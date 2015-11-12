@@ -111,6 +111,7 @@
 
 $(document).ready(function() {
     $('#form_data').submit(function(){
+    	$('#save').attr('disabled',true);//屏蔽保存按钮，防止多次提交退费；
         doAjax('{:U($controller."/dropCourse")}', $('#form_data').serialize(), 'POST', function(result){
             ui_info(result.info);
             if(result.state == 'ok'){
