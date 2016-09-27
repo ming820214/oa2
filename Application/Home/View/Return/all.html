@@ -1,0 +1,178 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+	.export{width: 200px;margin: 0px 8px;float: left;}
+	.page{background-color: beige;position: relative;text-align: right;padding: 5px 20px;}
+</style>
+{:W('PageHeader/finance',array('name'=>'退费管理','search'=>'N'))}
+<div  id="adv_search">
+<!-- 导出数据 -->
+		<form method="post" >
+		<div class="operate panel panel-default" >
+			<div class="panel-body">
+				<div class="pull-right">
+		            <div class="input-group export">
+		                <span class="input-group-addon">期次</span>
+		                <select name="date" class="form-control"><option value="{$Think.session.date}">{$Think.session.date}</option><option >全部</option></select>
+		            </div>
+		            <div class="input-group export">
+		                <span class="input-group-addon">审核状态</span>
+		                <select name="state" class="form-control"><option value="all">全部</option><option value="6">退款完成</option><option value="1">财务确认</option><option value="2">校区审核</option><option value="3">部门审核</option><option value="4">集团审批</option><option value="5">退款确认</option></select>
+		            </div>
+		            <div class="input-group export">
+		                <span class="input-group-addon">归属校区</span>
+		                <select name="school" class="form-control"><option></option>{:fill_option_val(C('SCHOOL'))}</select>
+		            </div>
+		            <div class="input-group export">
+		                <span class="input-group-addon">姓名</span>
+		                <input type="text" name="name" class="form-control" placeholder="学员姓名"/>
+		            </div>
+		            <!--<div class="input-group export">
+		                <span class="input-group-addon">单据编号</span>
+		                <input type="text" name="receiptNo" class="form-control" placeholder="单据编号"/>
+		            </div>-->
+		            <div class="input-group export">
+		                <span class="input-group-addon">年级</span>
+		                <select name="grade" class="form-control">
+		                	<option></option>
+		                	{:fill_option_ex($gradeList)}
+		                </select>
+		            </div>
+		            <div class="input-group export">
+		                <input type="submit" class="btn btn-primary" name="search" value="筛选"/>&nbsp;&nbsp;&nbsp;
+		                <input type="submit" class="btn btn-success" name="import" value="导出"/>
+		            </div>
+				</div>
+			</div>
+		</div>
+		</form>
+<!-- 导出数据 -->
+		<div style="overflow-x:auto;overflow-y:auto;max-height: 500px;">
+			<div class="ul_table message-container" style="width:3600px;">
+				<table class="table table-bordered" id="llst" width="110%" border="1px solid">
+					<thead>
+						<th width="1%" style="text-align: center;">
+							<input class="ace" type="checkbox" name="id-toggle-all" id="id-toggle-all"/>
+							<span class="lbl"></span>
+						</th>
+						<th width="2%" style="text-align: center;">序号</th>
+						<th width="3%" style="text-align: center;">状态</th>
+						<th width="3%" style="text-align: center;">校区</th>
+						<th width="3%" style="text-align: center;">学员姓名</th>
+						<th width="2%" style="text-align: center;">年级</th>
+						<th width="3%" style="text-align: center;">联系电话</th>
+						<th width="3%" style="text-align: center;">教学主任</th>
+						<th width="3%" style="text-align: center;">学习管理师</th>
+						<th width="5%" style="text-align: center;">课程类型</th>
+						<th width="5%" style="text-align: center;">课程类型2</th>
+						<th width="3%" style="text-align: center;">交费日期</th>
+						<th width="2%" style="text-align: center;">交费总额</th>
+						<th width="2%" style="text-align: center;">交费课时</th>
+						<th width="2%" style="text-align: center;">已上课时</th>
+						<th width="5%" style="text-align: center;">科目/教师</th>
+						<th width="6%" style="text-align: center;">剩余计算</th>
+						<th width="2%" style="text-align: center;">应退金额</th>
+						<th width="7%" style="text-align: center;">退费原因</th>
+						<th width="6%" style="text-align: center;">校区反馈</th>
+						<th width="6%" style="text-align: center;">校长沟通</th>
+						<th width="6%" style="text-align: center;">总部沟通</th>
+						<th width="3%" style="text-align: center;">申请时间</th>
+						<th width="3%" style="text-align: center;">财务确认时间</th>
+						<th width="3%" style="text-align: center;">校区审核时间</th>
+						<th width="3%" style="text-align: center;">总部沟通时间</th>
+						<th width="3%" style="text-align: center;">部门审批</th>
+						<th width="3%" style="text-align: center;">集团审批时间</th>
+						<th width="3%" style="text-align: center;">退费时间</th>
+						<th width="3%" style="text-align: center;">备注</th>
+					</thead>
+					<tbody>
+						<form method="post" action="{:U('delt')}" id="form_b">
+						<foreach name="list" item="vo">
+							<tr class="tbody data_item">
+								<td style="text-align: center;">
+									<label class="inline pull-left col-3">
+									<input class="ace" type="checkbox" name="id[]" value="{$vo.id}" />
+									<span class="lbl"></span></label>
+								</td>
+								<td>
+									{$vo.id}
+								</td>
+									
+									<td>
+										<switch name="vo.state" >
+										<case value="0"><a style="color:red;">退回修改</a></case>
+										<case value="1"><a style="color:fuchsia;">财务核算</a></case>
+										<case value="2"><a style="color:#6666FF;">校区审批</a></case>
+										<case value="3"><a style="color:#99CC00;">中心审批</a></case>
+										<case value="4"><a style="color:#333333;">财务批款</a></case>
+										<case value="5"><a style="color:#009933;">退款确认</a></case>
+										<case value="6"><a style="color:#009933;">退款完成</a></case>
+										</switch>
+									</td>
+									<td>{$vo.school}</td>
+									<td>{$vo.student}</td>
+									<td>
+										<switch name="vo.grade">
+							                <case value="22">高三</case>
+							                <case value="21">高二</case>
+							                <case value="20">高一</case>
+							                <case value="50">九年级</case>
+							                <case value="40">八年级</case>
+							                <case value="39">七年级</case>
+							                <case value="38">六年级</case>
+							                <case value="93">五年级</case>
+							                <case value="100">四年级</case>
+							                <case value="101">三年级</case>
+							                <case value="102">二年级</case>
+							                <case value="103">一年级</case>
+						                </switch>
+									</td>
+									<td>{$vo.tel}</td>
+									<td>{$vo.aa}</td>
+									<td>{$vo.bb}</td>
+									<td>{$vo.class}</td>
+									<td>{$vo.class1}=>{$vo.class2}</td>
+									<td>{$vo.timed}</td>
+									<td>{$vo.ze}</td>
+									<td>{$vo.count}</td>
+									<td>{$vo.countd}</td>
+									<td><empty name="vo.km">&nbsp;<else/>{$vo.km}</empty></td>
+									<td><empty name="vo.sy">&nbsp;<else/>{$vo.sy}</empty></td>
+									<td>{$vo.je}</td>
+									<td><empty name="vo.why1">&nbsp;<else />{$vo.why1}</empty></td>
+									<td><empty name="vo.why2">&nbsp;<else />{$vo.why2}</empty></td>
+									<td><empty name="vo.xqgt">&nbsp;<else />{$vo.xqgt}</empty></td>
+									<td><empty name="vo.why3">&nbsp;<else />{$vo.why3}</empty></td>
+									<td><empty name="vo.time1">&nbsp;<else />{$vo.time1}</empty></td>
+									<td><empty name="vo.cwqr_time">0000-00-00<else />{$vo.cwqr_time}</empty></td>
+									<td><empty name="vo.xqsh_time">0000-00-00<else />{$vo.xqsh_time}</empty></td>
+									<td><empty name="vo.zbgt_time">0000-00-00<else />{$vo.zbgt_time}</empty></td>
+									<td><empty name="vo.time2">0000-00-00<else />{$vo.time2}</empty></td>
+									<td><empty name="vo.jtsp_time">0000-00-00<else />{$vo.jtsp_time}</empty></td>
+									<td><empty name="vo.time3">0000-00-00<else />{$vo.time3}</empty></td>
+									<td>{$vo.other}</td>
+							</tr>
+							<php>$cont+=$vo['je'];</php>
+						</foreach>
+					</form>
+					</tbody>
+				</table>
+			</div>
+		</div>
+</div>
+<div class="page">{$page}</div>
+<div class="panel panel-default">
+	<div class="panel-body"><h3>项目合计：<php>echo round($cont,2)</php>元</h3>
+	</div>
+</div>
+</block>
+<block name="js">
+<script type="text/javascript">
+//列表项选择事件操作
+	$("#llst").on('click','tr',null,function(){
+
+      $("#llst tr").removeClass("active");
+		  $(this).attr("class", "active");
+    });	
+</script>
+</block>

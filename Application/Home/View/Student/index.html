@@ -1,0 +1,504 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+  .export{
+    width: 180px;
+    float: left;
+    margin: 0px 5px;
+  }
+</style>
+  {:W('PageHeader/search',array('name'=>'学员档案','search'=>'S'))}
+<div class="row">
+  <div class="col-sm-12">
+    <form id="form_data" method="post" class="form-horizontal" action="{:U('addx')}">
+      <input type="hidden" name="id" id="id">
+      <table class="table table-bordered" > 
+        <tr>
+          <th>姓名</th>
+          <td>
+          <input class="form-control col-10" type="text" name="name"  required="true" readonly>
+          </td>
+          <th>联系电话</th>
+          <td>
+          <input  class="form-control" type="text" name="tel"  required="true">
+          </td>
+          <th>性别</th>
+          <td>
+          <select name="sex" id="sex" class="form-control col-10">
+            <option  value="1">男</option>
+            <option value="0">女</option>
+          </select></td>
+          <th>家庭电话</th>
+          <td>
+          <input type="text" name="tel2" class="form-control">
+          </td>
+        </tr>
+        <tr>
+          <th>年级</th>
+          <td>
+            <select id="grade2" name="grade" class="form-control col-10">
+            	{:fill_option_ex($gradeList)}
+            <!--<optgroup label="初中">
+              <option value="初一">初一</option>
+              <option value="初二">初二</option>
+              <option value="初三">初三</option>
+            </optgroup>
+            <optgroup label="高中">
+              <option value="高一">高一</option>
+              <option value="高二">高二</option>
+              <option value="高三">高三</option>
+            </optgroup>-->
+            </select>
+          </td>
+          <th>文理</th>
+          <td><select name="wl" id="wl" class="form-control col-10">
+                <option  value="理">理</option>
+                <option value="文">文</option>
+              </select></td>
+          <th>学号</th>
+          <td><input type="text" name="std_id" class="form-control" readonly="readonly" value="" /></td>
+          <th>学员类型</th>
+          <td>
+            <select class="form-control col-10"  name="type" id="type2">
+              <option>普通</option>
+              <option>全日制</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>
+          <nobr>
+            现就读学校
+          </nobr></th>
+          <td>
+          <input type="text" id="schoolx" name="schoolx" class="form-control">
+          </td>
+          <th>
+          <nobr>
+            家庭地址
+          </nobr></th>
+          <td>
+          <input type="text" id="mobile_tel" name="address" class="form-control">
+          </td>
+          <th>学习管理师</th>
+          <td>
+              <select name="xueguan" class="form-control col-10" <present name="_GET['stuid']">disabled</present>>
+                <option value="">未分配</option>
+                <foreach name="xueguan" item="vx"><option value="{$vx}">{$vx}</option></foreach>
+              </select>
+          </td>
+          <th>教学主任</th>
+          <td>
+            <select name="jiaoxue" class="form-control col-10"><option value="">未分配</option>
+              <foreach name="jiaoxue" item="vj"><option value="{$vj}">{$vj}</option></foreach>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>最后更新时间</th>
+          <td id="timestamp"></td>
+          <th>状态</th>
+          <td>
+            <select class="form-control col-10"  name="state" id="state2">
+              <option value="1">正常</option>
+              <option value="2">停课</option>
+              <option value="3">结课</option>
+              <option value="4">毕业</option>
+              <option value="5">退费</option>
+            </select>
+          </td>
+          <th>备注信息</th>
+          <td>
+          <input type="text" id="other" name="other" class="form-control">
+          </td>
+          <th>查询码</th>
+          <td><input type="text" id="pw" name="pw" class="form-control"></td>
+        </tr>
+        <tr>
+          <th>勾选已停课科目</th>
+          <td colspan="2" style="letter-spacing: 3px;"><input type="checkbox" name="tk[]" value="语文">&nbsp;语文<input type="checkbox" name="tk[]" value="数学">&nbsp;数学<input  id="eng" type="checkbox" name="tk[]" value="英语">&nbsp;英语<input type="checkbox" name="tk[]" value="物理/地理">&nbsp;物理/地理<input type="checkbox" name="tk[]" value="化学/历史">&nbsp;化学/历史<input type="checkbox" name="tk[]" value="生物/政治">&nbsp;生物/政治</td>
+          <td style="letter-spacing: 3px;"><input type="checkbox" name="tk[]" value="临时">&nbsp;临时加课类学员</td>
+          <th><!-- <button class="btn btn-success" type="button"  data-toggle="modal" data-target="#jiaojie_dialog">学员交接</button> --></th>
+          <td colspan="3">
+              <div class="pull-left">
+                <button id="tochoose" class="btn btn-success" data-id="">课程管理</button>
+                <button id="tocharge" class="btn btn-success" data-id="">缴费</button>
+                <button id="toreturn" class="btn btn-success" data-id="">退费</button>
+              </div>
+              <div class="pull-right">
+              <!-- <input type="submit" class="btn btn-sm btn-primary" name="add" value="新增" /> -->
+              <a class="btn btn-sm btn-primary" onclick="sub()">保存修改</a>
+              </div>
+          </td>
+        </tr>
+      </table>
+    </form>
+
+  </div>
+</div>
+<form method="post" id="form_search" name="form_adv_search" action="{:U('index')}" <present name="_GET['stuid']">style="display:none"</present>>
+<input type="hidden" name="ajax" id="ajax" value="1">
+<input type="hidden" name="keyword" id="up_keyword"/>
+  <div class="operate panel panel-default">
+    <div class="panel-body">
+      <div class="pull-left">
+        <div class="input-group export">
+          <label  for="state" class="input-group-addon"><b>状态:</b></label>
+          <select id="state" name="state" class="form-control">
+            <option value="1">正常</option>
+            <option value="2">停课</option>
+            <option value="3">结课</option>
+            <option value="4">毕业</option>
+            <option value="5">退费</option>
+          </select>
+        </div>
+
+        <if condition="get_school_name() eq '集团'">
+            <div class="input-group export">
+              <span class="input-group-addon"><b>所属校区:</b></span>
+              <select id="school" name="school" class="form-control"><option></option>{:fill_option_val(C('SCHOOL'))}
+              </select>
+            </div>
+        </if>
+
+        <div class="input-group export">
+          <label  for="type" class="input-group-addon"><b>学员类型</b></label>
+          <select id="type" name="type" class="form-control">
+            <option value="">全部</option>
+            <option value="普通">普通</option>
+            <option value="全日制">全日制</option>
+          </select>
+        </div>
+
+        <div class="input-group export">
+          <label  for="xueguan" class="input-group-addon"><b>学习管理师</b></label>
+          <select id="xueguan" name="xueguan" class="form-control">
+            <option value="">全部</option>
+            <option value="无">无</option>
+            <foreach name="xueguan" item="vx"><option value="{$vx}">{$vx}</option></foreach>
+          </select>
+        </div>
+
+
+        <div class="input-group export">
+          <label  for="jiaoxue" class="input-group-addon"><b>教学主任</b></label>
+          <select id="jiaoxue" name="jiaoxue" class="form-control">
+            <option value="">全部</option>
+            <option value="无">无</option>
+            <foreach name="jiaoxue" item="vj"><option value="{$vj}">{$vj}</option></foreach>
+          </select>
+        </div>
+
+        <div class="input-group export">
+          <label  for="grade" class="input-group-addon"><b>年级</b></label>
+          <select id="grade" name="grade" class="form-control">
+            <option value="">全部</option>
+            {:fill_option_ex($gradeList)}
+          <!--<optgroup label="初中">
+            <option value="初一">初一</option>
+            <option value="初二">初二</option>
+            <option value="初三">初三</option>
+          </optgroup>
+          <optgroup label="高中">
+            <option value="高一">高一</option>
+            <option value="高二">高二</option>
+            <option value="高三">高三</option>
+          </optgroup>-->
+          </select>
+        </div>
+      </div>
+      <div class="pull-right">
+      <input type="submit" class="btn btn-sm btn-primary" name="search" value="查询" id="search" />
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="row">
+  <div class="col-sm-12 sub_left_menu ">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>学号</th>
+          <th>校区</th>
+          <th>姓名</th>
+          <th>年级</th>
+          <th>联系电话</th>
+          <th>学习管理师</th>
+          <th>教学主任</th>
+          <th>状态</th>
+          <th width="200px">查看</th>
+        </tr>
+      </thead>
+      <tbody>
+        <volist name="list" id="data">
+          <tr id="{$data.id}">
+            <td>{$data.std_id}</td>
+            <td>{$data.school}</td>
+            <td><a href="{:U('weihu/xg_base_info',['name'=>$data['name'],'std_id'=>$data['std_id'],'id'=>$data['id']])}" target="_blank">{$data.name}</a></td>
+            <td>
+            	<switch name="data.grade" >
+                <case value="22">高三</case>
+                <case value="21">高二</case>
+                <case value="20">高一</case>
+                <case value="50">九年级</case>
+                <case value="40">八年级</case>
+                <case value="39">七年级</case>
+                <case value="38">六年级</case>
+                <case value="93">五年级</case>
+                <case value="100">四年级</case>
+                <case value="101">三年级</case>
+                <case value="102">二年级</case>
+                <case value="103">一年级</case>
+                </switch>
+            </td>
+            <td>{$data.tel}</td>
+            <td>{$data.xueguan}</td>
+            <td>{$data.jiaoxue}</td>
+            <td><switch name="data.state" >
+                <case value="1">正常</case>
+                <case value="2">停课</case>
+                <case value="3">结课</case>
+                <case value="4">毕业</case>
+                <case value="5">退费</case>
+                </switch></td>
+            <td>
+              <button class="btn btn-xs btn-primary" onclick="fankui({$data.id})">授课反馈</button>
+              <button class="btn btn-xs btn-primary" onclick="weihui({$data.id})">维护记录</button>
+            </td>
+          </tr>
+        </volist>
+      </tbody>
+    </table>
+    <div class="pagination">
+      {$page}
+    </div>
+  </div>
+
+</div>
+
+<!-- 授课反馈记录 -->
+<div class="modal fade" id="fankui" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document" style="width:800px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">授课反馈</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-9">
+            <div class="input-group">
+              <span class="input-group-addon">开始时间</span>
+              <input type="text" name="date1"  class="form-control" readonly onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" value="{:date('Y-m-d',(time()-15*24*3600))}">
+              <span class="input-group-addon">结束时间</span>
+              <input type="text" name="date2"  class="form-control" readonly onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" value="{:date('Y-m-d')}">
+            </div>
+          </div>
+          <div class="col-md-3">
+              <button class="btn btn-success" onclick="fankuii()">查询</button>
+          </div>
+        </div><br>
+        <div class="content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 维护记录 -->
+<div class="modal fade" id="weihu" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document" style="width:800px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">学管维护记录</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-9">
+            <div class="input-group">
+              <span class="input-group-addon">开始时间</span>
+              <input type="text" name="date1"  class="form-control" readonly onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" value="{:date('Y-m-d',(time()-30*24*3600))}">
+              <span class="input-group-addon">结束时间</span>
+              <input type="text" name="date2"  class="form-control" readonly onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" value="{:date('Y-m-d')}">
+            </div>
+          </div>
+          <div class="col-md-3">
+              <button class="btn btn-success" onclick="weihui()">查询</button>
+          </div>
+        </div><br>
+        <div class="content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</block>
+<block name="js">
+<script type="text/javascript">
+sid=0;
+  $(document).ready(function(){
+    $(".sub_left_menu tbody tr").click(function() {
+          $(".sub_left_menu tbody tr.active").removeClass("active");
+          $(this).attr("class", "active");
+          sid=$(this).attr("id");
+          $.ajax({ url: "{:U('info')}&id=" + $(this).attr("id"),dataType:"json", context: document.body, success: function(msg){
+              setform(msg);
+
+          }});
+    })
+    //查询保持不变
+    <notempty name="Think.post.search">
+      $("#state").val(get_cookie("s1"));
+      $("#type").val(get_cookie("s2"));
+      $("#grade").val(get_cookie("s3"));
+      $("#xueguan").val(get_cookie("s4"));
+      $("#jiaoxue").val(get_cookie("s5"));
+    </notempty>
+
+    $("#search").on("click",function () {
+      set_cookie("s1",$("#state").val());
+      set_cookie("s2",$("#type").val());
+      set_cookie("s3",$("#grade").val());
+      set_cookie("s4",$("#xueguan").val());
+      set_cookie("s5",$("#jiaoxue").val());
+      
+      $('#up_keyword').val($('#keyword').val());
+    });
+
+    $('#tocharge').click(function(result){
+        if($(this).data('id') == ''){
+          ui_error('请选择学员');
+          return false;
+        }
+        winopen(fix_url("{:U('Students/charge')}?id=" + $(this).data('id')), 730, 500);
+        return false;
+    });
+
+    $('#toreturn').click(function(result){
+        if($(this).data('id') == ''){
+          ui_error('请选择学员');
+          return false;
+        }
+        winopen(fix_url("{:U('Students/toreturn')}?id=" + $(this).data('id')), 730, 500);
+        return false;
+    });
+
+    $('#tochoose').click(function(result){
+        if($(this).data('id') == ''){
+          ui_error('请选择学员');
+          return false;
+        }
+        location.href = fix_url("{:U('Courses/index')}?id=" + $(this).data('id')), 730, 500;
+        return false;
+    });
+    
+    $('#school').change(function(){
+    		$.ajax({
+								type:'POST',
+								async:true,
+								cache:false,
+								url:"{:U('getXg')}&school_name=" + $(this).val(),
+								dataType:'json',
+								success:function(msg,status){
+								 if(msg.data != null){
+								 	$("#xueguan").find("option").remove();
+								 	$("#xueguan").append("<option value=''>全部</option>");
+								 	$.each(msg.data, function(i,name) {
+								 		 $("#xueguan").append("<option value='" + name + "'>" + name + "</option>"); 
+								 	});
+								 }
+								}
+							});
+    });
+
+  });
+
+  function fankui(sid){
+    var t1 = $("#fankui input[name='date1']").val();
+    var t2 = $("#fankui input[name=date2]").val();
+    var html = '';
+    $.getJSON("{:U('xueguan/fankui_record')}",{stuid:sid,k:3,t1:t1,t2:t2},function(msg){
+      if(msg){
+        for(x in msg){
+          html+=msg[x][0]+'<br>'+msg[x][1]+'<br>'+msg[x][2]+'<hr>';
+        }
+      }else{
+        html = '没有查询到近期的相关信息，建议重新选择查询时间范围！'
+      }
+        $("#fankui .content").html(html);
+        $("#fankui").modal('show');
+    })
+  }
+  function fankuii(){
+    fankui(sid);
+  }
+
+  function weihu(sid){
+    var t1 = $("#weihu input[name='date1']").val();
+    var t2 = $("#weihu input[name=date2]").val();
+    var html = '';
+    $.getJSON("{:U('xueguan/weihu_record')}",{stuid:sid,k:3,t1:t1,t2:t2},function(msg){
+      if(msg){
+        for(x in msg){
+          html+=msg[x][0]+'<br>'+msg[x][1]+'<br>'+msg[x][2]+'<hr>';
+        }
+      }else{
+        html = '没有查询到近期的相关信息，建议重新选择查询时间范围！'
+      }
+        $("#weihu .content").html(html);
+        $("#weihu").modal('show');
+    })
+  }
+  function weihui(){
+    weihu(sid);
+  }
+
+
+
+  function setform (msg) {
+    $('#form_data').find("input[name='id']").val(msg.id);
+    $('#form_data').find("input[name='std_id']").val(msg.std_id);
+    $('#form_data').find("input[name='name']").val(msg.name);
+    $('#form_data').find("input[name='pw']").val(msg.pw);
+    $("#form_data").find("select[name='sex']").val(msg.sex);
+    $("#form_data").find("select[name='wl']").val(msg.wl);
+    $('#form_data').find("input[name='tel']").val(msg.tel);
+    $('#form_data').find("input[name='tel2']").val(msg.tel2);
+    $('#form_data').find("input[name='hometel']").val(msg.hometel);
+    $('#form_data').find("select[name='grade']").val(msg.grade);
+    $('#form_data').find("input[name='schoolx']").val(msg.schoolx);
+    $('#form_data').find("input[name='address']").val(msg.address);
+    $('#form_data').find("select[name='xueguan']").val(msg.xueguan);
+    $('#form_data').find("select[name='jiaoxue']").val(msg.jiaoxue);
+    $('#form_data').find("input[name='other']").val(msg.other);
+    $("#form_data").find("select[name='state']").val(msg.state);
+    $("#form_data").find("select[name='type']").val(msg.type);
+    $("#form_data input[name='tk[]']").prop("checked", false);
+
+    $("#form_data").find("button").data('id', msg.id);
+
+    for (var i = 0; i < msg.tk.length; i++) {
+      $("#form_data input[name='tk[]']").each(function(){
+        if($(this).val()==msg['tk'][i])
+          $(this).prop("checked", true);
+      });
+    };
+    $("#timestamp").text(msg.timestamp);
+  }
+
+  //保存，新增，删除操作
+  function sub() {
+    $.post("{:U('savex')}", $("#form_data").serialize(),function(data){
+      if(data==1){
+        alert('数据更新成功……');
+      }else{
+        alert('数据更新失败……');
+      }
+    },"json");
+  }
+  
+  
+
+</script>
+</block>

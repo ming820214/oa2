@@ -1,0 +1,554 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+{:W('PageHeader/finance',array('name'=>'退费审核','search'=>'N'))}
+<style>
+	.export{width: 200px;margin: 0px 8px;float: left;}
+	.page{background-color: beige;position: relative;text-align: right;padding: 5px 20px;}
+	.red_star {
+		color: red;
+	} 
+	
+</style> 
+<form method="post" id="form_aa" action="{:U('add')}">
+	<if condition="$module == 'gt' ">
+		<input type="hidden" id="zbgt_time" name="zbgt_time" value="" />
+	</if>
+	
+	<div class="adv_search panel panel-default hidden"  id="adv_aa">
+		<div class="panel-heading">
+			<div class="row">
+				<h4 class="col-xs-6">修改--><input  type="text" name="date" onclick="WdatePicker({dateFmt:'yyyy-MM'})" style="width: 70px;" required="true" value="{$Think.session.date}" />期次-->{$Think.session.user_name}<input type="hidden" name="id"></h4>
+				<div class="col-xs-6 text-right">
+					<input class="btn btn-sm btn-info" type="submit" value="保存">
+					<a  class="btn btn-sm btn-info" onclick="change_c();">取消</a>
+				</div>
+			</div>
+		</div>
+		<div class="panel-body">
+		<table align="center" style="width: 100%;">
+			<tr>
+				<td>学员姓名：</td>
+				<td><input type="text" name="student" required="true" readonly="readonly"/></td>
+				<td>年级：</td>
+				<td>
+					<select name="grade">
+						{:fill_option_ex($gradeList)}
+						<!--<option>高一</option>
+						<option>高二</option>
+						<option>高三</option>
+			            <option>初一</option>
+			            <option>初二</option>
+			            <option>初三</option>-->
+					</select>
+				</td>
+				<td>联系电话:</td>
+				<td><input type="text" name="tel" required="true" readonly="readonly"/></td>
+				<td>教学主任:</td>
+				<td><input type="text" name="aa" required="true" readonly="readonly"/></td>
+				<td>学管理师：</td>
+				<td><input type="text" name="bb" required="true" readonly="readonly"/></td>
+			</tr>
+			<empty name="why3">
+			<tr>
+				<td>课程类型：</td>
+				<td><input type="text" name="class" /><select class="class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select>&nbsp;&nbsp;<select name="class2" class="sub_type" required="required"></select></td>
+				<td>交费日期：</td>
+				<td><input type="text" name="timed" required="true" onclick="WdatePicker()" /></td>
+				<td>交费总额:</td>
+				<td><input type="number" name="ze" required="true"/></td>
+				<td>交费课时：</td>
+				<td><input type="text" name="count" required="true"/></td>
+				<td>已上课时:</td>
+				<td><input type="text"  name="countd" required="true"></td>
+			</tr>
+			<tr>
+				<td>科目/教师:</td>
+				<td><input type="text" name="km" required="true"></td>
+				<td>剩余计算：</td>
+				<td colspan="3">
+					<textarea name="sy" cols="50" rows="4" required="true" ></textarea><span class="red_star">(**必填项**)</span>
+				</td>
+				<td>应退金额：</td>
+				<td><input type="number" name="je" required="true" step="0.01"/></td>
+				<!--<td>备注：</td>
+				<td><input type="text" name="other"></td>-->
+				<td>业绩类型：</td>
+				<td>
+					<select id="yj_type" name="yj_type" style="max-width: 137px;min-width: 65px;width:100%;" required="required">
+						<option value="新签">新签</option>
+						<option value="续签">续签</option>
+						<option value="转介绍">转介绍</option>
+						<option value="激活">激活</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>具体原因：</td>
+				<td colspan="3">
+					<textarea name="why2" cols="80" rows="4" required="true" ></textarea><span class="red_star">(**必填项**)</span>
+				</td>
+				<td>扣费类型：</td>
+				<td>
+					<select id="kf_type" name="kf_type" style="max-width: 137px;min-width: 65px;width:100%;" required="required">
+						<option value="">--请选择--</option>
+						<option value="新签">新签</option>
+						<option value="续签">续签</option>
+						<!-- <option value="转介绍">转介绍</option> -->
+					</select>
+				</td>
+				<!-- <td>
+					<select id="kf_type" name="kf_type" style="max-width: 137px;min-width: 65px;width:100%;" disabled="disabled">
+						<option value="">--请选择--</option>
+						<option value="新签">新签</option>
+						<option value="续签">续签</option>
+						<option value="转介绍">转介绍</option>
+					</select>
+				</td> -->
+				
+				<td>备注：</td>
+				<td colspan="3"><input type="text" name="other" style="min-width: 137px;max-width: 440px;width: 100%;"  maxlength="15"></td>
+			</tr>
+			<if condition="$module == 'xqsh' ">
+			<tr>
+				<td>校长沟通：</td>
+				<td colspan="9">
+					<textarea name="xqgt" cols="80" rows="4" required="true" ></textarea><span class="red_star">(**必填项**)</span>
+				</td>
+			</tr>
+			<elseif condition="$module != 'xqsh' "/>
+			<tr>
+				<td>校长沟通：</td>
+				<td colspan="9">
+					<textarea name="xqgt" cols="80" rows="4" readonly="readonly"></textarea><span class="red_star">(**必填项**)</span>
+				</td>
+			</tr>
+			</if>
+			<else />
+				<tr>
+					<td>总部沟通：</td>
+					<td colspan="4"><input type="text" name="why3" required="true" style="width:100%;"></td>
+				</tr>
+			</empty>
+		</table>
+		</div>
+	</div>
+</form>
+
+
+<div  id="adv_search">
+	<form method="post" action="" name="form_data" id="form_data">
+		<empty name="bt">
+			<div class="operate panel panel-default">
+				<div class="panel-body">
+					<div class="pull-left">
+						<if condition="$module == 'xqsh' ">
+						<input class="btn btn-sm btn-danger" type="button" id="xqsh" name="aax" value="通过审核" />
+						<input type="hidden" id="tgsh" name="aax" value="" />
+						<elseif condition="$module == 'cwqr' "/>
+							<input class="btn btn-sm btn-danger" type="button" id="cwqr" name="aax" value="通过审核" />
+							<input type="hidden" id="tgsh" name="aax" value="" />
+						<else/>
+						<input class="btn btn-sm btn-danger" type="submit" name="aax" value="通过审核" />
+						</if>
+						<input class="btn btn-sm btn-danger" type="submit" name="bt" value="退回修改" />
+					</div>
+					<div class="pull-right">
+						<input class="btn btn-sm btn-primary" onclick="change()" value="直接修改" />
+						<input class="btn btn-sm btn-primary" type="submit" name="dl" value="删除" />
+					</div>
+				</div>
+			</div>
+		<else />
+			<div class="operate panel panel-default">
+				<div class="panel-body">
+					<div class="pull-left">
+						<empty name="why3">
+								<input class="btn btn-sm btn-danger" type="submit" name="aax" value="退款完成" />
+						<else />
+								<input type="button" class="btn btn-sm btn-primary" onclick="change()" value="总部沟通" />
+								<input class="btn btn-sm btn-danger" type="submit" name="bt" value="退回修改" />
+						</empty>
+					</div>
+				</div>
+			</div>
+		</empty>
+
+<a  class="btn btn-primary">执行流程：退费申请->财务核算->校区审批->总部沟通->中心审批->财务批款->退款确认</a>
+	<div style="overflow-x:auto;overflow-y:auto;max-height: 500px;">
+		<div class="ul_table message-container" style="width:3600px;">
+			<table class="table table-bordered" id="llst" width="100%">
+					<thead>
+						<th width="1%" style="text-align: center;">
+							<input class="ace" type="checkbox" name="id-toggle-all" id="id-toggle-all"/>
+							<span class="lbl"></span>
+						</th>
+						<th width="1%" style="text-align: center;">序号</th>
+						<th width="2%" style="text-align: center;">状态</th>
+						<th width="3%" style="text-align: center;">校区</th>
+						<th width="2%" style="text-align: center;">学员姓名</th>
+						<th width="2%" style="text-align: center;">年级</th>
+						<th width="3%" style="text-align: center;">联系电话</th>
+						<th width="2%" style="text-align: center;">教学主任</th>
+						<th width="3%" style="text-align: center;">学习管理师</th>
+						<!--<th width="2%" style="text-align: center;">课程类型</th>-->
+						<th width="5%" style="text-align: center;">课程类型</th>
+						<th width="3%" style="text-align: center;">交费日期</th>
+						<th width="2%" style="text-align: center;">交费总额</th>
+						<th width="2%" style="text-align: center;">交费课时</th>
+						<th width="2%" style="text-align: center;">已上课时</th>
+						<th width="5%" style="text-align: center;">科目/教师</th>
+						<th width="7%" style="text-align: center;">剩余计算</th>
+						<th width="2%" style="text-align: center;">应退金额</th>
+						<th width="6%" style="text-align: center;">退费原因</th>
+						<th width="7%" style="text-align: center;">校区反馈</th>
+						<th width="7%" style="text-align: center;">校长沟通</th>
+						<th width="7%" style="text-align: center;">总部沟通</th>
+						<th width="3%" style="text-align: center;">申请时间</th>
+						<th width="3%" style="text-align: center;">财务确认时间</th>
+						<th width="3%" style="text-align: center;">校区审核时间</th>
+						<th width="3%" style="text-align: center;">总部沟通时间</th>
+						<th width="3%" style="text-align: center;">部门审批</th>
+						<th width="3%" style="text-align: center;">集团审批时间</th>
+						<th width="3%" style="text-align: center;">退费时间</th>
+						<th width="6%" style="text-align: center;">备注</th>
+					</thead>
+					<tbody id="list1">
+						<form method="post" action="{:U('delt')}" id="form_b">
+						<foreach name="list" item="vo">
+							<tr class="tbody data_item">
+								<td style="text-align: center;">
+									<label class="inline pull-left col-3">
+									<input class="ace" type="checkbox" name="id[]" value="{$vo.id}" />
+									<span class="lbl"></span></label>
+								</td>
+								<td>
+									{$vo.id}
+								</td>
+								<td>
+									<switch name="vo.state" >
+									<case value="0"><a style="color:red;">退回修改</a></case>
+									<case value="1"><a style="color:fuchsia;">财务核算</a></case>
+									<case value="2"><a style="color:#6666FF;">校区审批</a></case>
+									<case value="3"><a style="color:#99CC00;">中心审批</a></case>
+									<case value="4"><a style="color:#333333;">财务批款</a></case>
+									<case value="5"><a style="color:#009933;">退款确认</a></case>
+									<case value="6"><a style="color:#009933;">退款完成</a></case>
+									</switch>
+								</td>
+								<td>{$vo.school}</td>
+								<td>{$vo.student}</td>
+								<td>
+									<switch name="vo.grade">
+						                <case value="22">高三</case>
+						                <case value="21">高二</case>
+						                <case value="20">高一</case>
+						                <case value="50">九年级</case>
+						                <case value="40">八年级</case>
+						                <case value="39">七年级</case>
+						                <case value="38">六年级</case>
+						                <case value="93">五年级</case>
+						                <case value="100">四年级</case>
+						                <case value="101">三年级</case>
+						                <case value="102">二年级</case>
+						                <case value="103">一年级</case>
+					                </switch>
+								</td>
+								<td>{$vo.tel}</td>
+								<td>{$vo.aa}</td>
+								<td>{$vo.bb}</td>
+								<!--<td>{$vo.class}</td>-->
+								<td>{$vo.class1}=>{$vo.class2}</td>
+								<td>{$vo.timed}</td>
+								<td>{$vo.ze}</td>
+								<td>{$vo.count}</td>
+								<td>{$vo.countd}</td>
+								<td><empty name="vo.km">&nbsp;<else/>{$vo.km}</empty></td>
+								<td><empty name="vo.sy">&nbsp;<else/>{$vo.sy}</empty></td>
+								<td>{$vo.je}</td>
+								<td><empty name="vo.why1">&nbsp;<else />{$vo.why1}</empty></td>
+								<td><empty name="vo.why2">&nbsp;<else />{$vo.why2}</empty></td>
+								<td><empty name="vo.xqgt">&nbsp;<else />{$vo.xqgt}</empty></td>
+								<td><empty name="vo.why3">&nbsp;<else />{$vo.why3}</empty></td>
+								<td><empty name="vo.time1">&nbsp;<else />{$vo.time1}</empty></td>
+								<td><empty name="vo.cwqr_time">0000-00-00<else />{$vo.cwqr_time}</empty></td>
+								<td><empty name="vo.xqsh_time">0000-00-00<else />{$vo.xqsh_time}</empty></td>
+								<td><empty name="vo.zbgt_time">0000-00-00<else />{$vo.zbgt_time}</empty></td>
+								<td><empty name="vo.time2">0000-00-00<else />{$vo.time2}</empty></td>
+								<td><empty name="vo.jtsp_time">0000-00-00<else />{$vo.jtsp_time}</empty></td>
+								<td><empty name="vo.time3">0000-00-00<else />{$vo.time3}</empty></td>
+								<td>{$vo.other}</td>
+							</tr>
+							<php>$cont+=$vo['je'];</php>
+						</foreach>
+					</form>
+					</tbody>
+					<tbody id="list2">
+						<foreach name="list2" item="voo">
+							<tr class="tbody data_item">
+								<td style="text-align: center;">
+									<label class="inline pull-left col-3">
+									<a class="ace">&nbsp;</a>
+									<span class="lbl"></span></label>
+								</td>
+								<td>
+									{$voo.id}
+								</td>
+								<td>
+									<switch name="voo.state" >
+									<case value="0"><a style="color:red;">退回修改</a></case>
+									<case value="1"><a style="color:fuchsia;">财务核算</a></case>
+									<case value="2"><a style="color:#6666FF;">校区审批</a></case>
+									<case value="3"><a style="color:#99CC00;">中心审批</a></case>
+									<case value="4"><a style="color:#333333;">财务批款</a></case>
+									<case value="5"><a style="color:#009933;">退款确认</a></case>
+									<case value="6"><a style="color:#009933;">退款完成</a></case>
+									</switch>
+								</td>
+								<td>{$voo.school}</td>
+								<td>{$voo.student}</td>
+								<td>
+									<switch name="voo.grade">
+						                <case value="22">高三</case>
+						                <case value="21">高二</case>
+						                <case value="20">高一</case>
+						                <case value="50">九年级</case>
+						                <case value="40">八年级</case>
+						                <case value="39">七年级</case>
+						                <case value="38">六年级</case>
+						                <case value="93">五年级</case>
+						                <case value="100">四年级</case>
+						                <case value="101">三年级</case>
+						                <case value="102">二年级</case>
+						                <case value="103">一年级</case>
+					                </switch>
+								</td>
+								<td>{$voo.tel}</td>
+								<td>{$voo.aa}</td>
+								<td>{$voo.bb}</td>
+								<!--<td>{$voo.class}</td>-->
+								<td>{$voo.class1}=>{$voo.class2}</td>
+								<td>{$voo.timed}</td>
+								<td>{$voo.ze}</td>
+								<td>{$voo.count}</td>
+								<td>{$voo.countd}</td>
+								<td><empty name="voo.km">&nbsp;<else/>{$voo.km}</empty></td>
+								<td><empty name="voo.sy">&nbsp;<else/>{$voo.sy}</empty></td>
+								<td>{$voo.je}</td>
+								<td><empty name="voo.why1">&nbsp;<else />{$voo.why1}</empty></td>
+								<td><empty name="voo.why2">&nbsp;<else />{$voo.why2}</empty></td>
+								<td><empty name="voo.xqgt">&nbsp;<else />{$voo.xqgt}</empty></td>
+								<td><empty name="voo.why3">&nbsp;<else />{$voo.why3}</empty></td>
+								<td><empty name="voo.time1">&nbsp;<else />{$voo.time1}</empty></td>
+								<td><empty name="voo.cwqr_time">0000-00-00<else />{$voo.cwqr_time}</empty></td>
+								<td><empty name="voo.xqsh_time">0000-00-00<else />{$voo.xqsh_time}</empty></td>
+								<td><empty name="voo.zbgt_time">0000-00-00<else />{$voo.zbgt_time}</empty></td>
+								<td><empty name="voo.time2">0000-00-00<else />{$voo.time2}</empty></td>
+								<td><empty name="voo.jtsp_time">0000-00-00<else />{$voo.jtsp_time}</empty></td>
+								<td><empty name="voo.time3">0000-00-00<else />{$voo.time3}</empty></td>
+								<td>{$voo.other}</td>
+							</tr>
+						</foreach>
+					</tbody>
+			</table>
+		</div>		
+	</div>	
+		
+	</form>
+</div>
+<div class="page">{$page}</div>
+<div class="panel panel-default">
+	<div class="panel-body"><h3>审核中的项目合计：<php>echo round($cont,2)</php>元</h3>
+	</div>
+</div>
+</block>
+<block name="js">
+<script type="text/javascript">
+	//如果是总部沟通页面，则在页面里添加总部沟通时间参数，传入后台进行保存
+	if(document.getElementById("zbgt_time")) {
+		var dd = new Date();
+		var tt = dd.getFullYear() + "-" + ((dd.getMonth() + 1) < 10 ? ('0' + (dd.getMonth() + 1)) : (dd.getMonth() + 1)) + "-" + ((dd.getDate()) < 10 ? ('0' + (dd.getDate())) : (dd.getDate())) + " " + ((dd.getHours()) < 10 ? ('0' + (dd.getHours())) : (dd.getHours())) + ":" + ((dd.getMinutes()) < 10 ? ('0' + (dd.getMinutes())) : (dd.getMinutes())) + ":" + ((dd.getSeconds()) < 10 ? ('0' + (dd.getSeconds())) : (dd.getSeconds()));
+		document.getElementById("zbgt_time").value = tt; 
+	}
+	
+	
+	$('#xqsh').click(function(){
+		var flag = true;
+		var flag_NO ='';
+		var checkboxes =$("input[name='id[]']:checkbox:checked");
+		var id=$("input[name='id[]']:checkbox:checked").val();
+		if(id){
+			$.each(checkboxes, function(i,obj){
+				if($(obj).val()){
+					$.ajax({
+				         url: "{:U('Return/api_c')}",
+				         data: "id="+$(obj).val(),
+				         type: "POST",
+				         async:false,
+				         dataType:"json",
+				         success: function(msg){
+				         	if(msg.xqgt == "" || msg.xqgt == undefined){
+				         		flag = false;
+				         		flag_NO += "," + msg.id;
+				         	}
+				         }
+				      });
+				}
+			});
+			
+			if(!flag){
+				if(flag_NO != ''){
+					flag_NO = flag_NO.substr(1);
+				}
+				alert('以下序号：' + flag_NO + '的记录 “校长沟通” 内容不能为空，请逐个选中后点击-》直接修改按钮进行修改！');
+				return;
+			}else{
+				$('#tgsh').val("通过审核");
+				$('#form_data').submit();
+			}
+		
+		}else{
+			alert('请选择要操作的数据！');
+		}
+		
+		
+		
+	});
+	
+	$('#cwqr').click(function(){
+		var flag = true;
+		var flag_NO ='';
+		var checkboxes =$("input[name='id[]']:checkbox:checked");
+		var id=$("input[name='id[]']:checkbox:checked").val();
+		if(id){
+			$.each(checkboxes, function(i,obj){
+				if($(obj).val()){
+					$.ajax({
+				         url: "{:U('Return/api_c')}",
+				         data: "id="+$(obj).val(),
+				         type: "POST",
+				         async:false,
+				         dataType:"json",
+				         success: function(msg){
+				         	if(msg.kf_type == "" || msg.kf_type == undefined){
+				         		flag = false;
+				         		flag_NO += "," + msg.id;
+				         	}
+				         }
+				      });
+				}
+			});
+			
+			if(!flag){
+				if(flag_NO != ''){
+					flag_NO = flag_NO.substr(1);
+				}
+				alert('以下序号：' + flag_NO + '的记录 “扣费类型” 内容不能为空，请逐个选中后点击-》直接修改按钮进行修改！');
+				return;
+			}else{
+				$('#tgsh').val("通过审核");
+				$('#form_data').submit();
+			}
+		
+		}else{
+			alert('请选择要操作的数据！');
+		}
+		
+		
+		
+	});
+	
+	//列表项选择事件操作
+	$("#llst").on('click','tr',null,function(){
+
+      $("#llst tr").removeClass("active");
+		  $(this).attr("class", "active");
+    });	
+    
+	/*批量审批无法验证
+	 * $('#xqsh').click(function(){
+		var id=$("input[name='id[]']:checkbox:checked").val();
+	
+		if(id){
+			$.ajax({
+		         url: "{:U('Return/api_c')}",
+		         data: "id="+id,
+		         type: "POST",
+		         async:true,
+		         dataType:"json",
+
+		         success: function(msg){
+		         	if(msg.xqgt == "" || msg.xqgt == undefined){
+		         		alert('“校长沟通”内容不能为空，请点击-》直接修改进行修改！');
+		         	}else{
+		         		$('#tgsh').val("通过审核");
+		         		$('#form_data').submit();
+		         	}
+		         }
+		      });
+		}else{
+			alert('请选择要操作的数据！');
+		}
+		
+	})*/
+	
+	
+	function change(){
+		var id=$("input[name='id[]']:checkbox:checked").val();
+		      $.ajax({
+		         url: "{:U('Return/api_c')}",
+		         data: "id="+id,
+		         type: "POST",
+		         async:true,
+		         dataType:"json",
+
+		         success: function(msg){
+		         	$("#adv_aa").removeClass("hidden");
+		         	$("#adv_aa").find("input[name='student']").val(msg.student);
+		         	$("#adv_aa").find("select[name='grade']").val(msg.grade);
+		         	$("#adv_aa").find("input[name='tel']").val(msg.tel);
+		         	$("#adv_aa").find("input[name='aa']").val(msg.aa);
+		         	$("#adv_aa").find("input[name='bb']").val(msg.bb);
+		         	$("#adv_aa").find("input[name='class']").val(msg.class);
+		         	$("#adv_aa").find("select[name='class1']").val(msg.class1);
+		         	$('#adv_aa .class_type').change();
+		         	$("#adv_aa").find("select[name='class2']").val(msg.class2);
+		         	$("#adv_aa").find("input[name='timed']").val(msg.timed);
+		         	$("#adv_aa").find("input[name='ze']").val(msg.ze);
+		         	$("#adv_aa").find("input[name='count']").val(msg.count);
+		         	$("#adv_aa").find("input[name='countd']").val(msg.countd);
+		         	$("#adv_aa").find("input[name='km']").val(msg.km);
+		         	$("#adv_aa").find("textarea[name='sy']").val(msg.sy);
+		         	$("#adv_aa").find("input[name='je']").val(msg.je);
+		         	$("#adv_aa").find("input[name='id']").val(msg.id);
+		         	$("#adv_aa").find("textarea[name='why2']").val(msg.why2);
+		         	$("#adv_aa").find("textarea[name='xqgt']").val(msg.xqgt);
+		         	$("#adv_aa").find("input[name='why3']").val(msg.why3);
+		         	$("#adv_aa").find("input[name='other']").val(msg.other);
+		         	$("#adv_aa").find("select[name='yj_type']").val(msg.yj_type);
+		         	$("#adv_aa").find("select[name='kf_type']").val(msg.kf_type);
+		         }
+		      });
+	}
+
+	function change_c(){
+         	$("#adv_aa").addClass("hidden");
+	}
+	
+	
+	$('.class_type').change(function(){
+		
+		$(".sub_type option").remove();
+		var sub = '{:json_encode($class2)}';
+		var obj = $.parseJSON(sub);
+		var tval = $(this).val();
+		$.each(obj, function(i,vo) {
+			if(tval == vo['group']){
+				$('.sub_type').append("<option value='" + vo['id'] + "'>" + vo['name'] +  "</option>");
+			}
+			
+		});
+		
+	});
+
+</script>
+</block>

@@ -1,0 +1,275 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style type="text/css">
+	.export {
+		margin:5px 5px;
+	}
+</style>
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+ 
+<!--功能模块区域-->
+<div class="panel panel-success" style="border:0px;">
+    <div class="panel-heading" role="tab" id="headingQuery">
+    	<h4 class="panel-title">
+	       	 功能模块区
+     	</h4>
+    </div>
+    <div class="panel-body" style="padding:0px;border:0px;">
+	  <!-- Nav tabs -->
+	  <ul class="nav nav-tabs" role="tablist">
+	    <li role="presentation" class="active"><a class="btn btn-warning" href="#xgcontent" aria-controls="xgcontent" role="tab" data-toggle="tab">基本信息</a></li>
+	    <li role="presentation"><a class="btn btn-warning" href="#xgcontent" aria-controls="xgcontent" role="tab" data-toggle="tab">授课反馈</a></li>
+	    <li role="presentation"><a class="btn btn-warning" href="#xgcontent" aria-controls="xgcontent" role="tab" data-toggle="tab">维护回访</a></li>
+	    <li role="presentation"><a class="btn btn-warning" href="#xgcontent" aria-controls="xgcontent" role="tab" data-toggle="tab">维护任务</a></li>
+	    <li role="presentation"><a class="btn btn-warning" href="#xgcontent" aria-controls="xgcontent" role="tab" data-toggle="tab">课表查询</a></li>
+	    <li role="presentation"><a class="btn btn-warning" href="#xgcontent" aria-controls="xgcontent" role="tab" data-toggle="tab">成绩查询</a></li>
+	    <li role="presentation"><a class="btn btn-warning" href="#xgcontent" aria-controls="xgcontent" role="tab" data-toggle="tab">缴费充值</a></li>
+	    <li role="presentation"><a class="btn btn-warning" href="#xgcontent" aria-controls="xgcontent" role="tab" data-toggle="tab">课程管理</a></li>
+	    <li role="presentation"><a class="btn btn-warning" href="#xgcontent" aria-controls="xgcontent" role="tab" data-toggle="tab">上课记录</a></li>
+	  </ul>
+    </div>
+</div>
+
+ <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="xgcontent">{__CONTENT__}</div>
+  </div>
+
+
+
+
+
+
+</block>
+<block name="js">
+<script type="text/javascript">
+sid=0;
+pageCount = 10; //每页显示多少条记录(全局变量)
+currentPage = 1; //当前页码
+maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
+pageString = '';
+state = {:json_encode(array_column(C('COURSE_STATES'),'name','id'))};
+
+  $(document).ready(function(){
+  	
+  	
+  	/**
+  	 * 绘制动态表格公用函数
+  	 * @param {Object} data  表格实体数据，由后台返回;
+  	 * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+  	 * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+  	 * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+  	 * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+  	 * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+  	 * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+  	 * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+  	 */
+  	$.drawTrTd=function (data,tbody_id,button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr){
+  		
+  		$.each(data, function(i,value) {
+  			var temp_str = '';
+  			
+  			$('#' + tbody_id).append('<tr id="' + value.id + '">');
+  			
+  			if(check_name != null){
+  				$('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class="' + value.id + '"  value="' + value.classid + '" /></td>');	
+  			}
+  			
+  			
+  			for(var i=0;i<field_arr.length;i++){
+  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+  					$('#' + value.id).append('<td>' + ( (eval('value.' + field_arr[i])== undefined || $.isEmptyObject($.trim((eval('value.' + field_arr[i])))))? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'))  + '</td>');
+  				}else{
+  					$('#' + value.id).append('<td>' + ( (eval('value.' + field_arr[i])== undefined || $.isEmptyObject($.trim((eval('value.' + field_arr[i])))))? '': eval('value.' + field_arr[i]))  + '</td>');	
+  				}
+  				
+  			}
+  			
+  			if(button_method_arr != null){
+  				for(var j=0;j<button_method_arr.length;j++){
+  					if(method_param_arr != null){
+  						var param_str = '';
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  						for(var k=0;k<method_param_arr.length;k++){
+  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  						}
+  						param_str = param_str.substring(0,param_str.length-1);
+						temp_str += param_str;  						
+  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}else{
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';	
+  					}
+  					
+  				}	
+  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+  				$('#' + value.id).append('<td>' + temp_str  + '</td>');
+  			}
+  			
+  			
+  		});
+  	}
+  	
+  		//教师授课列表分页操作
+   $('#pagination_students').jqPagination({
+			link_string	: '/?page={page_number}',
+			max_page	: maxPage,
+			paged		: function(page) {
+		
+			var pageNumber = (page-1)*pageCount //从第几行开始查询
+			var form_data =  $('#form_student_search_id').serializeArray();
+			
+			$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('studentInfoFilter')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+				dataType:'json',
+				data:form_data,
+				success:function(msg,status){
+					if(status=="success"){
+						var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+						currentPage = page; //设置当前页码
+						maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+						
+						if(msg.data != null && msg.data.length > 0 ){
+							$('#llst').empty();
+							
+							var button_method_arr = null;
+							var button_name_arr = null;
+							var field_arr = ['std_id','school','name','sex','schoolx','grade','wl','tel','xueguan','jiaoxue','state','hour','remain_hour'];
+							var select_lst_arr = ['state'];
+							var check_name = null;
+							var method_param_arr = null;
+							$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr);
+						}else{
+							$('#llst').empty();
+						}
+						
+					}
+				}
+			});
+
+			this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+			this.max_page = maxPage;
+			
+			if(this.max_page <= 0){
+				this.page_string = '没有符合条件的记录';
+			}
+		}
+		
+	});
+	
+  	
+  	
+    $(".sub_left_menu tbody tr").click(function() {
+          $(".sub_left_menu tbody tr.active").removeClass("active");
+          $(this).attr("class", "active");
+          sid=$(this).attr("id");
+          $.ajax({ url: "{:U('info')}&id=" + $(this).attr("id"),dataType:"json", context: document.body, success: function(msg){
+              setform(msg);
+
+          }});
+    })
+   
+
+/**
+ * 搜索区域隐藏与显示控制
+ */
+	$('#headingQuery a').click(function() {
+			 
+	  if($(this).is('.glyphicon.glyphicon-chevron-down')){
+	  	$('#headingQuery a').attr('class','glyphicon glyphicon-chevron-up');
+	  }else{
+	  	$('#headingQuery a').attr('class','glyphicon glyphicon-chevron-down');
+	  }
+			
+	});
+
+
+ $('#form_student_search_id').submit(function(event){
+ 	event.preventDefault();
+ 	
+ 		var form_data =  $('#form_student_search_id').serializeArray();
+	 		
+	 		$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('studentInfoFilter')}&pageNumber=0&pageCount=" + pageCount,
+				dataType:'json',
+				data:form_data,
+				success:function(msg,status){
+					if(msg.data != null && msg.data.length > 0 ){
+							$('#llst').empty();
+							
+							//data,tbody_id,button_method_arr,button_name_arr,field_arr,check_name
+							var button_method_arr = null;
+							var button_name_arr = null;
+							var field_arr = ['std_id','school','name','sex','schoolx','grade','wl','tel','xueguan','jiaoxue','state','hour','remain_hour'];
+							var select_lst_arr = ['state'];
+							var check_name = null;
+							var method_param_arr = null;
+							$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr);
+							maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+							$('#pagination_students').jqPagination('option',{'current_page':1,'trigger': false}); //设置分页插件的当前页码
+							$('#pagination_students').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+						}else{
+							$('#pagination_students').jqPagination('option',{'current_page':1,'trigger': false}); //设置分页插件的当前页码
+							$('#pagination_students').jqPagination('option',{'max_page':1,'trigger': false}); //设置分页插件的最大页码
+							$('#llst').empty();
+						}
+				},
+				failure:function(msg,status){
+					
+				}
+				});
+ 	});
+
+});
+
+ function submit_search(){
+ 		
+ 		var keyword = $('#keyword').val();		
+ 		if($.isEmptyObject(keyword)){
+ 			ui_alert("<img src='__INS__/img/error.jpg' width='20%' height='20%' alt='buhaoshi'/><font color='red' style='font-size:18px;'>请输入查询的关键字！</font>");
+ 			return;
+ 		}
+ 		var form_data =  $('#form_student_search_id').serializeArray();
+			
+	 		$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('studentInfoFilter')}&pageNumber=0&pageCount=" + pageCount + "&keyword=" + keyword,
+				dataType:'json',
+				data:form_data,
+				success:function(msg,status){
+					if(msg.data != null && msg.data.length > 0 ){
+							$('#llst').empty();
+							
+							//data,tbody_id,button_method_arr,button_name_arr,field_arr,check_name
+							var button_method_arr = null;
+							var button_name_arr = null;
+							var field_arr = ['std_id','school','name','sex','schoolx','grade','wl','tel','xueguan','jiaoxue','state','hour','remain_hour'];
+							var select_lst_arr = ['state'];
+							var check_name = null;
+							var method_param_arr = null;
+							$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr);
+							maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+							$('#pagination_students').jqPagination('option',{'current_page':1,'trigger': false}); //设置分页插件的当前页码
+							$('#pagination_students').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+						}else{
+							$('#pagination_students').jqPagination('option',{'current_page':1,'trigger': false}); //设置分页插件的当前页码
+							$('#pagination_students').jqPagination('option',{'max_page':1,'trigger': false}); //设置分页插件的最大页码
+							$('#llst').empty();
+						}
+				},
+				failure:function(msg,status){
+					
+				}
+				});
+ }
+
+</script>
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

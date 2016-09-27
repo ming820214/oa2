@@ -1,0 +1,140 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+{:W('PageHeader/simple',array('name'=>'每日消耗统计'))}
+
+<div class="operate panel panel-default">
+	<div class="panel-body">
+        <div class="input-group col-md-4 col-md-offset-4">
+            <span class="input-group-addon">选择日期</span>
+            <input name="date" class="input-date form-control" value="{:date('Y-m-d')}" id="get_date">
+            
+            <if condition="get_school_name() eq '集团'">
+            	<span class="input-group-addon" style="border:0;">&nbsp;</span>	
+	            <span class="input-group-addon">切换校区</span>
+	            <select name="school" class="form-control" id="get_school"><option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+            </if>
+           
+        </div>
+        
+        	 
+        <div>
+        	<input type="button" class="btn btn-sm btn-info pull-right" name="less_search" id="less_search" value="查询"> 
+	        <!--<input type="button" class="btn btn-sm btn-danger pull-left" value="数据批量导出"/>-->
+	    </div>
+       
+	</div>
+	
+</div>
+
+<!--数据导出模版-->
+<div class="modal fade" id="import">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>数据导出(请用wps打开模版文件！！！！)</h3>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <a href="{:U('export_template')}" target="_blank" class="btn btn-primary pull-left">下载模版文件</a>
+                    </div>
+                </div>
+                <div class="panel">
+                    <form  method="post" enctype="multipart/form-data" action="{:U('export')}">
+                        <input type="file" name="file" required/>
+                        <button  class="btn btn-primary pull-right">执行导入</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="overflow-y:auto;max-height: 400px;">
+	<table class="table">
+			<tr>
+				<th>校区</th>
+				<th>上课日期</th>
+				<th>学员</th>
+				<th>开始时间</th>
+				<th>结束时间</th>
+				<th>课时</th>
+				<th>科目</th>
+				<th>老师</th>
+				<th>消费订单</th>
+				<th>标准单价</th>
+				<th>标准消耗</th>
+				<th>实际单价</th>
+				<th>实际消耗</th>
+			</tr>
+		<volist name="data" id="v">
+			<tr>
+				<td>{$v.school}</td>
+				<td>{$v.timee}</td>
+				<td>{$v.name}</td>
+				<td>{$v.time1}</td>
+				<td>{$v.time2}</td>
+				<td>{$v.count}</td>
+				<td>{$v.class}</td>
+				<td>{$v.teacher}</td>
+				<td>{$v.plan.plan_name}</td>
+				<td>{$v.plan.unitprice}</td>
+				<td>{$v['plan']['unitprice'] * $v['count']}</td>
+				<td>{$v['plan']['true_price'] | round=###,2}</td>
+				<td>{$v['plan']['true_price'] * $v['count'] | round=###,2}</td>
+			</tr>
+		</volist>
+	</table>
+</div>
+
+<table border="0" class="table">
+  <tr style="background-color: rosybrown;height: 40px;color: white;">
+    <th width="130">校区名称</th>
+    <th width="170">当日消耗</th>
+    <th width="170">剩余消耗</th>
+  </tr>
+  	<volist name="last" id="vo">
+	  <tr style="background-color: darkgray;color: white;">
+	    <th>{$key}</th>
+	    <th>￥{$vo[0]| round=###,2}</th>
+	    <th>￥{$vo[1]}</th>
+	  </tr>
+    </volist>
+</table>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+	<notempty name="_GET['school']">$("#get_school").val("{$_GET['school']}");</notempty>	
+	<notempty name="_GET['date']">$("#get_date").val("{$_GET['date']}");</notempty>	
+
+	$(document).ready(function() {
+		set_return_url();
+		$("#move_to li").click(function() {
+			move_to($(this).attr("id"));
+		})
+
+		/*$("#get_school").change(function(){
+			var school = $("#get_school").val();
+			var date = $("#get_date").val();
+			document.location.href="{:U()}"+'&school='+school+'&date='+date;
+		})*/
+		
+		/*$("#get_date").blur(function(){
+			$("#get_school").change();
+		})*/
+		
+		$('#less_search').click(function(){
+			var school = $("#get_school").val();
+			var date = $("#get_date").val();
+			if(school != undefined){
+				document.location.href="{:U()}"+'&school='+school+'&date='+date;	
+			}else{
+				document.location.href="{:U()}"+'&date='+date;
+			}
+			
+		});
+	}); 
+
+</script>
+</block>

@@ -1,0 +1,126 @@
+<extend name="Layout/ins_popup" />
+<block name="content">
+<style>
+.loading {
+    position: fixed; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, .2);
+    background-image: url(__INS__/img/loading.gif);
+    background-position: center 300px;
+    background-repeat: no-repeat;
+    background-size: 50px;
+    display: none;
+    z-index: 5000;
+}
+</style>
+{:W('PageHeader/popup',array('name'=>'退费'))}
+    <div class="row">
+        <div class="col-sm-12 sub_content">
+            <form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+                <input type="hidden" name="id" id="id" value="{$id}">
+                <input type="hidden" name="pre_balance" id="pre_balance" value="{$balance}">
+                <input type="hidden" name="balance" id="balance" value="{$balance}">
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="std_id_display">学号：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="std_id_display" name="std_id_display" value="{$std_id}" disabled />
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="name_display">姓名：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="name_display" name="name_display" value="{$name}" disabled />
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="balance_show">余额：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="balance_show" name="balance_show" value="{$balance}" disabled />
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="tocharge">退费金额：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="number" min="0" step="0.01" id="tocharge" name="tocharge" value="" required autofocus />
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="pay_no">收据编号：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="pay_no" name="pay_no" value="" />
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="remark">备注：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="remark" name="remark" value="" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+
+$(document).ready(function() {
+    $('#form_data').submit(function(){
+        if($.trim($('#pay_no').val()) == ''){
+            ui_error('请输入收据编号');
+            return false;
+        }
+        doAjax('{:U($controller."/returnStudent")}', $('#form_data').serialize(), 'POST', function(result){
+            ui_info(result.info);
+            if(result.state == 'ok'){
+                setTimeout(function(){
+//                  parent.getData(parent.g_start, parent.g_count, parent.g_search);
+                    myclose();
+                }, 3000);
+            }
+        });
+
+        return false;
+    });
+
+    $('#tocharge').on('change' ,function(){
+        value = Number($('#pre_balance').val())-Number($(this).val());
+        if(value < 0){
+            ui_error('数值错误！');
+            return false;
+        }
+        $('#balance').val($('#balance_show').val());
+        $('#balance_show').val(value.toFixed(2));
+    });
+});
+
+function save() {
+    return $('#form_data').submit();
+}
+
+function doAjax(url, params, method, callback){
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: method,
+        dataType: 'JSON',
+        data: params,
+    })
+    .done(function(result){
+        if(result.state == 'ok'){
+            callback(result);
+        }else{
+            ui_error(result.info);
+        }
+    })
+    .fail(function(){
+        alert('网络错误！');
+    })
+    .always(function(){
+        $('.loading').fadeOut();
+    });
+}
+</script>
+</block>

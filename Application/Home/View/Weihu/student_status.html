@@ -1,0 +1,702 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+{:W('PageHeader/search_definition',array('name'=>'今日状态'))}
+<form method="post" id="status_form_search" name="form_adv_search">
+	<input type="hidden" name="sy_sort_type" value=""/>
+	<input type="hidden" name="day_sort_type" value=""/>
+	<input type="hidden" name="used_sort_type" value=""/>
+	<input type="hidden" name="unused_sort_type" value=""/>
+  <div class="operate panel panel-default">
+    <div class="panel-body">
+      <div class="pull-left">
+        <label  for="grade"><b>年级:</b></label>
+        <select id="grade" name="grade_w" class="col-10">
+          <option value="">全部</option>
+          {:fill_option_ex($gradeList)}
+        <!--<optgroup label="初中">
+          <option value="初一">初一</option>
+          <option value="初二">初二</option>
+          <option value="初三">初三</option>
+        </optgroup>
+        <optgroup label="高中">
+          <option value="高一">高一</option>
+          <option value="高二">高二</option>
+          <option value="高三">高三</option>
+        </optgroup>-->
+        </select>&nbsp;&nbsp;&nbsp;
+        
+        
+        <input type="number" min="0" name="val1" />
+        <label  for="xueguan"><b> =< </b></label>
+        <select name="lession_type">
+        	<option value="sy">剩余课时</option>
+        	<option value="day">今日课时</option>
+        	<option value="used">实到课时</option>
+        	<option value="unused">缺席课时</option>
+        </select>
+        <label  for="xueguan"><b><=</b></label>
+        <input type="number" min="0" name="val2" />
+        &nbsp;&nbsp;&nbsp;
+        <input type="button" class="btn btn-sm btn-primary" name="search" value="查询" id="status_search" />
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="row">
+  <div class="col-sm-12">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+        	<th>学员编号</th>
+          <th>学员姓名</th>
+          <th>年级</th>
+          <th>文理</th>
+          <th><a href="javascript:void(0);" class="glyphicon glyphicon-sort-by-order" id="day_hour_sort">今日总课时</a></th>
+          <th><a href="javascript:void(0);" class="glyphicon glyphicon-sort-by-order" id="used_hour_sort">实到课时</a></th>
+          <th><a href="javascript:void(0);" class="glyphicon glyphicon-sort-by-order" id="unused_hour_sort">缺席课时</a></th>
+          <th><a href="javascript:void(0);" class="glyphicon glyphicon-sort-by-order" id="remain_hour_sort">账户剩余总课时</a></th>
+        </tr>
+      </thead>
+      <tbody  id="llst">
+      <volist name="data" id="vo">
+          <tr>
+            <td>{$vo.std_id}</td>
+            <td><a href="javascript:void(0);" std_id="{$vo.std_id}" name="{$vo.name}">{$vo.name}</a></td>
+            <td>
+            	<switch name="vo.grade" >
+	                <case value="22">高三</case>
+	                <case value="21">高二</case>
+	                <case value="20">高一</case>
+	                <case value="50">九年级</case>
+	                <case value="40">八年级</case>
+	                <case value="39">七年级</case>
+	                <case value="38">六年级</case>
+	                <case value="93">五年级</case>
+	                <case value="100">四年级</case>
+	                <case value="101">三年级</case>
+	                <case value="102">二年级</case>
+	                <case value="103">一年级</case>
+                </switch>
+            </td>
+            <td>{$vo.wl}</td>
+            <td>{$vo.day_hour}</td>
+            <td>{$vo.used_hour}</td>
+            <td>{$vo.unused_hour}</td>
+            <td>{$vo.remain_hour}</td>
+          </tr>
+        </volist>
+      </tbody>
+      <tbody>
+        <tr>
+        	<td>今日学员数据统计：</td>
+            <td><div id="pageCount">共{:empty($counts)?0:$counts}人</div></td>
+            <td>
+            	<div id="page_grade_tj">
+            			初一：{:empty($page_grade_tj['39'])?0:$page_grade_tj['39']}&nbsp;
+		            	初二:{:empty($page_grade_tj['40'])?0:$page_grade_tj['40']}&nbsp;
+		            	初三:{:empty($page_grade_tj['50'])?0:$page_grade_tj['50']}
+		            	<br/>
+		            	高一：{:empty($page_grade_tj['20'])?0:$page_grade_tj['20']}&nbsp;
+		            	高二:{:empty($page_grade_tj['21'])?0:$page_grade_tj['21']}&nbsp;
+		            	高三:{:empty($page_grade_tj['22'])?0:$page_grade_tj['22']}
+            	</div>
+            </td>
+            <td>
+            	<div id="page_wl_tj">
+            		文： {:empty($page_wl_tj['文'])?0:$page_wl_tj['文']} 人   &nbsp;&nbsp; 理：{:empty($page_wl_tj['理'])?0:$page_wl_tj['理']} 人
+            	</div>
+            </td>
+            <td><div id="page_day_hour">{:empty($page_day_hour)?0:$page_day_hour}</div></td> <!--总课时-->
+            <td><div id="page_used_hour">{:empty($page_used_hour)?0:$page_used_hour}</div></td><!--实到总课时-->
+            <td><div id="page_unused_hour">{:empty($page_unused_hour)?0:$page_unused_hour}</div></td><!--缺席总课时-->
+            <td><div id="page_remain_hour">{:empty($page_remain_hour)?0:$page_remain_hour}</div></td><!--所有学员账户剩余总课时-->
+        </tr>
+        <tr>
+        	  <td>所有学员数据统计：</td>
+            <td><div id="allCount">共{$allCount}人</div></td>
+            <td>
+	            	<div id="grade_tj">
+		            	初一：{:empty($grade_tj['39'])?0:$grade_tj['39']}&nbsp;
+		            	初二:{:empty($grade_tj['40'])?0:$grade_tj['40']}&nbsp;
+		            	初三:{:empty($grade_tj['50'])?0:$grade_tj['50']}
+		            	<br/>
+		            	高一：{:empty($grade_tj['20'])?0:$grade_tj['20']}&nbsp;
+		            	高二:{:empty($grade_tj['21'])?0:$grade_tj['21']}&nbsp;
+		            	高三:{:empty($grade_tj['22'])?0:$grade_tj['22']}
+	             </div>
+            </td>
+            <td><div id="wl_tj">文： {:empty($wl_tj['文'])?0:$wl_tj['文']} 人   &nbsp;&nbsp; 理：{:empty($wl_tj['理'])?0:$wl_tj['理']} 人</div></td>
+            <td><div id="day_hour">{:empty($day_hour)?0:$day_hour}</div></td> <!--总课时-->
+            <td><div id="used_hour">{:empty($used_hour)?0:$used_hour}</div></td><!--实到总课时-->
+            <td><div id="unused_hour">{:empty($unused_hour)?0:$unused_hour}</div></td><!--缺席总课时-->
+            <td><div id="remain_hour">{:empty($remain_hour)?0:$remain_hour}</div></td><!--所有学员账户剩余总课时-->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!--今日学生状况分页-->
+  <div id="pagination_studentstatus" class="pagination" style="float:right;margin-right:35px;">
+			    <a href="#" class="first" data-action="first">&laquo;</a>
+			    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+			    <input id="pager_input" type="text" readonly="readonly"  data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+			    <a href="#" class="next" data-action="next">&rsaquo;</a>
+			    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+
+</div>
+
+<!-- 教学授课反馈 -->
+<div class="modal fade" id="studentstatus_dialog" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document" style="width:800px;">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title"><span id="student_name"></span>的今日课时安排情况<input type="hidden" id="student_std" value=""/></h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="row">
+					  <div class="col-sm-12">
+						  <table class="table table-bordered" style="background-color:white;">
+						      <thead>
+						        <tr>
+						        	<th>学员编号</th>
+						        	<th>学员姓名</th>
+						        	<th>ssss</th>
+						        	<th>年级</th>
+						        	<th>文理</th>
+						        	<th>科目</th>
+						        	<th>开始时间</th>
+						          <th>结束时间</th>
+						          <th>课时</th>
+						          <th>授课教师</th>
+						          <th>上课日期</th>
+						        </tr>
+						      </thead>
+						      <tbody id="llst_lession">
+						        <volist name="lession_data" id="v">
+							          <tr>
+							            <td>{$v.std_id}</td>
+							            <td>{$v.name}</td>
+							            <td>
+							            	<switch name="v.grade" >
+								                <case value="22">高三</case>
+								                <case value="21">高二</case>
+								                <case value="20">高一</case>
+								                <case value="50">九年级</case>
+								                <case value="40">八年级</case>
+								                <case value="39">七年级</case>
+								                <case value="38">六年级</case>
+								                <case value="93">五年级</case>
+								                <case value="100">四年级</case>
+								                <case value="101">三年级</case>
+								                <case value="102">二年级</case>
+								                <case value="103">一年级</case>
+							                </switch>
+							            </td>
+							            <td>{$v.wl}</td>
+							            <td>{$v.class}</td>
+							            <td>{$v.time1}</td>
+							            <td>{$v.time2}</td>
+							            <td>{$v.count}</td>
+							            <td>{$v.teacher}</td>
+							            <td>{$v.timee}</td>
+							          </tr>
+						        </volist>
+						      </tbody>
+						    </table>
+					  </div>
+
+					  <!--查看学生今日课时安排列表分页-->
+						 <div id="pagination_studentlesson" class="pagination" style="float:right;margin-right:35px;">
+						    <a href="#" class="first" data-action="first">&laquo;</a>
+						    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+						    <input type="text" readonly="readonly"  data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+						    <a href="#" class="next" data-action="next">&rsaquo;</a>
+						    <a href="#" class="last" data-action="last">&raquo;</a>
+						</div>
+					</div>
+	    </div>
+	  </div>
+	</div>
+</div>
+
+</block>
+<block name="js">
+
+<script type="text/javascript">
+
+sid=0;
+pageCount = 10; //每页显示多少条记录(全局变量)
+currentPage = 1; //当前页码
+maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
+pageString = '';
+state = {:json_encode(array_column(C('COURSE_STATES'),'name','id'))};
+grade = {:json_encode($gradelst)};
+$(function(){
+
+/**
+ *
+ * 绘制动态表格公用函数
+ * @param {Object} data  表格实体数据，由后台返回;
+ * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+ * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+ * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+ * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+ * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+ * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+ * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+ * @param {Object} a_link_arr 需要超链接包围的显示字段，为数组类型;
+ * @param {Object} a_link_url 相应位置超链接的url地址，为数组类型;
+ * @param {Object} a_link_param 相应位置超链接的url地址中需要绑定的参数，为数组类型;
+ * @param {Object} a_link_target 超链接弹出页面的方式设定，target，例如：_blank
+ * @param {Object} a_fun_arr  超链接如果有函数，这里是函数名称，为数组类型;
+ * @param {Object} a_fun_param_arr 函数中的参数字段，该字段需要在data中存在
+ */
+  	$.drawTrTd=function (
+  		data,
+  		tbody_id,
+  		button_method_arr,
+  		method_param_arr,
+  		button_name_arr,
+  		field_arr,
+  		check_name,
+  		select_lst_arr,
+  		a_link_arr,
+  		a_link_url,
+  		a_link_param,
+  		a_link_target,
+  		a_fun_arr,
+  		a_fun_param_arr,
+  		a_attr_arr,
+  		a_attr_value_arr){
+
+  		$.each(data, function(i,value) {
+  			var temp_str = '';
+
+  			$('#' + tbody_id).append('<tr id="' + value.id + '">');
+
+  			//列表checkbox选择组件创建
+  			if(check_name != null){
+  				$('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class="' + value.id + '"  value="' + value.classid + '" /></td>');
+  			}
+
+  			for(var i=0;i<field_arr.length;i++){
+  				//单元格起始构建
+  				temp = '<td>';
+
+  				//判断是否有超链接
+  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+  					var a_temp_str = '';
+
+  					//超链接起始构建
+  					if(a_link_param != null){
+  						//如果url地址需要参数
+  						a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)];
+  						//添加参数
+  						for(var n=0;n<a_link_param.length;n++){
+  							a_temp_str += '&' + a_link_param[n] + '=' + $.trim(eval('value.' + a_link_param[n]));
+  						}
+  						a_temp_str +=  '" ';
+  					}else{
+  						a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)] + '" ';
+  					}
+  					
+  					//给超链接添加属性
+  					if(a_attr_arr != null&& ($.inArray(field_arr[i],a_attr_arr) != -1)){
+  						for(var m=0;m<a_attr_arr.length;m++){
+  							a_temp_str += ' ' + a_attr_arr[m] + '="' + $.trim(eval('value.' + a_attr_arr[m])) + '"';
+  						}
+  					}
+
+  					//onclick函数起始构建
+  					if(a_fun_arr != null){
+  						a_temp_str += 'onclick="' + a_fun_arr[$.inArray(field_arr[i],a_link_arr)]  + '(';
+  					}
+
+  					//函数的参数全构建
+  					if(a_fun_param_arr != null){
+  						for(var k=0;k<a_fun_param_arr.length;k++){
+							a_temp_str += ($.trim(eval('value.' + a_fun_param_arr[k]))== undefined ? '': "'" + $.trim(eval('value.' + a_fun_param_arr[k]))) + "',";
+  						}
+
+  						a_temp_str = a_temp_str.substring(0,a_temp_str.lastIndexOf(','));
+  						a_temp_str += (')"')
+  					}
+
+					if(a_link_target != null){
+						a_temp_str += 'target=' + a_link_target + '>';
+					}else{
+						a_temp_str += '>';
+					}
+
+
+
+  					//添加超链接起始部分
+					temp += a_temp_str;
+
+  				}
+
+
+  				//添加单元格内容部分
+  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+  					//单元格内容如果是select组件中的value部分，需要转义的，通过在这里实现，但是javascript脚本最开始的部分需要添加相应的php代码带获取相应的数组，这部分内容在后期会进一步完善，会把该数组也放到该函数内来实现。
+  					temp += (((eval('value.' + field_arr[i])== undefined) || ($.trim(eval('value.' + field_arr[i]))==''))? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'));
+  				}else{
+  					temp += ((eval('value.' + field_arr[i])== undefined || eval('value.' + field_arr[i])== false) ? '': eval('value.' + field_arr[i]));
+  				}
+
+  				//超链接结束标签构建
+  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+  					temp += '</a>';
+  				}
+
+  				//单元格结束标签构建
+  				temp += '</td>';
+
+  				$('#' + value.id).append(temp);
+  			}
+
+
+  			if(button_method_arr != null){
+  				for(var j=0;j<button_method_arr.length;j++){
+  					if(method_param_arr != null){
+  						var param_str = '';
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  						for(var k=0;k<method_param_arr.length;k++){
+  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  						}
+  						param_str = param_str.substring(0,param_str.length-1);
+						temp_str += param_str;
+  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}else{
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}
+
+  				}
+  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+  				$('#' + value.id).append('<td>' + temp_str  + '</td>');
+  			}
+  	});
+ }
+
+
+	//学员今日状况列表分页操作
+  	$('#pagination_studentstatus').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var form_data =  $('#status_form_search').serializeArray();
+						
+						var keyword = $('#keywords').val();
+						var search = new Object();
+						search = {name:'keyword',value:keyword};
+						
+						form_data.push(search);
+
+						$.ajax({
+							type:'POST',
+							async:false,
+							cache:false,
+							url:"{:U('student_status')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+							dataType:'json',
+							data:form_data,
+							success:function(msg,status){
+								if(status=="success"){
+									var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+									currentPage = page; //设置当前页码
+									maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+									if(msg.data != null && msg.data.length > 0 ){
+										$('#llst').empty();
+
+										var button_method_arr = null;
+										var button_name_arr = null;
+										var field_arr = ['std_id','name','grade','wl','day_hour','used_hour','unused_hour','remain_hour'];
+										var select_lst_arr = ['state','grade'];
+										var check_name = null;
+										var method_param_arr = null;
+										var a_link_param = null;
+										var a_link_arr = ['name'];
+										var a_link_url = ['javascript:void(0);'];
+										var a_attr_arr = ['std_id','name'];
+										var a_attr_value_arr = ['std_id','name'];
+										var a_link_target = null;
+										var a_fun_arr = null;
+										var a_fun_param_arr = null;
+
+										$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,
+										button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,
+										a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr,
+										a_attr_arr,a_attr_value_arr);
+                  
+										var page_grade_str = '七年级：' + (msg.page_grade_tj['39'] == undefined?0:msg.page_grade_tj['39']);
+										page_grade_str += '&nbsp;八年级:' + (msg.page_grade_tj['40'] == undefined?0:msg.page_grade_tj['40']);
+										page_grade_str += '&nbsp;九年级:' + (msg.page_grade_tj['50'] == undefined?0:msg.page_grade_tj['50']);
+										page_grade_str += '<br/>高一：' + (msg.page_grade_tj['20'] == undefined?0:msg.page_grade_tj['20']);
+										page_grade_str += '&nbsp;高二:' + (msg.page_grade_tj['21'] == undefined?0:msg.page_grade_tj['21']);
+										page_grade_str += '&nbsp;高三:' + (msg.page_grade_tj['22'] == undefined?0:msg.page_grade_tj['22']);
+										$('#page_grade_tj').html(page_grade_str);
+										$('#page_wl_tj').html('文：' + (msg.page_wl_tj['文'] == undefined?0:msg.page_wl_tj['文']) + '人' +'<br/>理：' + (msg.page_wl_tj['理'] == undefined?0:msg.page_wl_tj['理']) + '人');
+										$('#page_day_hour').html(msg.page_day_hour);
+										$('#page_used_hour').html(msg.page_used_hour);
+										$('#page_unused_hour').html(msg.page_unused_hour);
+										$('#page_remain_hour').html(msg.page_remain_hour);
+										$('#pageCount').html('本页共 ' + msg.counts + '人');
+										
+										var grade_str = '七年级：' + (msg.grade_tj['39'] == undefined?0:msg.grade_tj['39']);
+										grade_str += '&nbsp;八年级:' + (msg.grade_tj['40'] == undefined?0:msg.grade_tj['40']);
+										grade_str += '&nbsp;九年级:' + (msg.grade_tj['50'] == undefined?0:msg.grade_tj['50']);
+										grade_str += '<br/>高一：' + (msg.grade_tj['20'] == undefined?0:msg.grade_tj['20']);
+										grade_str += '&nbsp;高二:' + (msg.grade_tj['21'] == undefined?0:msg.grade_tj['21']);
+										grade_str += '&nbsp;高三:' + (msg.grade_tj['22'] == undefined?0:msg.grade_tj['22']);
+										$('#grade_tj').html(grade_str);
+										$('#wl_tj').html('文：' + (msg.wl_tj['文'] == undefined?0:msg.wl_tj['文']) + '人' +'<br/>理：' + (msg.wl_tj['理'] == undefined?0:msg.wl_tj['理']) + '人');
+										$('#day_hour').html(msg.day_hour);
+										$('#used_hour').html(msg.used_hour);
+										$('#unused_hour').html(msg.unused_hour);
+										$('#remain_hour').html(msg.remain_hour);
+										$('#allCount').html('共 ' + msg.allCount + '人');
+
+									}else{
+										$('#llst').empty();
+										$('#grade_tj').html('');
+										$('#wl_tj').html('');
+										$('#day_hour').html('');
+										$('#used_hour').html('');
+										$('#unused_hour').html('');
+										$('#remain_hour').html('');
+                    $('#page_grade_tj').html('');
+                    $('#page_wl_tj').html('');
+                    $('#page_day_hour').html('');
+                    $('#page_used_hour').html('');
+                    $('#page_unused_hour').html('');
+                    $('#page_remain_hour').html('');
+                    $('#allCount').html('');
+                    $('#pageCount').html('');
+									}
+
+								}
+							}
+						});
+
+
+						if(maxPage <= 0){
+							this.page_string = '没有符合条件的记录';
+							maxPage = 1;
+						}else if(this.page_string == '没有符合条件的记录'){
+							this.page_string = 'Page {current_page} of {max_page}';
+						}
+
+						this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+						this.max_page = maxPage;
+
+
+						$('#pagination_studentstatus').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+					}
+
+	});
+
+	$('#status_search').click(function(){
+		 $('#pagination_studentstatus').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	});
+	
+	$.submit_search =function(){
+		$('#pagination_studentstatus').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	};
+	
+	
+$('#remain_hour_sort').click(function(){
+
+  	if($(this).attr('class') != 'glyphicon glyphicon-sort-by-order-alt'){
+  		 $(this).removeAttr('class');
+  		 $(this).attr('class','glyphicon glyphicon-sort-by-order-alt');
+  		 $('input[name="sy_sort_type"]').val('DESC');
+  	   $('input[name="day_sort_type"]').val('');
+  	   $('input[name="used_sort_type"]').val('');
+  	   $('input[name="unused_sort_type"]').val('');
+  	}else{
+  		 $(this).removeAttr('class');
+  		 $(this).attr('class','glyphicon glyphicon-sort-by-order');
+  		 $('input[name="sy_sort_type"]').val('ASC');
+  	   $('input[name="day_sort_type"]').val('');
+  	   $('input[name="used_sort_type"]').val('');
+  	   $('input[name="unused_sort_type"]').val('');
+  	}
+
+  	$('#pagination_studentstatus').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+
+  });
+
+  $('#day_hour_sort').click(function(){
+
+  	if($(this).attr('class') != 'glyphicon glyphicon-sort-by-order-alt'){
+  		 $(this).removeAttr('class');
+  		 $(this).attr('class','glyphicon glyphicon-sort-by-order-alt');
+  		 $('input[name="sy_sort_type"]').val('');
+  	   $('input[name="day_sort_type"]').val('DESC');
+  	   $('input[name="used_sort_type"]').val('');
+  	   $('input[name="unused_sort_type"]').val('');
+  	}else{
+  		 $(this).removeAttr('class');
+  		 $(this).attr('class','glyphicon glyphicon-sort-by-order');
+  		 $('input[name="sy_sort_type"]').val('');
+  	   $('input[name="day_sort_type"]').val('ASC');
+  	   $('input[name="used_sort_type"]').val('');
+  	   $('input[name="unused_sort_type"]').val('');
+  	}
+
+  	$('#pagination_studentstatus').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+
+  });
+
+	$('#used_hour_sort').click(function(){
+
+  	if($(this).attr('class') != 'glyphicon glyphicon-sort-by-order-alt'){
+  		 $(this).removeAttr('class');
+  		 $(this).attr('class','glyphicon glyphicon-sort-by-order-alt');
+  		 $('input[name="sy_sort_type"]').val('');
+  	   $('input[name="day_sort_type"]').val('');
+  	   $('input[name="used_sort_type"]').val('DESC');
+  	   $('input[name="unused_sort_type"]').val('');
+  	}else{
+  		 $(this).removeAttr('class');
+  		 $(this).attr('class','glyphicon glyphicon-sort-by-order');
+  		 $('input[name="sy_sort_type"]').val('');
+  	   $('input[name="day_sort_type"]').val('');
+  	   $('input[name="used_sort_type"]').val('ASC');
+  	   $('input[name="unused_sort_type"]').val('');
+  	}
+
+  	$('#pagination_studentstatus').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+
+  });
+
+  $('#unused_hour_sort').click(function(){
+
+  	if($(this).attr('class') != 'glyphicon glyphicon-sort-by-order-alt'){
+  		 $(this).removeAttr('class');
+  		 $(this).attr('class','glyphicon glyphicon-sort-by-order-alt');
+  		 $('input[name="sy_sort_type"]').val('');
+  	   $('input[name="day_sort_type"]').val('');
+  	   $('input[name="used_sort_type"]').val('');
+  	   $('input[name="unused_sort_type"]').val('DESC');
+  	}else{
+  		 $(this).removeAttr('class');
+  		 $(this).attr('class','glyphicon glyphicon-sort-by-order');
+  		 $('input[name="sy_sort_type"]').val('');
+  	   $('input[name="day_sort_type"]').val('');
+  	   $('input[name="used_sort_type"]').val('');
+  	   $('input[name="unused_sort_type"]').val('ASC');
+  	}
+
+  	$('#pagination_studentstatus').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+
+  });
+
+	//列表项选择事件操作
+	$("#llst").on('click','tr',null,function(){
+
+      $("#llst tr").removeClass("active");
+		  $(this).attr("class", "active");
+
+    })
+
+
+
+//学员今日状况列表分页操作
+  	$('#pagination_studentlesson').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var std_id =  $('#student_std').val();
+
+						$.ajax({
+							type:'POST',
+							async:false,
+							cache:false,
+							url:"{:U('student_lession')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+							dataType:'json',
+							data:{'std_id':std_id},
+							success:function(msg,status){
+								if(status=="success"){
+									var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+									currentPage = page; //设置当前页码
+									maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+									if(msg.data != null && msg.data.length > 0 ){
+										$('#llst_lession').empty();
+
+										var button_method_arr = null;
+										var button_name_arr = null;
+										var field_arr = ['std_id','name','grade','wl','class','time1','time2','count','teacher','timee'];
+										var select_lst_arr = ['grade'];
+										var check_name = null;
+										var method_param_arr = null;
+										var a_link_arr = null;
+										var a_link_url = null;
+										var a_attr_arr = null;
+										var a_attr_value_arr = null;
+										var a_link_param = null;
+										var a_link_target = null;
+										var a_fun_arr = null;
+										var a_fun_param_arr = null;
+
+										$.drawTrTd(msg.data,'llst_lession',button_method_arr,method_param_arr,
+										button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,
+										a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr,
+										a_attr_arr,a_attr_value_arr);
+
+									}else{
+										$('#llst_lession').empty();
+									}
+
+								}
+							}
+						});
+
+
+						if(maxPage <= 0){
+							this.page_string = '没有符合条件的记录';
+							maxPage = 1;
+						}else if(this.page_string == '没有符合条件的记录'){
+							this.page_string = 'Page {current_page} of {max_page}';
+						}
+
+						this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+						this.max_page = maxPage;
+
+
+						$('#pagination_studentlesson').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+					}
+
+	});
+
+
+	$('#llst').on('click','tr td:nth-child(2) a',null,function(){
+				$('#student_name').text($(this).attr('name'));
+				$('#student_std').val($(this).attr('std_id'));
+				$('#pagination_studentlesson').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+			 $("#studentstatus_dialog").modal('show');
+	})
+
+	$('#keywords').keydown(function(event){
+ 		if(event.keyCode == 13){
+ 			$.submit_search();
+ 		}
+ 			
+ 	});
+ 	
+});
+
+</script>
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

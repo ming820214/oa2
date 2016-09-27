@@ -1,0 +1,553 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+
+<div role="tabpanel" class="tab-pane" id="huifang">
+
+	<div class="panel panel-primary">
+	    <div class="panel-heading" role="tab" id="headingQueryWeihu">
+	    	<div style="float:left;">信息筛选区</div>
+		      <h4 class="panel-title" style="float:right;">
+			        <a class="glyphicon glyphicon-chevron-down" role="button" data-toggle="collapse" href="#collapseQueryWeihu" aria-expanded="true" aria-controls="collapseQueryWeihu">
+			        </a>
+		      </h4>
+		    <div style="clear: both;"></div>
+	    </div>
+	    <div id="collapseQueryWeihu" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingQueryWeihu">
+	       <div class="panel-body">
+	       		<form class="form-inline" id="visit_form_search" name="form_adv_search" action="{:U('visit_search')}" method="post">
+
+				  <div class="operate panel panel-default">
+				    <div class="panel-body">
+				      <div class="pull-left">
+
+				        <div class="input-group" style="margin-top: 5px;">
+				          <label  for="state_i" class="input-group-addon"><b>维护类型：</b></label>
+				          <select id="exam_type_id" name="weihutype"  class="form-control">
+					      	<option value="">全部</option> {:fill_option(C('WEIHU_TYPE'))}
+						  </select>
+				        </div>
+						
+						<div class="input-group" style="margin-top: 5px;">
+				          <label  for="state_i" class="input-group-addon"><b>回访方式：</b></label>
+				          <select id="exam_type_id" name="visit_type"  class="form-control">
+					      	<option value="">全部</option> {:fill_option(C('VISIT_TYPE'))}
+						  </select>
+				        </div>
+				        
+				      	<div class="input-group" style="margin-top: 5px;">
+				          <label  for="score_date" class="input-group-addon"><b>开始日期:</b></label>
+				          <input type="date" class="form-control" id="visit_date1" name="date1"/>
+				        </div>
+
+				        <div class="input-group" style="margin-top: 5px;">
+				          <label  for="score_date" class="input-group-addon"><b>结束日期:</b></label>
+				          <input type="date" class="form-control" id="visit_date2" name="date2"/>
+				        </div>
+				      </div>
+				      <div class="pull-right">
+				      <input type="button" class="btn btn-sm btn-primary" name="search" value="筛选" id="visit_search" />
+				      </div>
+				    </div>
+				  </div>
+				</form>
+	       </div>
+	    </div>
+	</div>
+
+
+	<div class="row">
+		<div class="col-sm-12">
+		    <table class="table table-bordered">
+		      <thead>
+		        <tr>
+		          <th>姓名</th>
+		          <th>维护类型</th>
+		          <th>维护方式</th>
+		          <th>维护内容</th>
+		          <th>维护效果</th>
+		          <th>维护日期</th>
+		        </tr>
+		      </thead>
+		      <tbody id="llst_weihu">
+						<volist name="data" id="item">
+							<tr id="{$item.id}" std_id="{$item.std_id}">
+								<td>{$item.name}</td>
+								<td>
+									<switch name="item.weihu_type">
+										<case value="11">首次课前</case>
+										<case value="12">首次课后</case>
+										<case value="13">考前回访</case>
+										<case value="14">考后回访</case>
+										<case value="15">日常沟通</case>
+										<case value="16">课程调整</case>
+									</switch>
+								</td>
+								<td>
+									<switch name="item.weihu_way">
+										<case value="11">去电</case>
+										<case value="12">来电</case>
+										<case value="13">面谈</case>
+										<case value="14">家长会</case>										
+									</switch>
+								</td>
+								<td>{$item.weihu_content}</td>
+								<td>{$item.weihu_effect}</td>
+								<td>{$item.weihu_timee}</td>
+							</tr>
+						</volist>
+		      </tbody>
+		    </table>
+
+		    <!-- 分页插件 -->
+			<div class="pagination" id="pagination_visit">
+			    <a href="#" class="first" data-action="first">&laquo;</a>
+			    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+			    <input id="pager_input" type="text" readonly="readonly"  onclick="return false;" data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+			    <a href="#" class="next" data-action="next">&rsaquo;</a>
+			    <a href="#" class="last" data-action="last">&raquo;</a>
+
+			</div>
+
+		</div>
+    </div>
+
+	<div class="row">
+		<div class="col-sm-12">
+		  <form id="visit_form_data" method="post" class="table-responsive" class="form-inline" action="{:U('visit_add')}">
+			<div class="panel panel-default">
+			  <div class="panel-heading">
+			    <h3 class="panel-title">
+				      添加维护信息
+			    </h3>
+			  </div>
+			  <div class="panel-body">
+					<input type="hidden" name="id" value="" />
+					<table class="table table-bordered">
+						<tbody>
+							<tr>
+								<td><b>学员姓名:</b></td>
+								<td> 
+										<select id="std_id_id" name="std_id">
+								     	{:fill_option($stu_list)}
+										</select>
+								</td>
+								<td><b>接洽家长：</b></td>
+								<td>
+									<select id="parent_type_id" class="form-control" name="parent_name"  class="form-control">
+								      	{:fill_option(C('PARENT_TYPE'))}
+									  </select>
+								</td>
+							</tr>
+							<tr>
+								<td><b>维护类型:</b></td>
+								<td>
+									 <select id="weihu_type_id" name="weihu_type"  class="form-control" required="required">
+								      	{:fill_option(C('WEIHU_TYPE'))}
+									  </select>
+								</td>
+								<td><b>回访方式:</b></td>
+								<td>
+									<select id="visit_type_id" name="weihu_way"  class="form-control" required="required">
+								      	{:fill_option(C('VISIT_TYPE'))}
+									 </select>
+								</td>
+							</tr>
+							<tr>
+								<td><b>起始时间:</b></td>
+								<td>
+									<input type="time" class="form-control" name="weihu_time1" />
+								</td>
+								<td><b>结束时间:</b></td>
+								<td>
+									 <input type="time" class="form-control" name="weihu_time2"/>
+								</td>
+							</tr>
+							<tr>
+								<td><b>家长反馈：</b></td>
+								<td colspan="3">
+									<textarea name="parents_fankui_info"  placeholder="本次家长反馈的情况" class="form-control"></textarea>
+								</td>
+							</tr>
+							<tr>
+								<td><b>维护内容：</b></td>
+								<td colspan="3">
+									<textarea name="weihu_content"  placeholder="本次维护内容" class="form-control"></textarea>
+								</td>
+							</tr>
+
+							<tbody id="meet" style="display: none;border-top-style: none;border-bottom-style: none;">
+								<tr>
+									<td><b>主持人：</b></td>
+									<td><input type="text" name="weihu_host" class="form-control"/></td>
+									<td><b>授课讲师：</b></td>
+									<td><input type="text" name="weihu_teacher" class="form-control"/></td>
+								</tr>
+								<tr>
+									<td><b>参会人员：</b></td>
+									<td><textarea name="weihu_participants"  placeholder="本次与会人员" class="form-control"></textarea></td>
+									<td><b>记录人：</b></td>
+									<td><input type="text" name="weihu_recorder" class="form-control"/></td>
+								</tr>
+								<tr>
+									<td><b>分析诊断：</b></td>
+									<td><textarea name="weihu_analys"  placeholder="关于本次会议提出的问题的分析和诊断" class="form-control"></textarea></td>
+									<td><b>家长意见：</b></td>
+									<td><textarea name="weihu_opinion"  placeholder="家长的意见" class="form-control"></textarea></td>
+								</tr>
+								<tr>
+									<td><b>解决办法：</b></td>
+									<td colspan="3"><textarea name="weihu_solution"  placeholder="本次会议提出的问题的解决方案" class="form-control"></textarea></td>
+								</tr>
+							</tbody>
+							<tbody style="border-top-style: none;">
+								<tr>
+									<td><b>维护日期：</b></td>
+									<td>
+										<input type="date" class="form-control" id="weihu_timee_id" name="weihu_timee" required="required" value=""/>
+									</td>
+									<td><b>维护效果：</b></td>
+									<td><input type="text" name="weihu_effect" class="form-control"/></td>
+								</tr>
+							</tbody>
+						</tbody>
+					</table>
+			    </div>
+			<div class="panel-footer">
+			  	<div class="form-control" style="text-align: center;border:0px;background-color: inherit;">
+			    	<input type="button" id="b_add" value="添加" class="btn btn-primary"/>
+			    	<input type="button" id="b_edit" value="维护" class="btn btn-primary"/>
+			    	<input type="reset" id="reset_visit_form" name="reset" style="display: none;"/>
+			    </div>
+			  </div>
+			</div>
+		  </form>
+		</div>
+	</div>
+   </div>
+
+</block>
+<block name="js">
+
+<script type="text/javascript">
+
+		sid=0;
+		pageCount = 10; //每页显示多少条记录(全局变量)
+		currentPage = 1; //当前页码
+		maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
+		pageString = '';
+		json_data = null;
+		weihu_type = {:json_encode(C('WEIHU_TYPE'))};
+		weihu_way = {:json_encode(C('VISIT_TYPE'))};
+
+$(function(){
+	
+				/**
+				 *
+				 * 绘制动态表格公用函数
+			  	 * @param {Object} data  表格实体数据，由后台返回;
+			  	 * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+			  	 * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+			  	 * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+			  	 * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+			  	 * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+			  	 * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+			  	 * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+					 * @param {Object} a_link_arr 需要超链接包围的显示字段，为数组类型;
+					 * @param {Object} a_link_url 相应位置超链接的url地址，为数组类型;
+					 * @param {Object} a_fun_arr  超链接如果有函数，这里是函数名称，为数组类型;
+					 * @param {Object} a_fun_param_arr 函数中的参数字段，该字段需要在data中存在
+				 */
+				  	$.drawTrTd=function (
+				  		data,
+				  		tbody_id,
+				  		button_method_arr,
+				  		method_param_arr,
+				  		button_name_arr,
+				  		field_arr,
+				  		check_name,
+				  		select_lst_arr,
+				  		a_link_arr,
+				  		a_link_url,
+				  		a_fun_arr,
+				  		a_fun_param_arr){
+
+				  		$.each(data, function(i,value) {
+				  			var temp_str = '';
+
+				  			$('#' + tbody_id).append('<tr id="' + value.id + '">');
+
+				  			//列表checkbox选择组件创建
+				  			if(check_name != null){
+				  				$('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class="' + value.id + '"  value="' + value.classid + '" /></td>');
+				  			}
+
+				  			for(var i=0;i<field_arr.length;i++){
+				  				//单元格起始构建
+				  				temp = '<td>';
+
+				  				//判断是否有超链接
+				  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+				  					var a_temp_str = '';
+
+				  					//超链接起始构建
+				  					a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)] + '" ';
+				  					//onclick函数起始构建
+				  					if(a_fun_arr != null){
+				  						a_temp_str += 'onclick="' + a_fun_arr[$.inArray(field_arr[i],a_link_arr)]  + '(';
+				  					}
+
+				  					//函数的参数全构建
+				  					if(a_fun_param_arr != null){
+				  						for(var k=0;k<a_fun_param_arr.length;k++){
+			  								a_temp_str += (eval('value.' + a_fun_param_arr[k])== undefined ? '': eval('value.' + a_fun_param_arr[k])) + ",";
+				  						}
+
+				  						a_temp_str = a_temp_str.substring(0,a_temp_str.lastIndexOf(','));
+				  					}
+
+				  					a_temp_str += (')">')
+
+				  					//添加超链接起始部分
+									temp += a_temp_str;
+
+				  				}
+
+
+
+				  				//添加单元格内容部分
+				  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+				  					//单元格内容如果是select组件中的value部分，需要转义的，通过在这里实现，但是javascript脚本最开始的部分需要添加相应的php代码带获取相应的数组，这部分内容在后期会进一步完善，会把该数组也放到该函数内来实现。
+				  					temp += (eval('value.' + field_arr[i])== undefined ? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'));
+				  				}else{
+				  					temp += ((eval('value.' + field_arr[i])== undefined || eval('value.' + field_arr[i])== false) ? '': eval('value.' + field_arr[i]));
+				  				}
+
+				  				//超链接结束标签构建
+				  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+				  					temp += '</a>';
+				  				}
+
+				  				//单元格结束标签构建
+				  				temp += '</td>';
+
+				  				$('#' + value.id).append(temp);
+				  			}
+
+
+				  			if(button_method_arr != null){
+				  				for(var j=0;j<button_method_arr.length;j++){
+				  					if(method_param_arr != null){
+				  						var param_str = '';
+				  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+				  						for(var k=0;k<method_param_arr.length;k++){
+				  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+				  						}
+				  						param_str = param_str.substring(0,param_str.length-1);
+										temp_str += param_str;
+				  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+				  					}else{
+				  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+				  					}
+
+				  				}
+				  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+				  				$('#' + value.id).append('<td>' + temp_str  + '</td>');
+				  			}
+				  	});
+				 }
+
+
+//初始化维护日期默认值
+var date_str = new Date().getFullYear() + '-' + ((new Date().getMonth()+1)<10?('0' + (new Date().getMonth()+1)):(new Date().getMonth()+1))+ '-' + (new Date().getDate()<10? ('0' + new Date().getDate()) : new Date().getDate());
+$('#weihu_timee_id').val(date_str);
+
+
+	$('#pagination_visit').jqPagination({
+							link_string	: '/?page={page_number}',
+							max_page	: maxPage,
+							paged		: function(page,param) {
+								
+							var pageNumber = (page-1)*pageCount //从第几行开始查询
+							
+							var data = $('#visit_form_search').serializeArray();
+							
+							$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('maintain_task')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_weihu').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['name','weihu_type','weihu_way','weihu_content','weihu_effect','weihu_timee'];
+											var select_lst_arr = ['weihu_type','weihu_way'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+
+											$.drawTrTd(msg.data,'llst_weihu',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+
+										}else{
+											$('#llst_weihu').empty();
+										}
+
+									}
+								}
+							});
+
+							
+							if(maxPage <= 0){
+								this.page_string = '没有符合条件的记录';
+								maxPage = 1;
+							}else if(this.page_string == '没有符合条件的记录'){
+								this.page_string = 'Page {current_page} of {max_page}';
+							}
+							
+							this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+							this.max_page = maxPage;
+							
+							
+							$('#pagination_visit').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+						}
+
+	});
+
+
+
+	$.setForm=function(data){
+		$('input[name="id"]').val(data[0]['id']);
+		$('select[name="weihu_type"]').val(data[0]['weihu_type']);
+		$('select[name="weihu_way"]').val(data[0]['weihu_way']);
+		$('input[name="weihu_timee"]').val(data[0]['weihu_timee']==false?'':data[0]['weihu_timee']);
+		$('textarea[name="weihu_content"]').val(data[0]['weihu_content']);
+		$('input[name="weihu_effect"]').val(data[0]['weihu_effect']);
+		$('input[name="weihu_time1"]').val(data[0]['weihu_time1']);
+		$('input[name="weihu_time2"]').val(data[0]['weihu_time2']);
+		$('input[name="parent_name"]').val(data[0]['parent_name']);
+		$('input[name="weihu_host"]').val(data[0]['weihu_host']);
+		$('input[name="weihu_teacher"]').val(data[0]['weihu_teacher']);
+		$('textarea[name="parents_fankui_info"]').val(data[0]['parents_fankui_info']);
+		$('input[name="weihu_recorder"]').val(data[0]['weihu_recorder']);
+		$('textarea[name="weihu_analys"]').val(data[0]['weihu_analys']);
+		$('textarea[name="weihu_solution"]').val(data[0]['weihu_solution']);
+		$('textarea[name="weihu_opinion"]').val(data[0]['weihu_opinion']);
+		$('textarea[name="weihu_participants"]').val(data[0]['weihu_participants']);
+		$('select[name="std_id"]').val(data[0]['std_id']);
+		$('#visit_type_id').change();
+
+
+	}
+	//列表项选择事件操作
+	$("#llst_weihu").on('click','tr',null,function(){
+
+      $("#llst_weihu tr").removeClass("active");
+		  $(this).attr("class", "active");
+		  var std_id = $(this).attr('std_id');
+		  
+		  sid=$(this).attr('id');
+          if(sid != 0){
+		          $.ajax({
+		          	type:'POST',
+		          	cache:false,
+		          	async:true,
+		          	url: "{:U('maintain_task')}",
+		          	data:{"id": sid},
+		          	dataType:"json",
+		          	success: function(msg){
+		          	
+					  $('#reset_visit_form').click();
+		              $.setForm(msg.data);
+
+		          	},
+		          	failure:function(err){
+
+		          		ui_error('error!');
+		          	}
+		          	});
+          }
+
+
+    });
+
+	//筛选查询操作
+	$('#visit_search').click(function(){
+		
+		$('#pagination_visit').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+
+	});
+
+
+	//回访类型控制显示内容
+	$('#visit_type_id').change(function(){
+		//当为家长会的情况下，会把家长会相关字段显示出来，否则隐藏掉
+		if(this.value != '14'){
+			$('#meet').css('display','none');
+		}else{
+			$('#meet').css('display','table-row-group');
+		}
+	});
+
+	
+	//维护回访内容的保存
+	$.saveFormData=function(submit_type){
+
+		var data = $('#visit_form_data').serializeArray();
+
+		$.ajax({
+				type:'POST',
+				async:true,
+				cache:false,
+				url:"{:U('visit_add')}&type=" + submit_type,
+				dataType:'json',
+				data:data,
+				success:function(msg,status){
+					if(status=="success" && msg.state == 'ok'){
+						if(submit_type == 'add'){
+							ui_info('信息添加成功!');	
+						}else if(submit_type == 'edit'){
+							ui_info('信息维护成功!');
+						}
+						
+						$('#reset_visit_form').click();
+						$('#visit_search').click();
+					}
+				},
+				failure:function(msg,status){
+					ui_info('请与系统管理员联系!');
+				}
+			});
+
+	};
+	
+	
+	$('#b_add').click(function(){
+		var submit_type = 'add';
+		$.saveFormData(submit_type);
+	});
+
+	$('#b_edit').click(function(){
+		var submit_type = 'edit';
+		$.saveFormData(submit_type);
+	});
+
+	
+	
+});
+  
+</script>
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

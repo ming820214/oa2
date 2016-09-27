@@ -1,0 +1,443 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	<link rel="stylesheet" href="__INS__/financeSys/css/common.css">
+
+	<div id="finance-main-container-box" class="finance-main-container-box">
+
+		<!-- 基础类型数据录入 Start -->
+		<div class="finance-page-header">
+			<h1 class="finance-h1">基础类型数据录入</h1>
+		</div>
+		<div class="finance-basic-entry-container">
+			<form action="" id="basic-info-submit">
+				<table class="basic-type-entry-content" >
+					<tr>
+						<td class="label_align_right_col"><label for="achievement_type">业绩类型</lable></td>
+						<td><input type="text" id="achievement_type" name="achievement_type" value="新签;续签;转介绍;激活" readonly></td>
+					</tr>
+					<tr>
+						<td class="label_align_right_col"><label for="charge_type">收费类型</lable></td>
+						<td><input type="text" id="charge_type" name="charge_type" value="普通;3A;5A;7A" readonly></td>
+					</tr>
+					<tr>
+						<td class="label_align_right_col"><label for="curriculum_type">常规课程类型</lable></td>
+						<td><input type="text" id="curriculum_type" name="curriculum_type"></td>
+					</tr>
+					<tr>
+						<td class="label_align_right_col"><label for="not_curriculum_type">非常规课程类型</lable></td>
+						<td><input type="text" id="not_curriculum_type" name="not_curriculum_type"></td>
+					</tr>
+					<tr>
+						<td class="label_align_right_col"><label for="curriculum_name">课程名称</lable></td>
+						<td><input type="text" id="curriculum_name" name="curriculum_name"></td>
+					</tr>
+					<tr>
+						<td class="label_align_right_col"><label for="receivables_type">收款类型</lable></td>
+						<td><input type="text" id="receivables_type" name="receivables_type" value="全款;预交款;补齐款" readonly></td>
+					</tr>
+					<tr>
+						<td class="label_align_right_col"></td>
+						<td style="text-align:right"><input type="submit" id="saveData" value="保存"></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<!-- 基础类型数据录入 End -->
+
+
+		<!-- 各校区基本信息数据录入 Start -->
+		<div class="finance-page-header">
+			<h1 class="finance-h1">各校区基本信息数据录入(仅限为当前月设定目标)</h1>
+		</div>
+		<div class="finance-basic-entry-container">
+			<ul class="school-basic-info-data" id="school-basic-info-data">
+				
+			</ul>
+			<input type="submit" value="保存" id="saveSchoolBasicData" style="float:right">
+			<div style="clear:both;margin-bottom:10px;"></div>
+		</div>
+		<!-- 各校区基本信息数据录入 End -->
+	</div>
+
+	<!-- 各校区基本信息数据模版 Start -->
+	<template id='schoolBasicInfoDataTemplate'>
+		<div class="school-target">
+			<ul>
+				<li data-name="new-target">
+					<span>新招业务目标：</span><input type="number" min="0" step="1000">
+				</li>
+				<li data-name="old-target">
+					<span>续费业务目标：</span><input type="number" min="0" step="1000">
+				</li>
+				<li data-name="count-target">
+					<span>招生业务目标：</span><input type="number" min="0" step="1000">
+				</li>
+			</ul>
+			<table>
+					<tr>
+						<th style="width:100px">姓名</th>
+						<th style="width:120px">职务</th>
+						<th style="width:100px">级别</th>
+						<th>配置人数</th>
+						<th>消耗业绩目标</th>
+						<th>业绩目标</th>
+						<th>消耗升级完成率</th>
+						<th>升级完成率</th>
+						<th>消耗保级完成率</th>
+						<th>保级完成率</th>
+						<th>消耗完成率</th>
+						<th style="width:60px">操作</th>
+					</tr>
+			</table>
+			<input type="button" value="添加新业务人员" data-add="add" style="width:200px;background:rgb(0,180,180);color:white;margin-left:40px;border:none;">
+		</div>
+		<div table-temp>
+			<table>
+				<tr>
+					<td>
+						<input type="text" data-personal-name >
+					</td>
+					<td>
+						<select data-personal-post>
+							<option value="11" selected>咨询主管</option>
+							<option value="12">维护主管</option>
+							<option value="19">教学主任</option>
+							<option value="18">学习管理师</option>
+						</select>
+					</td>
+					<td>
+						<select data-personal-level>
+							<option value="0">助理</option>
+							<option value="1" selected>初级</option>
+							<option value="2">中级</option>
+							<option value="3">高级</option>
+							<option value="4">特级</option>
+							<option value="5">精英级</option>
+						</select>
+					</td>
+					<td>
+						<input type="number" data-personal-personal_num min="0" step="1000">
+					</td>
+					<td>
+						<input type="number" data-personal-target_consume min="0" step="1000">
+					</td>
+					<td>
+						<input type="number" data-personal-target min="0" step="1000">
+					</td>
+					<td>
+						<input type="number" data-personal-upgrade_consume min="0"  step="0.01">
+					</td>
+					<td>
+						<input type="number" data-personal-upgrade min="0"  step="0.01">
+					</td>
+					<td>
+						<input type="number" data-personal-relegation_consume min="0"  step="0.01">
+					</td>
+					<td>
+						<input type="number" data-personal-relegation min="0"  step="0.01">
+					</td>
+					<td>
+						<input type="number" data-personal-consume min="0"  step="0.01">
+					</td>
+					<td>
+						<input type="button" value='删除' data-del="del" style="background: rgb(0,180,180);">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</template>
+	<!-- 各校区基本信息数据模版 End -->
+</block>
+<block name="js">
+	<script src="__INS__/financeSys/js/basic.js"></script>
+	<script>
+		(function(){
+			var basicTypeData 		= {},
+				schoolTempID	=	[]; //保存临时校区在DOM中的ID名称 格式为：{id:'school1jivl', school_id: '1', school_name: '盘锦天丽家园校区'}
+
+			var basicTypeDataSaveBtn = document.$('#saveData');
+			var schoolCollection 	 = document.$("#school-basic-info-data");
+			var saveSchoolBasicDataBtn  = document.$('#saveSchoolBasicData');
+
+
+			//基本类型数据录入 保存 按钮监听事件
+			basicTypeDataSaveBtn.addEventListener('click', function(e){
+				e.preventDefault();
+				basicTypeData.achievement_type			 = document.$('#achievement_type').value.trim().split(/;|；|\s|,|，|、/).join(';');
+				basicTypeData.charge_type				 = document.$('#charge_type').value.trim().split(/;|；|\s|,|，|、/).join(';');
+				basicTypeData.curriculum_type	 = document.$('#curriculum_type').value.trim().split(/;|；|\s|,|，|、/).join(';');
+				basicTypeData.not_curriculum_type = document.$('#not_curriculum_type').value.trim().split(/;|；|\s|,|，|、/).join(';');
+				basicTypeData.curriculum_name			 = document.$('#curriculum_name').value.trim().split(/;|；|\s|,|，|、/).join(';');
+				basicTypeData.receivables_type			 = document.$('#receivables_type').value.trim().split(/;|；|\s|,|，|、/).join(';');
+
+				AJAX({
+					url : IPaddr + 'index.php?c=PersonalCount&a=Json_file_add',
+					success : function(data){
+							if( data.status === true){
+								Toast(data.content);
+							} else {
+								Toast(data.content);
+							}
+					},
+					data : '&json_str=' + JSON.stringify( basicTypeData ),
+					error: function( errCode ){
+						Toast(errCode);
+					}
+				})
+			}, false);
+
+
+			window.addEventListener( "DOMContentLoaded", function(){
+				//获取基础数据初始值
+				AJAX({
+					url		: IPaddr + 'index.php?c=PersonalCount&a=Json_file_get',
+					success	: function(data){
+						basicTypeData = data;
+						for(var key in basicTypeData){
+							var el = document.$( "#" + key );
+							if( el !== null) el.value = basicTypeData[ key ];
+						}
+					}
+				});
+
+				//获取校区目标业绩
+				AJAX({
+					url : IPaddr + 'index.php?c=PersonalCount&a=Campus_target_find',
+					success : function( data ){
+						getSchoolBasicInfoData( data );
+					}
+				});
+
+				//添加一条新业务人员
+				var addPersonal = function( el , data ){
+					if( el.tagName !== 'TBODY' ) el = el.$("tbody");
+					if( typeof data === 'undefined') data = {};
+					data.id		 			= data.id || ''; 
+					data.name	 			= data.name || '';
+					data.post_id 			= data.post_id || '19';
+					data.level	 			= data.level || '1';
+					data.target_consume	 	= data.target_consume || '0';   	//消耗业绩总目标
+					data.target	 			= data.target || '0';   			//业绩总目标
+					data.upgrade_consume 	= data.upgrade_consume || '0';  	//消耗升级
+					data.upgrade 			= data.upgrade || '0';  			//升级
+					data.relegation_consume = data.relegation_consume || '0';  	//消耗保级
+					data.relegation 		= data.relegation || '0';  			//保级
+					data.consume 			= data.consume || '0';  			//消耗
+					var personalDataContent = document.importNode( document.$("#schoolBasicInfoDataTemplate")
+											  .content
+											  .querySelector("[table-temp]")
+											  .children[0], true);
+					personalDataContent.querySelector('[data-personal-name]').value 	  			= data.name;
+					personalDataContent.querySelector('[data-personal-post]').value 	  			= data.post_id;
+					personalDataContent.querySelector('[data-personal-level]').value 	  			= data.level;
+					personalDataContent.querySelector('[data-personal-personal_num]').value	  	= data.personal_num;
+					personalDataContent.querySelector('[data-personal-target_consume]').value	  	= data.target_consume;
+					personalDataContent.querySelector('[data-personal-target]').value	  			= data.target;
+					personalDataContent.querySelector('[data-personal-upgrade_consume]').value	  	= data.upgrade_consume;
+					personalDataContent.querySelector('[data-personal-upgrade]').value	  			= data.upgrade;
+					personalDataContent.querySelector('[data-personal-relegation_consume]').value 	= data.relegation_consume;
+					personalDataContent.querySelector('[data-personal-relegation]').value 			= data.relegation;
+					personalDataContent.querySelector('[data-personal-consume]').value 				= data.consume;
+					personalDataContent.querySelector('[data-del=del]').dataset.id		  			= data.id;
+
+					if(data.post_id != '12'){
+						personalDataContent.querySelector('[data-personal-target_consume]').disabled		= true;
+						personalDataContent.querySelector('[data-personal-upgrade_consume]').disabled		= true;
+						personalDataContent.querySelector('[data-personal-relegation_consume]').disabled	= true;
+						personalDataContent.querySelector('[data-personal-consume]').disabled				= true;
+					}
+
+					if(data.post_id != '11'){
+						personalDataContent.querySelector('[data-personal-personal_num]').disabled				= true;
+					}
+
+					el.appendChild( personalDataContent.querySelector('tr') );
+
+				}
+
+				//通过后台获取校区目标业绩方法
+				var getSchoolBasicInfoData = function( targetDate ){
+
+					var schoolCount		 = targetDate.length;
+
+
+
+					for( var i = 0; i < schoolCount; i++){
+						var school			= document.createElement('li'),
+							schoolNameDiv	= document.createElement('div'),
+							schoolContent	= document.createElement('div'),
+							schoolNameSpan	= document.createElement('span');
+
+						var tempId = ( Math.random() * 1000000000 ).toString(36);
+						tempId = tempId.split('');
+						tempId.splice( tempId.indexOf('.'), 1);
+						tempId = tempId.join('');
+						schoolTempID[i] = {};
+						schoolTempID[i].id = 'school' + tempId;
+						schoolTempID[i].school_id = targetDate[ i ].school_id;
+						schoolTempID[i].school_name = targetDate[ i ].school_name;
+
+						schoolContent.style.display		  = 'none';
+						schoolContent.dataset.id		  = schoolTempID[i].id;
+						schoolContent.dataset.school_id	  = schoolTempID[i].school_id;
+						schoolContent.dataset.school_name = schoolTempID[i].school_name;
+						schoolContent.dataset.fold		  = true;
+
+						var dataTemplate		 = document.importNode( document.$("#schoolBasicInfoDataTemplate").content.querySelector(".school-target"), true );
+						dataTemplate.querySelector('[data-name=new-target] > input').value = targetDate[ i ].new_target;
+						dataTemplate.querySelector('[data-name=old-target] > input').value = targetDate[ i ].old_target;
+						dataTemplate.querySelector('[data-name=count-target] > input').value = targetDate[ i ].count_target;
+						var tableObj = dataTemplate.querySelector("table > tbody");
+
+						targetDate[ i ].personal_target.forEach(function(val){
+							addPersonal(tableObj,val);
+						});
+
+						schoolContent.appendChild( dataTemplate );
+
+						schoolNameDiv.className = 'school-name';
+						schoolNameSpan.appendChild( document.createTextNode( targetDate[ i ].school_name ) )
+						schoolNameDiv.appendChild( schoolNameSpan )
+						school.appendChild( schoolNameDiv );
+						school.appendChild( schoolContent );
+						schoolCollection.appendChild(school);
+
+					}
+
+
+
+					//校区点击折叠事件监听
+					var foldSchoolEvent = function(){
+						var schoolCollection	= document.$('#school-basic-info-data');
+						var allSchool = schoolCollection.$$('[data-fold]');
+
+						schoolCollection.addEventListener('click', function(e){
+							var Target = e.target;
+							if(!((Target.tagName === 'SPAN' && Target.parentNode.className === 'school-name') || ( Target.tagName === 'DIV' && Target.className === 'school-name') ) ){
+								return;
+							}
+							if( Target.tagName === 'SPAN' ){
+								Target = Target.parentNode.nextElementSibling;
+							} else {
+								Target = Target.nextElementSibling
+							}
+							if(Target.dataset.fold === 'true'){
+								Target.style.display = 'block';
+								Target.dataset.fold = false;
+							} else {
+								Target.style.display = 'none';
+								Target.dataset.fold = true;
+							}
+
+							allSchool = Array.from(allSchool);
+							allSchool.forEach(function(val){
+											if( Target.dataset.id !== val.dataset.id && val.style.display === 'block'){
+												val.style.display = 'none';
+												val.dataset.fold = true;
+											}
+										})
+						}, false);
+
+						//监听添加新业务人员按钮
+						schoolCollection.addEventListener('click', function(e){
+							var Target = e.target;
+							if(!( Target.tagName === 'INPUT' && Target.type === 'button' && Target.dataset.add === 'add')){
+								return;
+							}
+							var el = Target.previousElementSibling;
+							
+							addPersonal(el);
+						},false);
+						
+						//监听删除新业务人员按钮
+						schoolCollection.addEventListener('click', function(e){
+							var Target = e.target;
+							if(!( Target.tagName === 'INPUT' && Target.type === 'button' && Target.dataset.del === 'del')){
+								return;
+							}
+							var name = Target.parentNode.parentNode.querySelector("[data-personal-name]").value;
+							if(name === ''){
+								Target.parentNode.parentNode.parentNode.removeChild(Target.parentNode.parentNode);
+								return;
+							}
+							
+							AJAX({
+								url : IPaddr + 'index.php?c=PersonalCount&a=campus_target_del&id=' + Target.dataset.id,
+								success : function( data ){
+									if(data.status === true){
+										Target.parentNode.parentNode.parentNode.removeChild(Target.parentNode.parentNode);
+										Toast(data.content);
+									} else {
+										Toast(data.content);
+									}
+								},
+								error : function(e){
+									Toast(e);
+								}
+							})
+						},false);
+
+					}();
+
+				};
+
+			}, false);
+
+			//////////////////////
+			//监听保存校区基本信息数据事件 //
+			//////////////////////
+			saveSchoolBasicDataBtn.addEventListener( "click", function(e){
+				var schoolCount = document.$$("#school-basic-info-data > li");
+				var schoolBasicInfoTempData = [];
+				for(var i = 0; i < schoolCount.length; i++){
+					//获取校区内容DOM对象
+					var el = schoolCount[ i ].$('[data-id=' + schoolTempID[ i ].id + ']');
+					var schoolUnit = {};
+					schoolUnit.school_id	= schoolTempID[ i ].school_id;
+					schoolUnit.school_name	= schoolTempID[ i ].school_name;
+					schoolUnit.new_target	= el.$('[data-name=new-target] > input').value;
+					schoolUnit.old_target	= el.$('[data-name=old-target] > input').value;
+					schoolUnit.count_target	= el.$('[data-name=count-target] > input').value;
+					schoolUnit.personal_target = [];
+
+					var personalTargetEl = el.$("table").$$("tr");
+					if( personalTargetEl.length !== 1 ){
+						for( var j = 1; j < personalTargetEl.length; j++ ){
+							var personal_target = {};
+							var personalName = personalTargetEl[j].$("[data-personal-name]").value;
+							if (personalName.trim() === '') continue;
+							personal_target.name = personalName;
+							personal_target.post = personalTargetEl[j].$("[data-personal-post]").value;
+							personal_target.level = personalTargetEl[j].$("[data-personal-level]").value;
+							personal_target.personal_num = +personalTargetEl[j].$("[data-personal-personal_num]").value;
+							personal_target.target_consume = +personalTargetEl[j].$("[data-personal-target_consume]").value;
+							personal_target.target = +personalTargetEl[j].$("[data-personal-target]").value;
+							personal_target.upgrade_consume = +personalTargetEl[j].$("[data-personal-upgrade_consume]").value;
+							personal_target.upgrade = +personalTargetEl[j].$("[data-personal-upgrade]").value;
+							personal_target.relegation_consume = +personalTargetEl[j].$("[data-personal-relegation_consume]").value;
+							personal_target.relegation = +personalTargetEl[j].$("[data-personal-relegation]").value;
+							personal_target.consume = +personalTargetEl[j].$("[data-personal-consume]").value;
+							schoolUnit.personal_target.push( personal_target )
+						}
+					}
+					schoolBasicInfoTempData.push( schoolUnit );
+				}
+				AJAX({
+					url		: IPaddr + 'index.php?c=PersonalCount&a=Campus_target_add',
+					success	: function(data){
+						if( !data.status){
+							Toast( data.content );
+						} else {
+							Toast( data.content );
+						}
+					},
+					data : 'data=' + JSON.stringify( schoolBasicInfoTempData ),
+					type:'POST'
+				});
+
+			}, false);
+
+		})();
+
+	</script>
+</block>

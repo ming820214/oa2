@@ -1,0 +1,346 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+    vertical-align: bottom;
+}
+
+#admin_form .table > thead > tr > th,
+#admin_form .table > tbody > tr > th,
+#admin_form .table > tfoot > tr > th,
+#admin_form .table > thead > tr > td,
+#admin_form .table > tbody > tr > td,
+#admin_form .table > tfoot > tr > td {
+    vertical-align: middle;
+}
+
+.loading {
+    position: fixed; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, .2);
+    background-image: url(__INS__/img/loading.gif);
+    background-position: center 300px;
+    background-repeat: no-repeat;
+    background-size: 50px;
+    display: none;
+    z-index: 5000;
+}
+
+#admin_form table.table>thead>tr>th,
+#admin_form table.table>tbody>tr>td {
+    text-align: center;
+}
+
+#admin_form {
+    max-height: 500px;
+}
+
+tr input[type=checkbox] {
+    width: 1.3em;
+}
+
+.export {
+    width:100%;
+    max-width:250px;
+    float: left;
+    margin-right: 10px;
+}
+
+.sbtbox {
+    outline: 1px #E5E6E7 solid;
+    display: inline-block;
+    width: 510px;
+    float: left;
+    margin-right: 10px;
+}
+
+.sbtbox>div {
+    height: 39px;
+    padding-left: 8px;
+    padding-top: 5px;
+}
+
+.sbtbox>div>.export {
+    max-width: 230px;
+}
+
+</style>
+{:W('PageHeader/finance',array('name'=>$title,'search'=>'N'))}
+<div class="operate panel panel-default">
+    <div class="panel-body" id="form_box">
+        <h3 style="text-align:center">{$name}-{$std_id}</h3>
+        <form class="apply_form" id="old_form" action="#">
+            <div class="table-responsive">
+                <table class="table" align="center" style="width: 100%;">
+                    <tr>
+                        <td>
+                            <div class="input-group export">
+                                <span class="input-group-addon">姓名</span>
+                                <input class="form-control" type="text" value="{$course.name}" disabled>
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">学号</span>
+                                <input class="form-control" type="text" value="{$course.std_id}" disabled>
+                            </div>
+                            <div class="input-group export" style="max-width:510px;">
+                                <span class="input-group-addon">方案</span>
+                                <input class="form-control" type="text" value="{$course.plan_name}" disabled>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="input-group export">
+                                <span class="input-group-addon">单价（￥）</span>
+                               <input data-timeid="" type="text" name="unitprice" class="form-control" value="{$course.unitprice}" disabled />
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">订购课时</span>
+                                <input data-timeid="" type="text" name="hour" class="form-control" disabled value="{$course.hour} + {$course.ext_hour}" />
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">已上课时</span>
+                                <input data-timeid="" type="text" name="ext_hour" class="form-control" disabled value="{$course.used_hour}" />
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">折扣</span>
+                                <input data-timeid="" type="text" name="ext_hour" class="form-control" disabled value="{$course.factor}" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="sbtbox" style="width:250px">
+                                <h4 style="text-align: center">科目教师</h4>
+                                <p style="text-align:center">{$subject_teacher}</p>
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">价格（￥）</span>
+                                <input data-timeid="" type="text" name="price" class="form-control" value="{$course.price|formatPrice}" disabled />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+        <hr />
+        <h3 style="text-align:center">调整课时( 仅限补款后增加课时或转班减少课时的情况使用 )</h3>
+        <form class="apply_form" id="new_form" action="#">
+            <input type="hidden" name="id" value="{$course.id}" />
+            <input type="hidden" name="plan_id" value="{$plan_id}" />
+            <input type="hidden" name="from" value="{$from}" />
+            <input type="hidden" name="count" value="{$unit_plan['count']}" />
+            <div class="table-responsive">
+                <table class="table" align="center" style="width: 100%;">
+                    <tr>
+                        <td>
+                            <div class="input-group export">
+                                <span class="input-group-addon">增加</span>
+                               <input data-timeid="" data-hour="{$course['hour']/$unit_plan['count']}" type="number" min="-{$course.hour}" step="0.25" name="add_hour" class="form-control" />
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">合计</span>
+                                <input data-timeid="" type="text" name="hour" class="form-control" value="{$course.hour}" readonly />
+                                <span class="input-group-addon">{$unit_plan.label}</span>
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">赠送课时</span>
+                                <input data-timeid="" type="number" name="ext_hour" min="0" step="0.1" value="{$course.ext_hour}" class="form-control" readonly />
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">单价（￥）</span>
+                               <input data-timeid="" type="text" name="unitprice" class="form-control" value="{$course.unitprice}" readonly/>
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">折扣</span>
+                                <input data-timeid="" type="text" name="factor" class="form-control" disabled value="{$course.factor}" />
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">价格（￥）</span>
+                                <input data-timeid="" type="text" name="price" class="form-control" value="{$course.price}" readonly />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="input-group export" style="max-width: 510px">
+                                <span class="input-group-addon">备注</span>
+                                <input data-timeid="" name="remark" class="form-control" value="{$course.remark}" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="operate panel panel-default">
+    <div class="panel-body">
+        <form id="pay_form" action="#" method="post">
+            <input type="hidden" name="std_id" value="{$course.std_id}" />
+            <input type="hidden" name="name" value="{$course.name}" />
+
+            <div class="pull-right">
+                <div class="input-group export">
+                    <span class="input-group-addon">收款人</span>
+                    <input id="emp" class="form-control" type="text" name="emp" value="{:session('user_name')}" readonly required />
+                </div>
+                <div class="input-group export">
+                    <span class="input-group-addon">差价（￥）</span>
+                    <input id="pay_due" class="form-control" type="text" name="pay_due" value="0.00" required readonly />
+                </div>
+                <div class="input-group export">
+                    <span class="input-group-addon">账户余额：（￥）</span>
+                    <input class="form-control" data-toggle="tooltip" data-placement="top" value="{$balance}"  type="number" min="0" step="0.01" name="pay_real"  readonly />
+                </div>
+                <div class="input-group export">
+                    <span class="input-group-addon">备注</span>
+                    <input class="form-control" type="text" name="remark" />
+                </div>
+                <button id="submit-button" class="btn btn-primary">确定提交</button>
+            </div>
+        </form>
+    </div>
+</div>
+<nav style="text-align: right; float:right;margin-right: 10px;">
+    <ul class="pagination"></ul>
+</nav>
+<div class="loading"></div>
+</block>
+
+<block name="js">
+<script type="text/javascript">
+pageInit = 0;
+pageCount = '{$pageCount}';
+from = '{$from}';
+g_search = '';
+
+$(document).ready(function($){
+    $('#data-list').on('click', 'tr', function(){
+        $(this).find('input[type=checkbox]').click();
+    });
+
+    $('#data-list').on('click', 'input[type=checkbox]', function(e){
+        e.stopPropagation();
+    });
+
+    $('#data-list').on('click', '.todrop', function(event) {
+        winopen(fix_url("{:U($controller.'/drop')}?id=" + $(this).data('id')), 730, 500);
+        return false;
+    });
+
+    $('#data-list').on('click', '.torenewal', function(event) {
+        winopen(fix_url("{:U($controller.'/renewal')}?id=" + $(this).data('id')), 730, 500);
+        return false;
+    });
+
+    $('#cancel-button').click(function(event){
+        clearForm();
+        return false;
+    });
+
+    $("#check-all").click(function(){
+        $("input[name='id[]']").prop("checked", $(this).prop("checked"));
+    });
+
+    $('#form_box').on('change', 'input[name=add_hour]', function(){
+        $('#new_form input[name=hour]').val((Number($(this).data('hour'))+Number($(this).val())).toFixed(2));
+            
+        doAjax('{:U($controller."/getPriceRenewal")}', $('#new_form').serialize(), 'GET', function(result) {
+            // $('#new_form select[name=teacher]').html(fillOptionArH(result.data, {$teacher_id}));
+            for(var x in result){
+                $('#new_form input[name='+x+']').val(result[x]);
+            }
+
+            $('#pay_form input[name=pay_due]').val(result.pay.toFixed(2));
+        });
+    });
+
+    $('#form_box').on('change', 'select[name=subject]', function(){
+        $('#form_box input[name=add_hour]').change();
+    });
+
+    $('#pay_form').submit(function(event) {
+        data = {};
+        data.pay_info = JSON.stringify($('#pay_form').serializeJson())
+        data.new = JSON.stringify($('#new_form').serializeJson())
+
+        doAjax('{:U("Courses/renewalCourse")}', data, 'POST', function(result){
+            ui_info(result.info);
+            history.back();
+        });
+        return false;
+    });
+
+    $('[data-toggle="tooltip"]').tooltip();
+    $('#form_box input[name=add_hour]').change();
+    initPage();
+});
+
+function initPage(){
+    g_start = pageInit;
+    g_count = pageCount;
+}
+
+function doAjax(url, params, method, callback){
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: method,
+        dataType: 'JSON',
+        data: params,
+    })
+    .done(function(result){
+        if(result.state == 'ok'){
+            callback(result);
+        }else{
+            ui_error(result.info);
+        }
+    })
+    .fail(function(){
+        alert('网络错误！');
+    })
+    .always(function(){
+        $('.loading').fadeOut();
+    });
+}
+
+function fillOptionArH(list, id){
+    var html = '<option value="">请选择</option>';
+    for(x in list){
+        var selected = '';
+        if(list[x].uid == id){
+            selected = ' selected';
+        }
+        html += '<option value="'+list[x].uid+'" '+selected+'>'+list[x].teacher+'</option>';
+    }
+   return html;
+}
+
+function fillOptionAr(list, id){
+    var html = "";
+    for(x in list){
+        var selected = '';
+        if(list[x].id == id){
+            selected = ' selected';
+        }
+        html += '<option value="'+list[x].id+'" '+selected+'>'+list[x].name+'</option>';
+    }
+   return html;
+}
+
+function fillOptionArEx(list, id){
+    var html = '<option value="_all_">全部</option>';
+    html += fillOptionAr(list, id);
+    return html;
+}
+
+</script>
+</block>

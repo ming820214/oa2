@@ -1,0 +1,299 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+    vertical-align: bottom;
+}
+
+#admin_form .table > thead > tr > th,
+#admin_form .table > tbody > tr > th,
+#admin_form .table > tfoot > tr > th,
+#admin_form .table > thead > tr > td,
+#admin_form .table > tbody > tr > td,
+#admin_form .table > tfoot > tr > td {
+    vertical-align: middle;
+}
+
+#admin_form table.table>thead>tr>th,
+#admin_form table.table>tbody>tr>td {
+    text-align: center;
+}
+
+#admin_form {
+    max-height: 500px;
+}
+
+tr input[type=checkbox] {
+    width: 1.3em;
+}
+
+.export {
+    width:100%;
+    max-width:250px;
+    float: left;
+    margin-right: 10px;
+}
+
+.sbtbox {
+    outline: 1px #E5E6E7 solid;
+    display: inline-block;
+    width: 510px;
+    float: left;
+    margin-right: 10px;
+}
+
+.sbtbox>div {
+    height: 39px;
+    padding-left: 8px;
+    padding-top: 5px;
+}
+
+.sbtbox>div>.export {
+    max-width: 230px;
+}
+</style>
+{:W('PageHeader/simple',array('name'=>'课程管理'))}
+<div class="operate panel panel-default">
+    <div class="panel-body">
+        <form id="search" action="#" method="post">
+            <div class="pull-right">
+                <div class="input-group export">
+                    <span class="input-group-addon">学员姓名</span>
+                    <input class="form-control" name="name" />
+                </div>
+                <div class="input-group export">
+                    <span class="input-group-addon">订单状态</span>
+                    <select class="form-control" name="state">
+                        <option value="_all_">全部</option>
+                        {:fill_option_ex(C('COURSE_STATES'))}
+                    </select>
+                </div>
+                <if condition="get_school_name() eq '集团'">
+                <div class="input-group export">
+                    <span class="input-group-addon">切换校区</span>
+                    <select name="school" class="form-control" id="get_school"><option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+                </div>
+                </if>
+                <button type="button" onclick="initPage();" class="btn btn-success">筛选</button>
+            </div>
+        </form>
+    </div>
+</div>
+<form id="admin_form" action="#" class="table-responsive">
+    <input type="hidden" name="from" value="{$from}" />
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+            <tr>
+                <th><nobr>序号</nobr></th>
+                <th><nobr>订单状态</nobr></th>
+                <th><nobr>操作</nobr></th>
+                <th><nobr>学号</nobr></th>
+                <th><nobr>姓名</nobr></th>
+                <th><nobr>方案</nobr></th>
+                <th style="min-width:104px"><nobr>科目/教师</nobr></th>
+                <th><nobr>订购</nobr></th>
+                <th><nobr>赠送</nobr></th>
+                <th><nobr>已上课时</nobr></th>
+                <th><nobr>单价</nobr></th>
+                <th><nobr>折扣</nobr></th>
+                <th><nobr>学员类型</nobr></th>
+                <th><nobr>创建时间</nobr></th>
+                <th><nobr>备注</nobr></th>
+            </tr>
+        </thead>
+        <tbody id="data-list"></tbody>
+    </table>
+</form>
+<nav style="text-align: right; float:right;margin-right: 10px;">
+    <ul class="pagination"></ul>
+</nav>
+<div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+pageInit = 0;
+pageCount = '{$pageCount}';
+from = '{$from}';
+g_search = '';
+
+$(document).ready(function($){
+
+    $('#data-list').on('click', '.todetail', function(event) {
+        winopen(fix_url("{:U($controller.'/forarrangedcourse')}?id=" + $(this).data('id')), $('body').width()*.8, 500);
+        return false;
+    });
+
+    $('.pagination').on('click', '.page', function(){
+        g_start = ($(this).data('page') - 1) * g_count;
+        getData(g_start, g_count);
+        return false;
+    });
+
+    $("#get_school").change(function(){
+        initPage();
+    });
+
+    initPage();
+});
+
+// 修改订单的已上课时数
+
+function change_used(id){
+    var used = prompt('输入实际消耗课时数');
+    if(used)
+    $.post("{:U('change_used')}",{id:id,used:used},function(msg){
+        msg!='ok' ? ui_error(msg) : ui_info('修改成功！');
+    });
+}
+
+function initPage(){
+    g_start = pageInit;
+    g_count = pageCount;
+    getData(g_start, g_count);
+}
+
+function getData(start, count){
+    var search = JSON.stringify($('#search').serializeJson());
+    doAjax('{:U("getCourses",["all"=>1])}',
+        {start: start, count: count, from: from, search: search, std_id: '{$std_id}'}, 'GET', function(result){
+            showData($('#data-list'), result);
+        });
+}
+
+function showData(box, result){
+    var html = '';
+    var data = result.data;
+
+
+    for(x in data){
+        var operate = '<a onclick="change_used('+data[x].id+')">修改</a>';
+
+        var title = '';
+        var label = data[x].label=='月'?'天':'课时';
+        if(data[x].reason){
+            title = 'data-toggle="tooltip" data-placement="top" data-original-title="原因：'+data[x].reason+'"';
+        }
+
+        html += '<tr '+title+'>'
+                + '<td><nobr><span class="spanid">'+data[x].id+'</span></nobr></td>'
+                + '<td><nobr><b>'+data[x].state_str+'</b></nobr></td>';
+
+        html += '<td><nobr>'+ operate +'</nobr></td>';
+
+        html += '<td><nobr><b>'+data[x].std_id+'</b></nobr></td>'
+                + '<td><nobr>'+data[x].name+'</nobr></td>'
+                + '<td><nobr>'+data[x].plan_name+'</nobr></td>'
+                + '<td>'+data[x].subject_teacher+'</td>'
+                + '<td><nobr>'+data[x].hour+label+'</nobr></td>'
+                + '<td><nobr>'+data[x].ext_hour+'</nobr></td>'
+                + '<td><nobr><a class="todetail" href="#" data-id="'+data[x].id+'">'+data[x].used_hour+label+'</a></nobr></td>'
+                + '<td><nobr>'+data[x].unitprice+'</nobr></td>'
+                + '<td><nobr>'+data[x].factor+'</nobr></td>'
+                + '<td><nobr>'+data[x].std_type_name+'</nobr></td>'
+                + '<td><nobr>'+data[x].create_time_str+'</nobr></td>'
+                + '<td>'+data[x].remark+'</td>'
+             +'</tr>'
+    }
+
+    box.html(html);
+    g_start = result.start;
+    g_count = result.count;
+    g_total = result.total;
+    pageination(g_start, g_count, g_total);
+    $('[data-toggle="tooltip"]').tooltip();
+}
+
+function doAjax(url, params, method, callback){
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: method,
+        dataType: 'JSON',
+        data: params,
+    })
+    .done(function(result){
+        if(result.state == 'ok'){
+            callback(result);
+        }else{
+            ui_error(result.info);
+        }
+    })
+    .fail(function(){
+        alert('网络错误！');
+    })
+    .always(function(){
+        $('.loading').fadeOut();
+    });
+}
+
+function pageination(s_start, s_count, s_total){
+    var lp = parseInt(s_total / s_count);
+        if(s_total % s_count){
+            ++lp;
+        }
+    var page = parseInt(s_start / s_count) + 1;
+        if(s_start % s_count){
+            ++page;
+        }
+
+    if(page > 1){
+        var html = '<li><a href="#" class="page" aria-label="Previous" data-page="'+ (page - 1) +'"><span aria-hidden="true">&laquo;</span></a></li>';
+    }else{
+        var html = '';
+    }
+
+    var count = 0;
+    for(var i = page - 9; i <= lp; ++i){
+        if(i < 1){
+            continue;
+        }
+
+        if(i == page){
+            html += '<li class="active"><a href="javascript:void(0)">'+ i +'</a></li>';
+        }else{
+            html += '<li><a class="page" data-page="'+ i +'" href="">'+ i +'</a></li>';
+        }
+
+        ++count;
+        if(count > 9){
+            break;
+        }
+    }
+
+    if(page < lp){
+        html += '<li><a href="#" class="page" aria-label="Next" data-page="'+ (page + 1) +'"><span aria-hidden="true">&raquo;</span></a></li>';
+    }else{
+        html += '';
+    }
+
+    $('.pagination').html(html);
+}
+
+
+(function($){
+    $.fn.serializeJson = function(){
+        var serializeObj = {};
+        var array = this.serializeArray();
+        var str = this.serialize();
+        $(array).each(function(){
+            if(serializeObj[this.name]){
+                if($.isArray(serializeObj[this.name])){
+                    serializeObj[this.name].push(this.value);
+                }else{
+                    serializeObj[this.name] = [serializeObj[this.name],this.value];
+                }
+            }else{
+                serializeObj[this.name] = this.value;
+            }
+        });
+        return serializeObj;
+    };
+})(jQuery);
+</script>
+</block>
+

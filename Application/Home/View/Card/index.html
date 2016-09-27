@@ -1,0 +1,559 @@
+<extend name="Layout/ins_page" />
+
+<block name="content">
+
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+
+<style>
+  .export{
+    width: 180px;
+    float: left;
+    margin: 5px 5px;
+  }
+  
+  .export-w{
+    width: 300px;
+    float: left;
+    margin: 5px 5px;
+  }
+  #school_two1 , #school_two2{
+	display:none;
+  }
+  #school_two1 > option , #school_two2 > option{
+	display:none;
+  }
+</style>
+ 
+{:W('PageHeader/search_ajax',array('name'=>'VIP信息管理','search'=>'S'))}
+  
+  <!-- 跟进记录列表 -->
+<div class="modal fade" id="cardInfo_dialog" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">VIP信息录入</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          	 <!-- 新增录入修改 -->
+							<form id="form_data" method="post" class="form-horizontal">
+							<input type="hidden" name="id" id="id_t" value=""/>
+							<table class="table table-bordered">
+							    <tr>
+							        <th>编号</th>
+							        <td>
+							            <input class="form-control required" type="text" name="card_no" id="cardNO" maxlength="20"/>
+							        </td>
+							    </tr>
+							    <tr>
+							        <th>
+							            <nobr>VIP类型</nobr>
+							        </th>
+							        <td>
+							            <select name="card_type" id="cardType" class="form-control">
+							                {:fill_option(get_config('CARD_TYPE'))}
+							            </select>
+							            <input type="hidden" name="card_value" id="card_value" value="3000"/>
+							        </td>
+							    </tr>
+							    <!--<tr>
+							        <th>卡片额度</th>
+							        <td>
+							            <select name="card_value" id="card_value" class="form-control" >
+							                <option value="01">10000</option>
+							                <option value="02">5000</option>
+							                <option value="03">3000</option>
+							            </select>
+							        </td>
+							    </tr>-->
+							    <tr>
+							        <th>卡片状态</th>
+							        <td>
+							            <select id="cardState" name="card_state" class="form-control">
+							                {:fill_option(get_config('CARD_STATE'))}
+							            </select>
+							        </td>
+							    </tr>
+							    
+							    <tr>
+							        <th>持卡人姓名</th>
+							        <td>
+							             <input class="form-control" type="text" name="card_owner" id="card_owner" maxlength="20"/>
+							        </td>
+							    </tr>
+							    
+							    <tr>
+							        <th>持卡人电话</th>
+							        <td>
+							             <input class="form-control" type="text" name="owner_tel" id="owner_tel" maxlength="11"/>
+							        </td>
+							    </tr>
+							    
+							    <tr>
+							    	<td align="center" colspan="8">
+							    		  <input type="submit" id="add" class="btn btn-sm btn-primary" name="add" value="保存" />
+						            <input type="reset" class="btn btn-sm btn-primary" id="reset_b" name="reset_b" value="重置" />
+							    	</td>
+							    </tr>
+							</table>
+							</form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+ 
+<!-- 列表页面 -->
+<form method="post" id="d_form_search" name="form_adv_search">  
+<input type="hidden" name="keyword" id="keyword_id" value=""/>
+<!--<input type="hidden" name="ajax" id="ajax" value="1">-->
+  <div class="operate panel panel-default">
+    <div class="panel-body">
+      <div class="pull-left">
+
+        <div class="input-group export">
+          <label  for="state_i" class="input-group-addon"><b>卡片状态：</b></label>
+          <select id="state_i" name="card_state" class="form-control"><option value="" selected>全部</option>{:fill_option_ex(get_config('CARD_STATE'))}</select>
+        </div>
+
+      	<div class="input-group export">
+          <label  for="card_type_i" class="input-group-addon"><b>卡片类型:</b></label>
+          <select id="card_type_i" name="card_type" class="form-control"><option value="" selected>全部</option>{:fill_option(get_config('CARD_TYPE'))}
+          </select>
+        </div>
+				
+				<div class="input-group export">
+          <label class="input-group-addon"><b>卡片编号：</b></label>
+          <input type="text" name="card_no" class="form-control" maxlength="20">
+        </div>
+				
+				<div class="input-group export">
+          <label class="input-group-addon"><b>持卡人姓名：</b></label>
+          <input type="text" name="card_owner" class="form-control" maxlength="20">
+        </div>
+        
+        <div class="input-group export">
+          <label class="input-group-addon"><b>持卡人电话：</b></label>
+          <input type="text" name="owner_tel" class="form-control" maxlength="11">
+        </div>
+        
+        <if condition="get_school_name() eq '集团'">
+            <div class="input-group export">
+              <span class="input-group-addon"><b>所属校区:</b></span>
+              <select id="school" name="card_school" class="form-control"><option value="">全部</option>{:fill_option(C('SCHOOL'))}
+              </select>
+            </div>
+        </if>
+        
+      </div>
+      <div class="pull-right">
+      	<input type="button" id="add_show" class="btn btn-sm btn-primary" name="add" value="新增" /> &nbsp;&nbsp;
+      <input type="button" class="btn btn-sm btn-primary" name="search" value="筛选" id="search" />&nbsp;&nbsp;
+       <a class="btn btn-sm btn-danger" data-toggle="modal" data-target="#import">数据批量导入</a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="row sub_left_menu">
+    <table class="table table-bordered">    	
+      <thead>
+        <tr>
+          <th>卡片状态</th>
+          <th>卡片编号</th>
+          <th>卡片类型</th>
+          <th>卡片所属校区</th>
+          <th>卡片价值</th>
+          <th>持卡人</th>
+          <th>持卡人电话</th>
+          <th>添加人</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="llst">
+          <volist name="list" id="data">
+            <tr id="{$data.id}">
+              <td>{:get_config('CARD_STATE')[$data['card_state']]}</td>
+              <td>{$data.card_no}</td>
+              <td>{:get_config('CARD_TYPE')[$data['card_type']]}</td>
+              <td>{:get_school_name($data['card_school'])}</td>
+              <td>{:get_config('CARD_VALUE')[$data['card_type']]}</td>
+              <td>{$data.card_owner}</td>
+              <td>{$data.owner_tel}</td>
+              <td>{$data.creator}</td>
+              <td>
+              	<button class="btn btn-xs btn-info" onclick="$.showBaseInfo({$data.id})">编辑</button>
+              </td>
+            </tr>
+          </volist>
+      </tbody>
+    </table>
+    
+    <!-- 分页插件 -->
+	<div class="pagination" id="pagination_vipcard">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input id="pager_input" type="text" readonly="readonly"  onclick="return false;" data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	    
+	</div>
+</div>
+
+
+
+<!-- 数据导入 -->
+<div class="modal fade" id="import">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>数据导入(用wps打开模版文件,把数据复制到模版中,并清除页面中的所有文字格式保存！导入系统会自动删除重复数据)</h3>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <a href="{:U('import_template')}" target="_blank" class="btn btn-primary pull-left">下载模版文件</a>
+                    </div>
+                </div>
+                <div class="panel">
+                    <form  method="post" enctype="multipart/form-data" action="{:U('import')}">
+                        <input type="file" name="file" required/>
+                        <button  class="btn btn-primary pull-right">执行导入</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</block>
+<block name="js">
+<script type="text/javascript">
+
+pageCount = 10; //每页显示多少条记录(全局变量)
+currentPage = 1; //当前页码
+maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
+pageString = '';
+card_state = {:json_encode(get_config('CARD_STATE'))};
+card_type = {:json_encode(get_config('CARD_TYPE'))};
+
+$(function(){
+/**
+ *
+ * 绘制动态表格公用函数
+ * @param {Object} data  表格实体数据，由后台返回;
+ * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+ * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+ * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+ * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+ * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+ * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+ * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+ * @param {Object} a_link_arr 需要超链接包围的显示字段，为数组类型;
+ * @param {Object} a_link_url 相应位置超链接的url地址，为数组类型;
+ * @param {Object} a_link_param 相应位置超链接的url地址中需要绑定的参数，为数组类型;
+ * @param {Object} a_link_target 超链接弹出页面的方式设定，target，例如：_blank
+ * @param {Object} a_fun_arr  超链接如果有函数，这里是函数名称，为数组类型;
+ * @param {Object} a_fun_param_arr 函数中的参数字段，该字段需要在data中存在
+ */
+  	$.drawTrTd=function (
+  		data,
+  		tbody_id,
+  		button_method_arr,
+  		method_param_arr,
+  		button_name_arr,
+  		field_arr,
+  		check_name,
+  		select_lst_arr,
+  		a_link_arr,
+  		a_link_url,
+  		a_link_param,
+  		a_link_target,
+  		a_fun_arr,
+  		a_fun_param_arr){
+
+  		$.each(data, function(i,value) {
+  			var temp_str = '';
+
+  			$('#' + tbody_id).append('<tr id="' + value.id + '">');
+
+  			//列表checkbox选择组件创建
+  			if(check_name != null){
+  				$('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class="' + value.id + '"  value="' + value.id + '" /></td>');
+  			}
+
+  			for(var i=0;i<field_arr.length;i++){
+  				//单元格起始构建
+  				temp = '<td>';
+
+  				//判断是否有超链接
+  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+  					var a_temp_str = '';
+
+  					//超链接起始构建
+  					if(a_link_param != null){
+  						//如果url地址需要参数
+  						a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)];
+  						//添加参数
+  						for(var n=0;n<a_link_param.length;n++){
+  							a_temp_str += '&' + a_link_param[n] + '=' + $.trim(eval('value.' + a_link_param[n]));
+  						}
+  						a_temp_str +=  '" ';
+  					}else{
+  						a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)] + '" ';	
+  					}
+  					
+  					//onclick函数起始构建
+  					if(a_fun_arr != null){
+  						a_temp_str += 'onclick="' + a_fun_arr[$.inArray(field_arr[i],a_link_arr)]  + '(';
+  					}
+
+  					//函数的参数全构建
+  					if(a_fun_param_arr != null){
+  						for(var k=0;k<a_fun_param_arr.length;k++){
+							a_temp_str += ($.trim(eval('value.' + a_fun_param_arr[k]))== undefined ? '': "'" + $.trim(eval('value.' + a_fun_param_arr[k]))) + "',";
+  						}
+
+  						a_temp_str = a_temp_str.substring(0,a_temp_str.lastIndexOf(','));
+  						a_temp_str += (')"')
+  					}
+					
+					if(a_link_target != null){
+						a_temp_str += 'target=' + a_link_target + '>';
+					}else{
+						a_temp_str += '>';	
+					}
+					
+  					
+
+  					//添加超链接起始部分
+					temp += a_temp_str;
+
+  				}
+
+
+  				//添加单元格内容部分
+  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+  					//单元格内容如果是select组件中的value部分，需要转义的，通过在这里实现，但是javascript脚本最开始的部分需要添加相应的php代码带获取相应的数组，这部分内容在后期会进一步完善，会把该数组也放到该函数内来实现。
+  					temp += (((eval('value.' + field_arr[i])== undefined) || ($.trim(eval('value.' + field_arr[i]))==''))? '': eval(field_arr[i] + "['"  + eval('value.' + field_arr[i]) + "']"));
+  				}else{
+  					temp += ((eval('value.' + field_arr[i])== undefined || eval('value.' + field_arr[i])== false) ? '': eval('value.' + field_arr[i]));
+  				}
+
+  				//超链接结束标签构建
+  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+  					temp += '</a>';
+  				}
+
+  				//单元格结束标签构建
+  				temp += '</td>';
+
+  				$('#' + value.id).append(temp);
+  			}
+
+
+  			if(button_method_arr != null){
+  				for(var j=0;j<button_method_arr.length;j++){
+  					if(method_param_arr != null){
+  						var param_str = '';
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  						for(var k=0;k<method_param_arr.length;k++){
+  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  						}
+  						param_str = param_str.substring(0,param_str.length-1);
+						temp_str += param_str;
+  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}else{
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}
+
+  				}
+  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+  				$('#' + value.id).append('<td>' + temp_str  + '</td>');
+  			}
+  	});
+ }
+  	
+  	$('#pagination_vipcard').jqPagination({
+							link_string	: '/?page={page_number}',
+							max_page	: maxPage,
+							paged		: function(page,param) {
+								
+							var pageNumber = (page-1)*pageCount //从第几行开始查询
+							
+							var data = $('#d_form_search').serializeArray();
+//							data.push($('#form_search').serializeArray()[0]);
+//							var keyword = $('#keyword').val();
+							
+//							var search = new Object();
+//							search = {name:'keyword',value:keyword};
+//							
+//							data.push(search);
+							
+							$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('pager')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst').empty();
+
+											var button_method_arr = ['$.showBaseInfo'];
+											var button_name_arr = ['编辑'];
+											var field_arr = ['card_state','card_no','card_type','card_school','card_value','card_owner','owner_tel','creator'];
+											var select_lst_arr = ['card_state','card_type'];
+											var check_name = null;
+											var method_param_arr = ['id'];
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;//['$.showDialog'];
+											var a_fun_param_arr = null;//['id','name','grade','wl','frequency','visit_type','std_id'];
+
+											$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+
+										}else{
+											$('#llst').empty();
+										}
+
+									}
+								}
+							});
+
+							if(maxPage <= 0){
+								this.page_string = '没有符合条件的记录';
+								maxPage = 1;
+							}else if(this.page_string == '没有符合条件的记录'){
+								this.page_string = 'Page {current_page} of {max_page}';
+							}
+							
+							this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+							this.max_page = maxPage;
+							
+							
+							$('#pagination_vipcard').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+							Ycom.loading.hide();
+						}
+
+	});
+
+
+	//列表项选择事件操作
+	$("#llst").on('click','tr',null,function(){
+
+      $("#llst tr").removeClass("active");
+		  $(this).attr("class", "active");
+    });	
+    
+    
+  //	查询所有记录，刷新列表
+	function searchAll(arr){
+			var currentPage = $('.pagination').jqPagination('option','current_page');
+			$('.pagination').jqPagination('option',{'current_page':currentPage,'trigger': true}); //设置分页插件的当前页码
+			
+	}
+     //查询按钮操作
+	$('#search_ajax').bind("click",function(){
+			$('#keyword_id').val($('#keyword').val());
+			var data = $('#d_form_search').serializeArray();
+//			进行查询操作
+		  searchAll(data);
+	});
+    
+  
+   //筛选按钮操作
+	  $('#search').click(function(param){
+			$('#search_ajax').click();
+		});
+		
+    $('#cardType').change(function(){
+  	  switch($(this).val()){
+  	  	case "01": $('#card_value').val(10000);break;
+  	  	case "02": $('#card_value').val(5000);break;
+  	  	case "03": $('#card_value').val(3000);break;
+  	  }
+    });
+    
+  	$('#add_show').click(function(){
+	  		$('#reset_b').trigger('click'); 
+		   	$('#cardInfo_dialog').modal('show');
+	  });
+	  
+	
+	  $.showBaseInfo = function(sid){
+    	if(sid != 0){
+		          $.ajax({ 
+		          	type:'POST',
+		          	cache:false,
+		          	async:true,
+		          	url: "{:U('pager')}",
+		          	data:{"id": sid},
+		          	dataType:"json", 
+		          	success: function(msg){
+		              setform(msg);
+		              $('#cardInfo_dialog').modal('show');
+		          	},
+		          	failure:function(err){
+		          		
+		          		ui_error('error!');
+		          	}
+		          	});
+          }
+    }
+	  
+	  
+	   //选择列表项时，设置编辑的表单内容
+    function setform (msg) {
+    
+    $('#form_data').find("input[name='id']").val(msg.data[0]['id']);
+    $('#form_data').find("input[name='card_no']").val(msg.data[0]['card_no']);
+    $('#form_data').find("select[name='card_type']").val(msg.data[0]['card_type']);
+    $('#form_data').find("select[name='card_value']").val(msg.data[0]['card_value']);
+    $("#form_data").find("select[name='card_state']").val(msg.data[0]['card_state']);
+    $("#form_data").find("input[name='card_owner']").val(msg.data[0]['card_owner']);
+    $('#form_data').find("input[name='owner_tel']").val(msg.data[0]['owner_tel']);
+  }
+    
+	  //新增按钮，新增记录操作;修改按钮操作;
+	$('#form_data').submit(function(event){
+		event.preventDefault();	
+		var data = $('#form_data').serialize();
+				
+				$.ajax({
+					type:'POST',
+					async:false,
+					cache:false,
+					url:"{:U('addCard')}",
+					dataType:'json',
+					data:data,
+					success:function(msg,status){ 
+						if(status == "success" && msg == 'ok'){
+              
+              ui_info("操作成功!"); 
+              $('#reset_b').trigger('click'); 
+							searchAll([]);//每次添加之后都会刷新列表；
+							
+						}else {
+							ui_error(msg);
+						}
+					}
+				});
+	});
+	
+
+});    
+</script>
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

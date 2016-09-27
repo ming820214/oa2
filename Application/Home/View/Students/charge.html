@@ -1,0 +1,198 @@
+<extend name="Layout/ins_popup" />
+<block name="content">
+<style>
+.loading {
+    position: fixed; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, .2);
+    background-image: url(__INS__/img/loading.gif);
+    background-position: center 300px;
+    background-repeat: no-repeat;
+    background-size: 50px;
+    display: none;
+    z-index: 5000;
+}
+</style>
+{:W('PageHeader/popup',array('name'=>'缴费充值'))}
+    <div class="row">
+        <div class="col-sm-12 sub_content">
+            <form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+                <input type="hidden" name="id" id="id" value="{$id}">
+                <input type="hidden" name="pre_balance" id="pre_balance" value="{$balance}">
+                <input type="hidden" name="balance" id="balance" value="{$balance}">
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="belong_type">业绩类型：</label>
+                    <div class="col-xs-9">
+                    <select name="belong_type"  class="form-control">
+                        <option value="1">新招</option>
+                        <option value="2">续费</option>
+                    </select>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="belong_user">业绩归属：</label>
+                    <div class="col-xs-9">
+                    <select name="belong_user"  class="form-control">{:fill_option_ex($belong_user)}
+                    </select>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="std_id_display">学号：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="std_id_display" name="std_id_display" value="{$std_id}" disabled />
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="name_display">姓名：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="name_display" name="name_display" value="{$name}" disabled />
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="balance_show">账户余额：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="balance_show" name="balance_show" value="{$balance}" disabled />
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="type">缴费类型：</label>
+                    <div class="col-xs-9">
+                    <select name="type"  class="form-control" id="type" onchange="$('#tocharge').change();">
+                        <option value="10000">缴费</option>
+                        <option value="10060">贵宾卡</option>
+                        <option value="10030">校长券(抵值+)</option>
+                        <option value="10040">校长券(归还-)</option>
+                        <option value="10050">错误抵消</option>
+                    </select>
+                    </div>
+                </div>
+                
+                <div class="form-group col-xs-12" id="card_no" style="display: none;">
+                    <label class="col-xs-3 control-label" for="cardNo">卡片编号：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="cardNo" name="cardNo" value="" />
+                    </div>
+                </div>
+                
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="tocharge">缴费金额：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="number" min="0" max="9999999" step="0.01" id="tocharge" name="tocharge" value="" required autofocus />
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="pay_no">收据编号：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="pay_no" name="pay_no" value="" />
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-3 control-label" for="remark">备注：</label>
+                    <div class="col-xs-9">
+                        <input class="form-control" type="text" id="remark" name="remark" value="" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+//var cardValue = {:json_encode(get_config('CARD_VALUE'))};
+
+$(document).ready(function() {
+    $('#form_data').submit(function(){
+        doAjax('{:U($controller."/chargeStudent")}', $('#form_data').serialize(), 'POST', function(result){
+            ui_info(result.info);
+            if(result.state == 'ok'){
+                setTimeout(function(){
+                    myclose();
+                }, 3000);
+            }
+        });
+
+        return false;
+    });
+
+    $('#tocharge').on('change' ,function(){
+        $('#balance_show').val((Number($('#pre_balance').val())+Number($(this).val())).toFixed(2));
+        $('#balance').val($('#balance_show').val());
+        if(Number($(this).val()) < 0 && $("#type").val()!="10040" && $("#type").val()!="10050"){
+            ui_error('不得为负数！');
+            return false;
+        }
+        if(Number($(this).val()) > 0 && $("#type").val()=="10040"){
+            ui_error('只能负数录入！');
+            return false;
+        }
+        if(Number($(this).val()) > 0 && $("#type").val()=="10050"){
+            ui_error('只能负数录入！');
+            return false;
+        }
+        if(Number($(this).val()) > 1000 && $("#type").val()=="10030"){
+            ui_error('校长券最多可使用1000元');
+            return false;
+        }
+        if($('#balance_show').val()<0)ui_error('账号余额不能为负！');
+        
+        if($("#type").val() == "10060"){
+        	$('#card_no').css('display',"block");
+        }else{
+        	$('#card_no').css('display',"none");
+        }
+    });
+});
+
+function save() {
+    if(!$('#tocharge').val())return;
+    if(Number($('#tocharge').val())<=0 && $("#type").val()=="10000")return;
+    if(Number($('#balance_show').val())<0 && $("#type").val()=="10050")return;
+    if($('#pay_no').val()=='' && $("#type").val()=="10000"){
+        ui_error('缴费的收据编号必填！！！');
+        return;
+    }
+    
+    if($('#cardNo').val()=='' && $("#type").val()=="10060"){
+        ui_error('缴费的贵宾卡卡片编号必填！！！');
+        return;
+    }
+    if($('#balance_show').val()<0)return;
+    if($('#remark').val()=='' && $("#type").val()=="10050"){
+        ui_error('请备注说明错误抵消原因！');
+        return;
+    }
+    
+    if(confirm("确认输入的缴费金额为：" + $('#tocharge').val())){
+    	
+    	return $('#form_data').submit();	
+    }
+    
+}
+
+function doAjax(url, params, method, callback){
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: method,
+        dataType: 'JSON',
+        data: params,
+    })
+    .done(function(result){
+        if(result.state == 'ok'){
+            callback(result);
+        }else{
+            ui_error(result.info);
+        }
+    })
+    .fail(function(){
+        alert('网络错误！');
+    })
+    .always(function(){
+        $('.loading').fadeOut();
+    });
+}
+</script>
+</block>

@@ -1,0 +1,222 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+    .ps{
+        text-align: center;
+        background: rgba(204, 204, 204, 0.79);
+        border-radius: 5px 15px;
+        float: left;
+        margin: 15px;
+        position:relative;
+    }
+    .ps td{
+        padding: 10px 20px;
+    }
+    .ps i[class="fa fa-user"]{
+        color: rgb(197, 72, 72);
+        font-size: 30px;
+        margin: 10px;
+    }
+    .ps i[class="fa fa-remove"]{
+          position: absolute;
+          top: 6px;
+          right: 8px;
+          font-size: 15px;
+          color: darksalmon;
+          cursor: pointer;
+    }
+    .ps i[class="fa fa-remove"]:hover{
+          color: brown;
+    }
+    .input-group{
+        margin: 5px 0;
+    }
+    .date{
+        color:black;
+    }
+    .list-checkbox{
+        background-color: antiquewhite;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+    }
+</style>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="pull-left">
+        <if condition="get_school_name() eq '集团'">
+        <form method="post">
+            <div class="form-inline">
+                <div class="input-group">
+                    <a class="input-group-addon">创建特色课堂</a>
+                    <input type="hidden" name="type" value="1">
+                    <input type="hidden" name="school" value="{$_GET['school']}">
+                    <input type="text" class="form-control" name="name" required>
+                </div>
+                <input type="submit" name="add" class="btn btn-primary" value="点击创建">
+            </div>
+        </form>
+        </if>
+        </div>
+        <div class="pull-right">
+        <form  id="head">
+            <div class="form-inline">
+                <div class="input-group">
+                    <a class="input-group-addon">课堂切换</a>
+                    <select name="grade" class="form-control">{:fill_option_ex($grade)}</select>
+                </div>
+                <if condition="get_school_name() eq '集团'">
+                <div class="input-group">
+                    <a class="input-group-addon">切换校区</a>
+                    <select name="school" class="form-control">{:fill_option_ex(C('SCHOOL'))}</select>
+                </div>
+                </if>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <div class="row">
+        <div class="col-md-9"><h3>课堂成员（系统将按天自动消耗课堂学员关联的课程订单）</h3></div>
+        <div class="col-md-3">
+        <notempty name="_GET['grade']">
+            <button class="btn btn-danger pull-right" data-toggle="modal" data-target="#add_student">添加成员</button>
+        </notempty>
+        </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <volist name='list' id='v'>
+        <table class="ps" data-id='{$v.id}' style="background-color:<if condition="$v.last_day eq 0">rgba(236, 125, 125, 0.79);<elseif condition="$v.last_day elt 3"/>rgba(245, 241, 118, 0.79);</if>">
+            <tbody>
+            <tr>
+                <td><i class="fa fa-user"></i></td>
+                <td><h4>{$v.name}</h4><if condition="$v.last_day eq 0">订单已消耗完<else />剩余{$v.last_day}天</if></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button class="btn btn-xs btn-primary" onclick="get_record({$v.course_id})">消耗记录</button>
+                    <button class="btn btn-xs btn-primary" onclick="del(this)">移除学员</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        </volist>
+    </div>
+</div>
+<!-- 添加成员 -->
+<div class="modal fade" id="add_student">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header btn-warning">
+                <h3>课堂里添加听课成员</h3>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                <input type="hidden" name="pid" value="{$_GET['grade']}">
+                <input type="hidden" name="school" value="{$_GET['school']}">
+                <input type="hidden" name="name">
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <div class="input-group">
+                            <a class="input-group-addon">选择学员</a>
+                            <select name="stuid" class="form-control"><option value="">选择学员</option>{:fill_option_ex($stu_list)}</select>
+                            <a class="input-group-addon">学员号</a>
+                            <input type="text" name="std_id" class="form-control" readonly>
+                        </div>
+                        <div class="input-group">
+                            <a class="input-group-addon">关联订单</a>
+                            <select name="course_id" class="form-control" required></select>
+                        </div>
+                        <input type="submit" name="add_student" class="btn btn-primary pull-right" value="保存添加">
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 查询上课记录 -->
+<div class="modal fade" id="get_record">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header btn-info">
+                <h3>查询消耗记录(按天消耗)</h3>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead>
+                                <th>日期</th>
+                                <th>开始时间</th>
+                                <th>结束时间</th>
+                                <th>计（天）</th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</block>
+<block name="js">
+<script>
+$("#head select").change(function(){
+    var data=$('#head').serialize();
+    location.href='{:U()}&'+data;
+});
+$('#head select[name=grade]').val('{$_GET['grade']}');
+$('#head select[name=school]').val('{$_GET['school']}');
+
+//添加学员
+$("#add_student select[name=stuid]").change(function () {
+    $.get("{:U('student/get_course')}&sid="+$(this).val(),function(msg){
+        $('#add_student input[name=std_id]').val(msg[0]);
+        $('#add_student input[name=name]').val($("#add_student select[name=stuid] option:selected").text());
+        $("#add_student select[name=course_id]").html(fillOptionAr(msg[1]));
+    })
+});
+
+//移除学员
+function del(th){
+    confirm('确定要移除该学员吗？')&&
+    $.get("{:U()}&del="+$(th).parents('table').data('id'),function(msg){
+        if(msg=='ok')$(th).parents('table').remove();
+    })
+}
+//查询上课记录
+function get_record(id){
+    $.get("{:U('ajax_get_record')}&id="+id,function(msg){
+        var html='';
+        for(x in msg){
+            if(msg[x]!='')
+            html+='<tr>\
+                    <td>'+msg[x]+'</td>\
+                    <td></td>\
+                    <td></td>\
+                    <td>1</td>\
+                </tr>';
+        }
+        $('#get_record tbody').html(html);
+        $('#get_record').modal('show');
+    })
+}
+
+function fillOptionAr(list, id){
+    var html = "";
+    for(x in list){
+        var selected = '';
+        if(list[x].id == id){
+            selected = ' selected';
+        }
+        html += '<option value="'+list[x].id+'" '+selected+'>'+list[x].plan_name+'</option>';
+    }
+   return html;
+}
+</script>
+</block>

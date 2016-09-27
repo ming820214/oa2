@@ -1,0 +1,148 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+  .info{
+    cursor: pointer;
+  }
+</style>
+{:W('PageHeader/simple',array('name'=>'业务数据'))}
+<form method="post">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <if condition="get_school_name() eq '集团'">
+        <div class="input-group col-md-3 pull-left">
+          <span class="input-group-addon"><b>切换校区:</b></span>
+          <select name="school" class="form-control" onchange='document.location.href="{:U()}&school="+this.value;'>
+              {:fill_option(C('SCHOOL'))}
+              <option value="all">全部</option>
+          </select>
+        </div>
+      </if>
+      <div class="pull-right col-md-5">
+        <div class="input-group col-md-10 pull-left" style="float:none;">
+          <span class="input-group-addon"><b>日期:</b></span>
+          <input type="text" class="form-control" name="date1" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" value="{$_POST['date1']}" required>
+          <span class="input-group-addon"><b>-</b></span>
+          <input type="text" class="form-control" name="date2" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" value="{$_POST['date2']}" required>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-sm btn-primary" type="submit">查询</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- 列表部分 -->
+<div class="panel panel-success">
+  <div class="panel-heading"><h3>校区业务人员业绩统计{$_POST['date1']}--{$_POST['date2']?:date('Y-m-d')}</h3></div>
+  <div class="panel-body">
+    <table class="table">    	
+      <thead>
+        <tr>
+          <th>校区</th>
+          <th>教学主任</th>
+          <th>报名总数</th>
+          <th>直访</th>
+          <th>直访报名</th>
+          <th>转化率</th>
+          <th>热线</th>
+          <th>热线报名</th>
+          <th>转化率</th>
+          <th>转介绍</th>
+          <th>转介绍报名</th>
+          <th>转化率</th>
+          <th>外呼</th>
+          <th>外呼报名</th>
+          <th>转化率</th>
+        </tr>
+      </thead>
+      <tbody>
+        <volist name="list" id="v">
+          <tr>
+          	<td>{$v.school}</td>
+            <td>{$key}</td>
+            <td class="danger info" data-id={$v.count|json_encode}>{$v.count|count}</td>
+            <td class="info" data-id={$v.zf.count|json_encode}>{$v.zf.count|count}</td>
+            <td class="info" data-id={$v.zf.ok|json_encode}>{$v.zf.ok|count}</td>
+            <td>{:(round(count($v['zf']['ok'])/count($v['zf']['count']),4)*100)}%</td>
+            <td class="info" data-id={$v.rx.count|json_encode}>{$v.rx.count|count}</td>
+            <td class="info" data-id={$v.rx.ok|json_encode}>{$v.rx.ok|count}</td>
+            <td>{:(round(count($v['rx']['ok'])/count($v['rx']['count']),4)*100)}%</td>
+            <td class="info" data-id={$v.zjs.count|json_encode}>{$v.zjs.count|count}</td>
+            <td class="info" data-id={$v.zjs.ok|json_encode}>{$v.zjs.ok|count}</td>
+            <td>{:(round(count($v['zjs']['ok'])/count($v['zjs']['count']),4)*100)}%</td>
+            <td class="info" data-id={$v.wh.count|json_encode}>{$v.wh.count|count}</td>
+            <td class="info" data-id={$v.wh.ok|json_encode}>{$v.wh.ok|count}</td>
+            <td>{:(round(count($v['wh']['ok'])/count($v['wh']['count']),4)*100)}%</td>
+          </tr>
+        </volist>
+      </tbody>
+    </table>	<hr>
+    <b style="color: blue">说明：同一学员多次跟进也算一次;(“会销”与“其他”都以外呼统计)</b>
+  </div>
+</div>
+
+<!-- 弹出层，详情 -->
+<div class="modal fade" role="dialog" id="info">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4>详情</h4>
+      </div>
+      <div class="modal-body" id="content"></div>
+    </div>
+  </div>
+</div>
+</block>
+<block name="js">
+<script type="text/javascript">
+TRACK_STATE = {:json_encode(get_config('TRACK_STATE'))};
+TRACK_YIXIANG = {:json_encode(get_config('TRACK_YIXIANG'))};
+TRACK_WAY = {:json_encode(get_config('TRACK_WAY'))};
+$(function(){
+    $('select[name=school]').val('{$_GET['school']}');
+})
+
+//弹出层，详情
+$(".info").click(function(){
+  var ids=$(this).data('id');
+  var html = '';
+  if(ids!=null)
+  $.post("{:U('tongji2_ajax')}",{ids:ids},function(msg){
+      html +='<table class="table">';
+      for(x in msg){
+          html+='<thead><tr class="success">\
+                  <th>学员姓名</th>\
+                  <th>'+ msg[x]['name'] +'</th>\
+                  <th>联系电话</th>\
+                  <th>'+ msg[x]['tel1'] +'</th>\
+                  <th>状态</th>\
+                  <th>'+ TRACK_STATE[msg[x]['state']] +'</th>\
+                </tr></thead>\
+                <tr>\
+                  <td>年级</td>\
+                  <td>'+ msg[x]['grade'] +'</td>\
+                  <td>就读学校</td>\
+                  <td>'+ msg[x]['schoolx'] +'</td>\
+                  <td>家庭住址</td>\
+                  <td>'+ msg[x]['address'] +'</td>\
+                </tr>\
+                <tr>\
+                  <td>备注信息</td>\
+                  <td>'+ msg[x]['other'] +'</td>\
+                  <td>获取途径</td>\
+                  <td>'+ TRACK_WAY[msg[x]['get_way']] +'</td>\
+                  <td>意向强度</td>\
+                  <td>'+ TRACK_YIXIANG[msg[x]['yixiang_qiang']] +'</td>\
+                </tr>\
+                ';
+      }
+      html+= '</table>';
+      $("#content").html(html);
+      $('#info').modal('show')
+  })
+})
+</script>
+</block>

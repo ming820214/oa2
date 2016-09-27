@@ -1,0 +1,312 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	<link rel="stylesheet" href="__INS__/financeSys/css/common.css">
+	<style>
+		.jup_tab{
+			position:fixed;
+			top:50%;
+			margin-top:-250px;
+			left:50%;
+			margin-left:-600px;
+			background-color: white;
+			z-index:99999;
+		}
+		#close_jup_div{
+			border:none;
+			outline: none;
+			width:30px;
+			height:30px;
+			float:right;
+			 font-size: 27px;
+    		line-height: 20px;
+		}
+		.jup_out_div{
+			width:100%;
+			z-index: 9999;
+			background-color: gray;
+			opacity: 0.6;
+			position:fixed;
+			left:0;
+			right:0;
+			top:0;
+			bottom:0;
+			display:none;
+		}
+		.jup_tr>th{
+			text-align: center;
+		}
+		.jup_tbody>tr>td{
+			border:1px solid #ccc;
+			height:40px;
+		}
+	</style>
+		<div class="jup_out_div"></div>
+	<div id="finance-main-container-box" class="finance-main-container-box">
+		<!-- 教主学管理升降级业绩统计 -->
+		<div class="finance-page-header">
+			<h1 class="finance-h1">个人业绩统计</h1>
+		</div>
+		
+		<div class="finance-basic-entry-container">
+			<div class="statistic-option">
+				<table>
+					<tbody>
+						<tr>
+							<td style="width:80px">校区名称</td>
+							<td>
+								<select id="school_id" style="width: 100%;min-width: 140px;">
+									<option value="">请选择校区</option>
+								</select>
+							</td>
+							<td style="width:80px"><label for="month">选择月份</label></td>
+							<td>
+								<input type="month" id="month" />
+							</td>
+							
+							<td style="width: 100px;">
+								<input type="button" id="startQuery" value="查询" style="width:100%;border:none;"/>								
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="statistic-query-result" style="margin-top: 30px;">
+				<div style="background: #CCCCCC;text-align: center;font-weight:bold;margin-top: 30px;padding: 5px;">个人绩统计结果</div>
+				<table>
+					<thead>
+
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+				<a href="http://i.ihongwen.com/oa2/index.php?m=&c=PersonalCount&a=personal_target_excel" download>下载当前统计表格</a>
+		</div>
+	
+		<div class="jup_tab" style=";display:none; width:1200px;height:500px;">
+			<div style="width:100%;height:30px;background-color:#4d4d4d;">
+				<input type="button" value="×" style="background-color:#4d4d4d;color:rgb(0,180,180); margin:0" id="close_jup_div">
+			</div>
+			<div style="overflow-y:scroll;overflow-x:scroll;height:470px;">
+				<table style="border-collapse: collapse;width: 1900px; border: 1px solid #CCC;text-align: center;" id="SubmittedDataTable">
+					<thead>
+						<tr style="background: #888; color: white;" class="jup_tr">
+							<th style="width: 64px;">记录ID</th>
+							<th style="width: 120px;">结算日期</th>
+							<th style="width: 80px;">收据编号</th>
+							<th style='width: 120px;'>收费（退费）</th>
+							<th style="width: 66px;">教学主任</th>
+							<th style="width: 82px;">学习管理师</th>
+							<th style="width: 66px;">业绩类型</th>
+							<th style="width: 66px;">学员姓名</th>
+							<th style="width: 50px;">年级</th>
+							<th style="width: 120px;">收费（退费）日期</th>
+							<th style="width: 98px;">常规课程类型</th>
+							<th style="width: 116px;">非常规课程类型</th>
+							<th style="width: 66px;">课程名称</th>
+							<th style="width: 220px;">交费（退费）金额</th>
+							<th style="">备注</th>
+						</tr>
+					</thead>
+					<tbody class="jup_tbody">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+</block>
+<block name="js">
+	<script src="__INS__/financeSys/js/basic.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var basicSchoolData = [];
+		var school_id = document.$("#school_id");
+		var date = document.$("#month");
+		
+		date.value = new Date().toISOString().substr(0,7);
+				AJAX({
+					url : IPaddr + 'index.php?m=&c=PersonalCount&a=Campus_target_find',
+					success : function( data ){
+						for(var i = 0; i < data.length; i++){
+							var record = {
+											school_id   : data[i].school_id,
+											school_name : data[i].school_name,
+											post		: {}
+										 }
+							var op = document.createElement('option');
+							op.value = record.school_id;
+							op.text  = record.school_name;
+							school_id.appendChild( op );
+							
+							for(var j = 0; j < data[i].personal_target.length; j++ ){
+								if( typeof record.post[ data[i].personal_target[j].post_id ] === 'undefined' ){
+									record.post[ data[i].personal_target[j].post_id ] = [];
+								}
+								record.post[ data[i].personal_target[j].post_id ].push( data[i].personal_target[j].name )
+							}
+							basicSchoolData.push(record);
+						}
+						
+					}
+				});
+
+		
+		//监听查询按钮
+		var startQuery = document.$("#startQuery");
+		startQuery.addEventListener('click',function(e){
+			var argu = {};
+			argu.school_id = school_id.value;
+			argu.date= date.value;
+			AJAX({
+				url : IPaddr + 'index.php?m=&c=PersonalCount&a=personal_count',
+				data: '&data=' + JSON.stringify(argu),
+				success : function( data ){
+					console.log(data);
+					var queryResult_header = document.$(".statistic-query-result table>thead");
+					
+					var str_header = '<tr><th>序号</th><th style="width: 52px;">姓名</th><th style="width: 120px;">校区名称</th><th>职务</th><th>业绩目标</th><th>业绩类型</th><th>招生业绩</th><th>常规课程退费</th><th>非常规课程退费</th><th>特训营业绩</th><th>合作项目业绩</th></tr>';
+
+					var tableHead = [
+					 					'num', 						//序号
+					 					'name',						//姓名
+					 					'school_name', 				//校区
+									 	'post_name', 				//职务
+									 	'target',					//业绩目标
+									 	'target_type',				//业绩类型
+									 	'money_num',				//招生业绩
+									 	'routine_refund',			//常规课程退费
+									 	'not_routine_refund',		//非常规课程退费
+									 	'special_money',			//特训营业绩
+									 	'cooperation_money',		//合作项目业绩
+								 	]
+					//alert(post.value);
+					queryResult_header.innerHTML=str_header;
+					
+					var queryResult = document.$(".statistic-query-result table>tbody");
+					queryResult.innerHTML = '';
+
+				 	var post_id = {
+									"11": "新签",
+									"12": "续签",
+									"18": "续签",
+									"19": "新签",
+								}
+				 	
+				 	if(data === null){
+				 		Toast('查询无结果');
+				 		return;
+				 	}
+				 	if(data.status === false){
+				 		Toast(data.content);
+				 		return;
+				 	}
+					for(var i = 0; i < data.length; i++){
+						var tr = document.createElement('tr');
+						for(var j = 0; j < tableHead.length; j++){
+							var td = document.createElement('td');
+							if( tableHead[j] === 'target_type' ){
+								td.innerText = post_id[data[i].post_id];
+							} else {
+								td.innerText = data[i][tableHead[j]];
+							}
+							if( tableHead[j] === 'name' ){
+								td.innerHTML = "<span class='span_hover' style='cursor:pointer;font-size:13px;' onclick=name_click(this,'" + data[i]['name'] + "','" + data[i]['user_id'] + "','" + data[i]['date'] + "','" + data[i]['post_id'] + "') >" + data[i][tableHead[j]] + "</span>";
+							}
+							tr.appendChild(td);
+						}
+						queryResult.appendChild(tr);
+					}
+				}
+			})
+		},false);
+		document.$("#close_jup_div").onclick=function(){
+			document.$(".jup_tab").style.display      = "none";
+			document.$(".jup_out_div").style.display  = "none";
+		}
+
+		function name_click(this_is,name,user_id,date,post_id){
+			document.$(".jup_tab").style.display      = "block";
+			document.$(".jup_out_div").style.display  = "block";
+			var queryOption = {};
+			//获取业绩类型值
+			queryOption.user_id = user_id,
+			queryOption.name = name,
+			queryOption.post_id = post_id,
+			queryOption.date = date;
+			AJAX({
+				url : IPaddr + 'index.php?m=&c=PersonalCount&a=personal_select',
+				data	: '&data=' + JSON.stringify( queryOption ),
+				success : function( data ){
+					console.log(data);
+					if( data === null ){
+						return;
+					}
+					addDataToSubmittedTable(data);
+					
+				}
+			});
+
+		}
+
+
+		/**
+			 * 添加数据至已提交列表
+			 * @param {Object} or {Array} type data;
+			 */
+			function addDataToSubmittedTable( data ){
+				var dataBridEl = document.$("#SubmittedDataTable>tbody");
+				// document.$("#count_num").style.display="block";
+				// document.$("#count_num").innerHTML='总计'+data[0].count_num+'元';
+
+				//清空表内容
+				/*var tr = dataBridEl.$$('tr');
+				for(var i = 1; i < tr.length; i++){
+							dataBridEl.removeChild( tr[i] );
+						}*/
+				if(!data) return;
+				dataBridEl.innerHTML = '';
+				/**
+				 * 建立一行表内容
+				 * @param {Object} cellData
+				 */
+				var createOneRowBrid = function( cellData ){
+					var tr = document.createElement('tr');
+					tr.dataset.id = cellData.id;
+					tr.innerHTML = '<td data-name="id" >' 					+ cellData.id 							+ '</td>' +
+								   '<td data-name="checkout_date" >' 		+ cellData.checkout_date 				+ '</td>' +
+								   '<td data-name="receipt_card" >' 		+ cellData.receipt_card 				+ '</td>' +
+								   '<td data-name="money_type" >' 			+ (cellData.money_type || '-') 			+ '</td>' +
+								   '<td data-name="teaching_userid" >' 		+ (cellData.teaching_userid || '-') 	+ '</td>' +
+								   '<td data-name="study_userid" >' 		+ (cellData.study_userid || '-') 		+ '</td>' +
+								   '<td data-name="chievement_type" >' 		+ cellData.achievement_type 			+ '</td>' +
+								   '<td data-name="student_name" >' 		+ cellData.student_name 				+ '</td>' +
+								   '<td data-name="grade" >' 				+ cellData.grade 						+ '</td>' +
+								   '<td data-name="achievement_date" >' 	+ cellData.achievement_date 			+ '</td>' +
+								   '<td data-name="curriculum_type" >' 		+ (cellData.curriculum_type || '-') 	+ '</td>' +
+								   '<td data-name="not_curriculum_type" >' 	+ (cellData.not_curriculum_type || '-') + '</td>' +
+								   '<td data-name="curriculum_name" >' 		+ cellData.curriculum_name 				+ '</td>' +
+								   '<td data-name="charge_money" >' 		+ cellData.charge_money 				+ '</td>' +
+								   '<td style="text-align:left;"  data-name="content" >' + cellData.content 		+ '</td>';
+					dataBridEl.appendChild( tr );
+				};
+				
+				switch ( true ){
+					case Array.isArray( data ):
+						data.forEach(function( val ){
+							createOneRowBrid( val )
+						});
+						break;
+					case Array.isArray( data ) === false && typeof data === 'object':
+						
+						createOneRowBrid(data);
+						break;
+				}
+				
+			}
+
+		
+		
+	</script>
+</block>

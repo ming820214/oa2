@@ -1,0 +1,658 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+<style type="text/css">
+	#show_history{
+		text-decoration:underline;
+	}
+	
+	#show_history :visited {
+    color:#00FF00;
+    text-decoration:underline;
+    }
+    #show_history:hover {
+    color:#000000;
+    text-decoration:underline;
+    }
+    #show_history :active {
+    color:#FFFFFF;
+    text-decoration:none;
+    }
+    
+</style>
+{:W('PageHeader/search_definition',array('name'=>'频率维护管理'))}
+<form method="post" id="frequency_form_search" name="form_adv_search">
+  <div class="operate panel panel-default">
+    <div class="panel-body">
+      <div class="pull-left form-inline">
+      	<if condition="get_school_name() eq '集团'">
+          <label for="school"><b>所属校区:</b></label>
+          <select id="school" name="school_s" class="form-control"><option value="all">全部</option>{:fill_option(C('SCHOOL'))}
+          </select>
+        </if>
+        <label  for="type"><b>学员类型:</b></label>
+        <select id="type" name="type_s" class="form-control col-10">
+          <option value="">全部</option>
+          <option value="普通">普通</option>
+          <option value="全日制">全日制</option>
+        </select>&nbsp;&nbsp;&nbsp;
+        <label  for="type"><b>学员状态:</b></label>
+        <select id="state_s" name="state_s" class="form-control col-10">
+          <option value="">全部</option>
+          <option value="1">正常</option>
+          <option value="2">停课</option>
+          <option value="3">结课</option>
+          <option value="4">毕业</option>
+          <option value="5">退费</option>
+          <option value="6">自习学员</option>
+        </select>&nbsp;&nbsp;&nbsp;
+        <label  for="grade"><b>年级:</b></label>
+        <select id="grade" name="grade_s" class="form-control col-10">
+          <option value="">全部</option>
+          {:fill_option_ex($gradeList)}
+        <!--<optgroup label="初中">
+          <option value="初一">初一</option>
+          <option value="初二">初二</option>
+          <option value="初三">初三</option>
+        </optgroup>
+        <optgroup label="高中">
+          <option value="高一">高一</option>
+          <option value="高二">高二</option>
+          <option value="高三">高三</option>
+        </optgroup>-->
+        </select>&nbsp;&nbsp;&nbsp;
+        <label  for="xueguan"><b>学习管理师:</b></label>
+        <select id="xueguan" name="xueguan_s" class="form-control col-10">
+          <option value="">全部</option>
+          {:fill_option($xueguan)}
+          <foreach name="xueguan" item="vx"><option value="{$vx}">{$vx}</option></foreach>
+        </select>&nbsp;&nbsp;&nbsp;
+        <label  for="frequency"><b>维护频率:</b></label>
+        <select id="frequency" name="frequency_s" class="form-control col-10">
+          <option value="">全部</option>
+          {:fill_option(C('VISIT_FREQUENCY'))}
+        </select>&nbsp;&nbsp;&nbsp;
+        <label  for="visit_type_s"><b>维护方式:</b></label>
+        <select id="visit_type_s" name="visit_type_s" class="form-control col-10">
+          <option value="">全部</option>
+          {:fill_option(C('VISIT_TYPE'))}
+        </select>&nbsp;&nbsp;&nbsp;
+        <input type="button" class="btn btn-sm btn-primary" name="search" value="查询" id="frequency_search" />
+      </div>
+    </div>
+  </div>
+</form>
+
+<!--数据列表展示区域-->
+<div class="row">
+  <div class="col-sm-12 sub_left_menu ">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>学号</th>
+          <th>校区</th>
+          <th>姓名</th>
+          <th>性别</th>
+          <th>学校</th>
+          <th>年级</th>
+          <th>文/理</th>
+          <th>联系电话</th>
+          <th>学习管理师</th>
+          <th>教学主任</th>
+          <th>学生状态</th>
+          <th>订单状态</th>
+          <th>总课时</th>
+          <th>剩余课时</th>
+     			<th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="llst">
+        <volist name="list" id="data">
+          <tr id="{$data.std_id}">
+            <td>{$data.std_id}</td>
+            <td>{$data.school}</td>
+            <td><a href="{:U('xg_base_info')}&name={$data.name}&std_id={$data.std_id}&id={$data.id}" target="_blank">{$data.name}</a></td>
+            <td>{$data.sex}</td>
+            <td>{$data.schoolx}</td>
+            <td>
+            	<switch name="data.grade">
+	                <case value="22">高三</case>
+	                <case value="21">高二</case>
+	                <case value="20">高一</case>
+	                <case value="50">九年级</case>
+	                <case value="40">八年级</case>
+	                <case value="39">七年级</case>
+	                <case value="38">六年级</case>
+	                <case value="93">五年级</case>
+	                <case value="100">四年级</case>
+	                <case value="101">三年级</case>
+	                <case value="102">二年级</case>
+	                <case value="103">一年级</case>
+                </switch>
+            </td>
+            <td>{$data.wl}</td>
+            <td>{$data.tel}</td>
+            <td>{$data.xueguan}</td>
+            <td>{$data.jiaoxue}</td>
+            <td>{:C('STUDENT_STATE')[$data['state']]}</td>
+            <td>
+            <switch name="data.course_state" >
+                <case value="200">正常</case>
+                <case value="250">暂停排课</case>
+                <case value="300">已结课</case>
+                <case value="500">已退费</case>
+                </switch>
+            </td>
+            <td>{$data.hour}</td>
+            <td>{$data.remain_hour}</td>
+            <td><button class="btn btn-xs btn-primary" onclick="$.showDialog('{$data.id}','{$data.name}','{$data.grade}','{$data.wl}','{$data.frequency}','{$data.visit_type}','{$data.std_id}')">维护频率</button></td>
+          </tr>
+        </volist>
+      </tbody>
+    </table>
+     <!--学生信息列表分页-->
+	  <div id="pagination_teaching_supervisor" class="pagination" style="float:right;margin-right:35px;">
+				    <a href="#" class="first" data-action="first">&laquo;</a>
+				    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+				    <input type="text" readonly="readonly"  data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+				    <a href="#" class="next" data-action="next">&rsaquo;</a>
+				    <a href="#" class="last" data-action="last">&raquo;</a>
+		</div>
+  </div>
+
+</div>
+
+
+
+<!-- 教学授课反馈 -->
+<div class="modal fade" id="teachingsupervisor_dialog" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document" style="width:800px;">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title"><span id="a_stu_name_id"></span>的任务维护方式修改</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="row">  									
+					  <div class="col-sm-12">
+					  	
+					  	<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+							  <span id="b_stu_name_id"></span><span>的任务维护历史记录</span>
+							</button><a id="show_history" class="glyphicon glyphicon-list-alt">点击查看历史记录详情↓↓↓</a>
+							<div class="collapse table-responsive" id="collapseExample">
+							  <div class="well" style="height:200px;min-height: 80px;overflow-y: scroll;">
+							  	
+							  </div>
+							</div>
+							
+							<form id="frequency_form" action="" method="POST">
+								<input type="hidden" name="id" value=""/>
+							  <table class="table table-bordered" style="background-color:white;">
+							      <tbody>
+							      	<tr>
+							      		<td><label>学员姓名：</label></td>
+							      		<td><input type="text" name="name" class="form-control" readonly="readonly"/></td>
+							      	</tr>
+							      	<tr>
+							      			<td><label>年级：</label></td>
+							      		<td><input type="text" name="grade"  class="form-control" readonly="readonly"/></td>
+							      	</tr>
+							      	<tr>
+							      			<td><label>文理：</label></td>
+							      		<td><input type="text" name="wl"  class="form-control" readonly="readonly"/></td>
+							      	</tr>
+							      	<tr>
+							      		<td><label>任务维护频率：</label></td>
+							      		<td>
+									        <select id="frequency" name="frequency" class="col-10">
+									          {:fill_option(C('VISIT_FREQUENCY'))}
+									        </select>
+							      		</td>
+							      	</tr>
+							      	<tr>
+							      			<td><label>任务维护方式：</label></td>
+							      		<td>
+									        <select id="visit_type" name="visit_type" class="col-10">
+									          {:fill_option(C('VISIT_TYPE'))}
+									        </select>
+							      		</td>
+							      	</tr>
+							      	<tr>
+							      		<td colspan="2" align="center">
+							      			<input type="button" id="b_teaching_supervisor" class="btn btn-primary" value="更改"/>
+							      			<input type="reset" id="reset_supervisor_form" style="display: none;"/>
+							      		</td>
+							      	</tr>
+							      </tbody>
+							    </table>
+						  </form>
+					  </div>  
+					</div>
+	    </div>
+	  </div>
+	</div>
+</div>
+
+
+<!-- 维护设置 -->
+<div class="box" id="set" style="display: none;height: 400px;"><a onclick="clos(this)" class="close">X</a>
+  <div class="title"><h3>维护设置</h3></div>
+  <div class="box1"><input type="hidden" name="stuid" class="stuid">
+    <table cellpadding="15" border="3" width="95%" height="220">
+      <tr>
+        <td>周次</td>
+        <td>维护级别</td>
+        <td>任务截止时间</td>
+      </tr>
+      <tr>
+        <td width="220px">
+          <div style="overflow-y: auto;max-height: 150px;" id="week">
+            <volist name="week" id="w">
+            <if condition="$i egt date('W')"><span data="{$w[0]}" <if condition="$i eq date('W')">class="week"</if>>第{$i}周（{$w[0]}-{$w[1]}）</span><br/></if>
+            </volist>
+          </div>
+        </td>
+        <td id="type" width="150px">
+        <span data="普通维护" class="type">普通（电话维护）</span><br/>
+        <span data="A级维护">A级（学管沟通）</span><br/>
+        <span data="2A级维护">2A级（小型学情）</span><br/>
+        <span data="3A级维护">3A级（大型学情）</span><br/>
+        </td>
+        <td><select name="week" id="m">
+          <option value="0">星期一</option>
+          <option value="1">星期二</option>
+          <option value="2">星期三</option>
+          <option value="3">星期四</option>
+          <option value="4">星期五</option>
+          <option value="5">星期六</option>
+          <option value="6">星期日</option>
+        </select><button class="bt">执行维护任务</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<div class="loading"></div>
+</block>
+<block name="js">
+
+<script type="text/javascript">
+sid=0;
+pageCount = 10; //每页显示多少条记录(全局变量)
+currentPage = 1; //当前页码
+maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
+pageString = '';
+course_state = {:json_encode(array_column(C('COURSE_STATES'),'name','id'))};
+state = {:json_encode(C('STUDENT_STATE'))};
+visittype_lst = {:json_encode(C('VISIT_TYPE'))};
+grade = {:json_encode($gradelst)};
+$(function(){
+
+/**
+ *
+ * 绘制动态表格公用函数
+ * @param {Object} data  表格实体数据，由后台返回;
+ * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+ * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+ * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+ * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+ * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+ * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+ * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+ * @param {Object} a_link_arr 需要超链接包围的显示字段，为数组类型;
+ * @param {Object} a_link_url 相应位置超链接的url地址，为数组类型;
+ * @param {Object} a_link_param 相应位置超链接的url地址中需要绑定的参数，为数组类型;
+ * @param {Object} a_link_target 超链接弹出页面的方式设定，target，例如：_blank
+ * @param {Object} a_fun_arr  超链接如果有函数，这里是函数名称，为数组类型;
+ * @param {Object} a_fun_param_arr 函数中的参数字段，该字段需要在data中存在
+ */
+  	$.drawTrTd=function (
+  		data,
+  		tbody_id,
+  		button_method_arr,
+  		method_param_arr,
+  		button_name_arr,
+  		field_arr,
+  		check_name,
+  		select_lst_arr,
+  		a_link_arr,
+  		a_link_url,
+  		a_link_param,
+  		a_link_target,
+  		a_fun_arr,
+  		a_fun_param_arr){
+
+  		$.each(data, function(i,value) {
+  			var temp_str = '';
+
+  			$('#' + tbody_id).append('<tr id="' + value.id + '">');
+
+  			//列表checkbox选择组件创建
+  			if(check_name != null){
+  				$('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class="' + value.id + '"  value="' + value.classid + '" /></td>');
+  			}
+
+  			for(var i=0;i<field_arr.length;i++){
+  				//单元格起始构建
+  				temp = '<td>';
+
+  				//判断是否有超链接
+  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+  					var a_temp_str = '';
+
+  					//超链接起始构建
+  					if(a_link_param != null){
+  						//如果url地址需要参数
+  						a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)];
+  						//添加参数
+  						for(var n=0;n<a_link_param.length;n++){
+  							a_temp_str += '&' + a_link_param[n] + '=' + $.trim(eval('value.' + a_link_param[n]));
+  						}
+  						a_temp_str +=  '" ';
+  					}else{
+  						a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)] + '" ';	
+  					}
+  					
+  					//onclick函数起始构建
+  					if(a_fun_arr != null){
+  						a_temp_str += 'onclick="' + a_fun_arr[$.inArray(field_arr[i],a_link_arr)]  + '(';
+  					}
+
+  					//函数的参数全构建
+  					if(a_fun_param_arr != null){
+  						for(var k=0;k<a_fun_param_arr.length;k++){
+							a_temp_str += ($.trim(eval('value.' + a_fun_param_arr[k]))== undefined ? '': "'" + $.trim(eval('value.' + a_fun_param_arr[k]))) + "',";
+  						}
+
+  						a_temp_str = a_temp_str.substring(0,a_temp_str.lastIndexOf(','));
+  						a_temp_str += (')"')
+  					}
+					
+					if(a_link_target != null){
+						a_temp_str += 'target=' + a_link_target + '>';
+					}else{
+						a_temp_str += '>';	
+					}
+					
+  					
+
+  					//添加超链接起始部分
+					temp += a_temp_str;
+
+  				}
+
+
+  				//添加单元格内容部分
+  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+  					//单元格内容如果是select组件中的value部分，需要转义的，通过在这里实现，但是javascript脚本最开始的部分需要添加相应的php代码带获取相应的数组，这部分内容在后期会进一步完善，会把该数组也放到该函数内来实现。
+  					temp += (((eval('value.' + field_arr[i])== undefined) || ($.trim(eval('value.' + field_arr[i]))==''))? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'));
+  				}else{
+  					temp += ((eval('value.' + field_arr[i])== undefined || eval('value.' + field_arr[i])== false) ? '': eval('value.' + field_arr[i]));
+  				}
+
+  				//超链接结束标签构建
+  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+  					temp += '</a>';
+  				}
+
+  				//单元格结束标签构建
+  				temp += '</td>';
+
+  				$('#' + value.id).append(temp);
+  			}
+
+
+  			if(button_method_arr != null){
+  				for(var j=0;j<button_method_arr.length;j++){
+  					if(method_param_arr != null){
+  						var param_str = '';
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  						for(var k=0;k<method_param_arr.length;k++){
+  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  						}
+  						param_str = param_str.substring(0,param_str.length-1);
+						temp_str += param_str;
+  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}else{
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}
+
+  				}
+  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+  				$('#' + value.id).append('<td>' + temp_str  + '</td>');
+  			}
+  	});
+ }
+  	
+  	$('#pagination_teaching_supervisor').jqPagination({
+							link_string	: '/?page={page_number}',
+							max_page	: maxPage,
+							paged		: function(page,param) {
+								
+							var pageNumber = (page-1)*pageCount //从第几行开始查询
+							
+							var data = $('#frequency_form_search').serializeArray();
+//							data.push($('#form_search').serializeArray()[0]);
+							var keyword = $('#keywords').val();
+							var search = new Object();
+							search = {name:'keyword',value:keyword};
+							
+							data.push(search);
+							
+							$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('teaching_supervisor')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst').empty();
+
+											var button_method_arr = ['$.showDialog'];
+											var button_name_arr = ['维护频率'];
+											var field_arr = ['std_id','school','name','sex','schoolx','grade','wl','tel','xueguan','jiaoxue','state','course_state','hour','remain_hour'];
+											var select_lst_arr = ['state','course_state','grade'];
+											var check_name = null;
+											var method_param_arr = ['id','name','grade','wl','frequency','visit_type','std_id'];
+											var a_link_arr = ['name'];
+											var a_link_url = ["{:U('xg_base_info')}"];
+											var a_link_param = ['name','std_id','id'];
+											var a_link_target = '_blank';
+											var a_fun_arr = null;//['$.showDialog'];
+											var a_fun_param_arr = null;//['id','name','grade','wl','frequency','visit_type','std_id'];
+
+											$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+
+										}else{
+											$('#llst').empty();
+										}
+
+									}
+								}
+							});
+
+							if(maxPage <= 0){
+								this.page_string = '没有符合条件的记录';
+								maxPage = 1;
+							}else if(this.page_string == '没有符合条件的记录'){
+								this.page_string = 'Page {current_page} of {max_page}';
+							}
+							
+							this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+							this.max_page = maxPage;
+							
+							
+							$('#pagination_teaching_supervisor').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+							Ycom.loading.hide();
+						}
+
+	});
+
+
+	//列表项选择事件操作
+	$("#llst").on('click','tr',null,function(){
+
+      $("#llst tr").removeClass("active");
+		  $(this).attr("class", "active");
+		  
+		  /*var std_id = $(this).attr('std_id');
+		  
+		  sid=$(this).attr('id');
+          if(sid != 0){
+		          $.ajax({
+		          	type:'POST',
+		          	cache:false,
+		          	async:true,
+		          	url: "{:U('maintain_task')}",
+		          	data:{"id": sid},
+		          	dataType:"json",
+		          	success: function(msg){
+		          	
+					  $('#reset_visit_form').click();
+		              $.setForm(msg.data);
+
+		          	},
+		          	failure:function(err){
+
+		          		ui_error('error!');
+		          	}
+		          	});
+          }*/
+
+
+    });	
+	
+	
+	//维护回访内容的保存
+	$('#b_teaching_supervisor').click(function(){
+
+		var data = $('#frequency_form').serializeArray();
+
+		$.ajax({
+				type:'POST',
+				async:true,
+				cache:false,
+				url:"{:U('frequency_update')}",
+				dataType:'json',
+				data:data,
+				success:function(msg,status){
+					if(status=="success" && msg.state == 'ok'){
+						$('#pagination_teaching_supervisor').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+						ui_info('信息维护成功!');
+						$('#reset_supervisor_form').click();
+					}else{
+						ui_error('信息维护失败!');
+						$('#reset_supervisor_form').click();
+					}
+				},
+				failure:function(msg,status){
+					ui_info('请与系统管理员联系!');
+				}
+			});
+
+	});
+	
+	$.showDialog=function(id,name,grades,wl,frequency,visit_types,std_id){
+		
+		$('#reset_supervisor_form').click();
+		
+		$('#a_stu_name_id').text(name);
+		$('#b_stu_name_id').text(name);
+		
+		$('input[name="id"]').val(id);
+		$('input[name="name"]').val(name);
+		debugger;
+		$('input[name="grade"]').val(window.grade[grades]);
+		$('input[name="wl"]').val(wl);
+		$('select[name="frequency"]').val(frequency);
+		$('select[name="visit_type"]').val(visit_types);
+		
+		
+		$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('searchAllMaintainInfoByStdId')}",
+				dataType:'json',
+				data:{'std_id':std_id},
+				success:function(msg,status){
+					if(status=="success" && msg.state == 'ok'){
+						
+						var str = ''
+						$.each(msg.data, function(i,vo) {
+							
+							str += '<div>';
+							
+							str += '<div class="input-group">';
+							str += '<div class="input-group-addon"><b>维护时间：</b></div>';
+							str += '<input type="text" class="form-control" id="weihu_time" value="' + vo.weihu_timee + '" readonly="readonly"/>';
+							str += '</div>';
+							
+							str += '<div class="input-group">';
+							str += '<div class="input-group-addon"><b>维护频率：</b></div>';
+							str += '<input type="text" class="form-control" id="weihu_frequency" value="' + vo.weihu_type + '" readonly="readonly"/>';
+							str += '</div>';
+							
+							str += '<div class="input-group">';
+							str += '<div class="input-group-addon"><b>维护方式：</b></div>';
+							str += '<input type="text" class="form-control" id="weihu_way" value="' + window.visittype_lst[vo.weihu_way] + '" readonly="readonly"/>';
+							str += '</div>';
+							
+							
+							str += '<div class="input-group">';
+							str += '<div class="input-group-addon"><b>维护内容：</b></div>';
+							str += '<textarea id="weihu_content" class="form-control" readonly="readonly">' + vo.weihu_content + '</textarea>';
+							str += '</div>';
+							
+							str += "</div>";
+							
+							str += '<hr style="border: 1px dashed darkturquoise;"/>'
+							
+						});
+						
+							$('.well').html(str);
+						
+					}
+				},
+				failure:function(msg,status){
+					ui_info('请与系统管理员联系!');
+				}
+			});
+			
+		$("#teachingsupervisor_dialog").modal('show');
+	}
+	
+	//筛选查询按钮操作
+	$('#frequency_search').click(function(){
+		Ycom.loading.show();
+		$('#pagination_teaching_supervisor').jqPagination('option',{'max_page':1,'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	});
+  
+  
+	$.submit_search= function(){
+		Ycom.loading.show();
+		$('#pagination_teaching_supervisor').jqPagination('option',{'max_page':1,'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	};
+	
+	$('#keywords').keydown(function(event){
+ 		if(event.keyCode == 13){
+ 			$.submit_search();
+ 		}
+ 			
+ 	});
+	
+	$('#show_history').click(function(){
+		 $('.collapse').collapse('toggle');
+	});
+	
+});
+</script>
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

@@ -1,0 +1,168 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+{:W('PageHeader/simple',array('name'=>'学员课程管理'))}
+<style>
+    .goods{
+        width: 450px;
+        float: left;
+    }
+    .course-state{float: right;color: red;}
+    .goods table{
+        line-height: 30px;
+        margin: 0 auto;
+    }
+    .goods .bt{text-align: center;}
+    .goods .teacher{
+        padding: 10px 15px;
+        background-color: gainsboro;
+        margin: 10px 7px;
+    }
+    .teacher span{    margin: 0 5px; border-left: 2px coral solid; padding-left: 5px;}
+</style>
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <div class="row">
+        <div class="col-md-7"><h3>{$student.name}----{$student.std_id}</h3></div>
+        <div class="col-md-4 pull-right">
+            <button class="btn btn-danger" onclick="get_charge()">缴费充值</button>
+            <button class="btn btn-success" onclick="get_record()">消费记录</button>
+            <button class="btn btn-success" onclick="get_toreturn()">学员退费</button>
+        </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <h2><i class="fa fa-tags"></i> 一对一<button class="btn btn-danger pull-right" onclick="book_course(1)">++<i class="fa fa-shopping-cart"></i> 订购</button></h2><hr>
+          <div class="goods">
+            <div class="thumbnail">
+              <div class="caption">
+                <h3>初中旗舰校 一对一 七年级 高级讲师<small class="course-state">正常</small></h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>已上课时：</th>
+                            <td></td>
+                            <th>预排课时：</th>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>订购课时</th>
+                            <td>100</td>
+                            <th>赠送课时</th>
+                            <td>10</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="teacher"><span>生物 > 董一厶</span><span>生物 > 董一厶</span><span>生物 > 董一厶</span><span>生物 > 董一厶</span><span>生物 > 董一厶</span><span>生物 > 董一厶</span><span>生物 > 董一厶</span></div>
+                <p class="bt">
+                    <a href="#" class="btn btn-sm btn-success" role="button">排课记录</a>
+                    <a href="#" class="btn btn-sm btn-success" role="button">变更讲师</a>
+                    <a href="#" class="btn btn-sm btn-success" role="button">调整课时</a>
+                    <a href="#" class="btn btn-sm btn-success" role="button">退订课程</a>
+                </p>
+              </div>
+            </div>
+          </div>
+    </div>
+    <div class="panel-body">
+        <h2><i class="fa fa-tags"></i> 一对多<button class="btn btn-danger pull-right">++<i class="fa fa-shopping-cart"></i> 订购</button></h2><hr>
+    </div>
+    <div class="panel-body">
+        <h2><i class="fa fa-tags"></i> 全日制<button class="btn btn-danger pull-right">++<i class="fa fa-shopping-cart"></i> 订购</button></h2>
+        <hr>
+    </div>
+    <div class="panel-body">
+        <h2><i class="fa fa-tags"></i> 小组课<button class="btn btn-danger pull-right">++<i class="fa fa-shopping-cart"></i> 订购</button></h2>
+        <hr>
+    </div>
+    <div class="panel-body">
+        <h2><i class="fa fa-tags"></i> 自习室<button class="btn btn-danger pull-right">++<i class="fa fa-shopping-cart"></i> 订购</button></h2>
+        <hr>
+    </div>
+    <div class="panel-body">
+        <h2><i class="fa fa-tags"></i> 特训营<button class="btn btn-danger pull-right">++<i class="fa fa-shopping-cart"></i> 订购</button></h2>
+        <hr>
+    </div>
+    <div class="panel-body">
+        <hr>
+    </div>
+</div>
+<!-- 课程订购 -->
+<div class="modal fade bs-example-modal-lg" id="book_course">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header btn-warning">
+                <h3>课程订购</h3>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <div class="input-group">
+                            <a class="input-group-addon">年级</a>
+                            <select name="stuid" class="form-control"><option value="">选择年级</option>{:fill_option_ex($grade)}}</select>
+                            <a class="input-group-addon">讲师级别</a>
+                            <select name="stuid" class="form-control"><option value="">选择年级</option>{:fill_option_ex($level)}}</select>
+                        </div><br>
+                        <div class="input-group">
+                            <a class="input-group-addon">可选课程</a>
+                            <select name="course_id" class="form-control"></select>
+                        </div><br>
+                        <div class="input-group col-md-6">
+                            <a class="input-group-addon">订购课时数</a>
+                            <input class="form-control" />
+                            <a class="input-group-addon">订购课时数</a>
+                            <input class="form-control" />
+                        </div>
+                        <input type="submit" name="add_student" class="btn btn-primary pull-right" value="保存添加">
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+COURSE={$course};
+//缴费充值
+function get_charge(){
+    winopen(fix_url("{:U('students/charge')}&id={$_GET['id']}"), 730, 500);
+}
+//消费记录
+function get_record(){
+    winopen(fix_url("{:U('print_course')}&id={$_GET['id']}"), $('body').width()*.8, 500);
+}
+//退费操作
+function get_toreturn(){
+    winopen(fix_url("{:U('students/toreturn')}&id={$_GET['id']}"), 730, 500);
+}
+// 退订课程
+function get_toreturn(course_id){
+    winopen(fix_url("{:U('course/drop')}&id="+course_id), 730, 500);
+}
+// 订购课程
+function book_course(type){
+    $('#book_course').modal('show');
+}
+$('#book_course select').change(function(){
+
+})
+</script>
+</block>
+

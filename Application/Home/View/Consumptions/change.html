@@ -1,0 +1,66 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.input-group{margin: 10px 0;}
+#apply_form li{ width: 200px;float: left;margin: 5px;list-style: none;font-weight: bold;}
+</style>
+
+<!-- 搜索部分 -->
+<div class="panel panel-default" id="adv_search" method="post" action="{:U('export')}">
+    <div class="panel-body">
+        <div class="form-inline">
+            <div class="input-group">
+                <a class="input-group-addon">要修改的记录序号</a>
+                <input name="id" class="form-control" id="id">
+            </div>
+            <a class="btn btn-info" onclick="getInfo()">查找获取</a>
+        </div>
+    </div>
+</div>
+
+<!-- 录入修改部分 -->
+<form id="apply_form" class="panel panel-default" method="post">
+    <div class="panel-heading">
+        <div class="pull-right">
+            <button type="submit" class="btn btn-danger"  id="save" disabled>保存更新</button>
+        </div>
+        <h3>修改(仅限缴费记录)</h3>
+    </div>
+    <div class="panel-body">
+        <ul>
+            <li>序号<input type="text" name="id" class="form-control" readonly></li>
+            <li>校区<input class="form-control" type="text" name="school" disabled readonly></li>
+            <li>学员<input class="form-control" type="text" name="student" disabled readonly></li>
+            <li>学号<input class="form-control" type="text" name="std_id" disabled readonly></li>
+            <li>审核状态<select name="state" class="form-control">{:fill_option_ex(C('CONSUME_STATES'))}</select></li>
+            <li>消费类型<select name="type" class="form-control" disabled>{:fill_option_ex(C('CONSUME_TYPE'))}</select></li>
+            <li>业绩类型<select name="belong_type" class="form-control"><option value="0"></option><option value="1">新招</option><option value="2">续费</option></select></li>
+            <li>业绩归属<select name="belong_user" class="form-control" id="belong_user"></select></li>
+            <li>金额<input class="form-control" type="number" min="0" step="0.01" name="value" disabled></li>
+            <li>期次<input name="month" type="text" class="form-control"></li>
+            <li>收据编号<input name="pay_no" type="text" class="form-control"></li>
+            <li>备注<input name="remark" type="text" class="form-control"></li>
+        </ul>
+    </div>
+</form>
+
+</block>
+<block name="js">
+<script type="text/javascript">
+    function getInfo(){
+        if($('#id').val())
+        $.get("{:U()}",{info:$('#id').val()},function(msg){
+            var html = '';
+            for(x in msg.belong){
+                html+='<option value="'+x+'">'+msg.belong[x]+'</option>';
+            }
+            $('#belong_user').html(html);
+            if(msg){
+                $('#save').prop('disabled',false);
+              Ycom.fillForm('#apply_form',msg);   
+            }
+        });
+    }
+</script>
+</block>
+

@@ -1,0 +1,716 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+    vertical-align: middle;
+}
+
+.toedit {
+    display: none;
+}
+
+tr:hover .toedit {
+    display: inline-block;
+}
+
+tr:hover .spanid {
+    display: none;
+}
+
+.table>tbody>tr.red {
+    background: #ed5565;
+    color: #fff;
+}
+
+.table>tbody>tr.red a{
+    color: #fff;
+}
+
+.table>tbody>tr a {
+    color: fff;
+}
+
+.loading {
+    position: fixed; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, .2);
+    background-image: url(__INS__/img/loading.gif);
+    background-position: center 300px;
+    background-repeat: no-repeat;
+    background-size: 50px;
+    display: none;
+    z-index: 5000;
+}
+
+#admin_form table.table>thead>tr>th {
+    test-align: right;
+}
+
+#admin_form {
+    max-height: 500px;
+}
+
+tr input[type=checkbox] {
+    width: 1.3em;
+}
+
+.export {
+    width:100%;
+    max-width:200px;
+    float: left;
+    margin-right: 10px;
+}
+</style>
+{:W('PageHeader/finance',array('name'=>$title,'search'=>'N'))}
+<form style="{$showApplyFrom?'':'display:none'}" id="apply_form" action="#">
+    <input type="hidden" name="id" value="" />
+    <input type="hidden" name="from" value="{$from}" />
+    <input type="hidden" name="dept_id" id="cost_dept_id" value="" />
+    <input type="hidden" name="dept_id2" id="cost_dept_id2" value="" />
+    <div class=" table-responsive">
+        <table class="table" align="center" style="width: 100%;">
+        <tr>
+            <td><label for="type">采购类型</label><select class="form-control" name="type" id="type" required><option value="">请选择</option></select></td>
+            <td><label for="belong">归属校区</label><select class="form-control" name="belong" id="belong" required><option value="">请选择</option>{:fill_option_ex(C('SCHOOL'))}</select></td>
+            <td><label for="cost_type">成本类型</label><select class="form-control" name="cost_type" id="cost_type" required><option value="">请选择</option></select></td>
+            <td><label for="cost_type2">二级科目</label><select data-toggle="tooltip" data-placement="top" title="" class="form-control" name="cost_type2" id="cost_type2"></select></td>
+            <td><label for="cost_project">支出项目</label><select class="form-control" name="cost_project" id="cost_project"></select></td>
+        </tr>
+        <tr>
+            <td><label for="name">物品名称</label><input class="form-control" type="text" name="name" value="" required /></td>
+            <td><label for="brand">品牌</label><input class="form-control" type="text" name="brand" value=""/></td>
+            <td><label for="model">型号/规格</label><input class="form-control" type="text" name="model" value=""/></td>
+            <td><label for="unit_price">单价</label><div style="width:100%;max-width:170px" class="input-group"><span class="input-group-addon">￥</span><input class="form-control" type="number" min="0" step="0.01" name="unit_price" value=""/></div></td>
+            <td><label for="count">数量</label><input class="form-control" type="number" min="0" name="count" value=""/></td>
+        </tr>
+        <tr>
+            <td><label for="unit">单位</label><input class="form-control" type="text" name="unit" value=""/></td>
+            <td><label for="price">合计金额</label><div style="width:100%;max-width:170px" class="input-group"><span class="input-group-addon">￥</span><input class="form-control" type="number" type="number" min="0" step="0.01" name="price" value="" readonly/></div></td>
+            <td><label for="receive_school">接收校区</label><select class="form-control" name="receive_school" id="receive_school"><option value="">请选择</option>{:fill_option_ex(C('SCHOOL'))}</select></td>
+            <td><label for="receiver">接收人</label><input class="form-control" type="text" name="receiver" value=""/></td>
+            <td><label for="card">卡号</label><input class="form-control" type="text" name="card_num" value=""/></td>
+        </tr>
+        <tr>
+            <td><label for="purchase_time">拟采购日期</label><input class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly type="text" name="purchase_time" value=""/></td>
+            <td><label for="price_time">价格更新日期</label><input class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly type="text" name="price_time" value=""/></td>
+            <td><label for="researcher">调研人</label><input class="form-control" type="text" name="researcher" value=""/></td>
+            <td><label for="reason">申请原因</label><textarea class="form-control" type="text" name="reason"></textarea></td>
+            <td><label for="use">用途</label><textarea class="form-control" type="text" name="use"></textarea></td>
+        </tr>
+        <tr>
+            <td><label for="research">价格调研情况</label><textarea class="form-control" type="text" name="research"></textarea></td>
+            <td><label for="research_place">调研地点</label><textarea class="form-control" type="text" name="research_place"></textarea></td>
+            <td><label for="remarks">备注</label><textarea class="form-control" type="text" name="remarks"></textarea></td>
+            <td><label>物流付款方式</label><div style="height:54px"><label><input type="radio" name="take_cost_type" value="到付"/>到付</label> | <label><input type="radio" name="take_cost_type" value="现付"/>现付</label></div></td>
+            <td colspan="2" style="text-align: right"><nobr><button id="save-button" class="btn btn-large btn-primary">提交申请</button>&nbsp;&nbsp;&nbsp;&nbsp;<button id="cancel-button" class="btn" href="#">取消</button></nobr></td>
+        </tr>
+        </table>
+    </div>
+</form>
+
+<div style="display:{$allowAdmin?'':'none'}" class="operate panel panel-default">
+    <div class="panel-body">
+        <div style="display:{$allowCheck?'inline-block':'none'}">
+            <button id="check-button" class="btn btn-primary">审核选中</button>
+            <button type="button" class="btn btn-primary btn-danger" data-toggle="modal" data-target="#myModal">
+                退回修改
+            </button>
+
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">回退原因</h4>
+                  </div>
+                  <div class="modal-body">
+                        <textarea class="form-control" name="back_reason" id="back_reason" cols="30" rows="5"></textarea>
+                  </div>
+                  <div class="modal-footer">
+                    <button id="back-button" type="button" class="btn btn-primary">确定</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div style="display:{$allowExport?'inline-block':'none'}">
+            <form id="export_form" action="{:U('purchase/exportExcel')}" target="_blank" method="post">
+            <div class="input-group export">
+                <span class="input-group-addon">期次</span>
+                <select name="month" class="form-control"><option value="{$Think.session.date}">{$Think.session.date}</option><option value="_all_">全部</option></select>
+            </div>
+            <div class="input-group export">
+                <span class="input-group-addon">状态</span>
+                <select name="state" class="form-control"><option value="_all_">全部</option>{:fill_option_ex(C('PURCHASE_STATES'))}</select>
+            </div>
+            <div class="input-group export">
+                <span class="input-group-addon">申请校区</span>
+                <select name="apply_school" class="form-control"><option value="_all_">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+            </div>
+            <div class="input-group export">
+                <span class="input-group-addon">归属校区</span>
+                <select name="belong" class="form-control"><option value="_all_">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+            </div>
+            <div class="input-group export" style="max-width: 180px">
+                <span class="input-group-addon">采购类型</span>
+                <select name="type" class="form-control"><option value="_all_">全部</option></select>
+            </div>
+            <div class="input-group export">
+                <span class="input-group-addon">成本类型</span>
+                <select id="export_cost_type" name="cost_type" class="form-control"><option value="_all_">全部</option></select>
+            </div>
+            <div class="input-group export">
+                <span class="input-group-addon">二级科目</span>
+                <select id="export_cost_type2" name="cost_type2" class="form-control"><option value="_all_">全部</option></select>
+            </div>
+            <div style="max-width:150px;float: left">
+                <button id="filt-button" class="btn btn-primary">筛选</button>&nbsp;&nbsp;&nbsp;
+                <button id="export-button" class="btn btn-success">导出</button>
+            </div>
+            </form>
+        </div>
+        <div class="pull-right">
+            <button id="del-button" class="btn btn-danger btn-primary">删除</button>
+        </div>
+    </div>
+</div>
+<form style="display:none" id="confirm_form" action="#">
+    <input name="id" type="hidden" value="" required />
+    <input name="take_state" type="hidden" value="1" />
+    <div class="operate panel panel-default">
+        <div class="panel-body">
+            <div class="pull-left">
+                <div class="input-group export" style="max-width:250px">
+                    <span class="input-group-addon">收货时间</span>
+                    <input class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" type="text" name="take_time" required readonly />
+                </div>
+                <div class="input-group export">
+                    <span class="input-group-addon">收货人</span>
+                    <input class="form-control" type="text" name="take_name" required />
+                </div>
+                <div class="input-group export hidden">
+                    <span class="input-group-addon">物流费（￥）</span>
+                    <input class="form-control" type="number" min="0" step="0.01" name="take_cost1" />
+                </div>
+<!--                 <div class="input-group export">
+                    <span class="input-group-addon">运输费（￥）</span>
+                    <input class="form-control" type="number" min="0" step="0.01" name="take_cost2" />
+                </div>
+ -->                <div class="input-group export" style="max-width: 400px">
+                    <span class="input-group-addon">收货备注</span>
+                    <input class="form-control" type="text" name="take_mark" />
+                </div>
+                <button class="btn btn-primary">确认收货</button>
+                <button class="btn" onclick="$('#confirm_form').slideUp('fast');return false">取消</button>
+            </div>
+        </div>
+    </div>
+</form>
+<form id="admin_form" action="#" class="table-responsive">
+    <input type="hidden" name="from" value="{$from}" />
+    <input type="hidden" name="back_reason" value="" />
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+            <tr>
+                <th><nobr>
+                    <input id="check-all" class="form-control" type="checkbox" />
+                </nobr></th>
+                <th><nobr>序号</nobr></th>
+                <th><nobr>状态</nobr></th>
+                <th><nobr>收货状态</nobr></th>
+                <th><nobr>物流信息</nobr></th>
+                <th><nobr>物流付款方式</nobr></th>
+                <th><nobr>确认收货人员</nobr></th>
+                <th><nobr>确认收货时间</nobr></th>
+                <th><nobr>物流费</nobr></th>
+                <th><nobr>运输费</nobr></th>
+                <th><nobr>收货备注</nobr></th>
+                <!-- <th><nobr>预计物流费</nobr></th> -->
+                <th><nobr>归属校区</nobr></th>
+                <th><nobr>接收校区</nobr></th>
+                <th><nobr>接收人</nobr></th>
+                <th><nobr>申请日期</nobr></th>
+                <th><nobr>拟采购日期</nobr></th>
+                <th><nobr>采购类型</nobr></th>
+                <th><nobr>成本类型</nobr></th>
+                <th><nobr>二级科目</nobr></th>
+                <th><nobr>支出项目</nobr></th>
+                <th><nobr>物品名称</nobr></th>
+                <th><nobr>品牌</nobr></th>
+                <th><nobr>型号/规格</nobr></th>
+                <th><nobr>单价(￥)</nobr></th>
+                <th><nobr>数量</nobr></th>
+                <th><nobr>单位</nobr></th>
+                <th><nobr>合计(￥)</nobr></th>
+                <th><nobr>调研人</nobr></th>
+                <th><nobr>价格调研情况</nobr></th>
+                <th><nobr>价格更新日期</nobr></th>
+                <th><nobr>调研地点</nobr></th>
+                <th><nobr>申请人员</nobr></th>
+                <th><nobr>备注</nobr></th>
+            </tr>
+        </thead>
+        <tbody id="data-list"></tbody>
+    </table>
+</form>
+<div class="operate panel panel-default">
+    <div class="panel-body pull-left">
+        <h3 style="font-weight: normal;">审核中的项目合计：<b id="checking">0</b>元&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; 完成的项目：<b id="checked">0</b>元&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; 合计：<b id="checkup">0</b>元</h5>
+    </div>
+<nav style="text-align: right; float:right;margin-right: 10px;">
+    <ul class="pagination">
+    </ul>
+</nav>
+<div style="width:0;height:0;clear: both"></div>
+</div>
+<div class="loading"></div>
+</block>
+
+<block name="js">
+<script type="text/javascript">
+costType = {:json_encode(C('COST_TYPE'))};
+purchaseType = {:json_encode(C('PURCHASE_TYPE'))};
+purchaseStates = {:json_encode(C('PURCHASE_STATES'))};
+
+pageInit = 0;
+pageCount = '{$pageCount}';
+from = '{$from}';
+g_search = '';
+
+allowAdmin = {$allowAdmin?'true':'false'};
+allowTrace = {$allowTrace?'true':'false'};
+
+$(document).ready(function($){
+    $('select[name=cost_type]').each(function(){
+        $(this).append(fillOptionAr(costType));
+    });
+
+    $('select[name=type]').each(function(){
+        $(this).append(fillOptionAr(purchaseType));
+    });
+
+    $('#cost_type').change(function(event){
+        $('#cost_type2').html('');
+        $('#cost_project').html('');
+        for(x in costType){
+            if(costType[x].name == $(this).val()){
+                    $('#cost_type2').html(fillOptionAr(costType[x]._child));
+                    $('#cost_type2').change();
+                break;
+            }
+        }
+    });
+
+    $('#cost_type2').change(function(event){
+        $('#cost_project').html('');
+        var title = '';
+        for(x in costType){
+            if(costType[x].name == $('#cost_type').val()){
+                for(y in costType[x]._child){
+                    if(costType[x]._child[y].name == $(this).val()){
+                        if(costType[x]._child[y].dept_name != '' || costType[x]._child[y].dept_name2 != ''){
+                            title = '审核部门：'+costType[x]._child[y].dept_name+' '+costType[x]._child[y].dept_name2;
+                        }
+                        $(this).attr('data-original-title', title);
+                        $('#cost_dept_id').val(costType[x]._child[y].dept_id);
+                        $('#cost_dept_id2').val(costType[x]._child[y].dept_id2);
+                        $('#cost_project').html(fillOptionAr(costType[x]._child[y]._child));
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    });
+
+    $('#export_cost_type').change(function(event){
+        $('#export_cost_type2').html('');
+        $('#export_cost_project').html('');
+        for(x in costType){
+            if(costType[x].name == $(this).val()){
+                    $('#export_cost_type2').html(fillOptionArEx(costType[x]._child));
+                    $('#export_cost_type2').change();
+                break;
+            }
+        }
+    });
+
+    $('#filt-button').click(function(event){
+        g_search = JSON.stringify($('#export_form').serializeJson());
+        initPage();
+        return false;
+    });
+
+    $('#apply_form').submit(function(){
+        doAjax('{:U("purchase/save")}', $(this).serialize(), 'POST', function(result){
+
+            if($('#apply_form input[name=id]').val()){
+                $('#apply_form').slideUp('fast');
+                getData(g_start, g_count, g_search);
+            }else{
+                initPage();
+            }
+
+            clearForm();
+            ui_info(result.info);
+        });
+
+        return false;
+    });
+
+    $('#data-list').on('click', 'tr', function(){
+        $(this).find('input[type=checkbox]').click();
+    });
+
+    $('#data-list').on('click', 'input[type=checkbox]', function(e){
+        e.stopPropagation();
+    });
+
+    $('#data-list').on('click', '.toedit', function(result){
+        doAjax('{:U("purchase/getOne")}', {id: $(this).data('id')}, 'GET', function(result){
+            for(x in result.data){
+                $('#apply_form input[name='+x+']').val(result.data[x]);
+                $('#apply_form textarea[name='+x+']').val(result.data[x]);
+            }
+            $('#apply_form select[name=type]').val(result.data['type']);
+            $('#apply_form select[name=belong]').val(result.data['belong']);
+            $('#apply_form select[name=receive_school]').val(result.data['receive_school']);
+
+            $('#apply_form select[name=cost_type]').val(result.data['cost_type']);
+            $('#apply_form select[name=cost_type]').change();
+            $('#apply_form select[name=cost_type2]').val(result.data['cost_type2']);
+            $('#apply_form select[name=cost_type2]').change();
+            $('#apply_form select[name=cost_project]').val(result.data['cost_project']);
+
+            $('#save-button').text('保存');
+            $('#apply_form').slideDown('fast');
+        });
+
+        return false;
+    });
+
+    $('#data-list').on('click', '.totrace', function(result){
+        doAjax('{:U("purchase/getOne")}', {id: $(this).data('id')}, 'GET', function(result){
+            for(x in result.data){
+                $('#confirm_form input[name='+x+']').val(result.data[x]);
+            }
+            $('#confirm_form input[name=take_state]').val('1');
+            $('#confirm_form').slideDown('fast');
+        });
+        return false;
+    });
+
+    $('#confirm_form').submit(function(){
+        doAjax('{:U("purchase/save")}', $(this).serialize(), 'POST', function(result){
+            $('#confirm_form').slideUp('fast');
+            getData(g_start, g_count, g_search);
+            ui_info(result.info);
+        });
+
+        return false;
+    });
+
+    $('#del-button').click(function(event){
+        if(confirm('确定要删除选中的数据吗？')){
+            doAjax('{:U("purchase/del")}', $('#admin_form').serialize(), 'POST', function(){
+                getData(g_start, g_count, g_search);
+                $('#apply_form').slideUp('fast');
+            });
+        }
+
+        return false;
+    });
+
+    $('#cancel-button').click(function(event){
+        $('#apply_form').slideUp('fast');
+        return false;
+    });
+
+    $("#check-all").click(function(){
+        $("input[name='id[]']").prop("checked", $(this).prop("checked"));
+    });
+
+    $('#check-button').click(function(){
+        doAjax('{:U("purchase/check")}', $('#admin_form').serialize(), 'POST', function(result){
+            getData(g_start, g_count, g_search);
+            $('#apply_form').slideUp('fast');
+            ui_info(result.info);
+        });
+        return false;
+    });
+
+    $('#back-button').click(function(){
+        $('#admin_form input[name=back_reason]').val($('#back_reason').val());
+        doAjax('{:U("purchase/checkBack")}', $('#admin_form').serialize(), 'POST', function(result){
+            getData(g_start, g_count, g_search);
+            $('#apply_form').slideUp('fast');
+            $('#myModal').modal('hide');
+            ui_info(result.info);
+        });
+        return false;
+    });
+
+    $('#myModal').on('hidden.bs.modal hide.bs.modal', function(e){
+        $('#back_reason').val('');
+        $('#admin_form input[name=back_reason]').val('');
+    })
+
+    $('.pagination').on('click', '.page', function(){
+        g_start = ($(this).data('page') - 1) * g_count;
+        getData(g_start, g_count, g_search);
+        return false;
+    });
+
+    $('[data-toggle="tooltip"]').tooltip();
+    initPage();
+});
+
+function initPage(){
+    g_start = pageInit;
+    g_count = pageCount;
+    getData(g_start, g_count, g_search);
+}
+
+function getData(start, count, search){
+    doAjax('{:U("purchase/getList")}',
+        {start: start, count: count, from: from, search: search}, 'GET', function(result){
+            showData($('#data-list'), result);
+
+            $('#checking').text(result.checking);
+            $('#checked').text(result.checked);
+            $('#checkup').text(result.checkup);
+        });
+}
+
+function showData(box, result){
+    var html = '';
+    var colors = {
+        c_50: 'red',
+        c_100: 'danger',
+        c_200: 'warning',
+        c_250: 'warning',
+        c_300: 'info',
+        c_400: 'success',
+        c_500: '',
+    };
+
+    var states = {
+        apply: purchaseStates.IN_SCHOOL.id,
+        schoolcheck: purchaseStates.IN_SCHOOL.id,
+        deptcheck: purchaseStates.IN_DEPT.id,
+        deptcheck2: purchaseStates.IN_DEPT2.id,
+        groupcheck: purchaseStates.IN_GROUP.id,
+    }
+
+    var data = result.data;
+
+    for(x in data){
+        var state = colors['c_'+data[x].state];
+        var back_reason = '';
+        if(data[x].back_reason != ''){
+            back_reason = ' data-toggle="tooltip" data-placement="top" data-original-title="回退原因：'+data[x].back_reason+'"';
+        }
+
+        html += '<tr'+back_reason+' class="'+state+'">';
+        var lstate = states[from];
+
+        if(data[x].apply_school == {:C('SCHOOL_JTID')} && from == 'apply'){
+            if(data[x].dept_id > 0){
+                lstate = purchaseStates.IN_DEPT.id;
+            }else if(data[x].dept_id2 > 0){
+                lstate = purchaseStates.IN_DEPT2.id;
+            }
+        }
+
+        if(data[x].state > lstate || !allowAdmin){
+            if (data[x].take_state >0) {
+                html += '<td><nobr>&nbsp;</nobr></td>';
+            } else {
+                html += '<td><nobr><a class="totrace" href="#" data-id="'+data[x].id+'">确认收货</a></nobr></td>';
+            }
+            html += '<td><nobr><span>'+data[x].id+'</span></nobr></td>';
+
+        }else{
+             html += '<td><input class="form-control" type="checkbox" value='+data[x].id+' name="id[]" /></td>'+
+                '<td><nobr><a class="toedit" href="#" data-id="'+data[x].id+'">修改</a><span class="spanid">'+data[x].id+'</span></nobr></td>';
+        }
+
+        var title = '';
+        if(data[x].dept_name != '' || data[x].dept_name2 != ''){
+            title = ' data-toggle="tooltip" data-placement="top" data-original-title="审核部门：'+data[x].dept_name+' '+data[x].dept_name2+'"';
+        }
+
+        html += '<td><nobr><b>'+data[x].state_str+'</b></nobr></td>' +
+             '<td>'+data[x].take_state_str+'</td>' +
+             '<td>'+data[x].track+'</td>' +
+             '<td>'+data[x].take_cost_type+'</td>' +
+             '<td>'+data[x].take_name+'</td>' +
+             '<td>'+data[x].take_time+'</td>' +
+             '<td>'+data[x].take_cost1+'</td>' +
+             '<td>'+data[x].take_cost2+'</td>' +
+             '<td>'+data[x].take_mark+'</td>' +
+             // '<td>'+data[x].take_pre_cost+'</td>' +
+             '<td><nobr>'+data[x].belong_str+'</nobr></td>' +
+             '<td><nobr>'+data[x].receive_school_str+'</nobr></td>' +
+             '<td><nobr>'+data[x].receiver+'</nobr></td>' +
+             '<td title="'+data[x].apply_time_full+'"><nobr>'+data[x].apply_time_str+'</nobr></td>' +
+             '<td><nobr>'+data[x].purchase_time_str+'</nobr></td>' +
+             '<td><nobr>'+data[x].type+'</nobr></td>' +
+             '<td><nobr>'+data[x].cost_type+'</nobr></td>' +
+             '<td><nobr>'+data[x].cost_type2+'</nobr></td>' +
+             '<td><nobr>'+data[x].cost_project+'</nobr></td>' +
+             '<td><nobr>'+data[x].name+'</nobr></td>' +
+             '<td><nobr>'+data[x].brand+'</nobr></td>' +
+             '<td><nobr>'+data[x].model+'</nobr></td>' +
+             '<td style="text-align:right">'+data[x].unit_price+'</td>' +
+             '<td style="text-align:right">'+data[x].count+'</td>' +
+             '<td>'+data[x].unit+'</td>' +
+             '<td style="text-align:right">'+data[x].price+'</td>' +
+             '<td><nobr>'+data[x].researcher+'</nobr></td>' +
+             '<td>'+data[x].research+'</td>' +
+             '<td><nobr>'+data[x].price_time_str+'</nobr></td>' +
+             '<td>'+data[x].research_place+'</td>' +
+             '<td>'+data[x].apply_user+'</td>' +
+             '<td>'+data[x].remarks+'</td>' +
+         '</tr>'
+    }
+
+    box.html(html);
+    g_start = result.start;
+    g_count = result.count;
+    g_total = result.total;
+    pageination(g_start, g_count, g_total);
+    $('[data-toggle="tooltip"]').tooltip();
+}
+
+function doAjax(url, params, method, callback){
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: method,
+        dataType: 'JSON',
+        data: params,
+    })
+    .done(function(result){
+        if(result.state == 'ok'){
+            callback(result);
+        }else{
+            ui_error(result.info);
+        }
+    })
+    .fail(function(){
+        alert('网络错误！');
+    })
+    .always(function(){
+        $('.loading').fadeOut();
+    });
+}
+
+function fillOptionAr(list, id){
+    var html = "";
+    for(x in list){
+        var selected = '';
+        if(list[x].id == id){
+            selected = ' selected';
+        }
+
+        var title = '';
+        if(list[x].dept_name != '' || list[x].dept_name2 != ''){
+            title = ' title="审核部门：'+list[x].dept_name+' '+list[x].dept_name2+ '"';
+        }
+
+        html += '<option'+title+' value="'+list[x].name+'" '+selected+'>'+list[x].name+'</option>';
+    }
+   return html;
+}
+
+function fillOptionArEx(list, id){
+    var html = '<option value="_all_">全部</option>';
+    html += fillOptionAr(list, id);
+    return html;
+}
+
+function clearForm(){
+    form = $('#apply_form');
+    form.find('input').val('');
+    form.find('textarea').val('');
+    form.find('input[name=from]').val(from);
+}
+
+function pageination(s_start, s_count, s_total){
+    var lp = parseInt(s_total / s_count);
+        if(s_total % s_count){
+            ++lp;
+        }
+    var page = parseInt(s_start / s_count) + 1;
+        if(s_start % s_count){
+            ++page;
+        }
+
+    if(page > 1){
+        var html = '<li><a href="#" class="page" aria-label="Previous" data-page="'+ (page - 1) +'"><span aria-hidden="true">&laquo;</span></a></li>';
+    }else{
+        var html = '';
+    }
+
+    var count = 0;
+    for(var i = page - 9; i <= lp; ++i){
+        if(i < 1){
+            continue;
+        }
+
+        if(i == page){
+            html += '<li class="active"><a href="javascript:void(0)">'+ i +'</a></li>';
+        }else{
+            html += '<li><a class="page" data-page="'+ i +'" href="">'+ i +'</a></li>';
+        }
+
+        ++count;
+        if(count > 9){
+            break;
+        }
+    }
+
+    if(page < lp){
+        html += '<li><a href="#" class="page" aria-label="Next" data-page="'+ (page + 1) +'"><span aria-hidden="true">&raquo;</span></a></li>';
+    }else{
+        html += '';
+    }
+
+    $('.pagination').html(html);
+}
+
+(function($){
+    $.fn.serializeJson = function(){
+        var serializeObj = {};
+        var array = this.serializeArray();
+        var str = this.serialize();
+        $(array).each(function(){
+            if(serializeObj[this.name]){
+                if($.isArray(serializeObj[this.name])){
+                    serializeObj[this.name].push(this.value);
+                }else{
+                    serializeObj[this.name] = [serializeObj[this.name],this.value];
+                }
+            }else{
+                serializeObj[this.name] = this.value;
+            }
+        });
+        return serializeObj;
+    };
+})(jQuery);
+$("#apply_form").on('change',"input[name='unit_price'],input[name='count']",function(){
+    var one = $("#apply_form input[name='unit_price']").val();
+    var count = $("#apply_form input[name='count']").val();
+    var price = parseFloat(one)*parseFloat(count);
+    $("#apply_form input[name='price']").val(price);
+})
+</script>
+</block>
+

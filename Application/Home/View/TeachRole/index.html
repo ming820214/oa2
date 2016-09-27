@@ -1,0 +1,182 @@
+<extend name="Layout/ins_popup_large" />
+<block name="content">
+    <style>
+    .input-group {
+        margin: 10px auto;
+    }
+    .loading {
+        position: fixed; width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        background-color: rgba(255, 255, 255, .2);
+        background-image: url(__INS__/img/loading.gif);
+        background-position: center 300px;
+        background-repeat: no-repeat;
+        background-size: 50px;
+        display: none;
+        z-index: 5000;
+    }
+    </style>
+    <div class="page-header clearfix">
+        <h1 class="col-xs-5">教师上课方案信息</h1>
+        <div class="text-right">
+            <button id="add" class="btn btn-primary">新增</button>
+            <button id="save" class="btn btn-primary">保存</button>
+            <button id="del" class="btn btn-sm btn-danger">删除</button> |
+            <a onclick="myclose();" class="btn btn-sm btn-default">关闭</a>
+        </div>
+    </div>
+    <div class="popup_tree_menu well pull-left" style="width:480px">
+        <ul class="tree_menu" id="data-list"></ul>
+    </div>
+    <div class="row pull-right" style="width:405px">
+        <form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+            <input type="hidden" name="id" id="id" value="">
+            <input type="hidden" name="uid" id="uid" value="{$uid}">
+            <input type="hidden" name="name" id="name" />
+            <div class="input-group">
+                <span class="input-group-addon">姓名</span>
+                <input class="form-control" name="tname" type="text" value="{$teacherName}" disabled />
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon">科目</span>
+                <select id="subject" name="subject" class="form-control">{:fill_option_ex($subjectList)}</select>
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon">选择校区</span>
+                <select id="school" name="school" class="form-control">
+                    <option value="">请选择</option>
+                    {:fill_option_ex(C('SCHOOL'))}
+                </select>
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon">选择方案</span>
+                <select id="plan_id" name="plan_id" class="form-control">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+
+        </form>
+    </div>
+    <div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+planList = {:json_encode($planList)};
+
+$(document).ready(function() {
+    $('#form_data').submit(function(){
+        doAjax('{:U($controller."/save")}', $('#form_data').serialize(), 'POST', function(result){
+            ui_info(result.info);
+            if(result.state == 'ok'){
+                getData();
+            }
+        });
+
+        return false;
+    });
+
+    $('#add').click(function(){
+        if($('select[name=plan_id]').val() == ''){
+            ui_error('请选择方案！');
+            return false;
+        }
+        $('#id').val('');
+        $('#form_data').submit();
+    });
+
+    $('#del').click(function(){
+        if(!$('#id').val()){
+            ui_error('请选择删除对象');
+            return false;
+        }
+
+        if(confirm('确定要删除吗？')){
+            doAjax('{:U($controller."/delOne")}', {id: $('#id').val()}, 'POST', function(result){
+                $('#form_data input[name='+x+']').val('');
+                $('#form_data select[name='+x+']').val('');
+                ui_info(result.info);
+                getData();
+            });
+        }
+    });
+
+    $('#save').click(function(){
+        if(!$('#id').val()){
+            ui_error('请选择编辑对象');
+            return false;
+        }
+
+        $('#form_data').submit();
+    });
+
+    $(".tree_menu").on('click', "a:not('.disabled')", function() {
+        $(".tree_menu a.active").removeClass("active");
+        $(this).addClass("active");
+        doAjax('{:U($controller."/getOne")}', {id: $(this).data('id')}, 'GET', function(result){
+            for(x in result.data){
+                $('#form_data input[name='+x+']').val(result.data[x]);
+            }
+            $('#subject').val(result.data.subject);
+            $('#school').val(result.data.school);
+            $('#school').change();
+            $('#plan_id').val(result.data.plan_id);
+            $('#plan_id').change();
+        });
+
+    })
+
+    $('#plan_id').change(function(){
+        $('#name').val($('#plan_id option:selected').text());
+    });
+
+    $('#school').change(function(event) {
+        var html = '';
+        for(x in planList){
+            if(planList[x].school == $('#school').val()){
+                html += '<option value="'+planList[x].id+'">'+planList[x].name+'</option>';
+            }
+        }
+       $('#plan_id').html(html);
+       $('#plan_id').change();
+    });
+
+    getData();
+});
+
+function getData(){
+    doAjax('{:U($controller."/getList")}', {uid: $('#uid').val()}, 'GET', function(result){
+        var html = '';
+        for(var x in result.data){
+            html += '<li><a href="#" data-id="'+result.data[x].id+'">#'+result.data[x].id+'<i class="fa fa-angle-right level1"></i><span>'+result.data[x].subject_name +'>'+ result.data[x].name +'</span></a></li>';
+        }
+
+        $('#data-list').html(html);
+    });
+}
+
+function doAjax(url, params, method, callback){
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: method,
+        dataType: 'JSON',
+        data: params,
+    })
+    .done(function(result){
+        if(result.state == 'ok'){
+            callback(result);
+        }else{
+            ui_error(result.info);
+        }
+    })
+    .fail(function(){
+        alert('网络错误！');
+    })
+    .always(function(){
+        $('.loading').fadeOut();
+    });
+}
+</script>
+</block>

@@ -1,0 +1,33 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<div class="panel panel-default">
+	<div class="panel-body">
+		<h3>讲师课程设置,授课方案管理</h3>
+	</div>
+</div>
+<div class="col-md-7">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>id</th>
+				<th>姓名</th>
+				<th>校区</th>
+				<th>职务</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<volist name="list" id="v">
+				<tr>
+					<td>{$v.id}</td>
+					<td>{$v.name}</td>
+					<td>{$v.school_id|get_school_name}</td>
+					<td>{$v.position_id|get_position_name}</td>
+					<td><button class="btn btn-info" type="button" onclick='winopen("{:U('TeachRole/index',['uid'=>$v['id']])}", 900,500);'>课程设置</button></td>
+				</tr>
+			</volist>
+		</tbody>
+	</table>
+</div>
+<div style="clear:both;"></div>
+</block>

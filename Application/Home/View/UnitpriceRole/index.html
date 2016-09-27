@@ -1,0 +1,212 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	{:W('PageHeader/simple',array('name'=>'规则管理','search'=>'N'))}
+	<form id="form_search" name="form_search" method="post" action="">
+		<div class="operate panel panel-default">
+			<div class="panel-body">
+				<div class="pull-left">
+	                <div class="input-group" style="width:250px">
+	                    <span class="input-group-addon">切换校区</span>
+	                    <select name="school" class="form-control" id="get_school">
+	                    <if condition="$_GET['school']"><option value="{$_GET['school']}">{:get_school_name($_GET['school'])}</option></if>
+	                    	<option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}
+	                    </select>
+	                </div>
+				</div>
+				<div class="pull-right">
+					<a onclick="add();" class="btn btn-sm btn-primary">新增</a>
+					<a onclick="save();"  class="btn btn-sm btn-primary">保存</a>
+					|
+					<a onclick="del();"  class="btn btn-sm btn-danger">删除</a>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="row">
+		<div class="col-sm-5 sub_left_menu">
+			<div class="well" style="overflow-y: auto;max-height: 600px;">
+				<?php echo $menu ?>
+			</div>
+		</div>
+		<div class="col-sm-7 sub_content">
+			<form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix" style="display:none">
+				<input type="hidden" name="id" id="id">
+				<input type="hidden" name="ajax" id="ajax" value="1">
+				<input type="hidden" name="opmode" id="opmode" value="">
+				<input type="hidden" name="name" id="name" value="">
+				<select name="node_list" id="node_list" class="hidden">
+					{:fill_option($node_list)}
+				</select>
+<!-- 				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="name">名称*：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="name" name="name" check="require" msg="请输入名称" disabled>
+					</div>
+				</div>
+ -->
+ 				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="sort">前端是否隐藏：</label>
+					<div class="col-sm-8" style="text-align: left;">
+						<select class="form-control" name="displays" id="displays">
+							<option value="0">不隐藏</option>
+							<option value="1">隐藏</option>
+						</select>
+					</div>
+				</div>
+				
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label">价格（￥）：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="number" min="0" step="0.01" name="price" id="price" value="" disabled/>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label">单位、标签：</label>
+					<div class="col-sm-8">
+						<input class="form-control" name="label" type="text" value="课时" disabled />
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label">等于多少课时：</label>
+					<div class="col-sm-8">
+						<input class="form-control" name="count" type="text" disabled />
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label">学校：</label>
+					<div class="col-sm-8">
+						<select class="form-control" name="school" id="school" disabled>
+							<option value="">请选择</option>
+							{:fill_option($schoolList)}
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label">年级：</label>
+					<div class="col-sm-8">
+						<select class="form-control" name="grade" id="grade" disabled>{:fill_option($gradeList)}</select>
+					</div>
+				</div>
+								<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label">课程类型：</label>
+					<div class="col-sm-8">
+						<select class="form-control" name="course" id="course" disabled>{:fill_option($courseList)}</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label">老师级别：</label>
+					<div class="col-sm-8">
+						<select class="form-control" name="level" id="level" disabled>{:fill_option($teacherLevelList)}</select>
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="is_join">赠送、优惠、规则：</label>
+					<div class="col-sm-8">
+						<select class="form-control" id="is_join" name="is_join" disabled><option value="0">无</option><option value="1">参与（赠送、优惠）</option><option value="2">使用特殊规则</option></select>
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="sort">排序：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="sort" name="sort" >
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="rule" >特殊规则：</label>
+					<div class="col-sm-8" >
+						<textarea class="form-control" name="rule" rows="5" class="col-xs-12" id="rule" disabled></textarea>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		function add() {
+			winopen("{:U('add')}",704,500);
+		};
+
+		function del() {
+			var vars = $("#form_data").serialize();
+			ui_confirm('确定要删除吗?', function() {
+				sendAjax("{:U('del')}", vars, function(data) {
+					if (data.status) {
+						ui_alert(data.info, function() {
+							$("#form_search").submit();
+						});
+					} else {
+						ui_alert(data.info, function() {
+						});
+					}
+				});
+			});
+		}
+
+		function save() {
+			if (check_form("form_data")) {
+				sendForm("form_data", "{:U('UnitpriceRole/save')}", fix_url("{:U('UnitpriceRole/index')}?eq_pid=" + $("#eq_pid").val()));
+			}
+		}
+
+		function select_pid() {
+			winopen("{:U('winpop')}", 730, 500);
+		}
+
+		function select_dept_id() {
+			winopen("{:U('depts?xid=dept_id&xname=dept_name')}", 730, 500);
+		}
+
+		function select_dept_id2(id, name) {
+			winopen("{:U('depts?xid=dept_id2&xname=dept_name2')}", 730, 500);
+		}
+
+		function showdata(result) {
+			Ycom.fillForm('#form_data',result.data);
+			$("#node_name").val($("#node_list option[value='" + $("#pid").val() + "']").text());
+			$("#opmode").val("edit");
+		}
+
+		$(document).ready(function() {
+			set_return_url();
+			set_val('eq_pid', '{$eq_pid}');
+			$(".sub_left_menu .tree_menu a").click(function() {
+				$('#form_data').slideDown();
+				$(".sub_left_menu .tree_menu  a").each(function() {
+					$(this).attr("class", "");
+				});
+
+				$('input[name=dept_name]').val('');
+				$('input[name=dept_id]').val('');
+				$('input[name=dept_name2]').val('');
+				$('input[name=dept_id2]').val('');
+				$(this).attr("class", "active");
+				sendAjax("{:U('read')}", "id=" + $(this).attr("node"), function(data) {
+					showdata(data);
+				});
+				return false;
+			});
+
+			$('#form_data select').change(function(){
+				$('#name').val($('#school option:selected').text()+ ' '
+					+$('#course option:selected').text()+ ' '
+					+$('#grade option:selected').text()+ ' '
+					+$('#level option:selected').text());
+			});
+
+			sendAjax("{:U('read')}", "id={$eq_pid}", function(data) {
+				showdata(data);
+			});
+
+			$("#get_school").change(function(){
+				var school = $("#get_school").val();
+				document.location.href="{:U()}"+'&school='+school;
+			});
+		});
+
+	</script>
+
+</block>

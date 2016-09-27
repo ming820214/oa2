@@ -1,0 +1,127 @@
+<extend name="Layout/ins_popup" />
+<block name="content">
+	{:W('PageHeader/popup',array('name'=>'添加项','search'=>'N'))}
+	<div class="row">
+		<div class="col-sm-12 sub_content">
+			<form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+				<input type="hidden" name="ajax" id="ajax" value="1">
+				<input type="hidden" name="opmode" id="opmode" value="add">
+				<select name="node_list" id="node_list" class="hidden">
+					{:fill_option($node_list)}
+				</select>
+				<div class="form-group col-xs-12 hide">
+					<label class="col-xs-3 control-label" for="url">类别：</label>
+					<div class="col-xs-9">
+						<select class="form-control" name="pid" id="pid" readonly>
+							{:fill_option($groupList)}
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12 tt">
+					<label class="col-xs-3 control-label" for="url">校区：</label>
+					<div class="col-xs-9">
+						<select class="form-control" name="school" id="school">
+							<option value="-1">通用</option>
+							{:fill_option($schoolList)}
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="name">名称*：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="text" id="name" name="name" check="require" msg="请输入名称">
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12 tt">
+					<label class="col-xs-3 control-label" for="url">大于等于：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="number" step="0.1" min="0" id="bottom" name="bottom">
+					</div>
+				</div>
+				<div class="form-group col-xs-12 tt">
+					<label class="col-xs-3 control-label" for="url">小于：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="number" step="0.1" min="0" id="top" name="top">
+					</div>
+				</div>
+				<div class="form-group col-xs-12 tt">
+					<label class="col-xs-3 control-label" for="url">数量：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="number" step="0.1" min="0" id="value" name="value">
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="url">规则：</label>
+					<div class="col-xs-9">
+						<textarea type="text" class="form-control" name="role" id="role"></textarea>
+					</div>
+				</div>
+<!-- 				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="icon">图标：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="text" id="icon" name="icon" >
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="badge_function">统计函数：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="text" id="badge_function" name="badge_function" >
+					</div>
+				</div>
+ -->				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="sort">排序：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="text" id="sort" name="sort" >
+					</div>
+				</div>
+
+				<!-- <div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="is_del">状态*：</label>
+					<div class="col-xs-9">
+						<select   name="is_del" id="is_del" class="form-control">
+							<option  value="0">启用</option>
+							<option value="1">禁用</option>
+						</select>
+					</div>
+				</div> -->
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		function select_pid() {
+			winopen("{:U('winpop')}", 704, 500);
+		}
+
+		function save() {
+			if (check_form("form_data")) {
+				var vars = $("#form_data").serialize();
+				sendAjax("{:U('save')}", vars, function(data) {
+					if (data.status) {
+						ui_alert(data.info, function() {
+							parent.location.reload(true);
+							myclose();
+						});
+					} else {
+						ui_error(data.info);
+					}
+				});
+			}
+		}
+
+		$(function(){
+			$('select[name=pid]').change(function() {
+				if ($(this).val() == {:C('DISCOUNT_ID')['FACTOR']}) {
+					$('.tt').hide();
+					$('select[name=school]').val('-1');
+				} else {
+					$('.tt').show();
+					$('select[name=school]').val('-1');
+				}
+			});
+		});
+	</script>
+
+</block>

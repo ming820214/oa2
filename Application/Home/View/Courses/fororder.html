@@ -1,0 +1,167 @@
+<extend name="Layout/ins_popup_large" />
+<block name="content">
+    <style>
+    .input-group {
+        margin: 10px auto;
+    }
+    .loading {
+        position: fixed; width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        background-color: rgba(255, 255, 255, .2);
+        background-image: url(__INS__/img/loading.gif);
+        background-position: center 300px;
+        background-repeat: no-repeat;
+        background-size: 50px;
+        display: none;
+        z-index: 5000;
+    }
+    </style>
+    <div class="page-header clearfix">
+        <h1 class="col-xs-5">查看订课详情</h1>
+        <div class="text-right">
+            <a onclick="myclose();" class="btn btn-sm btn-default">关闭</a>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+                <tr>
+                    <th><nobr>序号</nobr></th>
+                    <th><nobr>状态</nobr></th>
+                    <th><nobr>学号</nobr></th>
+                    <th><nobr>姓名</nobr></th>
+                    <th><nobr>方案</nobr></th>
+                    <th style="min-width:104px"><nobr>科目/教师</nobr></th>
+                    <th><nobr>订购课时</nobr></th>
+                    <th><nobr>赠送课时</nobr></th>
+                    <th><nobr>已上课时</nobr></th>
+                    <th><nobr>单价</nobr></th>
+                    <th><nobr>折扣</nobr></th>
+                    <th><nobr>订单金额</nobr></th>
+                    <th><nobr>学员类型</nobr></th>
+                    <th><nobr>创建时间</nobr></th>
+                    <th><nobr>备注</nobr></th>
+                </tr>
+            </thead>
+            <tbody id="data-list"></tbody>
+        </table>
+    </div>
+    <div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+g_order_id = {$order_id};
+pageInit = 0;
+pageCount = '{$pageCount}';
+
+$(document).ready(function() {
+    initPage();
+});
+
+function initPage(){
+    g_start = pageInit;
+    g_count = pageCount;
+    getData(g_start, g_count);
+}
+
+function pageination(s_start, s_count, s_total){
+    var lp = parseInt(s_total / s_count);
+        if(s_total % s_count){
+            ++lp;
+        }
+    var page = parseInt(s_start / s_count) + 1;
+        if(s_start % s_count){
+            ++page;
+        }
+
+    if(page > 1){
+        var html = '<li><a href="#" class="page" aria-label="Previous" data-page="'+ (page - 1) +'"><span aria-hidden="true">&laquo;</span></a></li>';
+    }else{
+        var html = '';
+    }
+
+    var count = 0;
+    for(var i = page - 9; i <= lp; ++i){
+        if(i < 1){
+            continue;
+        }
+
+        if(i == page){
+            html += '<li class="active"><a href="javascript:void(0)">'+ i +'</a></li>';
+        }else{
+            html += '<li><a class="page" data-page="'+ i +'" href="">'+ i +'</a></li>';
+        }
+
+        ++count;
+        if(count > 9){
+            break;
+        }
+    }
+
+    if(page < lp){
+        html += '<li><a href="#" class="page" aria-label="Next" data-page="'+ (page + 1) +'"><span aria-hidden="true">&raquo;</span></a></li>';
+    }else{
+        html += '';
+    }
+
+    $('.pagination').html(html);
+}
+
+function getData(start, count){
+    doAjax('{:U($controller."/getCourses")}', {start: start, count: count, search:'{"Course.order_id":"'+g_order_id+'"}'}, 'GET', function(result){
+            var html = '';
+        var data = result.data;
+        for(x in data){
+            html += '<tr>'
+                    + '<td><nobr><span class="spanid">'+data[x].id+'</span></nobr></td>'
+                    + '<td><nobr><b>'+data[x].state_str+'</b></nobr></td>'
+                    + '<td><nobr><b>'+data[x].std_id+'</b></nobr></td>'
+                    + '<td><nobr>'+data[x].name+'</nobr></td>'
+                    + '<td><nobr>'+data[x].plan_name+'</nobr></td>'
+                    + '<td>'+data[x].subject_teacher+'</td>'
+                    + '<td><nobr>'+data[x].hour+'</nobr></td>'
+                    + '<td><nobr>'+data[x].ext_hour+'</nobr></td>'
+                    + '<td><nobr>'+data[x].used_hour+'</nobr></td>'
+                    + '<td><nobr>'+data[x].unitprice+'</nobr></td>'
+                    + '<td><nobr>'+data[x].factor+'</nobr></td>'
+                    + '<td><nobr>'+data[x].price+'</nobr></td>'
+                    + '<td><nobr>'+data[x].std_type_name+'</nobr></td>'
+                    + '<td><nobr>'+data[x].create_time_str+'</nobr></td>'
+                    + '<td>'+data[x].remark+'</td>'
+                 +'</tr>'
+        }
+
+        $('#data-list').html(html);
+        g_start = result.start;
+        g_count = result.count;
+        g_total = result.total;
+        pageination(g_start, g_count, g_total);
+    });
+}
+
+function doAjax(url, params, method, callback){
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: method,
+        dataType: 'JSON',
+        data: params,
+    })
+    .done(function(result){
+        if(result.state == 'ok'){
+            callback(result);
+        }else{
+            ui_error(result.info);
+        }
+    })
+    .fail(function(){
+        alert('网络错误！');
+    })
+    .always(function(){
+        $('.loading').fadeOut();
+    });
+}
+</script>
+</block>
+

@@ -1,0 +1,289 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+{:W('PageHeader/finance',array('name'=>'简历管理','search'=>'A'))}
+<style type="text/css">
+.clos{
+	position: absolute;
+	top: 5px;
+	right: 15px;
+	font-size: 20px;
+	color: white;
+	cursor: pointer;
+}
+#add{
+	width: 940px;
+	position: fixed;
+	background-color: burlywood;
+	top: 150px;
+	left: -470px;
+	margin-left: 50%;
+	display: none;
+	padding: 15px;
+	padding-top: 40px;
+	max-height: 500px;
+	z-index: 9999;
+    overflow-y:auto;
+}
+.export{
+width: 190px;
+float: left;
+margin: 0px 5px;
+}
+#add input{
+	width: 100%;
+}
+</style>
+<form method="post">
+<div class="operate panel panel-default">
+	<div class="panel-body">
+		<div class="pull-left">
+			<a class="btn btn-sm btn-primary" onclick="$('#add').show()">简历录入</a>
+		</div>
+		<div class="pull-right">
+    		<div class="input-group export">
+				<a class="input-group-addon">姓名</a><input type="text" name="name" class="form-control"/>
+			</div>
+			<if condition="get_school_name() eq '集团'">
+    		<div class="input-group export">
+				<a class="input-group-addon">简历分配</a><select name="gs" class="form-control"><option></option>{:fill_option_val(C('SCHOOL'))}</select>
+			</div>
+			</if>
+    		<div class="input-group export">
+				<a class="input-group-addon">简历来源</a><input type="text" name="source" class="form-control" list="source"/>
+			</div>
+    		<div class="input-group export">
+				<a class="input-group-addon">应聘岗位</a><input type="text" name="position" list="position" class="form-control">
+			</div><hr>
+    		<div class="input-group export">
+				<a class="input-group-addon">应聘城市</a><select name="city" class="form-control"><option></option><option>盘锦</option><option>鞍山</option><option>大石桥</option><option>阜新</option><option>松原</option><option>鲅鱼圈</option><option>锦州</option><option>葫芦岛</option></select></div>
+    		<div class="input-group export">
+				<a class="input-group-addon">简历状态：</a>
+				<select name="state" class="form-control">
+				<option></option>
+				<option>初面未到</option>
+				<option>二面未到</option>
+				<option>初面淘汰</option>
+				<option>二面淘汰</option>
+				<option>等待初试</option>
+				<option>等待复试</option>
+				<option>等待签约</option>
+				<option>签约未到</option>
+				<option>成功录用</option>
+				<option>空号错号</option>
+				<option>电话淘汰</option>
+				<option>未接通</option>
+				</select>
+			</div>
+    		<div class="input-group" style="width:370px;float:left;">
+				<a class="input-group-addon">录入时间</a><input type="text" name="t1" class="form-control" style="width:110px;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"/><input type="text" name="t2" class="form-control" style="width:110px;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+			<input type="submit" class="btn btn-sm btn-primary" name="search" value="查询">
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+<div class="row">
+		<table class="table table-bordered" id="rule">
+			<thead>
+				<tr>
+					<th width="50px">序号</th>
+					<th width="100px">简历分配</th>
+					<th width="70px">姓名</th>
+					<th>性别</th>
+					<th>年龄</th>
+					<th>毕业学校</th>
+					<th>毕业时间</th>
+					<th>专业</th>
+					<th>籍贯</th>
+					<th>应聘岗位</th>
+					<th>应聘城市一</th>
+					<th>应聘城市二</th>
+					<th>服从调剂</th>
+					<th>初面时间</th>
+					<th>初面考官</th>
+					<th>初面结果</th>
+					<th>二面时间</th>
+					<th>二面考官</th>
+					<th>二面结果</th>
+					<th>简历状态</th>
+					<th>简历来源</th>
+					<th>录入时间</th>
+					<th width="120">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<volist name='data' id='v'>
+				<tr>
+					<td>{$v.id}</td>
+					<td>{$v.gs}</td>
+					<td>{$v.name}</td>
+					<td>{$v.sex|sex}</td>
+					<td>{$v.age}</td>
+					<td>{$v.school}</td>
+					<td>{$v.biye}</td>
+					<td>{$v.zhuanye}</td>
+					<td>{$v.jiguan}</td>
+					<td>{$v.position}</td>
+					<td>{$v.city1}</td>
+					<td>{$v.city2}</td>
+					<td><if condition="$v.tiaoji eq 1">是<elseif  condition="$v.tiaojia eq 2"/>否</if></td>
+					<td>{$v.ms1_a}</td>
+					<td>{$v.ms1_b}</td>
+					<td>{$v.ms1_c}</td>
+					<td>{$v.ms2_a}</td>
+					<td>{$v.ms2_b}</td>
+					<td>{$v.ms2_c}</td>
+					<td>{$v.state}</td>
+					<td>{$v.source}</td>
+					<td>{$v.timestamp|substr=###,0,10}</td>
+					<td>
+						<a class="btn btn-xs btn-primary" onclick="change({$v.id})">修改</a>&nbsp;
+						<if condition="get_school_name() eq '集团'"><a class="btn btn-xs btn-primary" href="{:U('jl')}&delt={$v.id}" onclick="return confirm('确定删除吗？')">删除</a></if>
+					</td>
+				</tr>
+				</volist>
+			</tbody>
+		</table>
+</div>
+<div>{$page}</div>
+
+<!-- 简历录入 -->
+<div id="add"><a onclick="clos(this)" class="clos">X</a>
+	<form method="post">
+	<table align="center" cellpadding="10" border="1" background-color="beige" class="table">
+		<tr>
+			<th width="100px">姓名：<input type="hidden" name="id"></th>
+			<td width="100px"><input type="text" name="name" value="{$info.name}"></td>
+			<th width="100px">性别：</th>
+			<td width="100px"><select name="sex"><option value="0">女</option><option value="1">男</option></select></td>
+			<th width="120px">年龄</td>
+			<td width="120px"><input type="text" name="age" ></td>
+			<th width="100px">毕业学校</th>
+			<td width="150px"><input type="text" name="school" value="{$info.mz}"></td>
+		</tr>
+		<tr>
+			<td>联系电话</td>
+			<td colspan="2"><input type="text" name="tel"></td>
+			<td>邮箱</td>
+			<td><input type="text" name="email"></td>
+			<td>备注</td>
+			<td colspan="2"><input type="text" name="other"></td>
+		</tr>
+		<tr>
+			<th>专业:</th>
+			<td><input type="text" name="zhuanye" value="{$info.zhuanye}"></td>
+			<th>毕业时间:</th>
+			<td><input type="text" name="biye" onclick="WdatePicker({dateFmt:'yyyy'})"></td>
+			<th>籍贯：</th>
+			<td colspan="3"><input type="text" name="jiguan" value="{$info.jiguan}"></td>
+		</tr>
+		<tr>
+			<th>应聘岗位:</th>
+			<td><input type="text" name="position" list="position">
+			<datalist id="position">
+				<option value="教学主任">
+				<option value="学习管理师">
+				<option value="校长助理">
+				<option value="财务">
+				<option value="教务">
+				<option value="语文讲师">
+				<option value="数学讲师">
+				<option value="英语讲师">
+				<option value="物理讲师">
+				<option value="化学讲师">
+				<option value="生物讲师">
+				<option value="政治讲师">
+				<option value="历史讲师">
+				<option value="地理讲师">
+				<option value="文综讲师">
+			</datalist></td>
+			<th>应聘城市一：</th>
+			<td><input type="text" name="city1" list="city"></td>
+			<datalist id="city">
+				<option value="盘锦">
+				<option value="鞍山">
+				<option value="大石桥">
+				<option value="阜新">
+				<option value="松原">
+				<option value="鲅鱼圈">
+				<option value="锦州">
+				<option value="葫芦岛">
+			</datalist>
+			<th>应聘城市二：</th>
+			<td><input type="text" name="city2" list="city"></td>
+			<th>服从调剂：</th>
+			<td><select name="tiaoji"><option value="0"></option><option value="1">服从</option><option value="2">不服从</option></select></td>
+		</tr>
+		<tr>
+			<th>初面时间:</th>
+			<td><input type="text" name="ms1_a" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})"></td>
+			<th>初面考官：</th>
+			<th><input type="text" name="ms1_b"></th>
+			<th>初面结果：</th>
+			<th colspan="3"><input type="text" name="ms1_c"></th>
+		</tr>
+		<tr>
+			<th>二面时间:</th>
+			<td><input type="text" name="ms2_a" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})"></td>
+			<th>二面考官：</th>
+			<td><input type="text" name="ms2_b"></td>
+			<th>二面结果：</th>
+			<td colspan="3"><input type="text" name="ms2_c"></td>
+		</tr>
+		<tr>
+			<th>简历状态</th>
+			<td colspan="2"><select name="state">
+				<option></option>
+				<option>初面未到</option>
+				<option>二面未到</option>
+				<option>初面淘汰</option>
+				<option>二面淘汰</option>
+				<option>等待初试</option>
+				<option>等待复试</option>
+				<option>等待签约</option>
+				<option>签约未到</option>
+				<option>成功录用</option>
+				<option>空号错号</option>
+				<option>电话淘汰</option>
+				<option>未接通</option>
+				</select></td>
+			<th>简历来源</th>
+			<td colspan="2"><input type="text" name="source" list="source">
+			<datalist id="source">
+				<option value="58同城">
+				<option value="转介绍">
+				<option value="前程无忧">
+				<option value="智联招聘">
+				<option value="其他网络">
+			</datalist>
+			</td>
+			<th>简历分配</th>
+			<td><select name="gs" class="col-10"><option>{:get_school_name()}</option>{:fill_option_val(C('SCHOOL'))}</select></td>
+		</tr>
+		<tr>
+			<td colspan="9" align="center"><input class="btn btn-sm btn-primary" type="submit" name="add"  value="保存简历"></td>
+		</tr>
+	</table>
+	</form>
+</div>
+</block>
+<block name="js">
+<script type="text/javascript">
+	function clos (th) {
+	    $(th).parent().hide();
+	    location.reload();
+	}
+	function add () {
+		$("#add").show();
+	}
+	function change(id){
+		$.getJSON("{:U('ajax_jl')}", {id:id}, function(msg) {
+			$("#add").show();
+	        for(x in msg){
+	        	$("#add").find('input[name='+x+']').val(msg[x]);
+	        	$("#add").find('select[name='+x+']').val(msg[x]);
+	        }
+		});
+	}
+</script>
+</block>

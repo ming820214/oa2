@@ -1,0 +1,191 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	{:W('PageHeader/simple',array('name'=>'规则管理','search'=>'N'))}
+	<form id="form_search" name="form_search" method="post" action="">
+		<div class="operate panel panel-default">
+			<div class="panel-body">
+				<div class="pull-left">
+	                <div class="input-group" style="width:250px">
+	                    <span class="input-group-addon">切换校区</span>
+	                    <select name="school" class="form-control" id="get_school">
+	                    <if condition="$_GET['school']"><option value="{$_GET['school']}">{:get_school_name($_GET['school'])}</option></if>
+	                    	<option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}
+	                    </select>
+	                </div>
+				</div>
+				<div class="pull-right">
+					<a onclick="add();" class="btn btn-sm btn-primary">新增</a>
+					<a onclick="save();"  class="btn btn-sm btn-primary">保存</a>
+					|
+					<a onclick="del();"  class="btn btn-sm btn-danger">删除</a>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="row">
+		<div class="col-sm-6 sub_left_menu" style="overflow-y:auto;max-height:500px;">
+			<div class="well">
+				<?php echo $menu ?>
+			</div>
+		</div>
+		<div class="col-sm-6 sub_content">
+			<form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix" style="display:none">
+				<input type="hidden" name="id" id="id">
+				<input type="hidden" name="ajax" id="ajax" value="1">
+				<input type="hidden" name="opmode" id="opmode" value="">
+				<select name="node_list" id="node_list" class="hidden">
+					{:fill_option($node_list)}
+				</select>
+				<div class="form-group col-xs-12 tt">
+					<label class="col-sm-4 control-label" for="name">校区：</label>
+					<div class="col-sm-8">
+						<select class="form-control" name="school" id="school" disabled>
+							<option value="-1">通用</option>
+							{:fill_option($schoolList)}
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="name">名称*：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="name" name="name" check="require" msg="请输入名称">
+					</div>
+				</div>
+				<div class="form-group col-xs-12" style="display:none">
+					<label class="col-sm-4 control-label" for="url">类别：</label>
+					<div class="col-sm-8">
+						<select class="form-control" name="pid" id="pid">
+							{:fill_option($groupList)}
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12 tt">
+					<label class="col-sm-4 control-label" for="name">大于等于：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="number" step="0.1" min="0" id="bottom" name="bottom">
+					</div>
+				</div>
+				<div class="form-group col-xs-12 tt">
+					<label class="col-sm-4 control-label" for="name">小于：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="number" step="0.1" min="0" id="top" name="top">
+					</div>
+				</div>
+				<div class="form-group col-xs-12 tt">
+					<label class="col-sm-4 control-label" for="name">数量：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="number" step="0.1" min="0" id="value" name="value">
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="url">规则：</label>
+					<div class="col-sm-8">
+						<textarea type="text" class="form-control" name="role" id="role"></textarea>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="sort">排序：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="sort" name="sort" >
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="remark" >备注：</label>
+					<div class="col-sm-8" >
+						<textarea class="form-control" name="remark" rows="5" class="col-xs-12" ></textarea>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		function add() {
+			winopen("{:U('add')}",734,500);
+		};
+
+		function del() {
+			var vars = $("#form_data").serialize();
+			ui_confirm('确定要删除吗?', function() {
+				sendAjax("{:U('del')}", vars, function(data) {
+					if (data.status) {
+						ui_alert(data.info, function() {
+							$("#form_search").submit();
+						});
+					} else {
+						ui_alert(data.info, function() {
+						});
+					}
+				});
+			});
+		}
+
+		function save() {
+			if (check_form("form_data")) {
+				sendForm("form_data", "{:U('DiscountRole/save')}", fix_url("{:U('DiscountRole/index')}?eq_pid=" + $("#eq_pid").val()));
+			}
+		}
+
+		function select_pid() {
+			winopen("{:U('winpop')}", 730, 500);
+		}
+
+		function select_dept_id() {
+			winopen("{:U('depts?xid=dept_id&xname=dept_name')}", 730, 500);
+		}
+
+		function select_dept_id2(id, name) {
+			winopen("{:U('depts?xid=dept_id2&xname=dept_name2')}", 730, 500);
+		}
+
+		function showdata(result) {
+			for (var s in result.data) {
+				set_val(s, result.data[s]);
+			}
+			if ({$eq_pid} == {:C('DISCOUNT_ID')['FACTOR']}) {
+				$('select[name=school]').val('-1');
+				$('.tt').css('display', 'none');
+			}
+
+			$("#node_name").val($("#node_list option[value='" + $("#pid").val() + "']").text());
+			$("#opmode").val("edit");
+		}
+
+
+		$(document).ready(function() {
+			set_return_url();
+			set_val('eq_pid', '{$eq_pid}');
+			if ({$eq_pid} == {:C('DISCOUNT_ID')['FACTOR']}) {
+				$('select[name=school]').val('-1');
+				$('.tt').css('display', 'none');
+			}
+			$(".sub_left_menu .tree_menu a").click(function() {
+				$('#form_data').slideDown();
+				$(".sub_left_menu .tree_menu  a").each(function() {
+					$(this).attr("class", "");
+				});
+
+				$('input[name=dept_name]').val('');
+				$('input[name=dept_id]').val('');
+				$('input[name=dept_name2]').val('');
+				$('input[name=dept_id2]').val('');
+				$(this).attr("class", "active");
+				sendAjax("{:U('read')}", "id=" + $(this).attr("node"), function(data) {
+					showdata(data);
+				});
+				return false;
+			});
+			sendAjax("{:U('read')}", "id={$eq_pid}", function(data) {
+				showdata(data);
+			});
+			
+			$("#get_school").change(function(){
+				var school = $("#get_school").val();
+				document.location.href="{:U()}"+'&school='+school;
+			});
+		});
+
+	</script>
+
+</block>

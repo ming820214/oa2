@@ -1,0 +1,161 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	<link rel="stylesheet" href="__INS__/financeSys/css/common.css">
+	<div id="finance-main-container-box" class="finance-main-container-box">
+		<!-- 集团业绩统计 -->
+		<div class="finance-page-header">
+			<h1 class="finance-h1">集团业绩统计</h1>
+		</div>
+		<div class="finance-basic-entry-container">
+			<div class="statistic-option">
+				<table>
+					<tbody>
+						<tr>
+							<td style="width:80px">业绩类型</td>
+							<td>
+								<select id="achievement_type" style="width: 100%;min-width: 120px;">
+									<option value="新签">新签业绩</option>
+									<option value="续签">续签业绩</option>
+									<option value="招生">招生业绩</option>
+								</select>
+							</td>
+							<td style="width:120px"><label for="startMonth">选择月份</label></td>
+							<td>
+								<input type="month" id="startMonth" />
+							</td>
+							
+							<!--<td style="width: 8px;">~</td>
+							<td>
+								<input type="month" id="endMonth" />								
+							</td>-->
+							
+							<td style="width: 100px;">
+								<input type="button" id="startQuery" value="查询" style="width:100%;border:none;"/>								
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div id="achievementTitle" style="background: #CCCCCC;text-align: center;font-weight:bold;margin-top: 30px;padding: 5px;"></div>
+			<div style="max-width: 100%;overflow: auto;max-height: 600px;">
+				<table id="queryResul"  class="queryResult">
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+				<a href="http://i.ihongwen.com/oa2/index.php?m=&c=PersonalCount&a=target_excel" download>下载当前统计表格</a>
+		</div>
+	</div>
+	</block>
+	<block name="js">
+	<script src="__INS__/financeSys/js/basic.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		!(function(){
+			document.$("#startMonth").value = new Date().toISOString().substr(0,7);
+			document.$('#achievementTitle').innerText = document.$("#achievement_type").value + '业绩查询';
+			document.$("#achievement_type").addEventListener('change',function(){
+				document.$('#achievementTitle').innerText = document.$("#achievement_type").value + '业绩查询';
+			},false)
+			var createOneRowRecord = function( el, data, textColor ){
+				var row = document.createElement('tr');
+				if( typeof textColor !== 'undefined'){
+					row.style.color = textColor;
+				}
+				for(var i = 0 ; i < data.length; i++ ){
+					var cell = document.createElement('td');
+					if( i === 0 ){
+						cell.style.width = '200px';
+					} else {
+						cell.style.width = '100px';
+					}
+					cell.innerText = data[i];
+					if(cell.innerText == ""){
+						cell.style.background='rgb(0,180,180)';
+					}
+					row.appendChild(cell);
+				}
+				el.appendChild( row );
+			}
+			
+			var addDataToTable = function( data ){
+				var queryResulEl = document.$("#queryResul>tbody");
+				var type = document.$("#achievement_type").value;
+				if(type == '招生'){
+					var rowItemName = ['target_new','achievement_new','complete_new','refund_new','not_refund_new','special_new','cooperation_new','achievement_count_new','null1','target_old','achievement_old','complete_old','refund_old','not_refund_old','special_old','cooperation_old','achievement_count_old','null2','target','achievement','complete','refund','not_refund','special','cooperation','achievement_count'];
+					// var rowItemName = ['target','achievement','complete','special','cooperation','achievement_count'];
+				}else{
+					var rowItemName = ['target','achievement','complete','refund','not_refund','special','cooperation','achievement_count'];
+					// var rowItemName = ['target','achievement','complete','special','cooperation','achievement_count'];
+
+				}
+				switch ( typeof data[rowItemName[0]] === 'object' ){
+					//本月各项业绩查询
+					case true:
+						queryResulEl.innerHTML = ''; //清空表内容。
+						var tableHeader = ["单位(元)"];
+						for(var i = 0; i < data.achievement.count.length; i++){
+							tableHeader.push( data.achievement.count[i].school_name );
+						}
+						createOneRowRecord( queryResulEl, tableHeader );
+						
+						rowItemName.forEach( function( val ){
+							var record = [data[val].name];
+							for(var i = 0; i < data[val].count.length; i++){
+								var temp = data[val];
+								record.push( temp.count[i].count_num);
+							}
+							createOneRowRecord( queryResulEl, record );
+						});
+						break;
+						
+					//每日总业绩查询
+					case false:
+						var i = 1;
+						for(var key in data){
+							var record = [data[i].name];
+							var j = 0;
+							for(var k in data[i]){
+								if( k !== 'name' ){
+									record.push( data[i][j].num_day_count );
+								}
+								j++;
+							}
+							createOneRowRecord( queryResulEl, record, 'red' );
+							i++;
+						}
+						break;
+				}
+				
+				
+			}
+			
+			//监听查询按钮点击事件
+			var startQuery = document.$("#startQuery");
+			startQuery.addEventListener('click', function(){
+				var queryOption = {};
+				//获取业绩类型值
+				queryOption.type = document.$("#achievement_type").value,
+				queryOption.date = document.$("#startMonth").value;
+				
+				AJAX({
+					url		: IPaddr + 'index.php?m=&c=PersonalCount&a=target_count',
+					data	: '&data=' + JSON.stringify( queryOption ),
+					success : function(data){
+						if(data.status === false){
+							Toast('调取服务器数据失败，或选取日期错误！');
+							return;
+						}
+						// console.log(data)
+						addDataToTable(data.top);
+						addDataToTable(data.bottom);
+					},
+					error : function(err){
+						alert(err);
+					}
+				})
+				
+			}, false);
+		})();
+	</script>
+</block>

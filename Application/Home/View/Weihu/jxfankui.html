@@ -1,0 +1,721 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+<style type="text/css">
+	#mobile_modify  thead th, 
+	#mobile_modify  tbody td
+	{
+		padding: 1px!important;
+	}
+	.input-group{
+		margin: 5px 0;
+	}
+	#form_jxfankui p{
+		text-align: center;
+		line-height: 35px;
+  		border: 1px solid rgba(229,230,231,1);
+  		font-weight: bolder;
+	}
+	
+	#form_jxfankui .col-md-6{
+		padding: 2px;
+	}
+	
+	#form_jxfankui .colum {
+		padding-right: 10px;
+	}
+</style>	
+<div class="row">
+  <div class="col-sm-12">
+    <table class="table table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th id="test_id">上课日期</th>
+          <th>科目</th>
+          <th>开始时间</th>
+          <th>结束时间</th>
+          <th>授课教师</th>
+          <th>授课反馈</th>
+        </tr>
+      </thead>
+      <tbody id="llst">
+        <volist name="data" id="v">
+	          <tr>
+	            <td>{$v.timee}</td>
+	            <td>{$v.class}</td>
+	            <td>{$v.time1}</td>
+	            <td>{$v.time2}</td>
+	            <td>{$v.teacher}</td>
+	            <td><input type="button" class="btn btn-xs btn-primary" name="jxfankui_b" value="教学反馈" onclick="$.jxfankui('{$v.stuid}','{$v.id}','{$v.timee}','{$v.teacher}','{$v.class}','{$v.time1}','{$v.time2}')"/></td>
+	          </tr>
+        </volist>
+      </tbody>
+    </table>
+  </div>
+    <!--教师授课课程分页插件 -->
+	 <div id="pagination_teach_course" class="pagination">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input id="pager_input" type="text" readonly="readonly" data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+</div>
+
+
+<!-- 普通学员授课反馈 -->
+<!-- 教学授课反馈 -->
+<div class="modal fade bs-example-modal-lg" id="fankui_dialog" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-lg" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title">教学授课反馈</h4>
+	      </div>
+	      <div class="modal-body">
+	      <div class="row">  									
+		  	<div class="col-sm-12">
+			  <table class="table table-bordered">
+			      <thead>
+			        <tr>
+			        	<th><input type="checkbox" name="all" id="check_all"/></th>
+			        	<th>学员姓名</th>
+			        	<th>上课日期</th>
+			        	<th>开始时间</th>
+			          	<th>结束时间</th>
+			        	<th>年级</th>
+			        	<th>文理</th>
+			        	<th>是否全日制</th>
+			         	<th>科目</th>
+			          	<th>授课教师</th>
+			        </tr>
+			      </thead>
+			      <tbody id="llst2">
+			        <volist name="student_data" id="v">
+				          <tr>
+				          	<td><input type="checkbox" name="check_cid" id="{$v.id}" class="{$v.classid}"/></td>
+				            <td>{$v.name}</td>
+				            <td>{$v.timee}</td>
+				            <td>{$v.time1}</td>
+				            <td>{$v.time2}</td>
+				            <td>{$v.grade}</td>
+				            <td>{$v.wl}</td>
+				            <td>{$v.type}</td>
+				            <td>{$v.class}</td>
+				            <td>{$v.teacher}</td>
+				          </tr>
+			        </volist>
+			      </tbody>
+			    </table>
+		  </div>  
+		     
+			 <div id="pagination_student" class="pagination" style="float:right;margin-right:35px;">
+			    <a href="#" class="first" data-action="first">&laquo;</a>
+			    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+			    <input id="pager_input2" type="text" readonly="readonly"  data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+			    <a href="#" class="next" data-action="next">&rsaquo;</a>
+			    <a href="#" class="last" data-action="last">&raquo;</a>
+			</div>
+		</div>
+	      	<hr />
+	        <div class="row">
+	          <div class="col-sm-12">
+	          	
+	          	<form name="form_jxfankui" id="form_jxfankui" method="post" action="">
+	          		<input type="hidden" name="stuid" id="form_stuid" value=""/>
+	          		<input type="hidden" name="cid" id="form_cid" value=""/>
+	          		<input type="hidden" name="school" id="form_school" value=""/>
+	          		<input type="reset" name="reset" style="display:none;" id="jxfankui_reset_b"/>
+	          		
+	          		
+	          		 <div class="panel panel-default">
+	          		 	<div class="panel-body">
+	          		 		<div class="row">
+			          		 	<div class="col-md-6 colum">
+			          		 		<div class="col-md-6">
+			          		 			<p>讲师:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<input type="hidden" name="teacher" id="form_teacher"/>
+							          	<p id="class_teacher"></p>
+			          		 		</div>
+			          		 	</div>
+			          		 	<div class="col-md-6">
+			          		 		<div class="col-md-6">
+			          		 			<p>科目:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			 <input type="hidden" name="class" id="form_class"/>
+							          	<p id="class_subject"></p>
+			          		 		</div>
+			          		 	</div>
+	          		 		</div>
+	          		 		
+	          		 		<div class="row">
+	          		 			<div class="col-md-6 colum">
+			          		 		<div class="col-md-6">
+			          		 			<p>上课日期:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<input type="hidden" name="date" id="form_date"/>
+							          	<p id="class_timee"></p>
+			          		 		</div>
+			          		 	</div>
+			          		 	<div class="col-md-6">
+			          		 		<div class="col-md-6">
+			          		 			<p>上课时间:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<p>
+			          		 			 <span id="class_time1"></span>
+			          		 			 <span>-</span>
+							          	<span id="class_time2"></span>
+							          	</p>
+			          		 		</div>
+			          		 	</div>
+	          		 		</div>
+	          		 		
+	          		 		<div class="row">
+	          		 			<div class="col-md-6 colum">
+			          		 		<div class="col-md-6">
+			          		 			<p>授课模块:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<input type="text" name="fk_a" class="form-control" placeholder="授课模块"/>
+			          		 		</div>
+			          		 	</div>
+			          		 	<div class="col-md-6">
+			          		 		<div class="col-md-6">
+			          		 			<p>授课内容:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<select name="fk_b" id="fk_course_type_id" class="form-control">
+								      		{:fill_option(get_config('TRACK_COURSE'))}
+								      	</select>
+			          		 		</div>
+			          		 	</div>
+	          		 		</div>
+	          		 		
+	          		 		<div class="row">
+	          		 			<div class="col-md-6 colum">
+			          		 		<div class="col-md-6">
+			          		 			<p>听课状态:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<input  type="text" name="fk_c" class="form-control" placeholder="听课状态"/>
+			          		 		</div>
+			          		 	</div>
+			          		 	<div class="col-md-6">
+			          		 		<div class="col-md-6">
+			          		 			<p>预留作业:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<input type="text" name="fk_e" class="form-control" placeholder="预留作业"/>
+			          		 		</div>
+			          		 	</div>
+	          		 		</div>
+	          		 		
+	          		 		<div class="row">
+	          		 			<div class="col-md-6 colum">
+			          		 		<div class="col-md-6">
+			          		 			<p>作业情况:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<select name="fk_f" id="complete" class="form-control">
+								      		<option value="全部完成">全部完成</option>
+								      		<option value="没有完成">没有完成</option>
+								      		<option value="部分完成">部分完成</option>
+								      	</select>
+			          		 		</div>
+			          		 	</div>
+			          		 	<div class="col-md-6">
+			          		 		<div class="col-md-6">
+			          		 			<p>沟通需要:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<select name="fk_g" id="interflow" class="form-control">
+								      		<option value="无需与家长沟通">无需与家长沟通</option>
+								      		<option value="需与家长沟通">需与家长沟通</option>
+								      		<option value="需与学管沟通">需与学管沟通</option>
+								      	</select>
+			          		 		</div>
+			          		 	</div>
+	          		 		</div>
+	          		 		
+	          		 		<div class="row">
+	          		 			<div class="col-md-6 colum">
+			          		 		<div class="col-md-6">
+			          		 			<p>问题建议:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<input type="text" name="fk_d" class="form-control" placeholder="问题及建议"/>
+			          		 		</div>
+			          		 	</div>
+			          		 	<div class="col-md-6">
+			          		 		<div class="col-md-6">
+			          		 			<p>备注信息:</p>
+			          		 		</div>
+			          		 		<div class="col-md-6">
+			          		 			<input type="text" name="fk_h" class="form-control"/>
+			          		 		</div>
+			          		 	</div>
+	          		 		</div>
+	          		 	</div>
+	          		 	
+	          		 	<div class="panel-footer">
+	          		 		<div class="row">
+	          		 			<div class="col-md-12 colum">
+							        <input type="submit" name="add" value="更新保存" class="center-block btn btn-success" />
+			          		 	</div>
+	          		 		</div>
+	          		 	</div>
+					</div>
+	          	</form>
+	        </div><br>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>
+
+ <!--全日制学员反馈 
+<form method="post" action="{:U('Xueguan/fankuipage')}">
+<div class="box" id="fankuiq" style="display:none;">
+<a onclick="clos(this)" class="close">X</a>
+<input type="hidden" name="cid" class="cid">
+	<input type="hidden" name="stuid" class="stuid">
+		<input type="hidden" name="date" class="date">
+			<input type="hidden" name="teacher" class="teacher">
+				<input type="hidden" name="class" class="class">
+  <div class="title"><h3>全日制授课记录</h3></div>
+  <div class="box1">
+    <table border="2" cellpadding="8" width="100%">
+      <tr>
+        <td width="200px">本日教学内容</td>
+        <td><input type="text" class="form-control" name="fkq_a" required></td>
+      </tr>
+      <tr>
+        <td>学员课堂表现</td>
+        <td><input type="text" class="form-control" name="fkq_b" required></td>
+      </tr>
+      <tr>
+        <td>本日作业</td>
+        <td><input type="text" class="form-control" name="fkq_c" required></td>
+      </tr>
+      <tr>
+        <td>昨日作业完成情况</td>
+        <td><input type="text" class="form-control" name="fkq_d" required></td>
+      </tr>
+      <tr>
+        <td>晚间答疑跟进问题</td>
+        <td><input type="text" class="form-control" name="fkq_e" required></td>
+      </tr>
+    </table>
+  </div>
+    <input type="submit" class="bt" style="margin-left:600px;" name="add" value="更新保存" />
+</div>
+</form>
+<include file="box" />-->
+</block>
+<block name="js">
+<script type="text/javascript">
+sid=0;
+pageCount = 10; //每页显示多少条记录(全局变量)
+currentPage = 1; //当前页码
+maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
+pageString = '';
+
+
+$(function(){
+	
+/**
+  	 * 绘制动态表格公用函数
+  	 * @param {Object} data  表格实体数据，由后台返回;
+  	 * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+  	 * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+  	 * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+  	 * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+  	 * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+  	 * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+  	 * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+  	 */
+  	$.drawTrTd=function (data,tbody_id,button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr){
+  		
+  		$.each(data, function(i,value) {
+  			var temp_str = '';
+  			
+  			$('#' + tbody_id).append('<tr id="' + value.id + '">');
+  			
+  			if(check_name != null){
+  				$('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class="' + value.id + '"  value="' + value.classid + '" /></td>');	
+  			}
+  			
+  			
+  			for(var i=0;i<field_arr.length;i++){
+  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+  					$('#' + value.id).append('<td>' + (eval('value.' + field_arr[i])== undefined ? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'))  + '</td>');
+  				}else{
+  					$('#' + value.id).append('<td>' + (eval('value.' + field_arr[i])== undefined ? '': eval('value.' + field_arr[i]))  + '</td>');	
+  				}
+  				
+  			}
+  			
+  			if(button_method_arr != null){
+  				for(var j=0;j<button_method_arr.length;j++){
+  					if(method_param_arr != null){
+  						var param_str = '';
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  						for(var k=0;k<method_param_arr.length;k++){
+  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  						}
+  						param_str = param_str.substring(0,param_str.length-1);
+						temp_str += param_str;  						
+  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}else{
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';	
+  					}
+  					
+  				}	
+  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+  				$('#' + value.id).append('<td>' + temp_str  + '</td>');
+  			}
+  			
+  			
+  		});
+  	}
+  	
+  	
+  $.studentInfolst = function (stuid,classid,timee,teacher,classd,time1,time2,pagecode,pagenum){
+
+	 $('#form_stuid').val(stuid);
+	 $("#form_cid").val(classid);
+	 $('#class_timee').text(timee);
+	 $('#class_teacher').text(teacher);
+	 $('#class_subject').text(classd);
+	 $('#class_time1').text(time1);
+	 $('#class_time2').text(time2);
+	 
+	 //保存的时候需要回传的数据
+	 $('#form_teacher').val(teacher);
+	 $('#form_date').val(timee);
+	 $('#form_class').val(classd);
+
+	 $.ajax({
+		type:'POST',
+		async:false,
+		cache:false,
+		url:"{:U('studentClass')}&pageNumber=" + pagenum + "&pageCount="  + pageCount + "&page=" + pagecode,
+		dataType:'json',
+		data:{'classid':classid,'timee':timee,'teacher':teacher,'class':classd,'time1':time1,'time2':time2},
+		success:function(msg,status){
+			if(status=="success"){
+				var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+				
+				currentPage = pagecode; //设置当前页码
+				maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+				currentPage = currentPage > maxPage ? maxPage:currentPage;
+				if(currentPage === 0 ){
+					currentPage = 1;
+					maxPage = 1;
+				}
+				$('#pagination_student').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+				$('#pagination_student').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+				if(msg.data != null && msg.data.length > 0 ){
+					$('#llst2').empty();
+					
+					//data,tbody_id,button_method_arr,button_name_arr,field_arr,check_name
+					var button_method_arr = null;
+					var button_name_arr = null;
+					var field_arr = ['name','timee','time1','time2','grade','wl','type','class','teacher'];
+					var select_lst_arr = null;
+					var check_name = 'student_sel';
+					
+					$.drawTrTd(msg.data,'llst2',button_method_arr,null,button_name_arr,field_arr,check_name,select_lst_arr);
+					
+					$("#fankui_dialog").modal('show'); //弹出上了这些课的学生列表及教学反馈填充表；
+					
+				}else{
+					$('#llst2').empty();
+				}
+				
+				
+				//如果当前页内容全部操作完成，
+						if(msg.data == null || msg.data.length <= 0)
+						{
+							page = page - 1;
+							if(page>0)
+							{
+								pageNumber = (page-1)*pageCount;
+						  		$.studentInfolst(pagenum,pageCount,pagecode); //出处递归调用，防止本页面内容项删除殆尽后，分页不自动跳转的问题	
+							}
+					  		
+					  	}
+						
+			}
+		}
+	});
+}
+  	
+ //教师课程列表页面刷新操作，这里应该考虑到在第二页数据没有的时候，如何显示列表的问题，本框架中的分页插件采用递归调用来解决这个问题。目前已经解决。
+  $.teachercourseInfo=function(pageNumber,pageCount,page){
+  	
+  	$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('jxfankui')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+				dataType:'json',
+				success:function(msg,status){
+					if(status=="success"){
+						var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+						
+						maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+						currentPage = page > maxPage ? maxPage:page;//设置当前页码
+						
+						if(msg.data != null && msg.data.length > 0 ){
+							$('#llst').empty();
+							
+							//data,tbody_id,button_method_arr,button_name_arr,field_arr,check_name
+							var button_method_arr = ['$.jxfankui'];
+							var button_name_arr = ['教学反馈'];
+							var field_arr = ['timee','class','time1','time2','teacher'];
+							var select_lst_arr = null;
+							var check_name = null;
+							var method_param_arr = ['stuid','id','timee','teacher','class','time1','time2'];
+							$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr);
+						}else{
+							$('#llst').empty();
+						}
+						
+						if(currentPage === 0 )
+						{
+							currentPage = 1;
+							maxPage = 1;
+						}
+						$('#pagination_teach_course').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+						$('#pagination_teach_course').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+						
+						//如果当前页内容全部操作完成，
+						if(msg.data == null || msg.data.length <= 0)
+						{
+							page = page - 1;
+							if(page>0)
+							{
+								pageNumber = (page-1)*pageCount;
+						  		$.teachercourseInfo(pageNumber,pageCount,page); //出处递归调用，防止本页面内容项删除殆尽后，分页不自动跳转的问题	
+							}
+					  		
+					  	}
+					}
+				}
+			});
+			
+			
+  }
+  	
+		//教师授课列表分页操作
+   $('#pagination_teach_course').jqPagination({
+			link_string	: '/?page={page_number}',
+			max_page	: maxPage,
+			paged		: function(page) {
+		
+			var pageNumber = (page-1)*pageCount //从第几行开始查询
+						
+			$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('jxfankui')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+				dataType:'json',
+				success:function(msg,status){
+					if(status=="success"){
+						var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+						currentPage = page; //设置当前页码
+						maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+						
+						if(msg.data != null && msg.data.length > 0 ){
+							$('#llst').empty();
+							
+							//data,tbody_id,button_method_arr,button_name_arr,field_arr,check_name
+							var button_method_arr = ['$.jxfankui'];
+							var button_name_arr = ['教学反馈'];
+							var field_arr = ['timee','class','time1','time2','teacher'];
+							var select_lst_arr = null;
+							var check_name = null;
+							var method_param_arr = ['stuid','id','timee','teacher','class','time1','time2'];
+							$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr);
+						}else{
+							$('#llst').empty();
+						}
+						
+					}
+				}
+			});
+
+			this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+			this.max_page = maxPage;
+			
+			if(this.max_page <= 0){
+				this.page_string = '没有符合条件的记录';
+			}
+		}
+		
+	});
+	
+	
+	
+	
+	//今日课程授课的学生列表分页操作
+   $('#pagination_student').jqPagination({
+			link_string	: '/?page={page_number}',
+			max_page	: maxPage,
+			paged		: function(page) {
+		
+			var pageNumber = (page-1)*pageCount //从第几行开始查询
+			
+			var classid =  $("#form_cid").val();
+			var timee = $('#class_timee').text();
+			var teacher = $('#class_teacher').text();
+			var classd = $('#class_subject').text();
+			var time1 = $('#class_time1').text();
+			var time2 = $('#class_time2').text();
+			 
+			
+			 $.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('studentClass')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+				dataType:'json',
+				data:{'classid':classid,'timee':timee,'teacher':teacher,'class':classd,'time1':time1,'time2':time2},
+				success:function(msg,status){
+					if(status=="success"){
+						var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+						currentPage = page; //设置当前页码
+						maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+						
+						if(msg.data != null && msg.data.length > 0 ){
+							$('#llst2').empty();
+							
+							//data,tbody_id,button_method_arr,button_name_arr,field_arr,check_name
+							var button_method_arr = null;
+							var button_name_arr = null;
+							var field_arr = ['name','timee','time1','time2','grade','wl','type','class','teacher'];
+							var select_lst_arr = null;
+							var check_name = 'student_sel';
+							
+							$.drawTrTd(msg.data,'llst2',button_method_arr,null,button_name_arr,field_arr,check_name,select_lst_arr);
+							
+						}else{
+							$('#llst2').empty();
+						}
+					}
+				}
+			});
+			
+				
+			this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+			this.max_page = maxPage;
+			
+			if(this.max_page <= 0){
+				this.page_string = '没有符合条件的记录';
+			}
+				
+		}
+		
+	});
+	
+	//表格title checkbox 控制
+  $('#check_all').bind('click',function(){
+  	 if($('#check_all').is(':checked')){
+  	 	  $("[name='student_sel']").prop("checked",true);
+  	 	  
+  	 }else{
+  	 		 $("[name='student_sel']").prop("checked",false);
+  	 }
+  });
+  
+  
+	//学生内容反馈记录保存操作
+	$('#form_jxfankui').submit(function(event){
+		event.preventDefault();
+		var data = $('#form_jxfankui').serializeArray();
+		
+		var sid = new Array();
+		var cid = new Array();
+		var i = 0;
+		$.each($('#llst2 input[type="checkbox"]'), function(key,vo) {
+			
+			if($(vo).is(':checked')){
+				sid.push($(vo).attr('class'));
+				cid.push($(vo).attr('value'));
+				i++;
+			}
+			
+		});
+		
+		if(i<=0){
+			alert('请选择学员……');
+			// ui_alert("<img src='__INS__/img/error.jpg' width='20%' height='20%' alt='buhaoshi'/><font color='red' style='font-size:18px;'>请选择要维护的数据项！</font>");
+			return;
+		}
+		
+		$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('savejxfkInfo')}&sid=" + sid + "&cid=" + cid,
+				dataType:'json',
+				data:data,
+				success:function(msg,status){
+					if(status=="success" && msg.state == 'ok'){
+							ui_info('教学反馈成功！');
+							
+							 var timee = $('#class_timee').text();
+							 var teacher = $('#class_teacher').text();
+							 var classd = $('#class_subject').text();
+							 var time1 = $('#class_time1').text();
+							 var time2 = $('#class_time2').text();
+							 var classid = $("#form_cid").val();	 
+							 var currentPage = $('#pagination_student').jqPagination('option','current_page'); //获取学生的分页插件的当前页码
+							 var page_stu = (currentPage-1)*pageCount //从第几行开始查询
+							$.studentInfolst(null,classid,timee,teacher,classd,time1,time2,currentPage,page_stu);
+							var page = $('#pagination_teach_course').jqPagination('option','current_page'); //获取教师分页插件的当前页码
+							var pageNumber = (page-1)*pageCount //从第几行开始查询
+							$.teachercourseInfo(pageNumber,pageCount,page);
+							
+					}
+				}
+			});
+	})
+	
+	
+/**
+ * 教学反馈按钮操作
+ */
+$.jxfankui=function (stuid,classid,timee,teacher,classd,time1,time2){
+										 
+	if(window.confirm("确认进行维护操作？")){
+			if($.isWeiXin()){
+				$('#fankui_dialog table').attr('id','mobile_modify');
+			}
+			$('#jxfankui_reset_b').click();
+			$('#check_all').prop('checked',false);
+			$.studentInfolst(stuid,classid,timee,teacher,classd,time1,time2,1,0)
+	}
+	
+	}
+});
+
+$.isWeiXin=function (){ 
+	var ua = window.navigator.userAgent.toLowerCase(); 
+	if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
+	return true; 
+	}else{ 
+	return false; 
+	} 
+} 
+</script>
+
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

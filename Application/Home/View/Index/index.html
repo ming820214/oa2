@@ -1,0 +1,104 @@
+<extend name="Layout/ins_home" />
+<block name="content">
+<script src="__INS__/js/swiper/js/swiper.min.js"></script>
+<link rel="stylesheet" href="__INS__/js/swiper/css/swiper.min.css">
+<style type="text/css">
+.ggao {
+    margin:20px 0px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 20px;
+}
+.ggao_a{
+    margin: 20px;
+    border-left: 5px red solid;
+    padding: 0px 25px;
+}
+.ggao_b {
+    margin: 20px;
+    border-right: 3px red solid;
+    padding-left: 20px;
+    padding-right: 3px;
+    color: darkgray;
+}
+.wrapper-content{
+    padding: 0px;
+}
+.container{
+    padding-right:0px;
+    padding-left:0px;
+}
+.white-bg{background-color:rgba(204, 204, 204, 0.63);}
+.user {
+    margin:20px 0px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    color: darkgray;
+}
+</style>
+<div class="container">
+<div class="row">
+    <div class="col-md-9">
+        <div class="ggao">
+            <h3 class="ggao_a">公告</h3>
+            <div class="ggao_b">
+                <a>OA近期更新中，遇到问题请第一时间反馈………</a><br/><br/>
+                <p>遇到下列问题联系人力资源解决：</p>
+                <p>1、排课系统以及oa相关的账号开通；
+                <p>2、微信申请相关的异常情况处理；</p>
+                <p>3、oa账号权限以及密码重置。</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="user">
+            <h1 class="hidden-xs"><img class="img-circle" id="emp_pic" src="__ROOT__/{$Think.session.auth_id|get_emp_pic}?t={:time()}" onerror="javascript:this.src='Uploads/emp_pic/no_avatar.jpg'"></h1><br/>
+            <h4>您好,{$Think.session.user_name},{$Think.session.emp_no}</h4>
+            上次登陆时间：<br/>{$Think.session.last_login_time|date='Y-m-d H:i',###}
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="ggao">
+                <h3 class="ggao_a">近期动态</h3>
+                <div class="ggao_b" style="min-height:100px;"></div>
+        </div>
+    </div>
+    <div class="col-md-12" style="margin:20px 0px;">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img style="width:100%;"  src="__INS__/img/img1.jpg">
+                </div>
+                <div class="swiper-slide">
+                    <img style="width:100%;"  src="__INS__/img/img2.jpg">
+                </div>
+                <div class="swiper-slide">
+                    <img style="width:100%;"  src="__INS__/img/img3.jpg">
+                </div>
+                <div class="swiper-slide">
+                    <img style="width:100%;"  src="__INS__/img/img4.jpg">
+                </div>
+                <div class="swiper-slide">
+                    <img style="width:100%;"  src="__INS__/img/img5.jpg">
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+</div>
+</div>
+</block>
+<block name="js">
+    <script>
+    var swiper = new Swiper('.swiper-container', {
+        pagination: '.swiper-pagination',
+        paginationClickable: true,
+        spaceBetween: 30,
+        centeredSlides: true,
+        autoplay: 2500,
+        autoplayDisableOnInteraction: false
+    });
+    </script>
+</block>

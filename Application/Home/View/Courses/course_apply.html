@@ -1,0 +1,259 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.input-group{margin: 10px 0;}
+#apply_form li{ width: 200px;float: left;margin: 5px;list-style: none;font-weight: bold;}
+.table-responsive{max-height: 500px;}
+#apply_list{min-width: 1000px;}
+.pagination {margin: 0;}
+</style>
+
+<div class="page-header clearfix">
+    <div class="col-sm-3">
+        <h1>特殊优惠申请</h1>
+    </div>
+    <div class="col-sm-offset-8 col-sm-1">
+        <a class="btn btn-sm btn-success pull-right" onclick="toggle_adv_search();"><i id="toggle_adv_search_icon" class="fa fa-chevron-down bigger-125"></i></a>
+    </div>
+</div>
+
+<!-- 搜索部分 -->
+<form class="panel panel-default hidden" id="adv_search" method="post">
+    <div class="panel-heading">
+        <div class="row">
+            <h4 class="col-xs-6">高级搜索</h4>
+            <div class="col-xs-6 text-right">
+                <a class="btn btn-info" onclick="loadData(0)">筛选</a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="form-inline">
+            <input type="hidden" name="act" value="{:ACTION_NAME}">
+                <div class="input-group">
+                    <a class="input-group-addon">状态</a>
+                    <select name="state" class="form-control">
+                        <option value="">全部</option>
+                        {:fill_option_ex(get_config('FEIYONG_APPLY_STATE'))}
+                    </select>
+                </div>
+            <if condition="ACTION_NAME eq 'manage'">
+                <div class="input-group">
+                    <a class="input-group-addon">申请校区</a>
+                    <select name="school" class="form-control"><option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+                </div>
+            </if>
+        </div>
+    </div>
+</form>
+
+<!-- 录入修改部分 -->
+<form id="apply_form" class="panel panel-default" <if condition="ACTION_NAME neq 'index'">style="display:none;"</if>>
+    <div class="panel-heading">
+        <div class="pull-right">
+            <if condition="ACTION_NAME eq 'index'"><button type="submit" class="btn btn-danger" id="bt_add">保存添加</button></if>
+            <button type="submit" class="btn btn-danger" style="display:none;" id="bt_save_change">修改</button>&nbsp;
+            <button type="reset" class="btn btn-danger">清空</button>
+        </div>
+        <h3>申请/修改</h3>
+    </div>
+    <div class="panel-body">
+        <ul><input type="hidden" name="id">
+            <li>学员姓名<input type="text" name="name" class="form-control" required></li>
+            <li>学号<input type="text" name="std_id" class="form-control" required></li>
+            <li>课程方案<select name="unit_plan" class="form-control">{:fill_option_ex($course)}</select></li>
+            <li>单价<input name="unitprice" class="form-control" type="number" min="0" step="0.000001" required></li>
+            <li>订购课时<input name="hour" class="form-control" type="number" step="0.25" value="0" required></li>
+            <li>赠送课时<input name="ext_hour" class="form-control" type="number" value="0" required></li>
+            <li>折扣<input name="factor" class="form-control" max="1" min="0" step="0.001" type="number" value="1" required></li>
+            <li>课程金额<input type="text" name="price" class="form-control" readonly></li>
+            <li>已消耗课时<input name="used_hour" class="form-control" type="number" step="0.25" value="0" required></li>
+            <li>备注申请原因：<input type="text" name="other" class="form-control"></li>
+        </ul>
+    </div>
+</form>
+
+<!-- 审核相关按钮 -->
+<div class="panel panel-default">
+    <div class="panel-body">
+        <if condition="ACTION_NAME eq 'index'"><button class="btn btn-info" onclick="check(1);">提交申请</button></if>
+        <if condition="ACTION_NAME eq 'examine'">
+            <button class="btn btn-info" onclick="check(1);">通过</button>
+            <button class="btn btn-info" onclick="check(0);">退回</button>
+        </if>
+        <if condition="ACTION_NAME eq 'index'">
+            <button class="btn btn-info" id="bt_change">修改</button>
+            <button class="btn btn-danger" onclick="check(-1)">删除</button>
+        </if>
+        <if condition="ACTION_NAME eq 'course_use'"><button class="btn btn-info" onclick="check(1);">扣费并启用</button></if>
+        <if condition="ACTION_NAME eq 'course_return'"><button class="btn btn-info" onclick="check(1);">订单申请退课</button></if>
+    </div>
+</div>
+
+<!-- 页面数据列表 -->
+<if condition="(ACTION_NAME eq 'index') OR (ACTION_NAME eq 'manage')">
+    <div class="btn btn-info">申请流程：校长审核=》集团审核=》审核通过=》启用订单</div>
+<else />
+    <div class="btn btn-info">申请流程：校长审核=》集团审核=》退课完成</div>
+</if>
+
+<div class="table-responsive">
+    <table id="apply_list" class="table table-bordered table-hover table-condensed">
+    </table>
+</div>
+
+<!-- 底部数据统计以及页码 -->
+<div class="panel-body">
+    <ul id="pagination" class="pagination pull-right" data-offset="0" data-count="30" data-total="300">
+    </ul>
+</div>
+<div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+    // 页面会用到的类型id
+    STATE={:json_encode(get_config('FEIYONG_APPLY_STATE'))};//审核状态
+    SCHOOL={:json_encode($school)};
+
+    $(document).ready(function(){
+        loadData(0);//页面数据加载
+    });
+
+    // 页码绑定事件
+    $('#pagination').on('click', '.page', function(){
+        var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
+        loadData(page_offset);
+    });
+    //金额自动计算
+    $('input[type=number]').change(function(){
+        var mm = $('input[name=unitprice]').val()*$('input[name=hour]').val()*$('input[name=factor]').val();
+        $('input[name=price]').val(mm.toFixed(2));
+    })
+    //添加/修改申请
+    $("#apply_form").submit(function(event){
+        event.preventDefault();
+        Ycom.loading.show();
+        var data = $("#apply_form").serializeArray();
+        $.post("{:U('write')}",data,function(msg){
+            loadData(0);
+            ui_info(msg);
+        });
+        //重置表单
+        $('#apply_form button:reset').click();
+        $("#bt_add").show();
+        $("#bt_save_change").hide();
+    })
+    // 数据列表点击事件
+    $("#apply_list").on('click','tbody tr',function(){
+        $("#apply_list tr").removeClass('success');
+        $(this).addClass('success');
+    })
+    //全选/取消
+    $("#apply_list").on('click','#checkbox',function(){
+        $("#apply_list tbody input[type=checkbox]").prop('checked',($(this).prop('checked')==true)?true:false);
+    })
+    //修改功能,只修改其中一个
+    $("#bt_change").click(function(){
+        var id = $("#apply_list tbody input:checked").val();
+        var data = $("#apply_list tbody input:checked").data('info');
+        if(id==undefined){
+            ui_error('请选择要修改的项目！');
+        }else{
+            $("#apply_form").show();
+            Ycom.fillForm('#apply_form',data);
+            $('#bt_save_change').show();
+            $('#bt_add').hide();
+            $('input[name=unit_price]').change();
+        }
+    })
+
+    //审核数据(1通过、0退回、-1删除)
+    function check(type){
+        var data = $("#apply_list tbody input:checked").serializeJson();
+        var reason = '';
+
+        if($("#apply_list tbody input:checked").val()==undefined){
+            ui_error('请选择要提交的项目！');
+            return;
+        }
+
+        <if condition="ACTION_NAME eq 'course_return'">
+            reason = prompt('输入退费金额');
+            if( Number(reason)<=0 || isNaN(Number(reason)) ) return;
+        </if>
+        if(type==0){
+            reason = prompt('退回原因(必填)：','');
+            if(reason==''||reason==null){
+                Ycom.loading.hide();
+                return;
+            }
+        }
+        Ycom.loading.show();
+        if(data.id!=undefined)
+        $.post('{:U("check")}',{type:type,data:data,reason:reason},function(msg){
+            msg=='ok' ? ui_info('操作成功') :ui_info(msg);
+            loadData(0);
+        })
+    }
+
+//加载数据列表
+function loadData(offset) {
+    Ycom.loading.show();
+    var search = $('#adv_search').serializeJson();
+    var count = $('#pagination').data('count');
+    $.ajax({
+        url: '{:U("CoursesApply/ajax_list")}',
+        type: 'GET',
+        dataType: 'JSON',
+        data: {search: search, offset: offset, count: count},
+    })
+    .done(function(result) {
+        for(var x in result.data){
+            //将数据完整保存在checkbox上，方便修改功能使用
+            result.data[x]._checkbox = '<input type="checkbox" name="id" value="'+result.data[x].id+'" data-info=\''+JSON.stringify(result.data[x])+'\'>';
+            if(result.data[x].edit == '0')result.data[x]._checkbox ='';
+            //被退回的数据显示退回的原因
+            if(result.data[x].type_state=='5'){
+                result.data[x].state = '<a title="' + result.data[x].reason + '">'+STATE[result.data[x].type_state]+'</a>';
+            }else{
+                result.data[x].state = STATE[result.data[x].type_state];
+            }
+            result.data[x].school = SCHOOL[result.data[x].school];
+        }
+        if (result.state == 'ok') {
+            Ycom.table('#apply_list', {
+                '_checkbox':'<input type="checkbox" id="checkbox">',
+                'id':'序号',
+                'state':'审核状态',
+                'school':'申请校区',
+                'name':'学员',
+                'std_id':'学号',
+                'plan_name':'课程类型',
+                'unitprice':'单价',
+                'hour':'订购课时',
+                'ext_hour':'赠送课时',
+                'used_hour':'已消耗课时',
+                'factor':'折扣',
+                'price':'金额',
+                'other':'申请原因',
+                'return_price':'退费差额'
+            }, result.data);
+            Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
+        }else{
+            ui_info(result.info);
+        }
+    })
+    .fail(function() {
+        ui_error('网络错误，请稍后再试')
+    })
+    .always(function(result) {
+        if (typeof(always) != "undefined") {
+            always(result);
+        }
+        Ycom.loading.hide();
+    });
+}
+</script>
+</block>
+

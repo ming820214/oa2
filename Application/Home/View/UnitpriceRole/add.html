@@ -1,0 +1,130 @@
+<extend name="Layout/ins_popup" />
+<block name="content">
+	{:W('PageHeader/popup',array('name'=>'添加项','search'=>'N'))}
+	<div class="row">
+		<div class="col-sm-12 sub_content">
+			<form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+				<input type="hidden" name="ajax" id="ajax" value="1">
+				<input type="hidden" name="opmode" id="opmode" value="add">
+				<input type="hidden" name="name" id="name" value="">
+<!-- 				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="name">名称*：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="text" id="name" name="name" check="require" msg="请输入名称">
+					</div>
+				</div>
+ -->
+ 				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="url">前端隐藏：</label>
+					<div class="col-xs-9">
+						<select class="form-control" name="displays" id="displays">
+							<option value="0">不隐藏</option>
+							<option value="1">隐藏</option>
+						</select>
+					</div>
+				</div>
+				
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="url">价格（￥）：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="number" min="0" step="0.01" name="price" id="price" value="" />
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label">单位、标签：</label>
+					<div class="col-xs-9">
+						<input class="form-control" name="label" type="text" value="课时" />
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label">等于多少课时数：</label>
+					<div class="col-xs-9">
+						<input class="form-control" name="count" type="number" step="1" value="1" />
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="url">学校：</label>
+					<div class="col-xs-9">
+						<select class="form-control" name="school" id="school">
+							<option value="">请选择</option>
+							{:fill_option($schoolList)}
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="url">年级：</label>
+					<div class="col-xs-9">
+						<select class="form-control" name="grade" id="grade">{:fill_option($gradeList)}</select>
+					</div>
+				</div>
+								<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="url">课程类型：</label>
+					<div class="col-xs-9">
+						<select class="form-control" name="course" id="course">{:fill_option($courseList)}</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="url">老师级别：</label>
+					<div class="col-xs-9">
+						<select class="form-control" name="level" id="levelx"><option value="0"></option>{:fill_option($teacherLevelList)}</select>
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="is_join">赠送、优惠、规则：</label>
+					<div class="col-sm-8">
+						<select class="form-control" id="is_join" name="is_join" ><option value="0">无</option><option value="1">参与（赠送、优惠）</option><option value="2">使用特殊规则</option></select>
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="sort">排序：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="sort" name="sort" >
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="rule" >特殊规则：</label>
+					<div class="col-sm-8" >
+						<textarea class="form-control" name="rule" rows="5" class="col-xs-12" id="rule"></textarea>
+					</div>
+				</div>
+
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		function select_pid() {
+			winopen("{:U('winpop')}", 704, 500);
+		}
+
+		function save() {
+			if (check_form("form_data")) {
+				var vars = $("#form_data").serialize();
+				sendAjax("{:U('save')}", vars, function(data) {
+					if (data.status) {
+						ui_alert(data.info, function() {
+							parent.location.reload(true);
+							myclose();
+						});
+					} else {
+						ui_error(data.info);
+					}
+				});
+			}
+		}
+
+		$(function(){
+			$('#form_data select').change(function(){
+				$('#name').val($('#school option:selected').text()+ ' '
+					+$('#course option:selected').text()+ ' '
+					+$('#grade option:selected').text()+ ' '
+					+$('#levelx option:selected').text());
+			});
+		});
+	</script>
+
+</block>

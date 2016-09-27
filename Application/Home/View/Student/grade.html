@@ -1,0 +1,287 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+  .export{
+    width: 170px;
+    float: left;
+    margin: 5px 5px;
+  }
+</style>
+  {:W('PageHeader/simple',array('name'=>'小组管理','search'=>'S'))}
+<div class="panel panel-default">
+  <div class="panel-body">
+  	<div class="pull-left">
+    	<div class="input-group export">
+          <label  for="type" class="input-group-addon"><b>筛选条件:</b></label>
+          <input type="text" class="form-control" style="width:300px;" name="team_name" id="team_name"/>
+      </div>	
+     </div>
+       <input type="button" class="btn btn-sm btn-primary export" id="search_team" name="search_team" value="筛选"/>
+  </div>
+</div>
+
+<form method="post">
+  <div class="operate panel panel-default">
+    <div class="panel-body">
+      <div class="pull-left col-md-8">
+        <div class="input-group">
+          <label  for="type" class="input-group-addon"><b>小组名称:</b></label>
+          <input type="text" class="form-control" name="name">
+          <label  for="type" class="input-group-addon"><b>备注:</b></label>
+          <input type="text" class="form-control" name="other">
+        </div>
+      </div>
+      <input type="submit" class="btn btn-sm btn-primary col-md-1" value="创建小组"/>
+      <if condition="get_school_name() eq '集团'">
+        <div class="pull-right col-md-3">
+          <div class="input-group">
+            <label class="input-group-addon"><b>切换校区:</b></label>
+            <select id="get_school" name="school" class="form-control">{:fill_option_val(C('SCHOOL'))}</select>
+          </div>
+        </div>
+      </if>
+    </div>
+  </div>
+</form>
+<div class="row">
+  <div class="col-sm-7 sub_left_menu ">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>小组名称</th>
+          <th>小组成员</th>
+          <th>备注</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody class="search_teams">
+        <volist name="list" id="data">
+          <tr id="{$data.id}">
+            <td>{$data.name}</td>
+            <td>{$data.students}</td>
+            <td>{$data.other}</td>
+            <td style="color:red;">{$data.bd}</td>
+            <td width="80"><a class="btn btn-xs btn-primary" onclick="delt_grade(this,{$data.id})">删除</a></td>
+          </tr>
+        </volist>
+      </tbody>
+    </table>
+    <div class="pagination">
+      {$page}
+    </div>
+  </div>
+  <div class="col-sm-5">
+    <form id="form_data" method="post" class="form-horizontal">
+      <input type="hidden" name="id" id="id">
+      <table class="table table-bordered" >
+        <tr>
+          <th>小组名称</th>
+          <td colspan="3">
+          <input class="form-control" type="text" name="name"  required="true">
+          </td>
+        </tr>
+        <tr>
+          <th>备注</th>
+          <td colspan="3">
+          <input class="form-control" type="text" name="other">
+          </td>
+        </tr>
+        <tr>
+          <th>小组成员</th>
+          <td>
+          <select name="stuid" class="form-control">
+          </select></td>
+          <th>学号</th>
+          <td id="std_id"></td>
+        </tr>
+        <tr>
+          <th>关联课程</th>
+          <td colspan="3"><select name="course_id" class="form-control"></select></td>
+        </tr>
+        <tr><td colspan="4">
+            <a class="btn btn-sm btn-primary" onclick="save_student()">保存修改</a>|
+            <a class="btn btn-sm btn-primary" onclick="delt_student()">删除学员</a>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <form id="add" method="post" >
+      <table class="table table-bordered">
+        <tr>
+          <th colspan="2">向该小组添加学员</th>
+        </tr>
+        <tr>
+          <th nowrap="nowrap">选择学员</th>
+          <td>
+          	<div class="input-group">
+            <select name="stuid" class="form-control" id="stu_lst">
+              <option value="a">-请选择-</option>
+            <volist name="list2" id="v">
+              <option value="{$v.id}">{$v.p}--{$v.name}</option>
+              </volist>
+            </select>
+            <span class="input-group-addon">    学员搜索：</span>
+            <input type="text" class="form-control " name="stu_name" id="stu_name" />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>关联课程</th>
+          <td><select name="course_id" class="form-control"></select></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="pull-right">
+              <button class="btn btn-success" type="button" onclick="add_student()">添加新成员</button>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+</div>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+  $(document).ready(function(){
+
+    $("#get_school").val("{$_GET['school']}");
+    $("#add").hide();
+    $(".sub_left_menu tbody tr").click(function() {
+          $(".sub_left_menu tbody tr.active").removeClass("active");
+          $(this).attr("class", "active");
+          $.getJSON("{:U('ajax_grade_info')}&gid=" + $(this).attr("id"),function(msg){
+              setform(msg);
+          });
+          $("#add").show();
+    })
+    $("#form_data select[name=stuid]").change(function(){
+        get_course(1);
+    })
+    $("#add select[name=stuid]").change(function(){
+        get_course(2);
+    })
+    $("#get_school").change(function(){
+      var school = $("#get_school").val();
+      document.location.href="{:U()}"+'&school='+school;
+    });
+	
+		$('#search_team').click(function(){
+			$('.search_teams tr').show();
+				$('.search_teams tr').each(function(){
+					if($(this).text().indexOf($('#team_name').val()) == -1){
+						$(this).hide();
+					}
+				})
+		});
+		
+		$('#stu_name').keyup(function(){
+			$('#stu_lst option').show();
+			
+			$('#stu_lst option').each(function(){
+				
+					if($(this).text().indexOf($('#stu_name').val()) == -1){
+						$(this).attr('dq','1'); //该属性，无任何意义，就是为了实现某种显示效果
+						$(this).hide();
+					}else{
+						$(this).attr('dq','2');
+					}
+			});
+					
+		$('#stu_lst option[dq=2]:first').prop('selected',true)
+		$("#add select[name=stuid]").change();
+		})
+		
+  });
+
+
+
+
+
+//获取小组信息
+  function setform (msg) {
+    $("#form_data input[name='name']").val(msg[0]['name']);
+    $("#form_data input[name='other']").val(msg[0]['other']);
+    var opt ='';
+    for (x in msg[1]){
+      opt+='<option value="'+msg[1][x]['stuid']+'">'+msg[1][x]['name']+'</option>';
+    }
+    $("#form_data select[name='stuid']").html(opt);
+    get_course(1)
+  }
+
+//获取学员信息以及订单
+  function get_course(i){
+    var gid = $(".sub_left_menu tbody tr.active").attr('id');
+    if(i==1)$("#std_id").text('');
+    if(i==1)var id = $("#form_data select[name='stuid']").val();
+    if(i==2)var id = $("#add select[name='stuid']").val();
+    var opt ='<option value="">请选择</option>';
+    $.getJSON("{:U('get_course')}"+'&sid='+id+'&gid='+gid,function(msg){
+        if(i==1)$("#std_id").text(msg[0]);
+        for(x in msg[1]){
+          opt+='<option value="'+msg[1][x]['id']+'">'+'【订单号：'+msg[1][x]['id']+'】'+msg[1][x]['plan_name']+'</option>';
+        }
+        if(i==1){
+          $("#form_data select[name='course_id']").html(opt);
+          $("#form_data select[name='course_id']").val(msg[2]);
+        }
+        if(i==2)$("#add select[name='course_id']").html(opt);
+    });
+  }
+
+// 添加学员绑定信息
+  function add_student(){
+    var data = $("#add").serialize();
+    var gid = $(".sub_left_menu tbody tr.active").attr('id');
+    if(!$('#add select[name=course_id]').val()){
+      ui_error('添加失败,请选择关联课程。');
+    }else{
+      $.get("{:U('grade_student_add')}"+'&gid='+gid,data,function(msg){
+        if(msg=='ok')ui_info('添加成功');
+        if(msg=='error')ui_error('添加失败,请选择关联课程。');
+        rest();
+      });
+    }
+  }
+// 修改学员绑定信息
+  function save_student(){
+    var data = $("#form_data").serialize();
+    var gid = $(".sub_left_menu tbody tr.active").attr('id');
+    $.get("{:U('grade_student_add')}"+'&gid='+gid,data,function(msg){
+      if(msg=='ok')ui_info('修改成功');
+      if(msg=='error')ui_error('修改失败');
+      rest();
+    });
+  }
+//删除班级成员
+  function delt_student(){
+    var gid = $(".sub_left_menu tbody tr.active").attr('id');
+    var stuid = $("#form_data select[name='stuid']").val();
+
+    $.get("{:U('grade_student_add')}&gid="+gid+'&delt='+stuid,function(msg){
+        if(msg=='ok')ui_info('删除成功！');
+        rest();
+    });
+  }
+//刷新页面数据
+  function rest(){
+      var gid = $("tr[class='active']").attr("id");
+      $.getJSON("{:U('ajax_grade_info')}&gid=" + gid,function(msg){
+          setform(msg);
+      });
+  }
+//删除班级
+  function delt_grade(th,id){
+    if(confirm('该操作将同步删除班级排课系统中之后的排课数据！'))
+      $.get("{:U('delt_grade')}&id="+id,function(msg){
+        if(msg=='ok'){
+          ui_info('删除成功！');
+          $(th).parents('tr').remove();
+        }
+      })
+  }
+</script>
+</block>

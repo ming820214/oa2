@@ -1,0 +1,1317 @@
+<extend name="Layout/ins_page" />
+
+<block name="content">
+
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+
+<style>
+  .export{
+    width: 180px;
+    float: left;
+    margin: 5px 5px;
+  }
+  
+  .export-w{
+    width: 300px;
+    float: left;
+    margin: 5px 5px;
+  }
+  #school_two1 , #school_two2{
+	display:none;
+  }
+  #school_two1 > option , #school_two2 > option{
+	display:none;
+  }
+</style>
+  
+  <if condition="ACTION_NAME eq 'huifang'">
+    {:W('PageHeader/search_ajax',array('name'=>'回访跟进','search'=>'S'))}
+  </if>
+  <if condition="ACTION_NAME eq 'index'">
+    {:W('PageHeader/search_ajax',array('name'=>'信息录入','search'=>'S'))}
+  </if>
+  
+  <if condition="ACTION_NAME eq 'set'">
+    {:W('PageHeader/search_ajax',array('name'=>'信息分配','search'=>'S'))}
+  </if>
+  
+  <!-- 跟进记录列表 -->
+<div class="modal fade" id="studentInfo_dialog" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">学员基本信息</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          	 <!-- 新增录入修改 -->
+							<form id="form_data" method="post" class="form-horizontal">
+							<input type="hidden" name="id" id="id_t" value=""/>
+							<table class="table table-bordered">
+							    <tr>
+							        <th>家长姓名</th>
+							        <td>
+							            <input class="form-control required" type="text" name="parents" id="parents_t" maxlength="5"/>
+							        </td>
+							        <th>
+							            <nobr>家长类型</nobr>
+							        </th>
+							        <td>
+							            <select name="parent_type" id="parentType_t" class="form-control">
+							                <option value="母亲">母亲</option>
+							                <option value="父亲">父亲</option>
+							                <option value="爷爷">爷爷</option>
+							                <option value="奶奶">奶奶</option>
+							                <option value="外公">外公</option>
+							                <option value="外婆">外婆</option>
+							                <option value="哥哥">哥哥</option>
+							                <option value="姐姐">姐姐</option>
+							                <option value="亲戚">亲戚</option>
+							                <option value="朋友">朋友</option>
+							            </select>
+							        </td>
+							        <th>信息途径</th>
+							        <td>
+							            <select name="get_way" id="getWay_t" class="form-control">
+							                <option value="">全部</option>{:fill_option(get_config('TRACK_WAY'))}</select>
+							        </td>
+							        <th>意向强度</th>
+							        <td>
+							            <select id="qiang_t" name="yixiang_qiang" class="form-control">
+							                <option value="">全部</option>{:fill_option(get_config('TRACK_YIXIANG'))}</select>
+							        </td>
+							    </tr>
+							    <tr>
+							        <th>联系电话<a style="color:red;">*</a>
+							        </th>
+							        <td>
+							            <input class="form-control required" type="text" name="tel1" id="tel1_t" required="true" maxlength="11">
+							        </td>
+							        <th>家庭电话</th>
+							        <td>
+							            <input type="text" name="tel2" id="tel2_t" class="form-control required" maxlength="11">
+							        </td>
+							        <th>家庭住址</th>
+							        <td>
+							            <input type="text" name="address" id="address_t" class="form-control required">
+							        </td>
+							        <th>意向</th>
+							        <td>
+							            <textarea class="form-control required" name="yixiang" id="yixiang_t"></textarea>
+							        </td>
+							    </tr>
+							    <tr>
+							        <th>孩子姓名</th>
+							        <td>
+							            <input type="text" name="name" id="name_t" class="form-control required" maxlength="5">
+							        </td>
+							        <th>性别</th>
+							        <td>
+							            <select name="sex" id="sex_t" class="form-control">
+							                <option value="1">男</option>
+							                <option value="0">女</option>
+							            </select>
+							        </td>
+							        <th>年级</th>
+							        <td>
+							            <select id="grade_t" name="grade" class="form-control">
+							            			{:fill_option_ex($gradeList)}
+							                   <!-- <option value="七年级">七年级</option>
+							                    <option value="八年级">八年级</option>
+							                    <option value="九年级">九年级</option>
+							                <optgroup label="初中">
+							                    <option value="初一">初一</option>
+							                    <option value="初二">初二</option>
+							                    <option value="初三">初三</option>
+							                </optgroup>
+							                <optgroup label="高中">
+							                    <option value="高一">高一</option>
+							                    <option value="高二">高二</option>
+							                    <option value="高三">高三</option>
+							                </optgroup>-->
+							            </select>
+							        </td>
+							        <th>文理</th>
+							        <td>
+							            <select name="wl" id="wl_t" class="form-control">
+							                <option value="文">文</option>
+							                <option value="理">理</option>
+							                <option value="">未知</option>
+							            </select>
+							        </td>
+							    </tr>
+							    <tr>
+							        <th>
+							            <nobr>现就读学校</nobr>
+							        </th>
+							        <td>
+							            <select id="school_one1" name="city_id" onchange="school_change('1')" class="form-control">
+														<option value="0" selected>请选择地区
+														<foreach name="area" item="vo">
+															<option value="{$vo.id}">{$vo.name}
+														</foreach>
+							            </select>
+										<select id="school_two1" name="schoolx" class="form-control">
+											<option value="0" class="school_option01" selected>请选择学校
+											<foreach name="school" item="vo">
+												<option class="school_option{$vo.pid}1" value="{$vo.name}">{$vo.name}
+											</foreach>
+							            </select>
+										<span id="school_two_span1"></span>
+							        </td>
+							        
+							        <th>班级</th>
+							        <td>
+							            <input class="form-control" name="class_old" id="class_old">
+							        </td>
+							        <th>学员类别</th>
+							        <td>
+							            <select name="type_gj" class="form-control">
+							            	<option value="">请选择</option>
+							            	<option value="11">艺术生</option>
+							            	<option value="12">体育生</option>
+							            	<option value="13">全日制</option>
+							            	<option value="14">特训营</option>
+							            	<option value="15">高报</option>
+							            	<option value="16">绝密</option>
+							            	<option value="17">预科班</option>
+							            	<option value="18">其他</option>
+							            </select>
+							        </td>
+							        <th>备注</th>
+							        <td>
+							            <input class="form-control" name="other" id="other">
+							        </td>
+							        
+							    </tr>
+							    <tr>
+							    	<td align="center" colspan="8">
+							    		  <input type="submit" id="add" class="btn btn-sm btn-primary" name="add" value="新增学员" />
+						            <input type="submit" id="edit_t" class="btn btn-sm btn-primary" name="edit" value="修改" />
+						            <input type="reset" id="reset_b" class="btn btn-sm btn-primary" name="reset_b" value="重置" />
+						            <!--<input type="reset" id="reset_b_h" name="reset_b_h" style="display: none;" />-->
+						            <input type="button" id="payed" class="btn btn-sm btn-primary" name="payed" value="学员转正" />
+						            <input type="button" id="jiaojie_b" class="btn btn-sm btn-primary" name="jiaojie_b" value="学生交接" />
+							    	</td>
+							    </tr>
+							</table>
+							</form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 列表页面 -->
+<form method="post" id="d_form_search" name="form_adv_search" action="{:U('index')}">  
+<input type="hidden" name="keyword" id="keyword_id" value=""/>
+<!--<input type="hidden" name="ajax" id="ajax" value="1">-->
+  <div class="operate panel panel-default">
+    <div class="panel-body">
+      <div class="pull-left">
+
+        <div class="input-group export">
+          <label  for="state_i" class="input-group-addon"><b>信息状态：</b></label>
+          <select id="state_i" name="state" class="form-control"><option value="" selected>全部</option>{:fill_option_ex(get_config('TRACK_STATE'))}</select>
+        </div>
+
+      	<div class="input-group export">
+          <label  for="get_way_i" class="input-group-addon"><b>信息途径:</b></label>
+          <select id="get_way_i" name="get_way" class="form-control"><option value="" selected>全部</option>{:fill_option(get_config('TRACK_WAY'))}
+          </select>
+        </div>
+
+        <div class="input-group export">
+          <label  for="qiangdu" class="input-group-addon"><b>意向强度:</b></label>
+          <select id="qiangdu" name="yixiang_qiang" class="form-control"><option value="">全部</option>
+          	{:fill_option(get_config('TRACK_YIXIANG'))}
+          </select>
+        </div>
+
+        <if condition="get_school_name() eq '集团'">
+            <div class="input-group export">
+              <span class="input-group-addon"><b>所属校区:</b></span>
+              <select id="school" name="school" class="form-control"><option value="">全部</option>{:fill_option(C('SCHOOL'))}
+              </select>
+            </div>
+        </if>
+
+        <div class="input-group export">
+          <label  for="grade" class="input-group-addon"><b>年级：</b></label>
+          <select id="grade" name="grade" class="form-control">
+            <option value="">全部</option>
+            {:fill_option_ex($gradeList)}
+             <!-- <option value="七年级">七年级</option>
+              <option value="八年级">八年级</option>
+              <option value="九年级">九年级</option>
+            <optgroup label="初中">
+              <option value="初一">初一</option>
+              <option value="初二">初二</option>
+              <option value="初三">初三</option>
+            </optgroup>
+            <optgroup label="高中">
+              <option value="高一">高一</option>
+              <option value="高二">高二</option>
+              <option value="高三">高三</option>
+            </optgroup>-->
+          </select>
+        </div>
+				
+				<div class="input-group export">
+          <label class="input-group-addon"><b>班级：</b></label>
+          <input type="text" name="class_old" class="form-control">
+        </div>
+        
+        <if condition="ACTION_NAME eq 'set'">
+        <div class="input-group export">
+          <label  for="wenli" class="input-group-addon"><b>跟进人：</b></label>
+          <select id="wenli" name="track_user" class="form-control"><option value="">全部</option>
+            <volist name="user" id="worker">
+                <option value="{$worker.id}">{$worker.name}</option>
+            </volist>
+          </select>
+        </div>
+        </if>
+        <div class="input-group export">
+          <label class="input-group-addon"><b>电话：</b></label>
+          <input type="text" name="tel1|tel2" class="form-control">
+        </div>
+        
+				 <div class="input-group export-w">
+          <label class="input-group-addon"><b>就读学校：</b></label>
+			<select id="school_one2" name="city_id" onchange="school_change('2')" class="form-control">
+				<option value="0" selected>请选择地区
+				<foreach name="area" item="vo">
+					<option value="{$vo.id}">{$vo.name}
+				</foreach>
+			</select>
+			<select id="school_two2" name="schoolx" class="form-control">
+				<option value="0" class="school_option02" selected>请选择学校
+				<foreach name="school" item="vo">
+					<option class="school_option{$vo.pid}2" value="{$vo.name}">{$vo.name}
+				</foreach>
+			</select>
+			<span id="school_two_span2"></span>
+        </div>
+      </div>
+      <div class="pull-right">
+      	<input type="button" id="add_show" class="btn btn-sm btn-primary" name="add" value="新增" /> &nbsp;&nbsp;
+      <input type="button" class="btn btn-sm btn-primary" name="search" value="筛选" id="search" />
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="row sub_left_menu">
+  <if condition="ACTION_NAME eq 'set'">
+    <div class="operate panel panel-default">
+        <div class="panel-body">
+          <div class="pull-left">
+            <input type="button" name="zhipai" id="zhipai_b" class="btn btn-sm btn-primary" value="指派"/>
+          </div>
+          <div class="pull-right">
+            <a class="btn btn-sm btn-danger" data-toggle="modal" data-target="#import">数据批量导入</a>
+          </div>
+        </div>
+    </div>
+  </if>
+    <table class="table table-bordered">    	
+      <thead>
+        <tr>
+          <th><input type="checkbox" name="all" id="check_all"/></th>         
+          <th>状态</th>
+          <th>家长姓名</th>
+          <th>家长类型</th>
+          <th>意向强度</th>
+          <th>联系电话</th>
+          <th>学生</th>
+          <th>学生类别</th>
+          <th>年级</th>
+          <th>跟进人</th>
+          <th>指派时间</th>
+          <th>最后跟进时间</th>
+          <th>下次跟进时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="llst">
+          <volist name="list" id="data">
+            <tr id="{$data.id}">
+              <td><input type="checkbox" name="zhipai_c" id="check{$data.id}" value="{$data.id}" /></td>
+              <td>{:get_config('TRACK_STATE')[$data['state']]}</td>
+              <td>{$data.parents}</td>
+              <td>{$data['parent_type']!='other'?$data['parent_type']:'未知'}</td>
+              <td>{:get_config('TRACK_YIXIANG')[$data['yixiang_qiang']]}</td>
+              <td>{$data.tel1}</td>
+              <td>{$data.name}</td>
+              <td>
+              	<switch name="data.type_gj" >
+                <case value="11">艺术生</case>
+                <case value="12">体育生</case>
+                <case value="13">全日制</case>
+                <case value="14">特训营</case>
+                <case value="15">高报</case>
+                <case value="16">绝密</case>
+                <case value="17">预科班</case>
+                <case value="18">其他</case>
+                <default/>&nbsp;
+                </switch>
+              </td>
+              <td>
+              	<switch name="data.grade" >
+                <case value="22">高三</case>
+                <case value="21">高二</case>
+                <case value="20">高一</case>
+                <case value="50">九年级</case>
+                <case value="40">八年级</case>
+                <case value="39">七年级</case>
+                <case value="38">六年级</case>
+                <case value="93">五年级</case>
+                <case value="100">四年级</case>
+                <case value="101">三年级</case>
+                <case value="102">二年级</case>
+                <case value="103">一年级</case>
+                </switch>
+              </td>
+              <td>{$data.track_user}</td>
+              <td>{$data.assign_time}</td>
+              <td>{$data.track_time}</td>
+              <td>{$data.track_next}</td>
+              <td>
+              	<button class="btn btn-xs btn-info" onclick="$.showBaseInfo({$data.id})">编辑</button>&nbsp;|&nbsp;
+                <button class="btn btn-xs btn-primary" onclick="genzhong({$data.id})">查看记录</button>&nbsp;|&nbsp;
+                <button class="btn btn-xs btn-success" onclick="weihu({$data.id})">添加记录</button>
+                <button class="btn btn-xs btn-default" onclick="$.del_record({$data.id})">删除记录</button>
+              </td>
+            </tr>
+          </volist>
+      </tbody>
+    </table>
+    
+    <!-- 分页插件 -->
+	<div class="pagination">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input id="pager_input" type="text" readonly="readonly"  onclick="return false;" data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	    
+	</div>
+</div>
+
+<div class="modal fade" id="zhipai" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document" style="width:800px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">市场调查业务跟进指派</h4>
+      </div>
+      <div class="modal-body">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="col-md-9">
+              <div class="input-group col-md-8">
+                <label for="workered" class="input-group-addon">以下学员指派给：</label>
+                <select name="user" id="workered" class="form-control"><option value=""></option>
+                  <volist name="user" id="worker">
+                    <option value="{$worker.id}">{$worker.name}</option>                  
+                  </volist>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-success pull-right" id="zhipai_e">指派</button>
+          </div>
+        </div>
+        <input type="hidden" id="students_h" name="students_h" />
+        <div id="customers">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <td>姓名</td><td>联系电话</td><td>学生姓名</td>
+              </tr>
+            </thead>
+            <tbody id="customers_body">
+            </tbody>
+          </table>
+        </div>
+        <div class="content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 跟进记录列表 -->
+<div class="modal fade" id="genzhong_dialog" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document" style="width:800px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">跟进记录</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-9">
+            <div class="input-group">
+              <span class="input-group-addon">开始时间</span>
+              <input type="text" name="date1"  class="form-control" readonly onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" value="{:date('Y-m-d',(time()-30*24*3600))}">
+              <span class="input-group-addon">结束时间</span>
+              <input type="text" name="date2"  class="form-control" readonly onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" value="{:date('Y-m-d')}">
+            </div>
+          </div>
+          <div class="col-md-3">
+          		<input type="hidden" name="stuid" id="genzhong_stuid" value=""/>
+              <input type="button" name="genzhong_query" id="genzhong_query" class="btn btn-success" value="查询" onclick="genzhong(genzhong_stuid.value)"/>
+          </div>
+        </div><br>
+        <div class="content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 跟进维护记录 -->
+<div class="modal fade" id="weihu_dialog" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document" style="width:800px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">添加记录</h4>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+      		<div class="col-md-12">
+      			<div class="form-group">
+      				<table class="table table-bordered">
+      					<tbody>
+      						<tr>
+      							<th>家长姓名</th><th>家长联系电话</th><th>学生姓名</th>
+      						</tr>
+      						<tr id="weihu_table_content"></tr>
+      					</tbody>
+      				</table>
+      			</div>
+      		</div>      		
+      	</div>
+      	<hr />
+        <div class="row">
+          <div class="col-md-12">
+          	<form class="form-inline" name="form_weihu" id="form_weihu" action="" method="post">
+          		<input type="hidden" name="stuid" id="weihu_stuid" value=""/>
+            <div class="form-group">
+            	<label for="track_time">跟进时间：</label>
+            	<input type="text" id="track_time" name="track_time" class="form-control"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" value="{:date('Y-m-d')}"/>
+            	&nbsp;&nbsp;&nbsp;&nbsp;
+            	<label for="way">跟进方式：</label>
+            	<input type="text" id="way" name="way" class="form-control"/>
+            </div>
+            
+            <div class="form-group" style="margin-top:10px;">
+            	<label for="direct">意向方向：</label>
+            	<input type="text" id="direct" name="direct" class="form-control" />
+            	&nbsp;&nbsp;&nbsp;&nbsp;
+            	<label for="interest">意向强度：</label>
+            	<select id="interest" name="interest" class="form-control col-10">
+	          	{:fill_option(get_config('TRACK_YIXIANG'))}
+	          </select>	
+            	
+            </div>
+            
+            <div class="form-group"  style="margin-top:10px;">
+            	<label for="weihu_info">跟进记录：</label>
+            	<textarea id="weihu_info" name="info" class="form-control" rows="3" cols="80"></textarea>
+            </div>
+            
+            <div class="form-group" style="margin-top:10px;">
+            	<label for="track_effect">跟进效果：</label>
+            	<input type="text" id="track_effect" name="track_effect" class="form-control"/>
+            	&nbsp;&nbsp;&nbsp;&nbsp;
+            	<label for="flag">是否继续：</label>
+            	<input type="checkbox" id="flag" name="flag" class="form-control" checked="checked" value="1"/>
+            </div>
+            
+            <div class="form-group" style="margin-top:10px;">
+            	<label for="track_next">下次跟进时间：</label>
+            	<input type="text" id="track_next" name="track_next" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" value="{:date('Y-m-d',(time()+7*24*3600))}"/>
+            </div>
+          </div>
+          <div class="col-sm-offset-4 col-sm-10" style="margin-top:30px;">
+              <input type="submit" class="btn btn-success" value="保存"/>
+              <input type="reset" id="weihu_reset_b" class="btn btn-success fade" value="重置"/>
+          </div>
+          </form>
+        </div><br>
+        <div class="content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 学生交接 -->
+<div class="modal fade" id="jiaojie_dialog" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:800px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">学生交接</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form class="form-inline" name="form_jiaojie" id="form_jiaojie" action="" method="post">
+                        <input type="hidden" name="id" id="jiaojie_stuid" value="" />
+                        <!--学科情况-->
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">学科情况</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="jiaojie_score">入学各科成绩：</label>
+                                    <textarea id="jiaojie_score" name="score" class="form-control" rows="3" cols="80" required></textarea>
+                                </div>
+                                <div class="form-group" style="margin-top:10px;">
+                                    <label for="jiaojie_subject">报名科目&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+                                    <textarea id="jiaojie_subject" name="subject" class="form-control" rows="3" cols="80" required></textarea>
+                                </div>
+                                <div class="form-group" style="margin-top:10px;">
+                                    <label for="jiaojie_progress">教学进度要求：</label>
+                                    <textarea id="jiaojie_progress" name="progress" class="form-control" rows="3" cols="80" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--排课要求-->
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">排课要求</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="jiaojie_require">老师要求&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+                                    <textarea id="jiaojie_require" name="require" class="form-control" rows="3" cols="80" required></textarea>
+                                </div>
+                                <div class="form-group" style="margin-top:10px;">
+                                    <label for="jiaojie_time">排课时间段&nbsp;&nbsp;&nbsp;：</label>
+                                    <textarea id="jiaojie_time" name="time" class="form-control" rows="3" cols="80" required></textarea>
+                                </div>
+                                <div class="form-group" style="margin-top:10px;">
+                                    <label for="jiaojie_pl">排课频率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+                                    <textarea id="jiaojie_pl" name="pl" class="form-control" rows="3" cols="80" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--维护需求-->
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">维护需求</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="jiaojie_weihu">维护需求&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+                                    <textarea id="jiaojie_weihu" name="weihu" class="form-control" rows="3" cols="80" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!--特殊注意事项-->
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">特殊注意事项</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="jiaojie_other">特殊注意事项：</label>
+                                    <textarea id="jiaojie_other" name="other" class="form-control" rows="3" cols="80" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-offset-5 col-sm-12" style="margin-top:30px;">
+                            <input type="submit" class="btn btn-success" value="保存" />
+                            <input type="reset" id="jiaojie_reset_b" class="btn btn-success fade" value="重置" />
+                        </div>
+                    </form>
+                </div>
+                <div class="content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 数据导入 -->
+<div class="modal fade" id="import">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>数据导入(用wps打开模版文件,把数据复制到模版中,并清除页面中的所有文字格式保存！导入系统会自动删除重复数据)</h3>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <a href="{:U('import_template')}" target="_blank" class="btn btn-primary pull-left">下载模版文件</a>
+                    </div>
+                </div>
+                <div class="panel">
+                    <form  method="post" enctype="multipart/form-data" action="{:U('import')}">
+                        <input type="file" name="file" required/>
+                        <button  class="btn btn-primary pull-right">执行导入</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</block>
+<block name="js">
+<script type="text/javascript">
+pageCount = 10; //每页显示多少条记录(全局变量)
+currentPage = 1; //当前页码
+maxPage = ((({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1)>0?((({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1):1; //最大页码
+pageString = '';
+yixiang_qiang = {:json_encode(get_config('TRACK_YIXIANG'))};
+grade = {:json_encode($gradelst)};
+state = {:json_encode(get_config('TRACK_STATE'))};
+type_gj = {:json_encode(get_config('TRACK_TYPE'))};
+  $(document).ready(function(){
+  	
+  	/**
+  	 * 绘制动态表格公用函数
+  	 * @param {Object} data  表格实体数据，由后台返回;
+  	 * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+  	 * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+  	 * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+  	 * @param {Object} button_cls_arr 每个按钮的样式，为数组类型；
+  	 * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+  	 * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+  	 * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+  	 */
+    function drawTrTd(data,tbody_id,button_method_arr,button_name_arr,button_cls_arr,field_arr,check_name,select_lst_arr){
+      
+      $.each(data, function(i,value) {
+        var temp_str = '';
+        
+        $('#' + tbody_id).append('<tr id="' + value.id + '">');
+        
+        $('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" /></td>');
+        
+        for(var i=0;i<field_arr.length;i++){
+          if($.inArray(field_arr[i],select_lst_arr) != -1){
+            $('#' + value.id).append('<td>' + (((eval('value.' + field_arr[i])== 0) || (eval('value.' + field_arr[i])== undefined)) ? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'))  + '</td>');
+          }else{
+            if(field_arr[i]=='state'){
+              $('#' + value.id).append('<td>' + state[value.state] + '</td>');  
+            }else{
+              $('#' + value.id).append('<td>' + (eval('value.' + field_arr[i])== undefined ? '': eval('value.' + field_arr[i]))  + '</td>');  
+            }
+          }
+          
+        }
+        
+        for(var j=0;j<button_method_arr.length;j++){
+        	temp_str += '<button onclick="' + button_method_arr[j] + '(' + value.id +')"'
+        	
+        	if(button_cls_arr != null && button_cls_arr[j] != undefined){
+        			temp_str += 'class="' + button_cls_arr[j] + '" ';
+        	}
+        		
+            temp_str += '>' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';  
+          }
+        temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+        $('#' + value.id).append('<td>' + temp_str  + '</td>');
+        
+      });
+      
+    }
+  	
+		//分页操作
+   $('.pagination').jqPagination({
+			link_string	: '/?page={page_number}',
+			max_page	: maxPage,
+			paged		: function(page) {
+		
+			var pageNumber = (page-1)*pageCount //从第几行开始查询
+			var data_searchForm = $('#d_form_search').serializeArray();
+			
+			<if condition="ACTION_NAME eq 'huifang'">
+        data_searchForm.push({name:'track_user',value:{:get_user_id()}});
+        data_searchForm.push({name:'state',value:10});
+      </if>
+      <if condition="ACTION_NAME eq 'index'">
+        data_searchForm.push({name:'track_user',value:{:get_user_id()}});
+      </if>
+      
+      
+			$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('pager')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page+"&act="+'<?php echo ACTION_NAME ?>',
+				dataType:'json',
+				data:data_searchForm,
+				success:function(msg,status){
+					if(status=="success"){
+						var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+						currentPage = page; //设置当前页码
+						maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+						
+						if(msg.data != null && msg.data.length > 0 ){
+							$('#llst').empty();
+							
+							//data,tbody_id,button_method_arr,button_name_arr,field_arr,check_name
+							var button_method_arr = ['$.showBaseInfo','genzhong','weihu','$.del_record'];
+							var button_name_arr = ['编辑','查看记录','添加记录','删除记录'];
+							var button_cls_arr = ['btn btn-xs btn-info','btn btn-xs btn-primary','btn btn-xs btn-success','btn btn-xs btn-default'];
+              var field_arr = ['state','parents','parent_type','yixiang_qiang','tel1','name','type_gj','grade','track_user','assign_time','track_time','track_next'];
+							var select_lst_arr = ['yixiang_qiang','grade','type_gj'];
+							var check_name = 'zhipai_c';
+							drawTrTd(msg.data,'llst',button_method_arr,button_name_arr,button_cls_arr,field_arr,check_name,select_lst_arr);
+						}else{
+							$('#llst').empty();
+						}
+						
+					}
+				}
+			});
+			
+			/*this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+			this.max_page = maxPage;
+			if(maxPage > 0){
+				$('#pager_input').val('Page ' + this.current_page + ' of ' + maxPage);
+			}else{
+				$('#pager_input').val('没有符合条件的记录');	
+			}
+			
+			// set disable class on appropriate links
+				$('div .pagination').find('a').removeClass('disabled');
+
+				if (this.current_page == this.max_page) {
+					$('div .pagination').find('.next, .last').addClass('disabled');
+				}
+	
+				if (this.current_page == 1) {
+					$('div .pagination').find('.previous, .first').addClass('disabled');
+				}*/
+				
+				
+				if(maxPage <= 0){
+							this.page_string = '没有符合条件的记录';
+							maxPage = 1;
+						}else if(this.page_string == '没有符合条件的记录'){
+							this.page_string = 'Page {current_page} of {max_page}';
+						}
+						
+						this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+						this.max_page = maxPage;
+						
+						
+						$('.pagination').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+				
+		}
+		
+	});
+	
+//	查询所有记录，刷新列表
+	function searchAll(arr){
+			var currentPage = $('.pagination').jqPagination('option','current_page');
+			$('.pagination').jqPagination('option',{'current_page':currentPage,'trigger': true}); //设置分页插件的当前页码
+     /* <if condition="ACTION_NAME eq 'huifang'">
+        arr.push({name:'track_user',value:{:get_user_id()}});
+        arr.push({name:'state',value:10});
+      </if>
+      <if condition="ACTION_NAME eq 'index'">
+        arr.push({name:'track_user',value:{:get_user_id()}});
+      </if>
+      
+			$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('pager')}&pageNumber=0&pageCount=" + pageCount + '&act={:ACTION_NAME}',
+				dataType:'json',
+				data:arr,
+				success:function(msg,status){
+					if(status=="success"){
+						if(msg.maxCount != undefined && msg.data.length > 0 ){
+							$('#llst').empty();
+							$.each(msg.data,function(i,value){
+								$('#llst').append('<tr id="' + value.id + '">');
+								temp = '<button class="btn btn-xs btn-info" onclick="$.showBaseInfo(' + value.id +')">编辑</button>&nbsp;|&nbsp;';;
+                temp += '<button class="btn btn-xs btn-primary" onclick="genzhong(' + value.id +')">跟进记录</button>&nbsp;|&nbsp;';
+                temp += '<button class="btn btn-xs btn-success" onclick="weihu(' + value.id +')">添加记录</button>';
+
+                $('<td>' + temp  + '</td>').prependTo('#' + value.id);
+                $('<td>' + (value.track_user== undefined ? '': value.track_user)  + '</td>').prependTo('#' + value.id);
+                $('<td>' + (value.name== undefined ? '': value.name)  + '</td>').prependTo('#' + value.id);
+                $('<td>' + (value.tel1== undefined ? '': value.tel1)  + '</td>').prependTo('#' + value.id);
+                $('<td>' + ((value.yixiang_qiang== undefined) || (value.yixiang_qiang==0) ? '': yixiang_qiang[value.yixiang_qiang])  + '</td>').prependTo('#' + value.id);
+                $('<td>' + (value.parent_type==undefined ? '': value.parent_type)  + '</td>').prependTo('#' + value.id);
+                $('<td>' + (value.parents== undefined ? '': value.parents)  + '</td>').prependTo('#' + value.id);
+                $('<td>' + (value.state == undefined ? '': state[value.state]) + '</td>').prependTo('#' + value.id);
+                $('<td><input type="checkbox" name="zhipai_c" id="check' + value.id + '" /></td>').prependTo('#' + value.id);
+							});
+							//设置分页插件数据
+							maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1;
+							$('#pager_input').val('Page 1 of ' + maxPage);
+						}else{
+							$('#llst').empty();
+							$('#pager_input').val('没有符合条件的记录');
+							$('div .pagination').find('a').addClass('disabled');
+	
+						}
+					}
+					
+					// set disable class on appropriate links
+						if (maxPage == 1) {
+							$('div .pagination').find('a').addClass('disabled');
+						}
+				
+				}
+			});*/
+	}
+	
+	//新增按钮，新增记录操作;修改按钮操作;
+	$('#form_data').submit(function(event){
+		event.preventDefault();	
+		var data = $('#form_data').serialize();
+				
+				$.ajax({
+					type:'POST',
+					async:false,
+					cache:false,
+					url:"{:U('add_students')}",
+					dataType:'json',
+					data:data,
+					success:function(msg,status){ 
+						if(status == "success" && msg == 'ok'){
+              
+              ui_info("操作成功!"); 
+              $('#reset_b').trigger('click'); 
+							searchAll([]);//每次添加之后都会刷新列表；
+							
+						}else {
+							ui_error(msg);
+						}
+					}
+				});
+	});
+							
+							
+	$('#add_show').click(function(){
+		 $('#reset_b').trigger('click'); 
+		 $('#jiaojie_b').hide();
+	   $('#add').show();
+	   $('#edit_t').hide();
+		 $('#reset_b').show();
+		 $('#payed').hide();
+		 $('#studentInfo_dialog').modal('show');
+		 
+		$(".school_option0").attr("selected","selected");
+		$("#school_two").css("display","none");
+		$(".school_option0").css("display","none");
+		$("#school_two").children().css("display","none");
+	});
+	
+  	//列表项选择事件操作
+	$(".sub_left_menu tbody").on('click','td:not(:first-child):not(:last-child)',function(){
+          $(".sub_left_menu tbody tr.active").removeClass("active");
+//        $(this).attr("class", "active");
+//        sid=$(this).attr("id");
+					$(this.parentElement).attr("class", "active");
+					sid=$(this.parentElement).attr('id');
+          if(sid != 0){
+		          $.ajax({ 
+		          	type:'POST',
+		          	cache:false,
+		          	async:true,
+		          	url: "{:U('pager')}",
+		          	data:{"id": sid},
+		          	dataType:"json", 
+		          	success: function(msg){
+			          	$('#reset_b').trigger('click'); 
+		          	 //	$('#add').attr("disabled",true);
+		          	 $('#jiaojie_b').hide();
+					    	 $('#add').hide();
+					    	 $('#edit_t').show();
+								 $('#reset_b').hide();
+								 $('#payed').show();
+		              setform(msg);
+		              $('#studentInfo_dialog').modal('show');
+									//$('#edit_t,#reset_b,#payed').attr('disabled',false);
+		          	},
+		          	failure:function(err){
+		          		
+		          		ui_error('error!');
+		          	}
+		          	});
+          }
+         
+        
+    });
+    
+    $.showBaseInfo = function(sid){
+		var school_id = $("#school_one").val();
+		$(".school_option0").attr("selected","selected");
+		$("#school_two").css("display","none");
+		$(".school_option0").css("display","none");
+		$("#school_two").children().css("display","none");
+    	if(sid != 0){
+		          $.ajax({ 
+		          	type:'POST',
+		          	cache:false,
+		          	async:true,
+		          	url: "{:U('pager')}",
+		          	data:{"id": sid},
+		          	dataType:"json", 
+		          	success: function(msg){
+		          		$('#reset_b').trigger('click'); 
+		          	 	$('#jiaojie_b').hide();
+					    	 $('#add').hide();
+					    	 $('#edit_t').show();
+								 $('#reset_b').hide();
+								 $('#payed').show();
+		              setform(msg);
+		              $('#studentInfo_dialog').modal('show');
+		              
+//									$('#edit_t,#reset_b,#payed').attr('disabled',false);
+		          	},
+		          	failure:function(err){
+		          		
+		          		ui_error('error!');
+		          	}
+		          	});
+          }
+    }
+    
+    
+    $.del_record = function(sid){
+    	var positionId = {$_SESSION['position_id']};
+    	
+    	if(positionId == 19){
+    		alert("教学主任无权删除该信息！");
+    		return;
+    	}
+    	
+    	if(sid != undefined){
+    		if(confirm("确定删除该条记录？")){
+    			$.ajax({ 
+	          	type:'POST',
+	          	cache:false,
+	          	async:true,
+	          	url: "{:U('delRecord')}",
+	          	data:{"id": sid},
+	          	dataType:"json", 
+	          	success: function(msg){
+	          	
+	          		$('#search_ajax').click();
+	          	},
+	          	failure:function(err){
+	          	
+	          		ui_error('删除操作失败，请与系统管理员联系!');
+	          	}
+          	});
+    		}
+    	}
+    }
+    //选择列表项时，设置编辑的表单内容
+    function setform (msg) {
+    
+    $('#form_data').find("input[name='id']").val(msg.data[0]['id']);
+    $('#form_data').find("input[name='parents']").val(msg.data[0]['parents']);
+    $('#form_data').find("select[name='parent_type']").val(msg.data[0]['parent_type']);
+    $('#form_data').find("select[name='get_way']").val(msg.data[0]['get_way']);
+    $("#form_data").find("select[name='yixiang_qiang']").val(msg.data[0]['yixiang_qiang']);
+    $("#form_data").find("input[name='tel1']").val(msg.data[0]['tel1']);
+    $('#form_data').find("input[name='tel2']").val(msg.data[0]['tel2']);
+    $('#form_data').find("input[name='hometel']").val(msg.data[0]['hometel']);
+    $('#form_data').find("input[name='address']").val(msg.data[0]['address']);
+    $('#form_data').find("input[name='name']").val(msg.data[0]['name']);
+    $('#form_data').find("select[name='sex']").val(msg.data[0]['sex']);
+    $('#form_data').find("select[name='grade']").val(msg.data[0]['grade']);
+    $('#form_data').find("select[name='wl']").val(msg.data[0]['wl']);
+	if(msg.data[0]['city_id']!=0){
+		$('#form_data').find("select[name='city_id']").val(msg.data[0]['city_id']);
+		if(msg.data[0]['schoolx']!=""){
+			$("#school_two1").css("display","block");
+			$(".school_option01").css("display","block");
+			$(".school_option" + msg.data[0]['city_id'] + "1").css("display","block");
+			$('#form_data').find("select[name='schoolx']").val(msg.data[0]['schoolx']);
+		}
+	}
+    $("#form_data").find("textarea[name='yixiang']").val(msg.data[0]['yixiang']);
+    $("#form_data").find("input[name='other']").val(msg.data[0]['other']);
+    $("#form_data").find("input[name='class_old']").val(msg.data[0]['class_old']);
+    $('#form_data').find("select[name='type_gj']").val(msg.data[0]['type_gj']);
+    $('#jiaojie_stuid').val(msg.data[0]['id']);
+//  alert(msg.data[0]['state']);
+    if(msg.data[0]['state'] == 20){
+    	 $('#jiaojie_b').show();
+    	 $('#add').hide();
+    	 $('#edit_t').hide();
+			 $('#reset_b').hide();
+			 $('#payed').hide();
+    }
+  
+  }
+    
+    //查询按钮操作
+	$('#search_ajax').bind("click",function(){
+			$('#keyword_id').val($('#keyword').val());
+			var data = $('#d_form_search').serializeArray();
+//			进行查询操作
+		  searchAll(data);
+	});
+    
+    //重置按钮操作
+    $('#reset_b').on('click',function(){
+    	
+    	//$('#reset_b_h').click();
+    	$('#id_t').val(''); 
+    	//$('#edit_t,#reset_b,#payed,#jiaojie_b').attr("disabled",true);
+			//$('#add').attr("disabled",false);
+    });
+    
+   //筛选按钮操作
+	  $('#search').click(function(param){
+			$('#search_ajax').click();
+		});
+
+
+	//表格title checkbox 控制
+  $('#check_all').bind('click',function(){
+  	 if($('#check_all').is(':checked')){
+  	 	  $("[name='zhipai_c']").prop("checked",true);
+  	 	  
+  	 }else{
+  	 		 $("[name='zhipai_c']").prop("checked",false);
+  	 }
+  });
+  
+  //列表页面指派按钮操作，负责弹出指派页面
+  var id_str = '';
+  $('#zhipai_b').bind('click',function(){
+    id_str = ''; //客户ID集合字符串
+    var temp_id = '';  //展示的客户ID
+    var temp_parents = ''; //展示的客户家长姓名
+    var temp_tel1 = ''; //展示的客户家长电话
+    var temp_name = ''; //展示的客户学生姓名
+    
+    $('#customers_body').empty();
+    
+    for(i=0;i<$('[name="zhipai_c"]').length;i++){
+        temp_id = '';
+        temp_parents = '';
+        temp_tel1 = '';
+        temp_name = '';
+      if($($('[name="zhipai_c"]')[i]).is(':checked')){
+         temp_id = $($('[name="zhipai_c"]')[i]).attr("id").substr(5);
+         temp_parents = $($('#' + temp_id + ' > td')[2]).text();
+         temp_tel1 = $($('#' + temp_id + ' > td')[5]).text();
+         temp_name = $($('#' + temp_id + ' > td')[6]).text();
+        //构建table tr 内容        
+        $('#customers_body').append('<tr id="tr' + temp_id + '">');
+        $('#tr' + temp_id).append('<td>' + temp_parents + '</td>');
+        $('#tr' + temp_id).append('<td>' + temp_tel1 + '</td>');
+        $('#tr' + temp_id).append('<td>' + temp_name + '</td>');
+        //拼装客户ID集合字符串
+        id_str +=   temp_id;
+        id_str +="@";
+      }
+    }
+    
+    if(id_str == ''){
+      ui_alert("<img src='__INS__/img/error.jpg' width='20%' height='20%' alt='buhaoshi'/><font color='red' style='font-size:18px;'>请选择指派的数据项！</font>");
+      return;
+    }
+    id_str = id_str.substring(0,id_str.length-1)
+    //指派的客户ID集合字符串
+    $('#students_h').val(id_str);
+    
+    $("#zhipai").modal('show');
+    
+  });
+
+  
+  //弹出的指派层页面中的指派按钮，完成真正的指派工作。
+  $('#zhipai_e').click(function(){ 
+  	var customerId = $('#students_h').val().split("@");
+  	var workerId = $('#workered').val();
+  	
+  	$.ajax({
+  		type:"post",
+  		url:"{:U('save_track')}",
+  		async:true,
+  		dataType:'json',
+  		data:{'stuid':customerId,'user':workerId},
+  		success:function(msg,status){
+  			if(status=='success'){
+  				ui_info("指派任务成功！");
+  				$('#search').click();
+  				$("#zhipai").modal('hide');
+  			}
+  		}
+  	});
+  	
+  });
+  
+  //是否继续跟进，checkbox操作控制
+  $('#flag').click(function(){
+  	if($(this).is(':checked')){
+  		$('#track_next').attr("disabled",false);
+  	}else{
+  		$('#track_next').attr("disabled",true);
+  		$('#track_next').val('');
+  	}
+  });
+  
+  
+  //维护记录保存操作
+  $('#form_weihu').submit(function(event){
+  	event.preventDefault();
+    alert('保存成功');
+  	var data_weihu = $('#form_weihu').serializeArray();
+  	$.ajax({
+  		type:"post",
+  		url:"{:U('huifang_add')}",
+  		async:true,
+  		dataType:'json',
+  		data:data_weihu,
+  		success:function(msg,status){
+  			if(status == 'success'){
+  				$('#weihu_reset_b').click();
+  				$('#weihu_stuid').val('');
+  				$("#weihu_dialog").modal('hide');
+  				ui_info('维护记录保存成功！');
+  			}
+  		}
+  	});
+  });
+  
+  
+  //学生信息交接页面显示
+  $('#jiaojie_b').click(function(){
+		$('#jiaojie_reset_b').click();
+  	$("#jiaojie_dialog").modal('show');
+    
+  });
+  
+  //学生交接信息保存 
+   $('#form_jiaojie').submit(function(event){
+    event.preventDefault();
+    var data_jiaojie = $('#form_jiaojie').serializeArray();
+    $.ajax({
+      type:"post",
+      url:"{:U('jiaojie_add')}",
+      async:true,
+      dataType:'json',
+      data:data_jiaojie,
+      success:function(msg,status){
+        if(status == 'success' && msg == 'ok'){
+//        $('#jiaojie_b').attr("disabled",true);
+          $('#jiaojie_b').show();
+          $('#jiaojie_stuid').val('');
+  				$('#jiaojie_reset_b').click();
+  				$("#jiaojie_dialog").modal('hide');
+  				ui_info('学生信息交接成功！');
+          searchAll([]);
+  			}
+  		}
+  	});
+  });
+  
+  });
+
+
+  //列表中的跟进记录按钮及跟进记录页面中的查询按钮的查询操作
+  function genzhong(sid){
+  	var t1 = $("#genzhong_dialog input[name='date1']").val();
+    var t2 = $("#genzhong_dialog input[name='date2']").val();
+    $('#genzhong_stuid').val(sid);
+    var html = '';
+    $.ajax({
+    	type:"post",
+    	url:"{:U('huifang_history')}",
+    	async:false,
+    	dataType:'json',
+    	cache:false,
+    	data:{'stuid':sid,'date1':t1,'date2':t2},
+    	success:function(msg,status){
+    		if(msg){
+       
+        $.each(msg, function(i,obj) {
+//      	alert(obj.track_next.substring(0,obj.track_next.indexOf(' ')));
+        	html += '跟进时间：' + obj.track_time.substring(0,obj.track_next.indexOf(' ')) + '<br/>';
+        	html += '跟进方式：' + obj.way + '<br/>';
+        	html += '意向方向：' + obj.direct + '<br/>';
+        	html += '意向强度：' + yixiang_qiang[obj.interest] + '<br/>';
+        	html += '跟进记录：' + obj.info + '<br/>';
+        	html += '是否继续：' + (obj.flag == 1 ? '继续跟进':'停止跟进') + '<br/>';
+        	if(obj.flag == 1){
+        		html += '下次跟进时间：' + obj.track_next.substring(0,obj.track_next.indexOf(' ')) + '<br/>';
+        	}
+        	html += '<hr/>';
+        });
+       
+      }else{
+        html = '没有查询到近期的相关信息，建议重新选择查询时间范围！'
+      }
+        $("#genzhong_dialog .content").html(html);
+        $("#genzhong_dialog").modal('show');
+    	}
+    });
+    
+   $("#genzhong_dialog").modal('show');
+  }
+  
+  //维护记录页面弹出层操作
+  function weihu(sid){
+  	
+  	var temp_parents = $($('#' + sid + ' > td')[2]).text();
+	  var temp_tel1 = $($('#' + sid + ' > td')[5]).text();
+	  var temp_name = $($('#' + sid + ' > td')[6]).text();
+	  
+	  //构建table tr 内容  		
+	  $('#weihu_table_content').empty();
+		$('#weihu_table_content').append('<td>' + temp_parents + '</td>');
+		$('#weihu_table_content').append('<td>' + temp_tel1 + '</td>');
+		$('#weihu_table_content').append('<td>' + temp_name + '</td>');
+	  
+	  $('#weihu_reset_b').click();
+	  $('#weihu_stuid').val(sid);
+	  
+  	$("#weihu_dialog").modal('show');
+  }
+  
+  //缴费
+    $('#payed').click(function(result){
+      var flag = false;
+      $('.required').each(function(){
+        if(!$(this).val())flag=true;
+      });
+      if(flag){
+        ui_error('请补全所有信息再点击学员转正！');
+        return;
+      }
+      if(confirm('学员转正并缴费，并保存学员信息到收费学员档案中……')){ 
+        $.get("{:U('jiaojie_zz')}&id="+ $('#id_t').val(),function(sid){
+          if(sid)location.href=('{:U('student/index')}&stuid='+sid);
+        })
+      }
+      return false;
+    });
+	//现就读学校联动菜单
+	function school_change(num){
+		var school_id = $("#school_one" + num).val();
+		$(".school_option0" + num).attr("selected","selected");
+		$("#school_two" + num).css("display","none");
+		$(".school_option0" + num).css("display","none");
+		$("#school_two" + num).children().css("display","none");
+		if(school_id!='0'){
+			$("#school_two" + num).css("display","block");
+			$(".school_option0" + num).css("display","block");
+			$(".school_option" + school_id + num).css("display","block");
+		}
+	}
+</script>
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

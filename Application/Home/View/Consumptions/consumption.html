@@ -1,0 +1,486 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+    vertical-align: middle;
+}
+
+.loading {
+    position: fixed; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, .2);
+    background-image: url(__INS__/img/loading.gif);
+    background-position: center 300px;
+    background-repeat: no-repeat;
+    background-size: 50px;
+    display: none;
+    z-index: 5000;
+}
+
+#admin_form table.table>thead>tr>th,
+#admin_form table.table>tbody>tr>td {
+    text-align: center;
+}
+
+.table>tbody>tr.red {
+    background: #ed5565;
+    color: #fff;
+}
+
+.table>tbody>tr.red a{
+    color: #fff;
+}
+
+#admin_form {
+    max-height: 500px;
+}
+
+tr input[type=checkbox] {
+    width: 1.3em;
+}
+
+.export {
+    width:100%;
+    max-width:200px;
+    float: left;
+    margin-right: 10px;
+}
+</style>
+{:W('PageHeader/finance',array('name'=>$title,'search'=>'N'))}
+<div class="operate panel panel-default">
+    <div class="panel-body">
+        <div style="display:{$allowCheck? '' : 'none'}" class="pull-left">
+            <button id="check-button" class="btn btn-primary">审核</button> |
+            <!-- <button class="btn btn-danger" data-toggle="modal" data-target="#myModal">作废</button> -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">作废原因（“订购”类型的消费请谨慎作废）</h4>
+                  </div>
+                  <div class="modal-body">
+                        <textarea class="form-control" name="reason" id="reason" cols="30" rows="5"></textarea>
+                  </div>
+                  <div class="modal-footer">
+                    <button id="cancel-button" type="button" class="btn btn-primary">确定</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <form class="pull-right" id="export_form" action="{:U('exportConsumptions')}" method="post">
+            <if condition="ACTION_NAME neq 'checka'">
+                <div class="input-group export">
+                    <span class="input-group-addon">切换校区</span>
+                    <select name="emp_school" class="form-control" id="school"><option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+                </div>
+            </if>
+                <div class="input-group export">
+                    <span class="input-group-addon">期次</span>
+                    <select name="month" class="form-control"><option value="{$Think.session.date}">{$Think.session.date}</option><option value="_all_">全部</option></select>
+                </div>
+                <div class="input-group export">
+                    <span class="input-group-addon">状态</span>
+                    <select class="form-control" name="state">
+                        <option value="_all_">全部</option>
+                        {:fill_option_ex(C('CONSUME_STATES'))}
+                    </select>
+                </div>
+                <div class="input-group export">
+                    <span class="input-group-addon">消费类型</span>
+                    <select class="form-control" name="type">
+                        <option value="_all_">全部</option>
+                        {:fill_option_ex(getConsumeType())}
+                    </select>
+                </div>
+                <div class="input-group export">
+                    <span class="input-group-addon">业绩类型</span>
+                    <select class="form-control" name="belong_type">
+                        <option value="">全部</option>
+                        <option value="1">新招</option>
+                        <option value="2">续费</option>
+                    </select>
+                </div>
+                <div class="input-group export">
+                    <span class="input-group-addon">学员</span>
+                    <input class="form-control" type="text" name="student" value="" />
+                </div>
+                <div class="input-group export">
+                    <span class="input-group-addon">学号</span>
+                    <input class="form-control" type="number" min="20150801001" name="std_id" value="" />
+                </div>
+                <button id="filt-button" class="btn btn-primary">筛选</button>
+          <if condition="$allowExport">
+             |<button id="export-button" class="btn btn-success">导出</button>
+          </if>
+        </form>
+    </div>
+</div>
+<form id="admin_form" action="#" class="table-responsive">
+    <input type="hidden" name="from" value="{$from}" />
+    <input type="hidden" name="reason" value="" />
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+            <tr>
+                <th style="width:1.3em"><nobr>
+                    <input id="check-all" class="form-control" type="checkbox" />
+                </nobr></th>
+                <th><nobr>序号</nobr></th>
+                <th><nobr>状态</nobr></th>
+                <th><nobr>期次</nobr></th>
+                <th><nobr>校区</nobr></th>
+                <th><nobr>消费类型</nobr></th>
+                <th><nobr>学号</nobr></th>
+                <th><nobr>学员</nobr></th>
+                <th><nobr>业绩类型</nobr></th>
+                <th><nobr>业绩归属</nobr></th>
+                <th><nobr>操作人</nobr></th>
+                <th><nobr>金额（￥）</nobr></th>
+                <th><nobr>收据编号</nobr></th>
+                <th><nobr>创建时间</nobr></th>
+                <th><nobr>备注</nobr></th>
+            </tr>
+        </thead>
+        <tbody id="data-list"></tbody>
+    </table>
+</form>
+<div class="operate panel panel-default">
+    <div class="panel-body pull-left">
+        <h3 style="font-weight: normal;">审核中的项目合计：<b id="checking">0</b>元&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; 完成的项目：<b id="checked">0</b>元&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; 合计：<b id="checkup">0</b>元</h5>
+    </div>
+<nav style="text-align: right; float:right;margin-right: 10px;">
+    <ul class="pagination">
+    </ul>
+</nav>
+<div style="width:0;height:0;clear: both"></div>
+</div>
+<div class="loading"></div>
+</block>
+
+<block name="js">
+<script type="text/javascript">
+pageInit = 0;
+pageCount = '{$pageCount}';
+from = '{$from}';
+g_search = '';
+
+consumeStates = {:json_encode(C('CONSUME_STATES'))};
+
+$(document).ready(function($){
+    $('#filt-button').click(function(event){
+        g_search = JSON.stringify($('#export_form').serializeJson());
+        initPage();
+        return false;
+    });
+    $('#export_form select').change(function(event){
+        g_search = JSON.stringify($('#export_form').serializeJson());
+        initPage();
+        return false;
+    });
+
+    $('#apply_form').submit(function(){
+        doAjax('{:U($controller."/saveStudent")}', $(this).serialize(), 'POST', function(result){
+            if($('#apply_form input[name=id]').val()){
+                // $('#apply_form').slideUp('fast');
+                getData(g_start, g_count, g_search);
+            }else{
+                initPage();
+            }
+
+            clearForm();
+            ui_info(result.info);
+        });
+
+        return false;
+    });
+
+    $('#admin_form').on('click', '.show-order', function(){
+        winopen(fix_url("{:U('Courses/fororder')}?order_id=" + $(this).data('id')), 900, 500);
+        return false;
+    });
+
+    $('#admin_form').on('click', '.show-drop', function(){
+        winopen(fix_url("{:U('Courses/fordrop')}?id=" + $(this).data('id')), 900, 500);
+        return false;
+    });
+
+    $('#admin_form').on('click', '.show-renewal', function(){
+        winopen(fix_url("{:U('Courses/forrenwal')}?id=" + $(this).data('id')), 900, 500);
+        return false;
+    });
+
+    $('#data-list').on('click', 'tr', function(){
+        $(this).find('input[type=checkbox]').click();
+    });
+
+    $('#data-list').on('click', 'input[type=checkbox]', function(e){
+        e.stopPropagation();
+    });
+
+    $("#check-all").click(function(){
+        $("input[name='id[]']").prop("checked", $(this).prop("checked"));
+    });
+
+    $('.pagination').on('click', '.page', function(){
+        g_start = ($(this).data('page') - 1) * g_count;
+        getData(g_start, g_count, g_search);
+        return false;
+    });
+
+    $('#cancel-button').click(function(){
+        $('#admin_form input[name=reason]').val($('#reason').val());
+        doAjax('{:U($controller."/cancel")}', $('#admin_form').serialize(), 'POST', function(result){
+            getData(g_start, g_count, g_search);
+            $('#apply_form').slideUp('fast');
+            $('#myModal').modal('hide');
+            ui_info(result.info);
+        });
+        return false;
+    });
+
+    $('#myModal').on('hidden.bs.modal hide.bs.modal', function(e){
+        $('#reason').val('');
+        $('#admin_form input[name=reason]').val('');
+    });
+
+    $('#check-button').click(function(){
+        doAjax('{:U($controller."/check")}', $('#admin_form').serialize(), 'POST', function(result){
+            getData(g_start, g_count, g_search);
+            ui_info(result.info);
+        });
+        return false;
+    });
+
+    $('[data-toggle="tooltip"]').tooltip();
+    initPage();
+});
+
+function initPage(){
+    g_start = pageInit;
+    g_count = pageCount;
+    getData(g_start, g_count, g_search);
+}
+
+function getData(start, count, search){
+    doAjax('{:U($controller."/getList")}',
+        {start: start, count: count, from: from, search: search}, 'GET', function(result){
+            showData($('#data-list'), result);
+
+            $('#checking').text(result.checking);
+            $('#checked').text(result.checked);
+            $('#checkup').text(result.checkup);
+
+        });
+}
+
+function showData(box, result){
+    var html = '';
+    var data = result.data;
+    var states = {
+        checka: consumeStates.CHECK1.id,
+        checkb: consumeStates.CHECK2.id,
+        checkc: consumeStates.CHECK3.id,
+        checkd: consumeStates.CHECK4.id,
+    }
+
+    var colors = {
+        c_{:C('CONSUME_STATES')['CHECK1']['id']}: 'danger',
+        c_{:C('CONSUME_STATES')['CHECK2']['id']}: 'warning',
+        c_{:C('CONSUME_STATES')['CHECK3']['id']}: 'info',
+        c_{:C('CONSUME_STATES')['CHECK4']['id']}: 'success',
+        c_{:C('CONSUME_STATES')['SUCCESS']['id']}: '',
+    }
+
+    for(var x in data){
+        var color = colors['c_'+data[x].state];
+        var valueColor = '';
+        var reason = '';
+        if(data[x].value < 0){
+            valueColor = 'green';
+        }
+
+        if(data[x].state == {:C('CONSUME_STATES')['CANCEL']['id']}){
+            color = 'red';
+            if(data[x].reason != ''){
+                reason = ' data-toggle="tooltip" data-placement="top" data-original-title="作废原因：'+data[x].reason+'"';
+            }
+        }
+
+        if(data[x].type == {:C('CONSUME_TYPE')['BOOK']['id']}){
+            data[x].type_str = '<a class="show-order" herf="#" data-id="'+data[x].id+'">'+data[x].type_str+'</a>';
+        }else if (data[x].type == {:C('CONSUME_TYPE')['DROP']['id']}) {
+            data[x].type_str = '<a class="show-drop" herf="#" data-id="'+data[x].id+'">'+data[x].type_str+'</a>';
+        } else if (data[x].type == {:C('CONSUME_TYPE')['RENEWAL']['id']}){
+            data[x].type_str = '<a class="show-renewal" herf="#" data-id="'+data[x].id+'">'+data[x].type_str+'</a>';
+        } else if (data[x].type == {:C('CONSUME_TYPE')['CHANGE']['id']}){
+            data[x].type_str = '<a class="show-renewal" herf="#" data-id="'+data[x].id+'">'+data[x].type_str+'</a>';
+        }
+
+        html += '<tr'+reason+' class="'+color+'">';
+
+        if(data[x].state > states[from] || from == 'export'){
+            html += '<td>&nbsp;</td>';
+        }else{
+             html += '<td><input class="form-control" type="checkbox" value='+data[x].id+' name="id[]" /></td>';
+        }
+
+        html +=   '<td><nobr>'+data[x].id+'</nobr></td>'
+                + '<td><nobr><b>'+data[x].state_str+'</b></nobr></td>'
+                + '<td class="month"><nobr><b>'+data[x].month+'</b></nobr></td>'
+                + '<td><nobr><b>'+data[x].school+'</b></nobr></td>'
+                + '<td><nobr>'+data[x].type_str+'</nobr></td>'
+                + '<td><nobr>'+data[x].std_id+'</nobr></td>'
+                + '<td><nobr>'+data[x].student+'</nobr></td>'
+                + '<td><nobr>'+(data[x].belong_type=='1'?'新招':(data[x].belong_type=='2'?'续费':''))+'</nobr></td>'
+                + '<td><nobr>'+data[x].belong_user_name+'</nobr></td>'
+                + '<td><nobr>'+data[x].emp+'</nobr></td>'
+                + '<td><nobr><b style="color:'+valueColor+'">'+data[x].value_format+'</b></nobr></td>'
+                + '<td><nobr class="number">'+data[x].pay_no+'</nobr></td>'
+                + '<td><nobr>'+data[x].create_time_str+'</nobr></td>'
+                + '<td>'+data[x].remark+'</td>'
+             +'</tr>'
+    }
+
+    box.html(html);
+    g_start = result.start;
+    g_count = result.count;
+    g_total = result.total;
+    $('[data-toggle="tooltip"]').tooltip();
+    pageination(g_start, g_count, g_total);
+}
+
+function doAjax(url, params, method, callback){
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: method,
+        dataType: 'JSON',
+        data: params,
+    })
+    .done(function(result){
+        if(result.state == 'ok'){
+            callback(result);
+        }else{
+            ui_error(result.info);
+        }
+    })
+    .fail(function(){
+        alert('网络错误！');
+    })
+    .always(function(){
+        $('.loading').fadeOut();
+    });
+}
+
+function fillOptionAr(list, id){
+    var html = "";
+    for(x in list){
+        var selected = '';
+        if(list[x].id == id){
+            selected = ' selected';
+        }
+        html += '<option value="'+list[x].name+'" '+selected+'>'+list[x].name+'</option>';
+    }
+   return html;
+}
+
+function fillOptionArEx(list, id){
+    var html = '<option value="_all_">全部</option>';
+    html += fillOptionAr(list, id);
+    return html;
+}
+
+function clearForm(){
+    form = $('#apply_form');
+    form.find('input').val('');
+    form.find('textarea').val('');
+    form.find('input[name=from]').val(from);
+}
+
+function pageination(s_start, s_count, s_total){
+    var lp = parseInt(s_total / s_count);
+        if(s_total % s_count){
+            ++lp;
+        }
+    var page = parseInt(s_start / s_count) + 1;
+        if(s_start % s_count){
+            ++page;
+        }
+
+    if(page > 1){
+        var html = '<li><a href="#" class="page" aria-label="Previous" data-page="'+ (page - 1) +'"><span aria-hidden="true">&laquo;</span></a></li>';
+    }else{
+        var html = '';
+    }
+
+    var count = 0;
+    for(var i = page - 9; i <= lp; ++i){
+        if(i < 1){
+            continue;
+        }
+
+        if(i == page){
+            html += '<li class="active"><a href="javascript:void(0)">'+ i +'</a></li>';
+        }else{
+            html += '<li><a class="page" data-page="'+ i +'" href="">'+ i +'</a></li>';
+        }
+
+        ++count;
+        if(count > 9){
+            break;
+        }
+    }
+
+    if(page < lp){
+        html += '<li><a href="#" class="page" aria-label="Next" data-page="'+ (page + 1) +'"><span aria-hidden="true">&raquo;</span></a></li>';
+    }else{
+        html += '';
+    }
+
+    $('.pagination').html(html);
+}
+
+(function($){
+    $.fn.serializeJson = function(){
+        var serializeObj = {};
+        var array = this.serializeArray();
+        var str = this.serialize();
+        $(array).each(function(){
+            if(serializeObj[this.name]){
+                if($.isArray(serializeObj[this.name])){
+                    serializeObj[this.name].push(this.value);
+                }else{
+                    serializeObj[this.name] = [serializeObj[this.name],this.value];
+                }
+            }else{
+                serializeObj[this.name] = this.value;
+            }
+        });
+        return serializeObj;
+    };
+})(jQuery);
+
+//修改功能
+$("#data-list").on('click',".month",function(){
+    $(this).attr('contenteditable',true);
+});
+$("#data-list").on('blur',".month",function(){
+    var id = $(this).parents('tr').children("td:eq(1)").text();
+    var month = $(this).text();
+    $.get("{:U('change_consumptions')}",{id:id,month:month},function(msg){
+        if(msg=='ok')
+        ui_info('期次修改已保存');
+    })
+});
+
+</script>
+</block>
+

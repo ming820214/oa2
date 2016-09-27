@@ -1,0 +1,291 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+    vertical-align: bottom;
+}
+
+#admin_form .table > thead > tr > th,
+#admin_form .table > tbody > tr > th,
+#admin_form .table > tfoot > tr > th,
+#admin_form .table > thead > tr > td,
+#admin_form .table > tbody > tr > td,
+#admin_form .table > tfoot > tr > td {
+    vertical-align: middle;
+}
+
+.loading {
+    position: fixed; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, .2);
+    background-image: url(__INS__/img/loading.gif);
+    background-position: center 300px;
+    background-repeat: no-repeat;
+    background-size: 50px;
+    display: none;
+    z-index: 5000;
+}
+
+#admin_form table.table>thead>tr>th,
+#admin_form table.table>tbody>tr>td {
+    text-align: center;
+}
+
+#admin_form {
+    max-height: 500px;
+}
+
+tr input[type=checkbox] {
+    width: 1.3em;
+}
+
+.export {
+    width:100%;
+    max-width:250px;
+    float: left;
+    margin-right: 10px;
+}
+
+.sbtbox {
+    outline: 1px #E5E6E7 solid;
+    display: inline-block;
+    width: 510px;
+    float: left;
+    margin-right: 10px;
+}
+
+.sbtbox>div {
+    height: 39px;
+    padding-left: 8px;
+    padding-top: 5px;
+}
+
+.sbtbox>div>.export {
+    max-width: 230px;
+}
+
+</style>
+{:W('PageHeader/finance',array('name'=>$title,'search'=>'N'))}
+<div class="operate panel panel-default">
+    <div class="panel-body" id="form_box">
+        <h3 style="text-align:center">{$name}-{$std_id}</h3>
+        <form class="apply_form" id="apply_form" action="#">
+            <input type="hidden" name="id" value="{$id}">
+            <input type="hidden" name="plan_id" value="{$plan_id}">
+            <div class="table-responsive">
+                <table class="table" align="center" style="width: 100%;">
+                    <tr>
+                        <td>
+                            <div class="input-group export">
+                                <span class="input-group-addon">姓名</span>
+                                <input class="form-control" type="text" value="{$name}" disabled>
+                            </div>
+                            <div class="input-group export">
+                                <span class="input-group-addon">学号</span>
+                                <input class="form-control" type="text" value="{$std_id}" disabled>
+                            </div>
+                            <div class="input-group export" style="max-width:370px;">
+                                <span class="input-group-addon">方案</span>
+                                <input class="form-control" type="text" value="{$plan_name}" disabled>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="sbtbox" style="width:250px">
+                                <h4 style="text-align: center">原科目教师</h4>
+                                <p style="text-align:center">{$subject_teacher}</p>
+                            </div>
+                            <div class="sbtbox">
+                                <h4 style="text-align: center">变更科目教师</h4>
+                                <button onclick="addSbt($(this));return false;" style="outline:none;display: block; text-align: center; width: 100%; font-size: 25px;" type="button" class="close"><span aria-hidden="true">+</span></button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <button id="submit-button" class="btn btn-primary pull-right">确定提交</button>
+        </form>
+    </div>
+</div>
+
+<div class="loading"></div>
+</block>
+
+<block name="js">
+<script type="text/javascript">
+pageInit = 0;
+pageCount = '{$pageCount}';
+from = '{$from}';
+g_search = '';
+
+$(document).ready(function($){
+    $('#data-list').on('click', 'tr', function(){
+        $(this).find('input[type=checkbox]').click();
+    });
+
+    $('#data-list').on('click', 'input[type=checkbox]', function(e){
+        e.stopPropagation();
+    });
+
+    $('#data-list').on('click', '.todrop', function(event) {
+        winopen(fix_url("{:U($controller.'/drop')}?id=" + $(this).data('id')), 730, 500);
+        return false;
+    });
+
+    $('#data-list').on('click', '.torenewal', function(event) {
+        winopen(fix_url("{:U($controller.'/renewal')}?id=" + $(this).data('id')), 730, 500);
+        return false;
+    });
+
+    $('#cancel-button').click(function(event){
+        clearForm();
+        return false;
+    });
+
+    $("#check-all").click(function(){
+        $("input[name='id[]']").prop("checked", $(this).prop("checked"));
+    });
+
+    $('#form_box').on('change', 'input[name=hour],select[name=dis],select[name=school],select[name=grade],select[name=course],select[name=level],select[name=subject],select[name="subject[]"]', function(){
+        var timeid = $(this).data('timeid');
+        var thisObj = $(this);
+        doAjax('{:U($controller."/getPriceRenewal")}', $('#apply_form').serialize()+'&subject='+$(this).filter('select[name="subject[]"]').val(), 'GET', function(result) {
+            thisObj.parent().next().children('select[name="teacher[]"]').html(fillOptionArH(result.data));
+        });
+    });
+
+    $('#form_box').on('change', 'select[name=subject]', function(){
+        $('#form_box input[name=add_hour]').change();
+    });
+
+    $('#apply_form').submit(function(event) {
+        console.log($(this).serialize())
+        doAjax('{:U("Courses/dosbt")}', $(this).serialize(), 'POST', function(result){
+            ui_info(result.info);
+            history.back();
+        });
+        return false;
+    });
+
+    $(document).on('click', '.del_sbt', function() {
+        $(this).parent().remove();
+
+        return false;
+    });
+
+    $('#form_box').on('change', 'select[name=school],select[name=grade],select[name=course],select[name=level]', function(){
+
+        $('.sbtbox').children('div').remove();
+    });
+
+    $('[data-toggle="tooltip"]').tooltip();
+    $('#form_box input[name=add_hour]').change();
+    initPage();
+});
+
+function addSbt(obj) {
+    obj.before('<div>\
+                    <button class="del_sbt close" style="margin-left: 2px;margin-right: 2px;float:left;right:4px;top:5px;position:relative;" type="button"><span aria-hidden="true">×</span></button>\
+                    <div class="input-group export">\
+                        <span class="input-group-addon">科目</span>\
+                        <select class="form-control" name="subject[]" required>\
+                            <option value="">请选择</option>\
+                            {:fill_option_ex($subjectList)}\
+                        </select>\
+                    </div>\
+                    <div class="input-group export">\
+                        <span class="input-group-addon">教师</span>\
+                        <select class="form-control" name="teacher[]" required>\
+                            <option value="">请选择</option>\
+                            {:fill_option_ex($teacherList)}\
+                        </select>\
+                    </div>\
+                            </div>');
+}
+
+function initPage(){
+    g_start = pageInit;
+    g_count = pageCount;
+}
+
+function doAjax(url, params, method, callback){
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: method,
+        dataType: 'JSON',
+        data: params,
+    })
+    .done(function(result){
+        if(result.state == 'ok'){
+            callback(result);
+        }else{
+            ui_error(result.info);
+        }
+    })
+    .fail(function(){
+        alert('网络错误！');
+    })
+    .always(function(){
+        $('.loading').fadeOut();
+    });
+}
+
+function fillOptionArH(list, id){
+    var html = '<option value="">请选择</option>';
+    for(x in list){
+        var selected = '';
+        if(list[x].uid == id){
+            selected = ' selected';
+        }
+        html += '<option value="'+list[x].uid+'" '+selected+'>'+list[x].teacher+'</option>';
+    }
+   return html;
+}
+
+function fillOptionAr(list, id){
+    var html = "";
+    for(x in list){
+        var selected = '';
+        if(list[x].id == id){
+            selected = ' selected';
+        }
+        html += '<option value="'+list[x].id+'" '+selected+'>'+list[x].name+'</option>';
+    }
+   return html;
+}
+
+function fillOptionArEx(list, id){
+    var html = '<option value="_all_">全部</option>';
+    html += fillOptionAr(list, id);
+    return html;
+}
+
+(function($){
+    $.fn.serializeJson = function(){
+        var serializeObj = {};
+        var array = this.serializeArray();
+        var str = this.serialize();
+        $(array).each(function(){
+            if(serializeObj[this.name]){
+                if($.isArray(serializeObj[this.name])){
+                    serializeObj[this.name].push(this.value);
+                }else{
+                    serializeObj[this.name] = [serializeObj[this.name],this.value];
+                }
+            }else{
+                serializeObj[this.name] = this.value;
+            }
+        });
+        return serializeObj;
+    };
+})(jQuery);
+</script>
+</block>

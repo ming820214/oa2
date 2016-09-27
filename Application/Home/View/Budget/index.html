@@ -1,0 +1,282 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+  .export{
+    width: 180px;
+    float: left;
+    margin: 0px 5px;
+  }
+  .page{
+	background-color: beige;
+	position: relative;
+	text-align: right;
+	padding: 5px 20px;
+  }
+</style>
+{:W('PageHeader/finance',array('name'=>'预算管理','search'=>'N'))}
+<!-- 添加修改区域 -->
+<form method="post" name="apply_form" id="apply_form">
+	<div class="adv_search panel panel-default <if condition="ACTION_NAME neq 'index'">hidden</if>"  id="adv_search">
+		<div class="panel-heading">
+			<div class="row">
+				<div class="col-xs-12 text-right"><input type="hidden" name="id">
+					<input class="btn btn-sm btn-info" type="submit" name="add" value="添加"/>
+					<input class="btn btn-sm btn-info hidden" type="submit" name="change" value="修改"/>
+					<input  class="btn btn-sm btn-danger" type="button" onclick="close_adv_search()" value="取消" />
+				</div>
+			</div>
+		</div>
+		<div class="panel-body">
+		<table align="center" class="table">
+			<tr>
+				<td><label>预算类型:</label>
+					<select name="class" class="form-control"><option value="1">常规性</option><option value="0">临时性</option></select>
+				</td>
+				<td><label>预算周期:</label><input class="form-control" type="text" name="week" value="{$Think.session.week}" /></td>
+				<td><label>接收人:</label><input class="form-control" type="text" name="jsr" value="{$Think.session.jsr}" required="ture"/></td>
+				<td><label>卡号:</label><input class="form-control" type="text" name="card" value="{$Think.session.card}"/></td>
+				<td><label>申请原因:</label><input class="form-control" type="text" name="why" value="{$Think.session.why}"/></td>
+			</tr>
+			<tr>
+				<td><label>接收校区：</label><select class="form-control" name="jsxq"><option>{$xx|get_school_name=###}</option>{:fill_option_val(C('SCHOOL'))}</select>
+				</td>
+				<td><label>归属校区：</label><select class="form-control" name="gs"><option>{$xx|get_school_name=###}</option>{:fill_option_val(C('SCHOOL'))}</select>
+				</td>
+				<td><label for="aa">成本类型</label><select class="form-control" name="aa" id="aa" required><option value="">请选择</option></select></td>
+				<td><label for="b">二级科目</label><a></a><select  data-toggle="tooltip" data-placement="top" title="" class="form-control" name="b" id="b"></select></td>
+				<td><label>期望审批日期：</label><input class="form-control" type="text" name="g" required="ture" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/></td>
+			</tr>
+			<tr>
+				<td><label>明细：</label><input class="form-control" type="text" name="c"></td>
+				<td><label>单价（元）:</label><input class="form-control" type="text"  name="d" required="ture"></td>
+				<td><label>数量:</label><input class="form-control" type="text" name="e" required="ture" onkeyup="this.value=/^\d+\.?\d{0,2}$/.test(this.value) ? this.value : ''"></td>
+				<td><label>备注</label><input class="form-control" type="text" name="other"></td>
+				<td><label>期次</label><input class="form-control" type="text" name="date" value="{$Think.session.date}" onclick="WdatePicker({dateFmt:'yyyy-MM'})" readonly></td>
+			</tr>
+		</table>
+		</div>
+	</div>
+</form>
+
+<form method="post" id="form_b">
+<div class="operate panel panel-default">
+    <div class="panel-body">
+        <div style="display:inline-block">
+    	<if condition="ACTION_NAME eq 'check'">
+            <input type="submit" name="yes" class="btn btn-danger btn-primary" value="审核通过"/>
+            <input type="submit" name="no" class="btn btn-primary" value="退回修改"/>
+        </if>
+    	<if condition="ACTION_NAME eq 'all'">
+    		<div class="input-group export">
+				<a class="input-group-addonn">期次：</a>
+				<select name="date" class="form-controll"><option value="{$Think.session.date}">{$Think.session.date}</option><option value="">全部</option></select>
+			</div>
+			<div class="input-group export">
+			<a class="input-group-addonn">状态：</a>
+			<select name="state" class="form-controll">
+				<option value="全部">全部</option>
+                <option value="0">退回修改</option>
+                <option value="1">校区审核</option>
+                <option value="2">部门审核</option>
+                <option value="3">中心审核</option>
+                <option value="3.5">总裁审核</option>
+                <option value="4">审批确认</option>
+                <option value="5">审核通过</option>
+                <option value="-1">审核失败</option>
+			</select>
+			</div>
+			<div class="input-group export">
+			<a class="input-group-addonn">申请校区：</a><select name="school" class="form-controll"><option></option>{:fill_option_val(C('SCHOOL'))}</select></div>
+			<div class="input-group export">
+			<a class="input-group-addonn">归属校区：</a><select name="gs" class="form-controll"><option></option>{:fill_option_val(C('SCHOOL'))}</select>
+			</div>
+			<div class="input-group export">
+			<a class="input-group-addonn">接收校区：</a><select name="jsxq" class="form-controll"><option></option>{:fill_option_val(C('SCHOOL'))}</select>
+			</div>
+			<div class="input-group export">
+			<a class="input-group-addon">成本类型：</a><input  type="text" name="aa" class="form-control">
+			</div>
+			<div class="input-group export">
+			<a class="input-group-addon">接收人：</a><input  type="text" name="jsr" class="form-control">
+			</div>
+        </if>
+        </div>
+        <div class="pull-right">
+    	<if condition="ACTION_NAME eq 'all'">
+			<input class="btn btn-sm btn-primary" type="submit" name="search" value="筛选"/>
+			<input class="btn btn-sm btn-primary" type="submit" name="import" value="导出"/>
+    	</if>
+            <input class="btn btn-sm btn-info" type="submit" name="delt" value="删除">
+        </div>
+    </div>
+</div>
+<div style="overflow-x:auto;overflow-y:auto;max-height: 500px;">
+	<div class="ul_table message-container" style="width:2600px;">
+	<ul>
+		<li class="thead">
+			<span class="lbl"><label class="inline pull-left col-3"><input class="ace" type="checkbox" name="id-toggle-all" id="id-toggle-all"/></label></span>
+			<span class="col-8 text-center">状态</span>
+			<span class="col-8 text-center">序号</span>
+			<span class="col-10 text-center">申请校区</span>
+			<span class="col-10 text-center">归属校区</span>
+			<span class="col-15 text-center">审核部门</span>
+			<span class="col-10 text-center">成本类型</span>
+			<span class="col-10 text-center">二级科目</span>
+			<span class="col-20 text-center">明细</span>
+			<span class="col-8 text-right">单价（元）</span>
+			<span class="col-8 text-right">数量</span>
+			<span class="col-8 text-right">申请金额</span>
+			<span class="col-15 text-center">期望审批日期</span>
+			<span class="col-10 text-center">类型</span>
+			<span class="col-20 text-center">预算周期</span>
+			<span class="col-10 text-center">接收校区</span>
+			<span class="col-10 text-center">接收人</span>
+			<span class="col-20 text-center">卡号</span>
+			<span class="col-10 text-center">财务</span>
+			<span class="col-15 text-center">申请原因</span>
+			<span class="col-20 text-center">备注</span>
+		</li>
+		<foreach name="list" item="vo">
+		<li class="tbody data_item <notempty name="vo.idd">state</notempty>">
+			<span class="lbl"><label class="inline pull-left col-3">
+			<empty name="vo.idd">&nbsp;<else/><input class="ace" type="checkbox" name="id[]" value="{$vo.id}" /></empty>
+			</label></span>
+			<span class="col-8 text-center">
+				<switch name="vo.state">
+				<case value="-1"><a style="color:red;" name="审核失败" onclick="change({$vo.idd})">审核失败</a></case>
+				<case value="0"><a style="color:red;" name="退回修改" onclick="change({$vo.idd})">退回修改</a></case>
+				<case value="1"><a style="color:fuchsia;" name="校区审核" onclick="change({$vo.idd})">校区审核</a></case>
+				<case value="2"><a style="color:#6666FF;" name="部门审核" onclick="change({$vo.idd})">部门审核</a></case>
+                <case value="3"><a style="color:#99CC00;" name="中心审核" onclick="change({$vo.idd})">中心审核</a></case>
+				<case value="3.5"><a style="color:rosybrown;" name="总裁审核" onclick="change({$vo.idd})">总裁审核</a></case>
+				<case value="4"><a style="color:#333333;" name="审批确认" onclick="change({$vo.idd})">审批确认</a></case>
+				<case value="5"><a style="color:#009933;" name="审核通过" onclick="change({$vo.idd})">审核通过</a></case>
+				</switch>
+			</span>
+			<span class="col-8 text-center">{$vo.id}</span>
+			<span class="col-10 text-center">{$vo.school}</span>
+			<span class="col-10 text-center"><empty name="vo.gs">&nbsp;<else />{$vo.gs}</empty></span>
+			<span class="col-15 text-center"><empty name="vo.bm">&nbsp;<else />{$vo.bm}</empty></span>
+			<span class="col-10 text-center"><empty name="vo.aa">&nbsp;<else />{$vo.aa}</empty></span>
+			<span class="col-10 text-center"><empty name="vo.b">&nbsp;<else />{$vo.b}</empty></span>
+			<span class="col-20 text-center"><empty name="vo.c">&nbsp;<else />{$vo.c}</empty></span>
+			<span class="col-8 text-right"><empty name="vo.d">&nbsp;<else />{$vo.d}</empty></span>
+			<span class="col-8 text-right"><empty name="vo.e">&nbsp;<else />{$vo.e}</empty></span>
+			<span class="col-8 text-right"><php>$f=$vo['d']*$vo['e'];$h+=$f;echo($f);</php></span>
+			<span class="col-15 text-center"><empty name="vo.g">&nbsp;<else />{$vo.g}</empty></span>
+			<span class="col-10 text-center"><if condition="$vo.class eq 1">常规性预算<else />临时性预算</if></span>
+			<span class="col-20 text-center"><empty name="vo.week">&nbsp;<else />{$vo.week}</empty></span>
+			<span class="col-10 text-center"><empty name="vo.jsxq">&nbsp;<else />{$vo.jsxq}</empty></span>
+			<span class="col-10 text-center"><empty name="vo.jsr">&nbsp;<else />{$vo.jsr}</empty></span>
+			<span class="col-20 text-center"><empty name="vo.card">&nbsp;<else />{$vo.card}</empty></span>
+			<span class="col-10 text-center"><empty name="vo.name">&nbsp;<else />{$vo.name}</empty></span>
+			<span class="col-15 text-center"><empty name="vo.why">&nbsp;<else />{$vo.why}</empty></span>
+			<span class="col-20 text-center"><empty name="vo.other">&nbsp;<else />{$vo.other}</empty></span>
+		</li>
+		</foreach>
+	</ul>
+	</div>
+</div>
+</form>
+<div class="page">{$page}</div>
+<div class="operate panel panel-default">
+	<div class="panel-body pull-left"><h3>
+		审核中的项目合计：<php>echo round($cont['a'],2)</php>元，&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;完成审核项目：<php>echo round($cont['b'],2)</php>元，&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;合计：<php>echo round($cont['a']+$cont['b'],2)</php>元</h3>
+	</div>
+</div>
+</block>
+
+<block name="js">
+<script type="text/javascript">
+costType = {:json_encode(C('COST_TYPE'))};
+$(document).ready(function(){
+    $('select[name=aa]').each(function(){
+        $(this).append(fillOptionAr(costType));
+    });
+
+    $('#aa').change(function(event){
+        $('#b').html('');
+        for(x in costType){
+            if(costType[x].name == $(this).val()){
+                    $('#b').html(fillOptionAr(costType[x]._child));
+                    $('#b').prev().text('');
+                    $("#b").change();
+                break;
+            }
+        }
+    });
+    $('#b').change(function(event){
+        var title = '';
+        for(x in costType){
+            if(costType[x].name == $('#aa').val()){
+                for(y in costType[x]._child){
+                    if(costType[x]._child[y].name == $(this).val()){
+                        if(costType[x]._child[y].dept_name != '' || costType[x]._child[y].dept_name2 != ''){
+                            title = '审核部门：'+costType[x]._child[y].dept_name+'+'+costType[x]._child[y].dept_name2;
+                        }
+                        $(this).attr('title', title);
+                        $(this).prev().text(title);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    });
+
+    //点击修改数据
+    $(".state").mousemove(function(){
+    	$(this).find('a').text("修改");
+    })
+    $(".state").mouseleave(function(){
+    	var a = $(this).find('a').attr('name');
+    	$(this).find('a').text(a);
+    })
+
+});
+
+function fillOptionAr(list, id){
+    var html = "";
+    for(x in list){
+        var selected = '';
+        if(list[x].id == id){
+            selected = ' selected';
+        }
+
+        var title = '';
+        if(list[x].dept_name != '' || list[x].dept_name2 != ''){
+            title = ' title="审核部门：'+list[x].dept_name+' '+list[x].dept_name2+ '"';
+        }
+
+        html += '<option'+title+' value="'+list[x].name+'" '+selected+'>'+list[x].name+'</option>';
+    }
+   return html;
+}
+
+function change(id){
+	$.getJSON("{:U('api_c')}",{id:id},function(msg){
+		$('#apply_form input[name=id]').val(msg.id);
+		$('#apply_form select[name=class]').val(msg.class);
+		$('#apply_form input[name=week]').val(msg.week);
+		$('#apply_form input[name=jsr]').val(msg.jsr);
+		$('#apply_form input[name=card]').val(msg.card);
+		$('#apply_form input[name=why]').val(msg.why);
+		$('#apply_form select[name=jsxq]').val(msg.jsxq);
+		$('#apply_form select[name=gs]').val(msg.gs);
+		$('#apply_form select[name=aa]').val(msg.aa);
+        $('#aa').change();
+		$('#apply_form select[name=b]').val(msg.b);
+		$('#apply_form input[name=g]').val(msg.g);
+		$('#apply_form input[name=c]').val(msg.c);
+		$('#apply_form input[name=d]').val(msg.d);
+		$('#apply_form input[name=e]').val(msg.e);
+		$('#apply_form input[name=other]').val(msg.other);
+
+		$("#adv_search input[name=change]").removeClass('hidden');
+		$("#adv_search input[name=add]").addClass('hidden');
+		$("#adv_search").removeClass('hidden');
+	})
+}
+
+</script>
+</block>

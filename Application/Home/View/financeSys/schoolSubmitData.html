@@ -1,0 +1,252 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	<link rel="stylesheet" href="__INS__/financeSys/css/common.css">
+
+	<div id="finance-main-container-box" class="finance-main-container-box">
+		<div id="finance-main-container-box" class="finance-main-container-box">
+
+		<!-- 校区财务数据录入 Start -->
+		<div class="finance-page-header" style="display:none">
+			<h1 class="finance-h1">校区业务数据修改</h1>
+		</div>
+		<!-- 各校区基本信息数据录入 Start -->
+		<div class="finance-page-header">
+			<h1 class="finance-h1">已提交业绩统计</h1>
+		</div>
+		<div class="queryCondition">
+			<label for="beginDate">查询日期范围</label>
+			<input type="date" id="beginDate" value="" style="width: 160px;"/> <span>-</span>
+			<input type="date" id="endDate" value=""  style="width: 160px;"/>&nbsp;&nbsp;&nbsp;
+			<label for="queryCondition">查询条件</label><select name="" id="queryCondition" style="padding-left:5px;width:145px;height: 38px;border-radius: 5px;font-size: 16px;font-family: '微软雅黑';">
+				<option value="">请选择查询条件</option>
+				<option value="receipt_card">收据编号</option>
+				<option value="teaching_userid">教学主任</option>
+				<option value="study_userid">学习管理师</option>
+				<option value="achievement_type">业绩类型</option>
+				<option value="charge_type">收费类型</option>
+				<option value="student_name">学员姓名</option>
+				<option value="achievement_date">收费日期</option>
+				<option value="curriculum_name">课程名称</option>
+				<option value="teacher_name">讲师</option>
+				<option value="receivables_type">收款类型</option>
+			</select>
+			<input type="text" name="" id="queryText" value=""  style="width: 200px;"/>
+			<input type="button" id="startQuery" value="开始查询" style="width: 150px;"/>
+			<span id='count_num' style="display:none;float:right;overflow:bold;height:48px;line-height:48px;border:1px solid black;width:150px;text-align:center"></span>
+		</div>
+		<div class="finance-basic-entry-container">
+			<div id="" style='overflow: auto;height: 500px;'>
+				<table style="border-collapse: collapse;width: 2300px;border: 1px solid #CCC;text-align: center;" id="SubmittedDataTable">
+					<thead>
+						<tr style="background: #888; color: white;">
+							<th style="width: 60px;">操作</th>
+							<th style="width: 120px;">结算日期</th>
+							<th style="width: 64px;">记录ID</th>
+							<th style="width: 80px;">收据编号</th>
+							<th style="width: 50px;">结账人</th>
+							<th style="width: 66px;">教学主任</th>
+							<th style="width: 82px;">学习管理师</th>
+							<th style="width: 66px;">业绩类型</th>
+							<th style="width: 66px;">收费类型</th>
+							<th style="width: 66px;">学员姓名</th>
+							<th style="width: 50px;">年级</th>
+							<th style="width: 120px;">收费日期</th>
+							<th style="width: 98px;">常规课程类型</th>
+							<th style="width: 116px;">非常规课程类型</th>
+							<th style="width: 66px;">课程名称</th>
+							<th style="width: 220px;">讲师</th>
+							<th style="width: 82px;">交费课时数</th>
+							<th style="width: 66px;">交费金额</th>
+							<th style="width: 98px;">归属新签比例</th>
+							<th style="width: 98px;">归属续签比例</th>
+							<th style="width: 66px;">收款类型</th>
+							<th style="">备注</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>	
+			<a href="http://i.ihongwen.com/oa2/index.php?m=&c=PersonalCount&a=school_target_excel"  download>下载当前统计表格</a>
+		</div>
+		<!-- 各校区基本信息数据录入 End -->
+	</div>
+
+
+	<!-- 各校区基本信息数据模版 Start -->
+	<template id='schoolBasicInfoDataTemplate'>
+	</template>
+	<!-- 各校区基本信息数据模版 End -->
+
+	</block>
+	<block name="js">
+	<script src="__INS__/financeSys/js/basic.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+				
+		(function(){
+			/*
+			 * 点击申请修改按钮
+			 */
+			var EventTable = document.$("#SubmittedDataTable > tbody");
+			EventTable.addEventListener("click",function(e){
+				var Target = e.target;
+				
+				if( Target.tagName !== 'INPUT' && Target.type !== 'button'){
+					return false;
+				}
+				var  tjSubmit =  confirm('是否确认申请修改');
+				if(!tjSubmit){			
+					return;
+				}
+				var parentNode = Target.parentNode.parentNode;
+				var recordID   = parentNode.querySelector("[data-name=id]").innerText;
+				var sendData   = {
+					id : recordID,
+					status: 3					
+				}
+				AJAX({
+					url : IPaddr + "index.php?c=PersonalCount&a=personal_target_save&",			
+					success : function( data ){
+							if(data.status==true){
+								  Toast("申请修改成功");		
+								 parentNode.parentNode.removeChild(parentNode);
+							}else{
+							  Toast("申请修改失败，请联系管理员");
+							}
+						},
+					data: "data=" + JSON.stringify( sendData ),
+					type: "post"
+				});
+			},false);
+			
+	
+			var basicTypeData 	=   {},
+				schoolTempID	=	[]; //保存临时校区在DOM中的ID名称 格式为：{id:'school1jivl', school_id: '1', school_name: '盘锦天丽家园校区'}
+				
+			var begin_date = document.$("#beginDate"),
+				end_date   = document.$("#endDate");
+				
+			begin_date.value = new Date().toISOString().substr(0,8) + '01';
+			end_date.value   = new Date().toISOString().substr(0,10);
+			var school_id = Cookie.get('school_id');
+			var user_id   = Cookie.get('user_id');
+			var user_name = Cookie.get('user_name');
+			var startQuery = document.$("#startQuery");
+
+
+			window.addEventListener( "DOMContentLoaded", function(){
+				AJAX({
+					url : IPaddr + 'index.php?c=PersonalCount&a=Personal_target_find&school_id=' + school_id + '&status=2',
+					success : function( data ){
+//						console.log(data);
+						if( data === null ){
+							return;
+						}
+						addDataToSubmittedTable(data);
+					}
+				})
+			},false);
+
+			/**
+			 * 添加数据至已提交列表
+			 * @param {Object} or {Array} type data;
+			 */
+			function addDataToSubmittedTable( data ){
+				var dataBridEl = document.$("#SubmittedDataTable>tbody");
+				document.$("#count_num").style.display="block";
+				document.$("#count_num").innerHTML='总计'+data[0].count_num+'元';
+
+				//清空表内容
+				/*var tr = dataBridEl.$$('tr');
+				for(var i = 1; i < tr.length; i++){
+							dataBridEl.removeChild( tr[i] );
+						}*/
+				if(!data) return;
+				dataBridEl.innerHTML = '';
+				/**
+				 * 建立一行表内容
+				 * @param {Object} cellData
+				 */
+				var createOneRowBrid = function( cellData ){
+					var tr = document.createElement('tr');
+					tr.dataset.id = cellData.id;
+					tr.innerHTML = '<td data-option>' + '<input type="button" value="申请修改">' +'</td>' +
+								   '<td data-name="checkout_date" >' 		+ cellData.checkout_date 				+ '</td>' +
+								   '<td data-name="id" >' 					+ cellData.id 							+ '</td>' +
+								   '<td data-name="receipt_card" >' 		+ cellData.receipt_card 				+ '</td>' +
+								   '<td data-name="checkout_username">' 	+ (cellData.checkout_username||'-')			+ '</td>' +
+								   '<td data-name="teaching_userid" >' 		+ (cellData.teaching_userid || '-') 	+ '</td>' +
+								   '<td data-name="study_userid" >' 		+ (cellData.study_userid || '-') 		+ '</td>' +
+								   '<td data-name="chievement_type" >' 		+ cellData.achievement_type 			+ '</td>' +
+								   '<td data-name="charge_type" >' 			+ cellData.charge_type 					+ '</td>' +
+								   '<td data-name="student_name" >' 		+ cellData.student_name 				+ '</td>' +
+								   '<td data-name="grade" >' 				+ cellData.grade 						+ '</td>' +
+								   '<td data-name="achievement_date" >' 	+ cellData.achievement_date 			+ '</td>' +
+								   '<td data-name="curriculum_type" >' 		+ (cellData.curriculum_type || '-') 	+ '</td>' +
+								   '<td data-name="not_curriculum_type" >' 	+ (cellData.not_curriculum_type || '-') + '</td>' +
+								   '<td data-name="curriculum_name" >' 		+ cellData.curriculum_name 				+ '</td>' +
+								   '<td data-name="teacher_name" >' 		+ cellData.teacher_name 				+ '</td>' +
+								   '<td data-name="charge_class_num" >' 	+ cellData.charge_class_num 			+ '</td>' +
+								   '<td data-name="charge_money" >' 		+ cellData.charge_money 				+ '</td>' +
+								   '<td data-name="new_signing_ratio" >' 	+ (cellData.new_signing_ratio || '-') 	+ '</td>' +
+								   '<td data-name="old_signing_ratio" >' 	+ (cellData.old_signing_ratio || '-')	+ '</td>' +
+								   '<td data-name="receivables_type" >' 	+ cellData.receivables_type 			+ '</td>' +
+								   '<td style="text-align:left;"  data-name="content" >' + cellData.content 		+ '</td>';
+					dataBridEl.appendChild( tr );
+				};
+				
+				switch ( true ){
+					case Array.isArray( data ):
+						data.forEach(function( val ){
+							createOneRowBrid( val )
+						});
+						break;
+					case Array.isArray( data ) === false && typeof data === 'object':
+						
+						createOneRowBrid(data);
+						break;
+				}
+				
+			}
+		
+			
+		startQuery.addEventListener('click', function(){
+			var queryCondition = document.$("#queryCondition"),
+				queryText	   = document.$("#queryText");				
+			var beginDate	   = begin_date.value,
+				endDate	   	   = end_date.value;
+			if( +end_date.valueAsDate < +begin_date.valueAsDate ){
+				alert('查询结束日期不能小于开始日期');
+				document.$("#endDate").focus();
+				return;
+			}
+			var cc = queryCondition.value !== '' ? ( '&' + queryCondition.value + '=' + queryText.value.trim() ) : '';
+			if((queryCondition.value === 'teaching_userid' || queryCondition.value === 'study_userid') && queryText.value === '' ){
+				cc = '&' + queryCondition.value + '=' + 'All';
+			}
+			var urlQueryString = 'index.php?c=PersonalCount&a=Personal_target_find&school_id=' + school_id +
+								 '&status=2' +
+								 '&begin_date=' + beginDate +
+								 '&end_date=' + endDate + 
+								 cc;
+//			console.log(urlQueryString);
+			AJAX({
+					url : IPaddr + urlQueryString,
+					success : function( data ){
+//						console.log(data);
+						if( data === null ){
+							Toast('查询数据为空！');
+							return;
+						}
+						addDataToSubmittedTable(data);
+					}
+				})
+				
+		}, false);
+		
+
+		})();
+
+	</script>
+
+</block>

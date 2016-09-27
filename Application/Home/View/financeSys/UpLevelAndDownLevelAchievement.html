@@ -1,0 +1,290 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	<link rel="stylesheet" href="__INS__/financeSys/css/common.css">
+	<div id="finance-main-container-box" class="finance-main-container-box">
+		<!-- 教主学管理升降级业绩统计 -->
+		<div class="finance-page-header">
+			<h1 class="finance-h1">教学主任与学习管理师升降级业绩统计</h1>
+		</div>
+		
+		<div class="finance-basic-entry-container">
+			<div class="statistic-option">
+				<table>
+					<tbody>
+						<tr>
+							<td style="width:80px">校区名称</td>
+							<td>
+								<select id="school_id" style="width: 100%;min-width: 140px;">
+									<option value="">请选择校区</option>
+								</select>
+							</td>
+							<td style="width:80px">选择职务</td>
+							<td>
+								<select id="post" style="width: 100%;min-width: 120px;">
+									<option value="">请选择职位</option>
+									<option value="11">咨询主管</option>
+									<option value="12">维护主管</option>
+									<option value="19">教学主任</option>
+									<option value="18">学习管理师</option>
+								</select>
+							</td>
+							<td style="width:50px">姓名</td>
+							<td>
+								<select id="postName" style="width: 100%;min-width: 120px;">
+									<option value="">请选择姓名</option>
+								</select>
+							</td>
+							<td style="width:80px"><label for="beginMonth">选择月份</label></td>
+							<td>
+								<input type="month" id="beginMonth" />
+							</td>
+							
+							<td style="width: 8px;">~</td>
+							<td>
+								<input type="month" id="endMonth" />								
+							</td>
+							
+							<td style="width: 100px;">
+								<input type="button" id="startQuery" value="查询" style="width:100%;border:none;"/>								
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="statistic-query-result" style="margin-top: 30px;">
+				<div style="background: #CCCCCC;text-align: center;font-weight:bold;margin-top: 30px;padding: 5px;">升降级业绩统计结果</div>
+				<table>
+					<thead>
+
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+				<a href="http://i.ihongwen.com/oa2/index.php?m=&c=PersonalCount&a=level_excel" download>下载当前统计表格</a>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script src="__INS__/financeSys/js/basic.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var basicSchoolData = [];
+		var post	  = document.$("#post");
+		var school_id = document.$("#school_id");
+		var postName  = document.$("#postName");
+		var beginDate = document.$("#beginMonth");
+		var endDate	  = document.$("#endMonth");
+		
+		beginDate.value = new Date().toISOString().substr(0,7);
+		endDate.value 	= new Date().toISOString().substr(0,7);
+		AJAX({
+					url : IPaddr + 'index.php?m=&c=PersonalCount&a=Campus_target_find',
+					success : function( data ){
+						for(var i = 0; i < data.length; i++){
+							var record = {
+											school_id   : data[i].school_id,
+											school_name : data[i].school_name,
+											post		: {}
+										 }
+							var op = document.createElement('option');
+							op.value = record.school_id;
+							op.text  = record.school_name;
+							school_id.appendChild( op );
+							
+							for(var j = 0; j < data[i].personal_target.length; j++ ){
+								if( typeof record.post[ data[i].personal_target[j].post_id ] === 'undefined' ){
+									record.post[ data[i].personal_target[j].post_id ] = [];
+								}
+								record.post[ data[i].personal_target[j].post_id ].push( data[i].personal_target[j].name )
+							}
+							basicSchoolData.push(record);
+						}
+						if( Array.isArray(basicSchoolData[0].post[19]) && basicSchoolData[0].post[19].length !== 0 ){
+							for(var i = 0; i < basicSchoolData[0].post[19].length; i++){
+								var op = document.createElement('option');
+								op.text = basicSchoolData[0].post[19][i];
+								postName.appendChild(op);
+							}
+						}
+						
+					}
+				});
+		
+		var pName = function(){
+			var post_id = post.value.toString();
+//			postName.innerHTML = '';
+			var op = postName.$$('option');
+			for(var i = 0; i < op.length; i++){
+				postName.removeChild(op[i]);
+			}
+			op = document.createElement('option');
+			op.value = '';
+			op.text = '请选择姓名';
+			postName.appendChild(op);
+			
+			var personal = [];
+			basicSchoolData.forEach(function(val){
+				
+				if( school_id.value === val.school_id && typeof val.post[post_id] !== 'undefined'){ 
+					personal = val.post[post_id];
+				}
+			});
+			if(personal.length === 0 ){
+				var op = document.createElement('option');
+				op.text = '';
+				postName.appendChild(op);
+				postName.removeChild(op);
+			}
+			for(var i = 0; i < personal.length; i++ ){
+				var op = document.createElement('option');
+				op.text = personal[i];
+				postName.appendChild(op);
+			}
+			
+		}
+		
+		//监听职务下拉列表变化
+		post.addEventListener('change', pName, false);
+		//监听校区下拉列表变化
+		school_id.addEventListener('change', pName, false);
+		
+		//监听查询按钮
+		var startQuery = document.$("#startQuery");
+		startQuery.addEventListener('click',function(e){
+			var argu = {};
+			argu.school_id = school_id.value;
+			argu.name	   = postName.value;
+			argu.post_id   = post.value;
+			argu.begin_date= beginDate.value;
+			argu.end_date  = endDate.value;
+			if(new Date(endDate.value) < new Date(beginDate.value)){
+				Toast('结束日期不能小于开始日期！');
+				endDate.focus();
+				return;
+			}
+			AJAX({
+				url : IPaddr + 'index.php?m=&c=PersonalCount&a=level_count',
+				data: '&data=' + JSON.stringify(argu),
+				success : function( data ){
+					// console.log(data);
+					var queryResult_header = document.$(".statistic-query-result table>thead");
+					
+					var str_header = '<tr><th>集团排名</th><th style="width: 52px;">姓名</th><th style="width: 120px;">校区</th><th>职务级别</th><th>升级所需总业绩</th><th>保级所需总业绩</th><th>个人业绩(不含独立项目)</th><th>距升级差额业绩</th><th>距保级差额业绩</th><th>月业绩目标</th><th>升级所需要完成率</th><th>保级所需要完成率</th><th>升级业绩完成率</th><th>保级业绩完成率</th></tr>';
+
+					var tableHead = [
+					 					'num', 						//集团排名
+					 					'name',						//姓名
+					 					'school_name', 				//校区
+									 	'level', 					//职务级别
+									 	'upgrade_num',				//升级所需总业绩
+									 	'relegation_num',			//保级所需总业绩
+									 	'money_num',				//个人业绩(不含独立项目)
+									 	'upgrade_difference',		//距升级差额业绩
+									 	'relegation_difference',	//距保级差额业绩
+									 	'new_target',				//校区新签月业绩目标
+									 	'upgrade',					//升级所需要完成率
+									 	'relegation',				//保级所需要完成率
+									 	'upgrade_num_num',			//升级业绩完成率
+									 	'relegation_num_num'		//保级业绩完成率
+								 	]
+					if(post.value == '18'){
+						var tableHead = [
+					 					'num', 						//集团排名
+					 					'name',						//姓名
+					 					'school_name', 				//校区
+									 	'level', 					//职务级别
+									 	'upgrade_num',				//升级所需总业绩
+									 	'relegation_num',			//保级所需总业绩
+									 	'money_num',				//个人业绩(不含独立项目)
+									 	'upgrade_difference',		//距升级差额业绩
+									 	'relegation_difference',	//距保级差额业绩
+									 	'target',					//个人月业绩目标
+									 	'upgrade',					//升级所需要完成率
+									 	'relegation',				//保级所需要完成率
+									 	'upgrade_num_num',			//升级业绩完成率
+									 	'relegation_num_num'		//保级业绩完成率
+								 	]
+					}
+
+					if(post.value == '11'){
+						var str_header = '<tr><th>集团排名</th><th style="width: 52px;">姓名</th><th style="width: 120px;">校区</th><th>职务级别</th><th>校区月业绩目标</th><th>配置人数</th><th>保级所需要完成率</th><th>升级所需团队完成率</th><th>个人完成业绩</th><th>个人完成率</th><th>团队完成业绩</th><th>团队完成率</th><th>升降情况</th></tr>';
+						var tableHead = [
+					 					'num', 						//集团排名
+					 					'name',						//姓名
+					 					'school_name', 				//校区
+									 	'level', 					//职务级别
+									 	'new_target',				//校区新签月业绩目标
+									 	'personal_num',				//配置人数
+									 	'relegation',				//保级所需要完成率
+									 	'upgrade',					//升级所需要完成率
+									 	'money_num',				//个人完成业绩(不含独立项目)
+									 	'personal_rate',			//个人完成率
+									 	'count_num',				//团队完成业绩(不含独立项目)
+									 	'count_rate',				//团队完成率
+									 	'content_str'				//升级情况
+								 	]
+					}
+					if(post.value == '12'){
+						var str_header = '<tr><th>集团排名</th><th style="width: 52px;">姓名</th><th style="width: 120px;">校区</th><th>职务级别</th><th>消耗业绩目标</th><th>业绩目标</th><th>保级所需消耗完成率</th><th>保级所需完成率</th><th>升级所需消耗完成率</th><th>升级所需完成率</th><th>消耗完成率</th><th>业绩完成率</th><th>升降情况</th><th>调整后级别</th><th>备注</th></tr>';
+						var tableHead = [
+					 					'num', 						//集团排名
+					 					'name',						//姓名
+					 					'school_name', 				//校区
+									 	'level', 					//职务级别
+									 	'target_consume',			//消耗业绩目标
+									 	'old_target',				//校区续费业绩目标
+									 	'relegation_consume',		//保级所需消耗完成率
+									 	'relegation',				//保级所需完成率
+									 	'upgrade_consume',			//升级所需消耗完成率
+									 	'upgrade',					//升级所需完成率
+									 	'consume',					//消耗完成率
+									 	'count_rate',				//团队完成率
+									 	'content_str',				//升级情况
+									 	'level_last',				//调整后级别
+									 	'content'					//备注
+								 	]
+					}
+					//alert(post.value);
+					queryResult_header.innerHTML=str_header;
+					
+					var queryResult = document.$(".statistic-query-result table>tbody");
+					queryResult.innerHTML = '';
+				 	var level = {
+									"0": "助理",
+									"1": "初级",
+									"2": "中级",
+									"3": "高级",
+									"4": "特级",
+									"5": "精英级"
+								}
+				 	
+				 	if(data === null){
+				 		Toast('查询无结果');
+				 		return;
+				 	}
+				 	if(data.status === false){
+				 		Toast(data.content);
+				 		return;
+				 	}
+					for(var i = 0; i < data.length; i++){
+						var tr = document.createElement('tr');
+						for(var j = 0; j < tableHead.length; j++){
+							var td = document.createElement('td');
+							if( tableHead[j] === 'level' ){
+								td.innerText = level[data[i].level];
+							} else {
+								td.innerText = data[i][tableHead[j]];
+							}
+							tr.appendChild(td)
+						}
+						queryResult.appendChild(tr);
+					}
+				}
+			})
+		},false);
+		
+		
+	</script>
+</block>

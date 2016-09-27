@@ -1,0 +1,2109 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+<style type="text/css">
+	  #statistic a:link {
+    color:#FF0000;
+    text-decoration:underline;
+    }
+    #statistic a:visited {
+    color:#00FF00;
+    text-decoration:underline;
+    }
+    #statistic a:hover {
+    color:#000000;
+    text-decoration:none;
+    }
+    #statistic a:active {
+    color:#FFFFFF;
+    text-decoration:none;
+    }
+</style>
+	<form method="post" id="statistic_form_search" name="form_adv_search">
+  <div class="operate panel panel-default">
+    <div class="panel-body">
+      <div class="pull-left">
+        <label  for="cycle"><b>统计周期:</b></label>
+        <select id="cycle" name="cycle" class="col-10">
+          <option value="1">今日</option>
+          <option value="2">本周</option>
+          <option value="3">本月</option>
+        </select>&nbsp;&nbsp;&nbsp;
+        <input type="button" class="btn btn-sm btn-primary" name="search" value="查询" id="search" />
+      </div>
+    </div>
+  </div>
+</form>
+
+
+	<div id="content" class="panel panel-info">
+		<div class="panel-heading" role="tab" id="heading">
+		  <h4 class="panel-title">
+	        <a role="button" data-toggle="collapse"  href="#collapse" aria-expanded="true" aria-controls="collapse">
+	          <label>集团各校区业务管理的数据统计</label><a href="javascript:void(0);" id="show_detail" class="glyphicon glyphicon-list-alt">点击查看记录详情↓↓↓</a>
+	        </a>
+	      </h4>
+		</div>
+		<div id="collapse" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading">
+		  <div class="panel-body">
+			<div class="row">
+			  <div class="col-sm-12">
+			    <table id="statistic" class="table table-bordered">
+			    	<caption align='top'> <span class="cycle_label"></span>集团各校区业务管理的数据统计</caption>
+			    	<thead id="tj_title">
+			    		<tr>
+			    			<th>校区名称</th>
+			    			<th>总课时数</th>
+			    			<th>上课人数</th>
+			    			<th>删课课时数</th>
+			    			<th>调课课时数</th>
+			    			<th>续费人数</th>
+			    			<th>停课人数</th>
+			    			<th>结课人数</th>
+			    			<th>退费人数</th>
+			    			<th>维护人数</th>
+			    			<th>课时<=10小时人数</th>
+			    			<th>半月未维护人数</th>
+			    			<th>半月未激活人数</th>
+			    		</tr>
+			    	</thead>
+			      <tbody id="jtxq">
+				      	
+			      </tbody>
+			    </table>
+			  </div>
+			</div>
+			</div>
+	  	</div>
+	</div>
+
+
+
+
+
+<div id="tj_content" class="panel panel-default hidden">
+	<div class="panel-heading">
+
+	</div>
+  <div class="panel-body">
+  
+  <!-- 各校区有效学生人数列表 -->
+	<div id="yxrs_student_lst">
+		<input type="hidden" name="school_yxrs" id="school_yxrs"/>
+		  <table class="table table-bordered">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	        	<th>学生编号</th>
+	          <th>姓名</th>
+	          <th>性别</th>
+	          <th>年级</th>
+	          <th>学习管理师</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_yxrs">
+	      	
+	      </tbody>
+		</table>
+		<div id="pagination_stu_yxrs" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$statis_count} % pageCount) == 0) ?  {$statis_count}/pageCount: parseInt({$statis_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+	
+	
+	<!-- 有效学生课时数列表 -->
+	<div id="yftk_student_lst">
+		<input type="hidden" name="school_ks" id="school_ks"/>
+		  <table class="table table-bordered">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>科目</th>
+	          <th>课程开始时间</th>
+	          <th>课程结束时间</th>
+	          <th>上课日期</th>
+	          <th>教师</th>
+	          <th>课时数</th>
+	          <th>学习管理师</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_ks">
+	      	
+	      </tbody>
+		</table>
+		<div id="pagination_stu_ks" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$statis_count} % pageCount) == 0) ?  {$statis_count}/pageCount: parseInt({$statis_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+	
+	<!-- 有效学生人数列表 -->
+	<div id="yfksrs_student_lst">
+		<input type="hidden" name="school_ksrs" id="school_ksrs"/>
+		  <table class="table table-bordered">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>科目</th>
+	          <th>课程开始时间</th>
+	          <th>课程结束时间</th>
+	          <th>上课日期</th>
+	          <th>教师</th>
+	          <th>课时数</th>
+	          <th>学习管理师</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_ksrs">
+	      	
+	      </tbody>
+		</table>
+		<div id="pagination_stu_ksrs" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$statis_count} % pageCount) == 0) ?  {$statis_count}/pageCount: parseInt({$statis_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+
+	<!-- 删课学生列表 -->
+	<div id="dk_lst" class="hidden">
+		<input type="hidden" name="school_ks" id="school_dk"/>
+		  <table class="table table-bordered">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>科目</th>
+	          <th>开始时间</th>
+	          <th>结束时间</th>
+	          <th>课时</th>
+	          <th>上课日期</th>
+	          <th>任课教师</th>
+	          <th>删调课类型</th>
+	          <th>删调课原因</th>
+	          <th>学习管理师</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_dk">
+	      		
+	      </tbody>
+		</table>
+		<div id="pagination_stu_dk" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$dk_count} % pageCount) == 0) ?  {$dk_count}/pageCount: parseInt({$dk_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+
+<!-- 调课学生列表 -->
+	<div id="tk_lst" class="hidden">
+		<input type="hidden" name="school_ks" id="school_tk"/>
+		  <table class="table table-bordered">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>科目</th>
+	          <th>开始时间</th>
+	          <th>结束时间</th>
+	          <th>课时</th>
+	          <th>上课日期</th>
+	          <th>任课教师</th>
+	          <th>删调课类型</th>
+	          <th>删调课原因</th>
+	          <th>学习管理师</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_tk">
+	      		
+	      </tbody>
+		</table>
+		<div id="pagination_stu_tk" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$dtk_tk_count} % pageCount) == 0) ?  {$dtk_tk_count}/pageCount: parseInt({$dtk_tk_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+
+<!-- 续费学生列表 -->
+	<div id="xf_lst" class="hidden">
+		<input type="hidden" name="school_ks" id="school_xf"/>
+		  <table class="table table-bordered">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>续费金额(元)</th>
+	          <th>学习管理师</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_xf">
+	      		
+	      </tbody>
+		</table>
+		<div id="pagination_stu_xf" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$xf_count} % pageCount) == 0) ?  {$xf_count}/pageCount: parseInt({$xf_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+	
+	
+	<!-- 停课学生列表 -->
+	<div id="tks_lst" class="hidden">
+		<input type="hidden" name="school_ks" id="school_tks"/>
+		  <table class="table table-bordered">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	        	<th>学员编号</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>学习管理师</th>
+	          <th>联系电话</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_tks">
+	      	
+	      </tbody>
+		</table>
+		<div id="pagination_stu_tks" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$tk_count} % pageCount) == 0) ?  {$tk_count}/pageCount: parseInt({$tk_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+	
+	
+	
+	<!-- 结课学生列表 -->
+	<div id="jks_lst" class="hidden">
+		<input type="hidden" name="school_ks" id="school_jks"/>
+		  <table class="table table-bordered">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	        	<th>学员编号</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>学习管理师</th>
+	          <th>联系电话</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_jks">
+	      	
+	      </tbody>
+		</table>
+		<div id="pagination_stu_jks" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$jk_count} % pageCount) == 0) ?  {$jk_count}/pageCount: parseInt({$jk_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+	
+	
+	<!-- 退费学生列表 -->
+	<div id="tf_lst" class="hidden">
+		<input type="hidden" name="school_ks" id="school_tf"/>
+		  <table class="table table-bordered">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	        	<th>学员编号</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>学习管理师</th>
+	          <th>联系电话</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_tf">
+	      		
+	      </tbody>
+		</table>
+		<div id="pagination_stu_tf" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$tf_count} % pageCount) == 0) ?  {$tf_count}/pageCount: parseInt({$tf_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+	
+	
+	<!-- 维护学生列表 -->
+	<div id="wh_lst" class="hidden">
+		<input type="hidden" name="school_wh" id="school_wh"/>
+		  <table class="table table-bordered" style="table-layout:fixed;">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	        	<th>学员编号</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>学习管理师</th>
+	          <th>维护内容</th>
+	          <th>维护时间</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_wh">
+	      	
+	      </tbody>
+		</table>
+		<div id="pagination_stu_wh" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$wh_count} % pageCount) == 0) ?  {$wh_count}/pageCount: parseInt({$wh_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+	
+	
+	<!-- 课时《10小时的有效学生列表 -->
+	<div id="yx_lst" class="hidden">
+		<input type="hidden" name="school_yx" id="school_yx"/>
+		  <table class="table table-bordered" style="table-layout:fixed;">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	        	<th>学员编号</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>学习管理师</th>
+	          <th>剩余学时</th>
+	          <th>订单编号</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_yx">
+	      		
+	      </tbody>
+		</table>
+		<div id="pagination_stu_yx" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$yx_count} % pageCount) == 0) ?  {$yx_count}/pageCount: parseInt({$yx_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+	
+	
+	<!-- 半月未维护人数列表 -->
+	<div id="hwh_lst" class="hidden">
+		<input type="hidden" name="school_hwh" id="school_hwh"/>
+		  <table class="table table-bordered" style="table-layout:fixed;">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	        	<th>学员编号</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>学习管理师</th>
+	          <th>维护时间</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_hwh">
+	      		
+	      </tbody>
+		</table>
+		<div id="pagination_stu_hwh" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$yx_count} % pageCount) == 0) ?  {$yx_count}/pageCount: parseInt({$yx_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+	
+	
+		<!-- 半月未激活人数列表 -->
+	<div id="hjh_lst" class="hidden">
+		<input type="hidden" name="school_hjh" id="school_hjh"/>
+		  <table class="table table-bordered" style="table-layout:fixed;">
+	      <thead>
+	        <tr>
+	        	<th>校区</th>
+	        	<th>学员编号</th>
+	          <th>姓名</th>
+	          <th>年级</th>
+	          <th>学习管理师</th>
+	          <th>维护时间</th>
+	        </tr>
+	      </thead>
+	      <tbody id="llst_stu_hjh">
+	      		
+	      </tbody>
+		</table>
+		<div id="pagination_stu_hjh" class="pagination" style="float:right;margin-right:35px;">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input type="text" readonly="readonly"  data-max-page="(({$yx_count} % pageCount) == 0) ?  {$yx_count}/pageCount: parseInt({$yx_count}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+	</div>
+	
+	
+	</div>
+
+	<div class="panel-footer">
+		<input type="button" class="btn-info center-block" value="关闭" id="close_panel"/>
+	</div>
+</div>
+
+
+</block>
+<block name="js">
+<script type="text/javascript">
+sid=0;
+pageCount = 10; //每页显示多少条记录(全局变量)
+currentPage = 1; //当前页码
+maxPage_ks = 10;//(({$statis_count} % pageCount) == 0) ?  {$statis_count}/pageCount: parseInt({$statis_count}/pageCount)+1;
+maxPage_dk = 10;//(({$dk_count} % pageCount) == 0) ?  {$dk_count}/pageCount: parseInt({$dk_count}/pageCount)+1; //最大页码;
+maxPage_tk = 10;//(({$dtk_tk_count} % pageCount) == 0) ?  {$dtk_tk_count}/pageCount: parseInt({$dtk_tk_count}/pageCount)+1; //最大页码;
+maxPage_xf = 10;//(({$xf_count} % pageCount) == 0) ?  {$xf_count}/pageCount: parseInt({$xf_count}/pageCount)+1; //最大页码;
+maxPage_tks = 10;//(({$tk_count} % pageCount) == 0) ?  {$tk_count}/pageCount: parseInt({$tk_count}/pageCount)+1; //最大页码;
+maxPage_jks = 10;//(({$jk_count} % pageCount) == 0) ?  {$jk_count}/pageCount: parseInt({$jk_count}/pageCount)+1; //最大页码;
+maxPage_tf = 10;//(({$tf_count} % pageCount) == 0) ?  {$tf_count}/pageCount: parseInt({$tf_count}/pageCount)+1; //最大页码;
+maxPage_wh = 10;//(({$wh_count} % pageCount) == 0) ?  {$wh_count}/pageCount: parseInt({$wh_count}/pageCount)+1; //最大页码;
+maxPage_yx = 10;//(({$yx_count} % pageCount) == 0) ?  {$yx_count}/pageCount: parseInt({$yx_count}/pageCount)+1; //最大页码;
+pageString = '';
+state = {:json_encode(C('STUDENT_STATE'))};
+sex = {:json_encode(C('SEX_TYPE'))};
+school = {:json_encode(C('SCHOOL'))};
+grade = {:json_encode($gradelst)};
+$(function(){
+
+/**
+ *
+ * 绘制动态表格公用函数
+ * @param {Object} data  表格实体数据，由后台返回;
+ * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+ * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+ * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+ * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+ * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+ * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+ * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+ * @param {Object} a_link_arr 需要超链接包围的显示字段，为数组类型;
+ * @param {Object} a_link_url 相应位置超链接的url地址，为数组类型;
+ * @param {Object} a_link_param 相应位置超链接的url地址中需要绑定的参数，为数组类型;
+ * @param {Object} a_link_target 超链接弹出页面的方式设定，target，例如：_blank
+ * @param {Object} a_fun_arr  超链接如果有函数，这里是函数名称，为数组类型;
+ * @param {Object} a_fun_param_arr 函数中的参数字段，该字段需要在data中存在
+ */
+  	$.drawTrTd=function (
+  		data,
+  		tbody_id,
+  		button_method_arr,
+  		method_param_arr,
+  		button_name_arr,
+  		field_arr,
+  		check_name,
+  		select_lst_arr,
+  		a_link_arr,
+  		a_link_url,
+  		a_link_param,
+  		a_link_target,
+  		a_fun_arr,
+  		a_fun_param_arr){
+
+  		$.each(data, function(i,value) {
+  			var temp_str = '';
+				var ids =  parseInt(Math.random()*10000);
+				$('#' + tbody_id).append('<tr id="tr' + ids + '">');
+
+  			//列表checkbox选择组件创建
+  			if(check_name != null){
+  				$('#tr' + ids).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class=c"' + value.id + '"  value="' + value.classid + '" /></td>');
+  			}
+
+  			for(var i=0;i<field_arr.length;i++){
+  				//单元格起始构建
+  				temp = '<td>';
+
+  				//判断是否有超链接
+  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+  					var a_temp_str = '';
+
+  					//超链接起始构建
+  					if(a_link_param != null){
+  						//如果url地址需要参数
+  						a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)];
+  						//添加参数
+  						for(var n=0;n<a_link_param.length;n++){
+  							a_temp_str += '&' + a_link_param[n] + '=' + $.trim(eval('value.' + a_link_param[n]));
+  						}
+  						a_temp_str +=  '" ';
+  					}else{
+  						a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)] + '" ';
+  					}
+
+  					//onclick函数起始构建
+  					if(a_fun_arr != null){
+  						a_temp_str += 'onclick="' + a_fun_arr[$.inArray(field_arr[i],a_link_arr)]  + '(';
+  					}
+
+  					//函数的参数全构建
+  					if(a_fun_param_arr != null){
+  						for(var k=0;k<a_fun_param_arr.length;k++){
+							a_temp_str += ($.trim(eval('value.' + a_fun_param_arr[k]))== undefined ? '': "'" + $.trim(eval('value.' + a_fun_param_arr[k]))) + "',";
+  						}
+
+  						a_temp_str = a_temp_str.substring(0,a_temp_str.lastIndexOf(','));
+  						a_temp_str += (')"')
+  					}
+
+					if(a_link_target != null){
+						a_temp_str += 'target=' + a_link_target + '>';
+					}else{
+						a_temp_str += '>';
+					}
+
+
+
+  					//添加超链接起始部分
+					temp += a_temp_str;
+
+  				}
+
+
+  				//添加单元格内容部分
+  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+  					//单元格内容如果是select组件中的value部分，需要转义的，通过在这里实现，但是javascript脚本最开始的部分需要添加相应的php代码带获取相应的数组，这部分内容在后期会进一步完善，会把该数组也放到该函数内来实现。
+  					temp += (((eval('value.' + field_arr[i])== undefined) || ($.trim(eval('value.' + field_arr[i]))==''))? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'));
+  				}else{
+  					temp += ((eval('value.' + field_arr[i])== undefined || eval('value.' + field_arr[i])== false) ? '': eval('value.' + field_arr[i]));
+  				}
+
+  				//超链接结束标签构建
+  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+  					temp += '</a>';
+  				}
+
+  				//单元格结束标签构建
+  				temp += '</td>';
+
+  				$('#tr' + ids).append(temp);
+  			}
+
+
+  			if(button_method_arr != null){
+  				for(var j=0;j<button_method_arr.length;j++){
+  					if(method_param_arr != null){
+  						var param_str = '';
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  						for(var k=0;k<method_param_arr.length;k++){
+  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  						}
+  						param_str = param_str.substring(0,param_str.length-1);
+						temp_str += param_str;
+  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}else{
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}
+
+  				}
+  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+  				$('#tr' + ids).append('<td>' + temp_str  + '</td>');
+  			}
+  	});
+ }
+
+	//统计数据统一放置处，在此处集中处理，显示到前端表格中
+	{
+		var xueguan = '{$xg}'; //该校区所有学管的列表
+		var xg = jQuery.parseJSON(xueguan);
+		
+		var ks_count = '{$kscount}'; //课时数及上课人数；
+		var ks_data = jQuery.parseJSON(ks_count);
+		
+		var dk_count = '{$dkcount}'; //删课课时数及删课人数；
+		var dk_data = jQuery.parseJSON(dk_count);
+		
+		var tk_count = '{$tkcount}'; //调课课时数及删课人数；
+		var tk_data = jQuery.parseJSON(tk_count);
+		
+		var xf_count = '{$xfcount}'; //续费人数；
+		var xf_data = jQuery.parseJSON(xf_count);
+		
+		var yftk_count = '{$yftkcount}'; //有费停课人数；
+		var yftk_data = jQuery.parseJSON(yftk_count);
+		
+		
+		var wftk_count = '{$wftkcount}'; //无费结课人数；
+		var wftk_data = jQuery.parseJSON(wftk_count);
+		
+		var tf_count = '{$tfcount}'; //退费人数；
+		var tf_data = jQuery.parseJSON(tf_count);
+		
+		var wh_count = '{$whcount}'; //维护人数；
+		var wh_data = jQuery.parseJSON(wh_count);
+		
+		var yx_count = '{$yxcount}'; //课时<=10小时人数填充；
+		var yx_data = jQuery.parseJSON(yx_count);
+		
+		var yxrs_count = '{$yxrscount}';
+		var yxrs_data = jQuery.parseJSON(yxrs_count); //各校区有效人数统计
+		
+		var hwh_count = '{$hwhcount}'; //半月未维护人数填充；
+		var hwh_data = jQuery.parseJSON(hwh_count);
+		
+		var hjh_count = '{$hjhcount}'; //半月未激活人数填充；
+		var hjh_data = jQuery.parseJSON(hjh_count);
+		
+		//页面初始化默认是当天的统计数据
+		$('#cycle').val({$cycle});
+		$('.cycle_label').text($('#cycle').find("option:selected").text());
+		
+
+		if($('#cycle').val() == '3'){
+				$('#tj_title').html("<tr id='tthead'>");
+				$('#tthead').append("<th>校区名称</th><th>总课时数</th><th>有效人数</th><th>维护人数</th><th>上课人数</th><th>上课率</th><th>删课课时数</th><th>续费人数</th><th>续生率</th><th>停课人数</th><th>停课率</th><th>结课人数</th><th>结课率</th><th>退费人数</th><th>结课率</th>");
+			
+				$.each(xg,function(i,obj){
+					if(obj.id != 0){
+						$('#jtxq').append('<tr id="jtxq' + obj.id + '">');
+						$("#jtxq" + obj.id).append("<td>" + obj['name'] + "</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						
+						//有效人数填充
+						$.each(yxrs_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(3)").html('<a href="javascript:void(0);" onclick="$.viewYXRSDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+						});
+						
+						//课时及上课人数数据填充
+						$.each(ks_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(2)").html('<a href="javascript:void(0);" onclick="$.viewKSDetail(\'' + kso['xueguan'] + '\')">' + kso['ksnum'] + '</a>');
+								$("#jtxq" + obj.id + " td:nth-child(5)").html('<a href="javascript:void(0);" onclick="$.viewKSRSDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+								var skrs = parseInt($("#jtxq" + obj.id + " td:nth-child(5)").text());
+								var yxrs = parseInt($("#jtxq" + obj.id + " td:nth-child(3)").text());
+								if(yxrs != 0 && !isNaN(skrs)){
+									$("#jtxq" + obj.id + " td:nth-child(6)").html(Math.round((skrs/yxrs) * 10000)/100 + "%");	
+								}else{
+									$("#jtxq" + obj.id + " td:nth-child(6)").html(0);
+								}
+								
+							}
+					});
+					
+						//维护人数填充
+						$.each(wh_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(4)").html('<a href="javascript:void(0);" onclick="$.viewWHDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+						});
+						
+						//删课课时数填充
+						$.each(dk_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(7)").html('<a href="javascript:void(0);" onclick="$.viewDKDetail(\'' + kso['xueguan'] + '\')">' + kso['ksnum'] + '</a>');
+							}
+						});
+						
+						
+						//调课课时数填充
+						$.each(tk_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(5)").html('<a href="javascript:void(0);" onclick="$.viewTKDetail(\'' + kso['xueguan'] + '\')">' + kso['ksnum'] + '</a>');
+							}
+						});
+						
+						//续费人数填充
+						$.each(xf_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(8)").html('<a href="javascript:void(0);" onclick="$.viewXFDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+								var xfrs = parseInt($("#jtxq" + obj.id + " td:nth-child(8)").text());
+								var yxrs = parseInt($("#jtxq" + obj.id + " td:nth-child(3)").text());
+								if(yxrs != 0 && !isNaN(xfrs)){
+									$("#jtxq" + obj.id + " td:nth-child(9)").html(Math.round((xfrs/yxrs) * 10000)/100 + "%");	
+								}else{
+									$("#jtxq" + obj.id + " td:nth-child(9)").html(0);
+								}
+							}
+						});
+						
+						//停课人数填充
+						$.each(yftk_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(10)").html('<a href="javascript:void(0);" onclick="$.viewTKSDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+								var tkrs = parseInt($("#jtxq" + obj.id + " td:nth-child(10)").text());
+								var yxrs = parseInt($("#jtxq" + obj.id + " td:nth-child(3)").text());
+								if(yxrs != 0 && !isNaN(tkrs)){
+									$("#jtxq" + obj.id + " td:nth-child(11)").html(Math.round((tkrs/yxrs) * 10000)/100 + "%");	
+								}else{
+									$("#jtxq" + obj.id + " td:nth-child(11)").html(0);
+								}
+							}
+						});
+						
+						//结课人数填充
+						$.each(wftk_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(12)").html('<a href="javascript:void(0);" onclick="$.viewJKSDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+								var jkrs = parseInt($("#jtxq" + obj.id + " td:nth-child(12)").text());
+								var yxrs = parseInt($("#jtxq" + obj.id + " td:nth-child(3)").text());
+								if(yxrs != 0 && !isNaN(jkrs)){
+									$("#jtxq" + obj.id + " td:nth-child(13)").html(Math.round((jkrs/yxrs) * 10000)/100 + "%");	
+								}else{
+									$("#jtxq" + obj.id + " td:nth-child(13)").html(0);
+								}
+							}
+						});
+						
+						
+						//退费人数填充
+						$.each(tf_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(14)").html('<a href="javascript:void(0);" onclick="$.viewTFDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+								var tfrs = parseInt($("#jtxq" + obj.id + " td:nth-child(14)").text());
+								var yxrs = parseInt($("#jtxq" + obj.id + " td:nth-child(3)").text());
+								if(yxrs != 0 && !isNaN(tfrs)){
+									$("#jtxq" + obj.id + " td:nth-child(15)").html(Math.round((tfrs/yxrs) * 10000)/100 + "%");	
+								}else{
+									$("#jtxq" + obj.id + " td:nth-child(15)").html(0);
+								}
+							}
+						});
+						
+					}
+			});
+		
+		}else{
+			$.each(xg,function(i,obj){
+					if(obj.id != 0){
+						$('#jtxq').append('<tr id="jtxq' + obj.id + '">');
+						$("#jtxq" + obj.id).append("<td>" + obj['name'] + "</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						$("#jtxq" + obj.id).append("<td>0</td>");
+						
+						//课时及上课人数数据填充
+						$.each(ks_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(2)").html('<a href="javascript:void(0);" onclick="$.viewKSDetail(\'' + kso['xueguan'] + '\')">' + kso['ksnum'] + '</a>');
+								$("#jtxq" + obj.id + " td:nth-child(3)").html('<a href="javascript:void(0);" onclick="$.viewKSRSDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+					});
+				
+						//删课课时数填充
+						$.each(dk_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(4)").html('<a href="javascript:void(0);" onclick="$.viewDKDetail(\'' + kso['xueguan'] + '\')">' + kso['ksnum'] + '</a>');
+							}
+						});
+						
+						
+						//调课课时数填充
+						$.each(tk_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(5)").html('<a href="javascript:void(0);" onclick="$.viewTKDetail(\'' + kso['xueguan'] + '\')">' + kso['ksnum'] + '</a>');
+							}
+						});
+						
+						//续费人数填充
+						$.each(xf_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(6)").html('<a href="javascript:void(0);" onclick="$.viewXFDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+						});
+						
+						//停课人数填充
+						$.each(yftk_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(7)").html('<a href="javascript:void(0);" onclick="$.viewTKSDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+						});
+						
+						//结课人数填充
+						$.each(wftk_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(8)").html('<a href="javascript:void(0);" onclick="$.viewJKSDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+						});
+						
+						
+						//退费人数填充
+						$.each(tf_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(9)").html('<a href="javascript:void(0);" onclick="$.viewTFDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+						});
+						
+						
+						//维护人数填充
+						$.each(wh_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(10)").html('<a href="javascript:void(0);" onclick="$.viewWHDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+						});
+						
+						
+						//课时<=10小时人数填充
+						$.each(yx_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(11)").html('<a href="javascript:void(0);" onclick="$.viewYXDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+						});
+						
+						//半月未维护人数填充
+						$.each(hwh_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(12)").html('<a href="javascript:void(0);" onclick="$.viewHWHDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+						});
+						
+						//半月未激活人数填充
+						$.each(hjh_data,function(ks,kso){
+							if(kso['xueguan'] == obj['name']){
+								$("#jtxq" + obj.id + " td:nth-child(13)").html('<a href="javascript:void(0);" onclick="$.viewHJHDetail(\'' + kso['xueguan'] + '\')">' + kso['pnum'] + '</a>');
+							}
+						});
+					}
+			});
+	
+		}
+		
+}
+	
+	//课时列表分页操作
+  	$('#pagination_stu_ks').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_ks,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+						
+						var data = new Array();
+						
+						data.push({name:'item',value:'ks'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_ks').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										if(maxPage == 0){
+											 maxPage = 1;
+										}
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_ks').empty();
+				
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','name','grade','class','time1','time2','timee','teacher','count','xueguan'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_ks',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_ks').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_ks').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+	
+	
+	//课时列表分页操作
+  	$('#pagination_stu_yxrs').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_ks,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+						
+						var data = new Array();
+						
+						data.push({name:'item',value:'yxrs_tj'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_yxrs').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_yxrs').empty();
+				
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','std_id','name','sex','grade','xueguan'];
+											var select_lst_arr = ['sex','grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_yxrs',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_yxrs').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_yxrs').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+	
+	
+	//课时列表分页操作
+  	$('#pagination_stu_ksrs').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_ks,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+						
+						var data = new Array();
+						
+						data.push({name:'item',value:'ks_rs'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_ksrs').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_ksrs').empty();
+				
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','name','grade','class','time1','time2','timee','teacher','count','xueguan'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_ksrs',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_ksrs').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_ksrs').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+
+
+//删课列表分页操作
+  	$('#pagination_stu_dk').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_dk,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var data = new Array();
+						
+						data.push({name:'item',value:'dk_ks'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_dk').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_dk').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','name','grade','class','time1','time2','count','timee','teacher','dtk_type','reason','xueguan'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_dk',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_dk').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_dk').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+
+	});
+
+
+
+//调课列表分页操作
+  	$('#pagination_stu_tk').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_tk,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var data = new Array();
+						
+						data.push({name:'item',value:'tk_rs'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_tk').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_tk').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','name','grade','class','time1','time2','count','timee','teacher','dtk_type','reason','xueguan'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_tk',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_tk').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_tk').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+
+
+
+//续费列表分页操作
+  	$('#pagination_stu_xf').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_xf,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var data = new Array();
+						
+						data.push({name:'item',value:'xf_rs'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_xf').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_xf').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','name','grade','money','xueguan'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_xf',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_xf').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_xf').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+	
+	
+	
+		//停课列表分页操作
+  	$('#pagination_stu_tks').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_tks,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var data = new Array();
+						
+						data.push({name:'item',value:'tks_rs'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_tks').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_tks').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','std_id','name','grade','xueguan','tel2'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_tks',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_tks').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_tks').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+	
+	
+	//结课列表分页操作
+  	$('#pagination_stu_jks').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_jks,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var data = new Array();
+						
+						data.push({name:'item',value:'jks_rs'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_jks').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_jks').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','std_id','name','grade','xueguan','tel2'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_jks',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_jks').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_jks').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+	
+	
+
+	
+	//退费列表分页操作
+  	$('#pagination_stu_tf').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_tf,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var data = new Array();
+						
+						data.push({name:'item',value:'tf_rs'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_tf').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_tf').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','std_id','name','grade','xueguan','tel2'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_tf',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_tf').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_tf').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+	
+	
+	
+	//维护列表分页操作
+  	$('#pagination_stu_wh').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_wh,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var data = new Array();
+						
+						data.push({name:'item',value:'wh_rs'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_wh').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_wh').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','std_id','name','grade','xueguan','weihu_content','weihu_timee'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_wh',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_wh').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_wh').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+	
+	
+	
+	
+	//课时《10小时人数列表分页操作
+  	$('#pagination_stu_yx').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_yx,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var data = new Array();
+						
+						data.push({name:'item',value:'yx_rs'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_yx').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_yx').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','std_id','name','grade','xueguan','remain_hour','courseid'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_yx',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_yx').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_yx').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+	
+	
+	//半月未维护列表分页操作
+  	$('#pagination_stu_hwh').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_yx,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var data = new Array();
+						
+						data.push({name:'item',value:'hwh_rs'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_hwh').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_hwh').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','std_id','name','grade','xueguan','weihu_timee'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_hwh',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_hwh').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_hwh').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+	
+	
+		//半月未激活列表分页操作
+  	$('#pagination_stu_hjh').jqPagination({
+						link_string	: '/?page={page_number}',
+						max_page	: maxPage_yx,
+						paged		: function(page,param) {
+
+						var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+						var data = new Array();
+						
+						data.push({name:'item',value:'hjh_rs'});
+						
+						var cycle = {name:'cycle',value:$('#cycle').val()};
+						
+						data.push(cycle);
+						
+						var school = $('#school_hjh').val();
+						
+						data.push({name:'school',value:school});
+						
+						
+						$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xq_statistic_detail')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_stu_hjh').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['school','std_id','name','grade','xueguan','weihu_timee'];
+											var select_lst_arr = ['grade'];
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_link_param = null;
+											var a_link_target = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+										
+											$.drawTrTd(msg.data,'llst_stu_hjh',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_link_param,a_link_target,a_fun_arr,a_fun_param_arr);
+				
+										}else{
+											$('#llst_stu_hjh').empty();
+										}
+				
+										this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+										this.max_page = maxPage;
+				
+										$('#pagination_stu_hjh').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+
+									}
+								}
+							});
+					}
+	});
+	
+	
+   //列表项选择事件操作
+	$("table tr").on('click','tr',null,function(){
+
+      $("table tr").removeClass("active");
+		  $(this).attr("class", "active");
+
+    })
+
+$.viewKSDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','show');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#school_ks').val(opt);
+	$('#pagination_stu_ks').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").html() + '上课课时情况</b>');
+}
+
+$.viewYXRSDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','show');
+	$('#school_yxrs').val(opt);
+	$('#pagination_stu_yxrs').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").html() + '该校区有效人数情况</b>');
+}
+
+$.viewKSRSDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','show');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#school_ksrs').val(opt);
+	$('#pagination_stu_ksrs').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").html() + '上课情况</b>');
+}
+
+
+$.viewDKDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#dk_lst').attr('class','show');
+	$('#school_dk').val(opt);
+	$('#pagination_stu_dk').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").html() + '删课情况</b>');
+}
+
+$.viewTKDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','show');
+	$('#school_tk').val(opt);
+	$('#pagination_stu_tk').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").html() + '调课情况</b>');
+}
+
+$.viewXFDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','show');
+	$('#school_xf').val(opt);
+	$('#pagination_stu_xf').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").html() + '续费情况</b>');
+}
+
+$.viewTKSDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','show');
+	$('#school_tks').val(opt);
+	$('#pagination_stu_tks').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").text() + '停课情况</b>');
+}
+
+$.viewJKSDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','show');
+	$('#school_jks').val(opt);
+	$('#pagination_stu_jks').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").text() + '结课情况</b>');
+}
+
+$.viewTFDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','show');
+	$('#school_tf').val(opt);
+	$('#pagination_stu_tf').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").text() + '退费情况</b>');
+}
+
+$.viewWHDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','show');
+	$('#school_wh').val(opt);
+	$('#pagination_stu_wh').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").text() + '维护情况</b>');
+}
+
+
+$.viewYXDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','show');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','hidden');
+	$('#school_yx').val(opt);
+	$('#pagination_stu_yx').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").text() + '所剩课时《10小时人数情况</b>');
+}
+
+$.viewHWHDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','show');
+	$('#hjh_lst').attr('class','hidden');
+	$('#school_hwh').val(opt);
+	$('#pagination_stu_hwh').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").text() + '半月未维护情况</b>');
+}
+
+$.viewHJHDetail = function(opt){
+	$('#tj_content').removeClass('hidden');
+	$('#yftk_student_lst').attr('class','hidden');
+	$('#yfksrs_student_lst').attr('class','hidden');
+	$('#yxrs_student_lst').attr('class','hidden');
+	$('#dk_lst').attr('class','hidden');
+	$('#tk_lst').attr('class','hidden');
+	$('#xf_lst').attr('class','hidden');
+	$('#tks_lst').attr('class','hidden');
+	$('#jks_lst').attr('class','hidden');
+	$('#tf_lst').attr('class','hidden');
+	$('#wh_lst').attr('class','hidden');
+	$('#yx_lst').attr('class','hidden');
+	$('#hwh_lst').attr('class','hidden');
+	$('#hjh_lst').attr('class','show');
+	$('#school_hjh').val(opt);
+	$('#pagination_stu_hjh').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").text() + '半月未激活情况</b>');
+}
+
+
+	$('#close_panel').click(function(){
+		$('#tj_content').addClass('hidden');
+	})
+
+	$('#show_detail').click(function(){
+		$('#collapse').collapse('toggle');
+	});
+
+	$('#cycle').change(function(obj){
+
+		$('.cycle_label').text($(this).find("option:selected").text());
+	});
+
+	$('#search').click(function(){
+		window.location.href="{:U('xq_all_statistic')}&cycle=" + $('#cycle').val();
+	})
+});
+
+</script>
+
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

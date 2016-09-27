@@ -1,0 +1,834 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+<style type="text/css">
+	.info2{
+		background-color: #d9edf7;
+	}
+	
+	.info3{
+		background-color: #d9edf7;
+	}
+	
+	.info4{
+		background-color: #d9edf7;
+	}
+	
+</style>
+{:W('PageHeader/simple',array('name'=>'消耗数据'))}
+
+
+		<div class="panel panel-primary">
+		    <div class="panel-heading" role="tab" id="headingStudentClass">
+		    	<div style="float:left;">信息筛选区</div>
+			      <h4 class="panel-title" style="float:right;">
+				        <a class="glyphicon glyphicon-chevron-down" role="button" data-toggle="collapse" href="#collapseStudentClass" aria-expanded="true" aria-controls="collapseStudentClass">
+				        </a>
+			      </h4>
+			    <div style="clear: both;"></div>
+		    </div>
+		    <div id="collapseStudentClass" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingStudentClass">
+		       <div class="panel-body">
+		       		<form class="form-inline" id="student_form_search" name="student_form_search" action="{:U('studentclass_search')}" method="post" >
+		
+					  <div class="operate panel panel-default">
+					    <div class="panel-body">
+					      <div class="pull-left">
+		
+					        <div class="input-group" style="margin-top: 5px;">
+					          <label  for="student" class="input-group-addon"><b>学生姓名：</b></label>
+					          <input id="student" name="student"  class="form-control"/>
+					        </div>
+					      	
+					      	<div class="input-group" style="margin-top: 5px;">
+					          <label  for="grade" class="input-group-addon"><b>年级：</b></label>
+					          <select id="grade" name="grade" class="form-control">
+				                	<option></option>
+				                	{:fill_option_ex($gradeList)}
+				              </select>
+					        </div>
+					      	
+					      	<div class="input-group" style="margin-top: 5px;">
+					          &nbsp;
+					          <input type="button" class="btn btn-sm btn-primary" name="search" value="结果筛选" id="visit_search" />
+					        </div>
+					      	
+					      </div>
+					      
+					      <div class="pull-right"  style="margin-top: 5px;">
+					      	
+					          	<input type="button" class="btn btn-sm btn-primary" name="export" value="数据导出" id="export_search" />
+					        </div>
+					        
+					      
+					    </div>
+					  </div>
+					</form>
+		       </div>
+		    </div>
+		</div>
+		
+		<form id="export_form" name="export_form" action="{:U('export_studentDetails')}" method="post">
+  			<input type="hidden" name="export_data" value='{$data}'/>
+  			<input type="hidden" name="export_date" id="export_date"/>
+   		</form>
+					        
+		<form name="kstj_form" id="kstj" method="post" action="">
+		  <div class="panel panel-default">
+		    <div class="panel-body">
+		      <if condition="get_school_name() eq '集团'">
+		        <div class="input-group col-md-3 pull-left">
+		          <span class="input-group-addon"><b>切换校区:</b></span>
+		          <select id="v_school" name="school" class="form-control" value="{$school}">
+		              {:fill_option(C('SCHOOL'))}
+		          </select>
+		        </div>
+		      </if>
+		        <div class="pull-right col-md-5">
+		        <div class="input-group col-md-10 pull-left" style="float:none;">
+		          <span class="input-group-addon"><b>日期:</b></span>
+		          <input type="date" id="cur_date" class="form-control" name="date" value="{$cur_date}" required />
+		        </div>
+		        <div class="col-md-2">
+		          <button class="btn btn-sm btn-primary" type="submit">统计</button>
+		        </div>
+		        </div>
+		    </div>
+		  </div>
+		</form>
+
+		<!-- 列表部分 -->
+		<div class="panel panel-success">
+		  <div class="panel-heading"><h3><span class="cur_label"></span>校区各个学员消耗统计</h3></div>
+		  <div class="panel-body">
+		    <table class="table">
+		      <thead>
+		        <tr>
+		          <th>校区</th>
+		          <th>学员编号</th>
+		          <th>姓名</th>
+		          <th><span class="cur_label"></span>消耗课时量(小时)</th>
+		          <th><span class="cur_label"></span>消耗金额(元)</th>
+		          <th>月实际消耗课时总数(小时)</th>
+		          <th>月实时消耗金额(元)</th>
+		          <th>月排课课时总数(小时)</th>
+		          <th>月预排课消耗金额(元)</th>
+		          <th>学员累计实际消耗课时总是(小时)</th>
+		          <th>学员累计实际消耗金额(元)</th>
+		          <th>账户剩余金额</th>
+		          <th>剩余总金额(元)</th>
+		        </tr>
+		      </thead>
+		      <tbody id="llst">
+		        <php>
+		        	$i = 0;
+		        	foreach($list as $key=>$value){
+		        		foreach($value as $kk=>$vv){
+		        			if(($i++)>=10){
+		        					break;
+		        			}
+		        		
+		        			echo("<tr>");
+		        				echo("<td>$key</td>");
+								echo("<td>" . $kk . "</td>");
+								echo("<td>" . $vv['name'] . "</td>");
+								echo("<td class='info' data-std_id='" . $kk . "' data-school='" . $key . "' style='text-decoration: underline;'>" . $vv['day'] . "</td><!--当日课时-->");
+								echo("<td>" . $vv['sum_day_money'] . "</td>");
+								echo("<td class='info3' data-std_id='" . $kk . "' data-school='" . $key . "' style='text-decoration: underline;'>" . $vv['sum_cwqr_keshi'] . "</td>");
+								echo("<td>" . $vv['sum_cwqr_money'] . "</td>");
+								echo("<td class='info2' data-std_id='" . $kk . "' data-school='" . $key . "' style='text-decoration: underline;'>" . $vv['month_count'] . "</td>");
+								echo("<td>" . $vv['month_xh_money'] . "</td>");
+								echo("<td class='info4' data-std_id='" . $kk . "' data-school='" . $key . "' style='text-decoration: underline;'>" . $vv['used_hour'] . "</td>");
+								echo("<td>" . $vv['real_consump_value'] . "</td>");
+								echo("<td>" . $vv['remain_csp'] . "</td>");
+								echo("<td>" . $vv['remain'] . "</td>");
+		        			echo("</tr>");
+		        			
+		        		}
+		        	}
+		        	
+		        </php>
+		      </tbody>
+		      <tbody>
+		      	<tr>
+		      		<td>校区汇总</td>
+		      		<td colspan="2">(校区所有学员)</td>
+		      		<td><span id="day"></span></td>
+		      		<td><span id="sum_day_money"></span></td>
+		      		<td><span id="sum_cwqr_keshi"></span></td>
+		      		<td><span id="sum_cwqr_money"></span></td>
+		      		<td><span id="month_count"></span></td>
+		      		<td><span id="month_xh_money"></span></td>
+		      		<td><span id="used_hour"></span></td>
+		      		<td><span id="real_consump_value"></span></td>
+		      		<td><span id="remain_csp"></span></td>
+		      		<td><span id="remain"></span></td>
+		      	</tr>
+		      </tbody>
+		     
+		    </table>	<hr>
+		    	
+		    	 <!--学生信息列表分页-->
+			  <div id="pagination_student_ks" class="pagination" style="float:right;margin-right:35px;">
+						    <a href="#" class="first" data-action="first">&laquo;</a>
+						    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+						    <input type="text" readonly="readonly"  data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+						    <a href="#" class="next" data-action="next">&rsaquo;</a>
+						    <a href="#" class="last" data-action="last">&raquo;</a>
+				</div>
+				
+		  </div>
+		</div>
+
+		<!-- 弹出层，详情 -->
+		<div class="modal fade" role="dialog" id="info">
+		  <div class="modal-dialog modal-lg">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		          <h4>详情</h4>
+		      </div>
+		      <div class="modal-body" id="content"></div>
+		    </div>
+		  </div>
+		</div>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+sid=0;
+pageCount = 10; //每页显示多少条记录(全局变量)
+currentPage = 1; //当前页码
+maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
+pageString = '';
+
+document.addEventListener("DOMContentLoaded",function(){
+	 $("#v_school option[value={$school}]").attr("selected", true);
+},false);
+
+
+$(function(){
+	
+	var value_data = '{$data}';
+	if(value_data != '' && value_data != undefined){
+		var initial_data = $.parseJSON(value_data);
+	
+		var day = 0.00;
+		var sum_day_money = 0.00;
+		var sum_cwqr_keshi = 0.00;
+		var sum_cwqr_money = 0.00;
+		var month_count = 0.00;
+		var month_xh_money = 0.00;
+		var used_hour = 0.00;
+		var real_consump_value = 0.00;
+		var remain_csp = 0.00;
+		var remain = 0.00;
+		
+		$.each(initial_data, function(key,value) {
+			$.each(value,function(kk,vv){
+				
+				day += vv['day'] != undefined? parseFloat(vv['day']):0;
+				sum_day_money += vv['sum_day_money'] != undefined? parseFloat(vv['sum_day_money']):0;
+		        sum_cwqr_keshi += vv['sum_cwqr_keshi'] != undefined? parseFloat(vv['sum_cwqr_keshi']):0 ;
+		        sum_cwqr_money += vv['sum_cwqr_money'] != undefined? parseFloat(vv['sum_cwqr_money']):0 ;
+		        month_count += vv['month_count'] != undefined? parseFloat(vv['month_count']):0 ;
+		        month_xh_money += vv['month_xh_money'] != undefined? parseFloat(vv['month_xh_money']):0 ;
+		        used_hour += vv['used_hour'] != undefined? parseFloat(vv['used_hour']):0 ;
+		        real_consump_value += vv['real_consump_value'] != undefined? parseFloat(vv['real_consump_value']):0 ;
+		        remain_csp += vv['remain_csp'] != undefined? parseFloat(vv['remain_csp']):0 ;
+		        remain += vv['remain'] != undefined? parseFloat(vv['remain']):0 ;
+			});
+		});
+	
+		$('#day').text(day);
+		$('#sum_day_money').text(sum_day_money);
+		$('#sum_cwqr_keshi').text(sum_cwqr_keshi);
+		$('#sum_cwqr_money').text(sum_cwqr_money);
+		$('#month_count').text(month_count);
+		$('#month_xh_money').text(month_xh_money);
+		$('#used_hour').text(used_hour);
+		$('#real_consump_value').text(real_consump_value);
+		$('#remain').text(remain);
+	}
+	
+
+
+
+ /**
+ *
+ * 绘制动态表格公用函数
+ * @param {Object} data  表格实体数据，由后台返回;
+ * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+ * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+ * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+ * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+ * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+ * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+ * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+ * @param {Object} a_link_arr 需要超链接包围的显示字段，为数组类型;
+ * @param {Object} a_link_url 相应位置超链接的url地址，为数组类型;
+ * @param {Object} a_link_param 相应位置超链接的url地址中需要绑定的参数，为数组类型;
+ * @param {Object} a_link_target 超链接弹出页面的方式设定，target，例如：_blank
+ * @param {Object} a_fun_arr  超链接如果有函数，这里是函数名称，为数组类型;
+ * @param {Object} a_fun_param_arr 函数中的参数字段，该字段需要在data中存在
+ */
+  	$.drawTrTd=function (
+  		data,
+  		tbody_id,
+  		button_method_arr,
+  		method_param_arr,
+  		button_name_arr,
+  		field_arr,
+  		check_name,
+  		select_lst_arr,
+  		a_link_arr,
+  		a_link_url,
+  		a_link_param,
+  		a_link_target,
+  		a_fun_arr,
+  		a_fun_param_arr){
+
+  		$.each(data, function(i,value) {
+  			var temp_str = '';
+
+  			$('#' + tbody_id).append('<tr id="' + value.id + '">');
+
+  			//列表checkbox选择组件创建
+  			if(check_name != null){
+  				$('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class="' + value.id + '"  value="' + value.classid + '" /></td>');
+  			}
+
+  			for(var i=0;i<field_arr.length;i++){
+  				//单元格起始构建
+  				temp = '<td>';
+
+  				//判断是否有超链接
+  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+  					var a_temp_str = '';
+
+  					//超链接起始构建
+  					if(a_link_param != null){
+  						//如果url地址需要参数
+  						a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)];
+  						//添加参数
+  						for(var n=0;n<a_link_param.length;n++){
+  							a_temp_str += '&' + a_link_param[n] + '=' + $.trim(eval('value.' + a_link_param[n]));
+  						}
+  						a_temp_str +=  '" ';
+  					}else{
+  						a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)] + '" ';	
+  					}
+  					
+  					//onclick函数起始构建
+  					if(a_fun_arr != null){
+  						a_temp_str += 'onclick="' + a_fun_arr[$.inArray(field_arr[i],a_link_arr)]  + '(';
+  					}
+
+  					//函数的参数全构建
+  					if(a_fun_param_arr != null){
+  						for(var k=0;k<a_fun_param_arr.length;k++){
+							a_temp_str += ($.trim(eval('value.' + a_fun_param_arr[k]))== undefined ? '': "'" + $.trim(eval('value.' + a_fun_param_arr[k]))) + "',";
+  						}
+
+  						a_temp_str = a_temp_str.substring(0,a_temp_str.lastIndexOf(','));
+  						a_temp_str += (')"')
+  					}
+					
+					if(a_link_target != null){
+						a_temp_str += 'target=' + a_link_target + '>';
+					}else{
+						a_temp_str += '>';	
+					}
+					
+  					
+
+  					//添加超链接起始部分
+					temp += a_temp_str;
+
+  				}
+
+
+  				//添加单元格内容部分
+  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+  					//单元格内容如果是select组件中的value部分，需要转义的，通过在这里实现，但是javascript脚本最开始的部分需要添加相应的php代码带获取相应的数组，这部分内容在后期会进一步完善，会把该数组也放到该函数内来实现。
+  					temp += (((eval('value.' + field_arr[i])== undefined) || ($.trim(eval('value.' + field_arr[i]))==''))? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'));
+  				}else{
+  					temp += ((eval('value.' + field_arr[i])== undefined || eval('value.' + field_arr[i])== false) ? '': eval('value.' + field_arr[i]));
+  				}
+
+  				//超链接结束标签构建
+  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+  					temp += '</a>';
+  				}
+
+  				//单元格结束标签构建
+  				temp += '</td>';
+
+  				$('#' + value.id).append(temp);
+  			}
+
+
+  			if(button_method_arr != null){
+  				for(var j=0;j<button_method_arr.length;j++){
+  					if(method_param_arr != null){
+  						var param_str = '';
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  						for(var k=0;k<method_param_arr.length;k++){
+  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  						}
+  						param_str = param_str.substring(0,param_str.length-1);
+						temp_str += param_str;
+  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}else{
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}
+
+  				}
+  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+  				$('#' + value.id).append('<td>' + temp_str  + '</td>');
+  			}
+  	});
+ }
+  	
+  	$('#pagination_student_ks').jqPagination({
+							link_string	: '/?page={page_number}',
+							max_page	: maxPage,
+							paged		: function(page,param) {
+								
+							var pageNumber = (page-1)*pageCount //从第几行开始查询
+							
+							var data = $('#student_form_search').serializeArray();
+
+							var student = $('#student').val();
+							
+							var grade = $('#grade').val();
+							
+							var data = $.parseJSON('{$data}');
+							
+							var count1 = 0;
+							var count2 = 0;
+							var count = 0;
+							var search_data = new Object();
+							
+							$.each(data, function(key,value) {
+								var filter_data = new Object();
+								$.each(value,function(kk,vv){
+									/*if(student != ""){
+			        					if(vv['name'].indexOf(student) != -1){
+			        						
+			        					filter_data[kk] = vv;
+			        							count++;
+			        					}
+			        				}else{
+			        						count++;
+			        					}*/
+			        					
+			        					try{
+			        						if(student != "" && grade != ""){
+				        						if((vv['name'] != "" && vv['name'] !=undefined) && (vv['name'].indexOf(student) != -1) || (vv['grade'] == grade)){
+				        							filter_data[kk] = vv;
+				        							count1++;
+				        						}
+				        					}else if(student != ""){
+					        					if((vv['name'] != "" && vv['name'] !=undefined) && (vv['name'].indexOf(student) != -1)){
+				        							filter_data[kk] = vv;
+				        							count1++;
+					        					}
+				        					}else if(grade != ""){
+					        					if((vv['grade'] != "" && vv['grade'] !=undefined) && vv['grade'] == grade){
+				        							filter_data[kk] = vv;
+				        							count1++;
+					        					}
+				        					}else{
+				        						count2++;
+				        					}
+			        					}catch(e){
+			        						//TODO handle the exception
+//			        						debugger;
+//			        						alert(e);
+			        					}
+			        					
+								});
+								
+								if(!$.isEmptyObject(filter_data)){
+									search_data[key] = filter_data;	
+									count = count1;
+								}else{
+									count = count2;
+								}
+								
+							});
+							
+							
+							maxPage = ((count % pageCount) == 0) ?  count/pageCount: parseInt(count/pageCount)+1; //翻页后的最大页码
+							
+							$('#llst').empty();
+							var real_data = null;
+							
+							if(student != "" || grade != ""){
+								real_data = search_data;
+							}else{
+								real_data = data;
+							}
+							
+							var day = 0.00;
+							var sum_day_money = 0.00;
+							var sum_cwqr_keshi = 0.00;
+							var sum_cwqr_money = 0.00;
+							var month_count = 0.00;
+							var month_xh_money = 0.00;
+							var used_hour = 0.00;
+							var real_consump_value = 0.00;
+							var remain_csp = 0.00;
+							var remain = 0.00;
+							
+							$.each(real_data, function(key,value) {
+								$.each(value,function(kk,vv){
+									
+									day += vv['day'] != undefined? parseFloat(vv['day']):0;
+									sum_day_money += vv['sum_day_money'] != undefined? parseFloat(vv['sum_day_money']):0;
+							        sum_cwqr_keshi += vv['sum_cwqr_keshi'] != undefined? parseFloat(vv['sum_cwqr_keshi']):0 ;
+							        sum_cwqr_money += vv['sum_cwqr_money'] != undefined? parseFloat(vv['sum_cwqr_money']):0 ;
+							        month_count += vv['month_count'] != undefined? parseFloat(vv['month_count']):0 ;
+							        month_xh_money += vv['month_xh_money'] != undefined? parseFloat(vv['month_xh_money']):0 ;
+							        used_hour += vv['used_hour'] != undefined? parseFloat(vv['used_hour']):0 ;
+							        real_consump_value += vv['real_consump_value'] != undefined? parseFloat(vv['real_consump_value']):0 ;
+							        remain_csp += vv['remain_csp'] != undefined? parseFloat(vv['remain_csp']):0 ;
+							        remain += vv['remain'] != undefined? parseFloat(vv['remain']):0 ;
+								});
+							});
+							
+							$('#day').text(day);
+							$('#sum_day_money').text(sum_day_money);
+							$('#sum_cwqr_keshi').text(sum_cwqr_keshi);
+							$('#sum_cwqr_money').text(sum_cwqr_money);
+							$('#month_count').text(month_count);
+							$('#month_xh_money').text(month_xh_money);
+							$('#used_hour').text(used_hour);
+							$('#real_consump_value').text(real_consump_value);
+							$('#remain').text(remain);
+							
+							
+							$.each(real_data, function(key,value) {
+								var school = key;
+								var i = 0;
+								var j = 0;
+								
+								$.each(value,function(kk,vv){
+		        			
+		        			//从第几条开始显示记录
+		        			if(i++>= pageNumber){
+		        				//每页显示指定条数
+		        				if((j++)>=pageCount){
+	        						return false;
+		        				}
+		        				
+		        					
+    							$('#llst').append("<tr id='sc" + i + "'>");
+    			
+		        			$('#sc' + i).append("<td>" + school + "</td>");
+		        			$('#sc' + i).append("<td>" + kk + "</td>");
+		        			$('#sc' + i).append("<td>" + vv['name'] + "</td>");
+		        			$('#sc' + i).append("<td class='info' data-std_id='" + kk + "'  data-school='" + school + "' style='text-decoration: underline;'>" + (vv['day']==undefined?0:vv['day']) + "</td>");
+		        			$('#sc' + i).append("<td>" + (vv['sum_day_money']==undefined?0:vv['sum_day_money']) + "</td>");
+		        			$('#sc' + i).append("<td class='info3' data-std_id='" + kk + "'  data-school='" + school + "' style='text-decoration: underline;'>" + (vv['sum_cwqr_keshi']==undefined?0:vv['sum_cwqr_keshi']) + "</td>");
+		        			$('#sc' + i).append("<td>" + (vv['sum_cwqr_money']==undefined?0:vv['sum_cwqr_money']) + "</td>");
+		        			$('#sc' + i).append("<td class='info2' data-std_id='" + kk + "'  data-school='" + school + "' style='text-decoration: underline;'>" + (vv['month_count']==undefined?0:vv['month_count']) + "</td>");
+		        			$('#sc' + i).append("<td>" + (vv['month_xh_money']==undefined?0:vv['month_xh_money']) + "</td>");
+		        			$('#sc' + i).append("<td class='info4' data-std_id='" + kk + "'  data-school='" + school + "' style='text-decoration: underline;'>" + (vv['used_hour']==undefined?0:vv['used_hour']) + "</td>");
+		        			$('#sc' + i).append("<td>" + (vv['real_consump_value']==undefined?0:vv['real_consump_value']) + "</td>");
+		        			$('#sc' + i).append("<td>" + (vv['remain_csp']==undefined?0:vv['remain_csp']) + "</td>");
+		        			$('#sc' + i).append("<td>" + (vv['remain']==undefined?0:vv['remain']) + "</td>");
+		        			$('#sc' + i).append("</tr>");
+		        			
+										
+									}
+								});
+							});
+							
+							currentPage = page; //设置当前页码
+							
+							if(maxPage <= 0){
+								this.page_string = '没有符合条件的记录';
+								maxPage = 1;
+							}else if(this.page_string == '没有符合条件的记录'){
+								this.page_string = 'Page {current_page} of {max_page}';
+							}
+							
+							this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+							this.max_page = maxPage;
+							
+							
+							$('#pagination_student_ks').jqPagination('option',{'current_page':currentPage,'max_page':maxPage,'trigger': false}); //设置分页插件的当前页码
+							Ycom.loading.hide();
+						}
+	});
+
+
+	$('#visit_search').click(function(){
+			$('#pagination_student_ks').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+	});
+
+	//列表项选择事件操作
+	$("#llst").on('click','tr',null,function(){
+
+      $("#llst tr").removeClass("active");
+		  $(this).attr("class", "active");
+
+    });	
+		
+		var cur_dd= $('#cur_date').val() == ''?new Date():$('#cur_date').val();
+		
+		var month_first = cur_dd.substr(0,8) + '01'//cur_dd.getFullYear() + "-" + ((cur_dd.getMonth()+1)<=9?('0' + (cur_dd.getMonth()+1)):(cur_dd.getMonth()+1)) + "-01";
+		var month_last = null;
+		switch(parseInt(cur_dd.substr(5,2))){
+			case 1: month_last = cur_dd.substr(0,4) + "-01-31";break;
+			case 2: 
+			if(((0==cur_dd.substr(0,4)%4)&&(cur_dd.substr(0,4)%100!=0))||(cur_dd.substr(0,4)%400==0)){
+				month_last = cur_dd.substr(0,4) + "-02-29";	
+			}else{
+				month_last = cur_dd.substr(0,4) + "-02-28";	
+			}
+			break;
+			
+			case 3: month_last = cur_dd.substr(0,4) + "-03-31";break;
+			case 4: month_last = cur_dd.substr(0,4) + "-04-30";break;
+			case 5: month_last = cur_dd.substr(0,4) + "-05-31";break;
+			case 6: month_last = cur_dd.substr(0,4) + "-06-30";break;
+			case 7: month_last = cur_dd.substr(0,4) + "-07-31";break;
+			case 8: month_last = cur_dd.substr(0,4) + "-08-31";break;
+			case 9: month_last = cur_dd.substr(0,4) + "-09-30";break;
+			case 10: month_last = cur_dd.substr(0,4) + "-10-31";break;
+			case 11: month_last = cur_dd.substr(0,4) + "-11-30";break;
+			case 12: month_last = cur_dd.substr(0,4) + "-12-31";break;
+			
+		}
+		
+		//var current_date = cur_dd.getFullYear() + "-" + ((cur_dd.getMonth()+1)<=9?('0' + (cur_dd.getMonth()+1)):(cur_dd.getMonth()+1)) + "-" + (cur_dd.getDate()<=9?('0' + cur_dd.getDate()):cur_dd.getDate());
+		var rdd = "{$cur_date}";
+		if(rdd != undefined && rdd != ''){
+			$('#cur_date').val(rdd);
+		}else{
+			$('#cur_date').val(cur_dd.getFullYear() + "-" + ((cur_dd.getMonth()+1)<=9?('0' + (cur_dd.getMonth()+1)):(cur_dd.getMonth()+1)) + "-" + (cur_dd.getDate()<=9?('0' + cur_dd.getDate()):cur_dd.getDate()));	
+		}
+		
+		<if condition="get_school_name() eq '集团'">
+			$('select[name=school]').val('0');
+		</if>
+		
+		$('.cur_label').text($('#cur_date').val());
+		
+		$('#kstj').submit(function(){
+			event.preventDefault();
+			$d = $('#kstj input[name="date"]').val();
+			if($('select[name=school]').length>0){
+				$s = $('select[name=school]').val();
+				document.location.href="{:U()}&school=" + $s + "&p_date=" + $d ;
+			}else{
+				document.location.href="{:U()}&school=&p_date=" + $d ;
+			}
+			
+		});
+
+		//弹出层，所有累计实际消耗课时详情
+		$("#llst").on('click','.info4',null,function(){
+		  var std_id=$(this).data('std_id');
+		  var school = $(this).data('school');
+		  var html = '';
+		  if(std_id!=null){
+					  $.post("{:U('course_detail_ajax')}",{std_id:std_id,p_school:school,type:'all_sjxh'},function(msg){
+				      html +='<table class="table">\
+				                <thead><tr class="success">\
+				                			<th>校区</th>\
+				                            <th>上课日期</th>\
+				                            <th>开始</th>\
+				                            <th>结束</th>\
+				                            <th>学员</th>\
+				                            <th>科目</th>\
+				                            <th>讲师</th>\
+				                            <th>订单</th>\
+				                            <th>课时</th>\
+				                            <th>财务确认</td>\
+				                            <th>价格</th>\
+				                          </tr></thead>';
+				      for(x in msg){
+				          if(msg[x]['cwqr'] != ''){
+				      		html+='<tr>\
+				          		  <td>'+ msg[x]['school'] +'</td>\
+				                  <td>'+ msg[x]['timee'] +'</td>\
+				                  <td>'+ msg[x]['time1'] +'</td>\
+				                  <td>'+ msg[x]['time2'] +'</td>\
+				                  <td>'+ msg[x]['name'] +'</td>\
+				                  <td>'+ msg[x]['class'] +'</td>\
+				                  <td>'+ msg[x]['teacher'] +'</td>\
+				                  <td>'+ msg[x]['course_id'] +'</td>\
+				                  <td>'+ msg[x]['count'] +'</td>\
+				                  <td>'+ msg[x]['cwqr'] +'</td>\
+				                  <td>'+ msg[x]['price'] +'</td>\
+				                </tr>\
+				                ';
+				      	}
+				      }
+				      html+= '</table>';
+				      $("#content").html(html);
+				      $('#info').modal('show')
+				  });  	
+		  }
+		
+		});
+
+		//弹出层，月实际消耗课时详情
+		$("#llst").on('click','.info3',null,function(){
+		  var std_id=$(this).data('std_id');
+		  var school = $(this).data('school');
+		  var html = '';
+		  if(std_id!=null){
+					  $.post("{:U('course_detail_ajax')}",{std_id:std_id,less_date:$('#cur_date').val(),p_school:school,type:'month_sjxh'},function(msg){
+				      html +='<table class="table">\
+				                <thead><tr class="success">\
+				                			<th>校区</th>\
+				                            <th>上课日期</th>\
+				                            <th>开始</th>\
+				                            <th>结束</th>\
+				                            <th>学员</th>\
+				                            <th>科目</th>\
+				                            <th>讲师</th>\
+				                            <th>订单</th>\
+				                            <th>课时</th>\
+				                            <th>财务确认</td>\
+				                            <th>价格</th>\
+				                          </tr></thead>';
+				      for(x in msg){	
+				      	if(msg[x]['cwqr'] != '' && (msg[x]['timee'] >= month_first && msg[x]['timee']<= month_last)){
+				      		html+='<tr>\
+				          		  <td>'+ msg[x]['school'] +'</td>\
+				                  <td>'+ msg[x]['timee'] +'</td>\
+				                  <td>'+ msg[x]['time1'] +'</td>\
+				                  <td>'+ msg[x]['time2'] +'</td>\
+				                  <td>'+ msg[x]['name'] +'</td>\
+				                  <td>'+ msg[x]['class'] +'</td>\
+				                  <td>'+ msg[x]['teacher'] +'</td>\
+				                  <td>'+ msg[x]['course_id'] +'</td>\
+				                  <td>'+ msg[x]['count'] +'</td>\
+				                  <td>'+ msg[x]['cwqr'] +'</td>\
+				                  <td>'+ msg[x]['price'] +'</td>\
+				                </tr>\
+				                ';
+		
+				      	}
+				      }
+				      html+= '</table>';
+				      $("#content").html(html);
+				      $('#info').modal('show')
+				  });  	
+		  }
+		
+		});
+
+		//弹出层，月预排课时详情
+		$("#llst").on('click','.info2',null,function(){
+		  var std_id=$(this).data('std_id');
+		  var school = $(this).data('school');
+		  var html = '';
+		  if(std_id!=null){
+					  $.post("{:U('course_detail_ajax')}",{std_id:std_id,less_date:$('#cur_date').val(),p_school:school,type:'month'},function(msg){
+				      html +='<table class="table">\
+				                <thead><tr class="success">\
+				                			<th>校区</th>\
+				                            <th>上课日期</th>\
+				                            <th>开始</th>\
+				                            <th>结束</th>\
+				                            <th>学员</th>\
+				                            <th>科目</th>\
+				                            <th>讲师</th>\
+				                            <th>订单</th>\
+				                            <th>课时</th>\
+				                            <th>财务确认</td>\
+				                            <th>价格</th>\
+				                          </tr></thead>';
+				      for(x in msg){	
+				      	if((msg[x]['timee'] >= month_first && msg[x]['timee']<= month_last)){
+					          html+='<tr>\
+					          		  <td>'+ msg[x]['school'] +'</td>\
+					                  <td>'+ msg[x]['timee'] +'</td>\
+					                  <td>'+ msg[x]['time1'] +'</td>\
+					                  <td>'+ msg[x]['time2'] +'</td>\
+					                  <td>'+ msg[x]['name'] +'</td>\
+					                  <td>'+ msg[x]['class'] +'</td>\
+					                  <td>'+ msg[x]['teacher'] +'</td>\
+					                  <td>'+ msg[x]['course_id'] +'</td>\
+					                  <td>'+ msg[x]['count'] +'</td>\
+					                  <td>'+ msg[x]['cwqr'] +'</td>\
+					                  <td>'+ msg[x]['price'] +'</td>\
+					                </tr>\
+					                ';
+				       	}
+				      }
+				      html+= '</table>';
+				      $("#content").html(html);
+				      $('#info').modal('show')
+				  });  	
+		  }
+		
+		});
+
+		//弹出层，当天课时详情
+		$("#llst").on('click','.info',null,function(){
+		  var std_id=$(this).data('std_id');
+		   var school = $(this).data('school');
+		  var html = '';
+		  if(std_id!=null)
+		  $.post("{:U('course_detail_ajax')}",{std_id:std_id,less_date:$('#cur_date').val(),p_school:school,type:'day'},function(msg){
+		      html +='<table class="table">\
+		                <thead><tr class="success">\
+		                			<th>校区</th>\
+		                            <th>上课日期</th>\
+		                            <th>开始</th>\
+		                            <th>结束</th>\
+		                            <th>学员</th>\
+		                            <th>科目</th>\
+		                            <th>讲师</th>\
+		                            <th>订单</th>\
+		                            <th>课时</th>\
+		                            <th>财务确认</td>\
+		                            <th>价格</th>\
+		                          </tr></thead>';
+		      for(x in msg){
+		      	
+		      	if(msg[x]['timee'] == $('#cur_date').val() ){
+		      		html+='<tr>\
+		          		  <td>'+ msg[x]['school'] +'</td>\
+		                  <td>'+ msg[x]['timee'] +'</td>\
+		                  <td>'+ msg[x]['time1'] +'</td>\
+		                  <td>'+ msg[x]['time2'] +'</td>\
+		                  <td>'+ msg[x]['name'] +'</td>\
+		                  <td>'+ msg[x]['class'] +'</td>\
+		                  <td>'+ msg[x]['teacher'] +'</td>\
+		                  <td>'+ msg[x]['course_id'] +'</td>\
+		                  <td>'+ msg[x]['count'] +'</td>\
+		                  <td>'+ msg[x]['cwqr'] +'</td>\
+		                  <td>'+ msg[x]['price'] +'</td>\
+		                </tr>\
+		                ';
+		      		}
+		      }
+		      html+= '</table>';
+		      $("#content").html(html);
+		      $('#info').modal('show')
+		  })
+		});
+		
+		$('#student_form_search').submit(function(){
+			event.preventDefault();
+		});
+		
+		$('#export_search').click(function(){
+			$('#export_date').val($('#cur_date').val());
+			$('#export_form').submit();
+		});
+		
+});
+
+</script>
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

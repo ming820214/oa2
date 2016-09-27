@@ -1,0 +1,157 @@
+<extend name="Layout/ins_popup" />
+<block name="content">
+    <style>
+    .input-group {
+        margin: 10px auto;
+    }
+    .loading {
+        position: fixed; width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        background-color: rgba(255, 255, 255, .2);
+        background-image: url(__INS__/img/loading.gif);
+        background-position: center 300px;
+        background-repeat: no-repeat;
+        background-size: 50px;
+        display: none;
+        z-index: 5000;
+    }
+    </style>
+    <form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+    <input type="hidden" name="id" id="id" value="{$id}">
+    <div class="page-header clearfix">
+        <h1 class="col-xs-5">退课</h1>
+        <div class="text-right">
+            <button id="save" class="btn btn-danger">确定</button> |
+            <a onclick="myclose();return false;" class="btn btn-sm btn-default">取消</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 sub_content">
+            <div class="form-group col-xs-12">
+                <label class="col-xs-3 control-label" for="std_id_display">姓名/学号：</label>
+                <div class="col-xs-4">
+                    <input class="form-control" type="text" id="name_display" name="name_display" value="{$name}" disabled />
+                </div>
+                <div class="col-xs-5">
+                    <input class="form-control" type="text" id="std_id_display" name="std_id_display" value="{$std_id}" disabled />
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <label class="col-xs-3 control-label" for="plan_name">方案/单价：</label>
+                <div class="col-xs-9">
+                    <input class="form-control" type="text" id="plan_name" name="plan_name" value="{$plan_name}" disabled />
+                </div>
+<!--                 <div class="col-xs-3" data-toggle="tooltip" data-placement="top" title="{$unitprice} X {$factor}">
+                    <input class="form-control" type="text" id="unitprice_real" name="unitprice_real" value="{$unitprice_real}" disabled />
+                </div>
+ -->
+            </div>
+            <div class="form-group col-xs-12">
+                <label class="col-xs-3 control-label">订购：</label>
+                <div class="col-xs-2">
+                    <input class="form-control" type="text" id="hour" name="hour" value="{$hour}" disabled />
+                </div>
+                <label class="col-xs-1 control-label">赠送</label>
+                <div class="col-xs-2">
+                    <input class="form-control" type="text" id="ext_hour" name="ext_hour" value="{$ext_hour}" disabled />
+                </div>
+                <label class="col-xs-1 control-label">单价</label>
+                <div class="col-xs-3">
+                    <input class="form-control" type="text" id="ext_hour" value="{$unitprice}" disabled />
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <label class="col-xs-3 control-label">已上：</label>
+                <div class="col-xs-2">
+                    <input class="form-control" type="text" id="used_hour" name="used_hour" value="{$used_hour}" disabled />
+                </div>
+                <label class="col-xs-1 control-label">赠送</label>
+                <div class="col-xs-2">
+                    <input class="form-control" type="text" id="forext_hour" name="forext_hour" value="{$forext_hour}" disabled />
+                </div>
+                <label class="col-xs-1 control-label">单价</label>
+                <div class="col-xs-3">
+                    <input class="form-control" type="text" id="ext_hour" value="{$unitprice_real}" disabled />
+                </div>
+            </div>
+            <div class="form-group col-xs-12" data-toggle="tooltip" data-placement="top" title="{$return_info}">
+                <label class="col-xs-3 control-label" for="tocharge">合计金额（￥）：</label>
+                <div class="col-xs-9">
+                    <input class="form-control" type="text" name="tocharge" value="{$return_value}" readonly />
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <label class="col-xs-3 control-label" for="nouse">未上赠送课时数</label>
+                <div class="col-xs-9">
+                    <input class="form-control" type="text" id="nouse" name="nouse" value="{$return_exthour}" disabled />
+                </div>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label class="col-xs-3 control-label" for="remark">退课原因：</label>
+                <div class="col-xs-9">
+                    <input class="form-control" type="text" name="drop_reason" required/>
+                </div>
+            </div>
+            
+            <div class="form-group col-xs-12">
+                <label class="col-xs-3 control-label" for="remark">备注：</label>
+                <div class="col-xs-9">
+                    <input class="form-control" type="text" id="remark" name="remark" value=""  required/>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+
+$(document).ready(function() {
+    $('#form_data').submit(function(){
+        doAjax('{:U($controller."/dropCourse")}', $('#form_data').serialize(), 'POST', function(result){
+            ui_info(result.info);
+            if(result.state == 'ok'){
+                setTimeout(function(){
+                    parent.getData(parent.g_start, parent.g_count, parent.g_search);
+                    myclose();
+                }, 500);
+            }
+        });
+
+        return false;
+    });
+
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+function save() {
+    return $('#form_data').submit();
+}
+
+function doAjax(url, params, method, callback){
+    $('.loading').show();
+    $.ajax({
+        url: url,
+        type: method,
+        dataType: 'JSON',
+        data: params,
+    })
+    .done(function(result){
+        if(result.state == 'ok'){
+            callback(result);
+        }else{
+            ui_error(result.info);
+        }
+    })
+    .fail(function(){
+        alert('网络错误！');
+    })
+    .always(function(){
+        $('.loading').fadeOut();
+    });
+}
+</script>
+</block>

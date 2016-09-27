@@ -1,0 +1,81 @@
+<extend name="Layout/ins_popup" />
+<block name="content">
+	{:W('PageHeader/popup',array('name'=>'添加项','search'=>'N'))}
+	<div class="row">
+		<div class="col-sm-12 sub_content">
+			<form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+				<input type="hidden" name="ajax" id="ajax" value="1">
+				<input type="hidden" name="opmode" id="opmode" value="add">
+				<select name="node_list" id="node_list" class="hidden">
+					{:fill_option($node_list)}
+				</select>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="name">名称*：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="text" id="name" name="name" check="require" msg="请输入名称">
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="url">添加到：</label>
+					<div class="col-xs-9">
+						<select class="form-control" name="pid" id="pid">
+							{:fill_option($groupList)}
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12 hide" id="group">
+					<label class="col-xs-3 control-label" for="sort">课程类型分组：</label>
+					<div class="col-xs-9">
+						<select class="form-control" name="group">
+						{:fill_option_ex(get_config('COURSE_GROUP'))}
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="url">附加信息：</label>
+					<div class="col-xs-9">
+						<textarea type="text" class="form-control" name="ext" id="ext"></textarea>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="sort">排序：</label>
+					<div class="col-xs-9">
+						<input class="form-control" type="text" id="sort" name="sort" >
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		$('#pid').change(function(){
+			if($(this).val()=='17'){
+				$('#group').removeClass('hide');
+			}else{
+				$('#group').addClass('hide');
+			}
+		})
+
+		function select_pid() {
+			winopen("{:U('winpop')}", 704, 500);
+		}
+
+		function save() {
+			if (check_form("form_data")) {
+				var vars = $("#form_data").serialize();
+				sendAjax("{:U('save')}", vars, function(data) {
+					if (data.status) {
+						ui_alert(data.info, function() {
+							parent.location.reload(true);
+							myclose();
+						});
+					} else {
+						ui_error(data.info);
+					}
+				});
+			}
+		}
+
+	</script>
+</block>

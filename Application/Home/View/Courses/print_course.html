@@ -1,0 +1,279 @@
+<extend name="Layout/ins_popup_large" />
+<block name="content">
+    <style>
+
+        #print{
+            width: 785px;
+            margin: 0;
+            padding: 0 0 0 100px;
+            /*border: 1px solid black;*/
+        }
+
+        #print input{display: none;}
+        #print .info{
+            text-align: center;
+            margin-top: 130px;
+        }
+        #print .info td{
+            height: 35px;
+        }
+        #print .course{
+            color: red;
+            text-align: center;
+            font-size: 10px;
+            margin: 45px auto auto 0;
+        }
+        .shouju td{
+            text-align: center;
+        }
+        .shouju{
+            position: absolute;
+            top: 370px;
+        }
+        @media print{
+            body{padding: 5px !important;}
+        }
+    </style>
+<div class="page-header clearfix hidden-print">
+    <h1 class="col-xs-10">选择打印的数据==》》》(打印选项：布局纵向，边距无)</h1>
+    <div class="text-right">
+        <a onclick="print_course();" class="btn btn-sm btn-default">打印</a>
+        <a onclick="myclose();" class="btn btn-sm btn-default">关闭</a>
+    </div>
+</div>
+<div class="table-responsive  hidden-print">
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <thead>
+            <tr>
+                <th><nobr>选择</nobr></th>
+                <th><nobr>学员类型</nobr></th>
+                <th><nobr>业务类型</nobr></th>
+                <th><nobr>课程类型</nobr></th>
+                <th><nobr>缴费金额</nobr></th>
+                <th><nobr>报名课时</nobr></th>
+                <th><nobr>课程单价</nobr></th>
+                <th><nobr>备注</nobr></th>
+            </tr>
+        </thead>
+        <tbody id="data-list">
+            <volist name="data" id="v">
+                <tr>
+                    <td><input class="form-control" type="checkbox" value="{$v.id}" name="id[]"></td>
+                    <td>{$v.order_std_type}</td>
+                    <td>{$v.type}</td>
+                    <td>{$v.order_plan}</td>
+                    <td>{$v.value}元</td>
+                    <td>{$v.order_hour}</td>
+                    <td><if condition="$v.order_unitprice gt 0">{$v.order_unitprice}元</if></td>
+                    <td><if condition="$v.order_ext_hour gt 0">赠送{$v.order_ext_hour}课时</if></td>
+                </tr>
+            </volist>
+        </tbody>
+    </table>
+    <!-- 补充信息部分 -->
+    <div>
+        <div class="col-md-4 col-md-offset-1">
+            <div class="input-group">
+                <a class="input-group-addon">收款项目</a>
+                <select name="project" id="project" class="form-control">
+                    <option>全款</option>
+                    <option>预交</option>
+                    <option>补款</option>
+                    <option>转班</option>
+                    <option>退费</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-addon">收款事由</span>
+                <input type="text" class="form-control" id="reason">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="input-group">
+                <span class="input-group-addon">结算方式</span>
+                <select name="method" class="form-control" id="method"><option value="现金">现金</option><option value="刷卡">刷卡</option></select>
+            </div>
+        </div>
+    </div><br><br>
+</div>
+
+<!-- 要打印的页面内容，794×1123  -->
+<div id="print"  class="visible-print-block">
+    <table class="info" border="0">
+        <tr>
+            <td width="86px"></td>
+            <td width="120px">{$info.name}</td>
+            <td width="86px"></td>
+            <td width="120px">{$info.sex|sex}</td>
+            <td width="120px"></td>
+            <td width="130px">{$info.std_id}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>{$info.schoolx}</td>
+            <td></td>
+            <td>
+            	<switch name="info.grade">
+	                <case value="22">高三</case>
+	                <case value="21">高二</case>
+	                <case value="20">高一</case>
+	                <case value="50">九年级</case>
+	                <case value="40">八年级</case>
+	                <case value="39">七年级</case>
+	                <case value="38">六年级</case>
+	                <case value="93">五年级</case>
+	                <case value="100">四年级</case>
+	                <case value="101">三年级</case>
+	                <case value="102">二年级</case>
+	                <case value="103">一年级</case>
+                </switch>
+            </td>
+            <td></td>
+            <td>{$info.wl}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>{$info.tel}</td>
+            <td></td>
+            <td>{$info.tel2}</td>
+            <td></td>
+            <td>{$info.address}</td>
+        </tr>
+        <tr height="15px"></tr>
+        <tr>
+            <td></td>
+            <td>{$info.name}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>{$info.jiaoxue}</td>
+            <td></td>
+            <td>{$info.xueguan}</td>
+            <td></td>
+            <td>{$info.school}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan="5">{$info.other}</td>
+        </tr>
+    </table>
+    <div style="position:relative;">
+        <table class="course" border="0">
+            <thead>
+                <tr>
+                    <td width="10px"></td>
+                    <td width="70px"></td>
+                    <td width="50"></td>
+                    <td width="200px"></td>
+                    <td width="100px"></td>
+                    <td width="50px"></td>
+                    <td width="90"></td>
+                    <td width="100px"></td>
+                </tr>
+            </thead>
+        </table>
+        <!-- 底部收据 -->
+        <table class="shouju" border="0" align="center">
+            <tr height="30">
+                <td colspan="2"></td>
+                <td colspan="2" style="text-align: right;">
+                    {:date('Y')}&nbsp;&nbsp;&nbsp;&nbsp;
+                    {:date('m')}&nbsp;&nbsp;&nbsp;&nbsp;
+                    {:date('d')}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr height="45px">
+                <td width="70px"></td>
+                <td width="100px">{$info.name}</td>
+                <td width="110px"></td>
+                <td width="130px"></td>
+                <td width="115px"></td>
+                <td width="100px" id="project_print"></td>
+            </tr>
+            <tr height="40px">
+                <td></td>
+                <td colspan="2" id="print_money1"></td>
+                <td colspan="2" id="print_money2" valign="bottom" style="letter-spacing: 10px;text-align: right;"></td>
+                <td id="print_method" valign="bottom"></td>
+            </tr>
+            <tr height="50px">
+                <td></td>
+                <td colspan="3" id="reason_print"></td>
+                <td></td>
+                <td>{:get_school_name()}<br>{:get_user_name()}</td>
+            </tr>
+        </table>
+    </div>
+
+
+</div>
+
+</block>
+<block name="js">
+<script type="text/javascript">
+function print_course () {
+    var money = 0;
+    $("#project_print").text($("#project").val());
+    $("#reason_print").text($("#reason").val());
+    $("#print_method").text($("#method").val());
+    $(".course tbody tr").each(function(){
+        var as = $(this).find('td').eq(4).text();
+        as =parseFloat(as.replace('元',''));
+        if(as > 0)money += as;
+    })
+    $("#print_money1").text(numToCny(money));
+    $("#print_money2").text('￥'+money+((parseInt(money)==money)?'.00':''));
+    print();
+
+}
+$("input[type='checkbox']").change(function(){
+    var text = $(this).parents("tr").text();
+    if($(this).prop('checked')==true){
+        $("#print .course").append($(this).parents("tr").prop('outerHTML'));
+    }else{
+        $("#print tr").each(function(){
+            if($(this).text() == text)$(this).remove();
+        })
+    }
+})
+
+//人民币金额转大写程序 JavaScript版         
+function numToCny(n){     
+    var fraction = ['角', '分'];  
+    var digit = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];  
+    var unit = [ ['元', '万', '亿'], ['', '拾', '佰', '仟']  ];  
+    var head = n < 0? '欠': '';  
+    n = Math.abs(n);  
+
+    var s = '';  
+
+    for (var i = 0; i < fraction.length; i++)   
+    {  
+        s += (digit[Math.floor(n * 10 * Math.pow(10, i)) % 10] + fraction[i]).replace(/零./, '');  
+    }  
+    s = s || '整';  
+    n = Math.floor(n);  
+
+    for (var i = 0; i < unit[0].length && n > 0; i++)   
+    {  
+        var p = '';  
+        for (var j = 0; j < unit[1].length && n > 0; j++)   
+        {  
+            p = digit[n % 10] + unit[1][j] + p;  
+            n = Math.floor(n / 10);  
+        }  
+        s = p.replace(/(零.)*零$/, '').replace(/^$/, '零')  + unit[0][i] + s;  
+    }  
+    return head + s.replace(/(零.)*零元/, '元').replace(/(零.)+/g, '零').replace(/^整$/, '零元整');  
+}
+</script>
+</block>
+

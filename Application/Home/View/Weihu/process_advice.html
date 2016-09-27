@@ -1,0 +1,430 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+
+<div class="row">
+<div class="col-sm-7">
+  <div style="overflow-x: auto;">
+    <table class="table table-bordered" style="min-width: 700px;">
+      <thead>
+        <tr>
+        	<th>校区</th>
+          <th>学员姓名</th>
+          <th>科目</th>
+          <th>教师</th>
+          <th>最近建议时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="llst">
+      <volist name="data" id="list">
+          <tr>
+          	<td><h4>{$list.school}</h4></td>
+            <td><h4>{$list.name}</h4></td>
+            <td><h4>{$list.class}</h4></td>
+            <td><h4>{$list.teacher}</h4></td>
+            <td>{$list.timee}</td>
+            <td>
+            	<input type="hidden" name="id" value="{$list.id}">
+         			<input type="button" class="btn btn-sm btn-primary" name="viewRecord" id="viewRecord" value="查看" onclick="$.showAdviceRecord({$list.id},{$list.stuid})"/>
+            </td>
+          </tr>
+        </volist>
+      </tbody>
+    </table>
+  </div>
+   <!--维护意见分页-->
+	  <div id="pagination_advice" class="pagination" style="float:right;margin-right:35px;">
+				    <a href="#" class="first" data-action="first">&laquo;</a>
+				    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+				    <input id="pager_input" type="text" readonly="readonly"  data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+				    <a href="#" class="next" data-action="next">&rsaquo;</a>
+				    <a href="#" class="last" data-action="last">&raquo;</a>
+		</div>
+  </div>
+</div>
+
+
+<!-- 学管与教师交流 -->
+<div class="modal fade" id="advice_dialog" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document" style="width:800px;">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title">学管与教师交流</h4>
+	      </div>
+	      <div class="modal-body">
+			    <div class="row">  									
+						  <div class="col-sm-12" id="adviceRecordDvid">
+								
+						  </div>
+						  <div style="float:left;width:100%;height:100%;">
+						  	<form id="rely_form_id" name="rely_form" method="post" action="">
+							  	<table  class="table table-bordered table-responsive">
+									    <tr>
+									      <td><label><nobr>回复:</nobr></label></td>
+									      <td>
+									      	<textarea class="form-control" id="rely_content" name="advice" rows="3" cols="59"></textarea>
+									      	<input type="hidden" name="pid" id="rootTreeId" value=""/>
+									      	<input type="hidden" name="stuid" id="rely_stuid" value=""/>
+									      </td>
+									    </tr>
+									    
+									    <tr>
+									      <td colspan="2" align="center">
+									      	<input type="button" class="bt" name="add" id="xueguan_rely" value="回复" />
+									      </td>
+									    </tr>
+									  </table>
+								  </form>
+						  </div>
+					</div>
+	    </div>
+	  </div>
+	</div>
+</div>
+</block>
+
+<block name="js">
+<script type="text/javascript">
+
+sid=0;
+pageCount = 1; //每页显示多少条记录(全局变量)
+currentPage = 1; //当前页码
+maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
+pageString = '';
+
+$(function(){
+	
+	/**
+  	 * 绘制动态表格公用函数
+  	 * @param {Object} data  表格实体数据，由后台返回;
+  	 * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+  	 * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+  	 * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+  	 * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+  	 * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+  	 * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+  	 * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+  	 */
+  	$.drawTrTd=function (data,tbody_id,button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr){
+  		
+  		$.each(data, function(i,value) {
+  			var temp_str = '';
+  			
+  			$('#' + tbody_id).append('<tr id="' + value.id + '">');
+  			
+  			if(check_name != null){
+  				$('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class="' + value.id + '"  value="' + value.classid + '" /></td>');	
+  			}
+  			
+  			
+  			for(var i=0;i<field_arr.length;i++){
+  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+  					$('#' + value.id).append('<td>' + (eval('value.' + field_arr[i])== undefined ? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'))  + '</td>');
+  				}else{
+  					$('#' + value.id).append('<td>' + (eval('value.' + field_arr[i])== undefined ? '': eval('value.' + field_arr[i]))  + '</td>');	
+  				}
+  				
+  			}
+  			
+  			if(button_method_arr != null){
+  				for(var j=0;j<button_method_arr.length;j++){
+  					if(method_param_arr != null){
+  						var param_str = '';
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  						for(var k=0;k<method_param_arr.length;k++){
+  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  						}
+  						param_str = param_str.substring(0,param_str.length-1);
+						temp_str += param_str;  						
+  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}else{
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';	
+  					}
+  					
+  				}	
+  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+  				$('#' + value.id).append('<td>' + temp_str  + '</td>');
+  			}
+  			
+  			
+  		});
+  	}
+  	
+	
+  	$.buildWall=function(data){
+  		 var temp_str = '';
+		
+  		 if(!$.isArray(data)){
+  		 	//针对一维数组的操作
+	  		 		if(data.node_type == 0){
+	  		 			temp_str += '<div class="panel panel-primary" style="margin:1px;">';
+	  		 		}else{
+	  		 			temp_str += '<div class="panel panel-warning" style="margin:1px;">';
+	  		 		}
+  		 		 temp_str += '<div class="panel-heading" role="tab" id="heading' + data.id + '">';
+  		     temp_str += '<h4 class="panel-title">';
+  		     temp_str += '<a role="button" data-toggle="collapse"  href="#collapse' + data.id + '" aria-expanded="true" aria-controls="collapse' + data.id + '">';
+		  		 temp_str += data.teacher   +  '<span style="float:right;">' + data.timee + '</span>';
+		  		 temp_str += '</a></h4></div>';
+		  		 temp_str += '<div id="collapse' + data.id + '" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading' + data.id + '">';
+		  		 temp_str += '<div class="panel-body">';
+		  		 temp_str += data.advice;
+		  		 if(data.node_type == 1){
+			  		 		
+			  		 	if($.isArray(data._child) && data._child.length>0){
+			  		 		temp_str += '</div>';
+			  		 		temp_str += $.buildWall(data._child);
+			  		 	}else{
+			  		 		temp_str += '<br/><a href="javascript:void(0);" style="float:right;" onclick="$.adviceReply(' + data.id + ',' + data.stuid + ')">回复</a></div>';
+			  		 	}
+		  		 }else{
+		  		 	
+		  		 		temp_str += '</div>';
+			  		 	if($.isArray(data._child) && data._child.length>0){
+			  		 		temp_str += $.buildWall(data._child)
+			  		 	}
+			  		 	
+		  		 }
+  		 	
+  		 }else if($.isArray(data)){
+  		 	//针对二维数组的操作
+	  		 	 if(data[0].node_type == 0){
+	  		 			temp_str += '<div class="panel panel-primary" style="margin:1px;">';
+	  		 		}else{
+	  		 			temp_str += '<div class="panel panel-warning" style="margin:1px;">';
+	  		 		}
+  		 	   temp_str += '<div class="panel-heading" role="tab" id="heading' + data[0].id + '">';
+  		     temp_str += '<h4 class="panel-title">';
+  		     temp_str += '<a role="button" data-toggle="collapse"  href="#collapse' + data[0].id + '" aria-expanded="true" aria-controls="collapse' + data[0].id + '">';
+  		 		 temp_str += data[0].teacher   +  '<span style="float:right;">' + data[0].timee + '</span>';
+		  		 temp_str += '</a></h4></div>';
+		  		 temp_str += '<div id="collapse' + data[0].id + '" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading' + data[0].id + '">';
+		  		 temp_str += '<div class="panel-body">';
+		  		 temp_str += data[0].advice;
+		  		 if(data[0].node_type == 1){
+			  		 		
+			  		 	if($.isArray(data[0]._child) && data[0]._child.length>0){
+			  		 		temp_str += '</div>';
+			  		 		temp_str += $.buildWall(data[0]._child);
+			  		 	}else{
+			  		 		temp_str += '<br/><a href="javascript:void(0);" style="float:right;" onclick="$.adviceReply(' + data[0].id + ',' + data[0].stuid +  ')">回复</a></div>';
+			  		 	}
+		  		 }else{
+		  		 	
+		  		 		temp_str += '</div>';
+			  		 	if($.isArray(data[0]._child) && data[0]._child.length>0){
+			  		 		temp_str += $.buildWall(data[0]._child)
+			  		 	}
+			  		 	
+		  		 }
+  		 }
+  		 
+  		 	
+  		 	temp_str += '</div></div>';
+  		 
+  		  return temp_str;
+  		 
+  	}
+  	
+  		//教师建议列表分页操作
+   $('#pagination_advice').jqPagination({
+			link_string	: '/?page={page_number}',
+			max_page	: maxPage,
+			paged		: function(page) {
+		
+			var pageNumber = (page-1)*pageCount //从第几行开始查询
+						
+			$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('treatAdvicelst')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+				dataType:'json',
+				success:function(msg,status){
+					if(status=="success"){
+						var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+						currentPage = page; //设置当前页码
+						maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+						
+						if(msg.data != null && msg.data.length > 0 ){
+							$('#llst').empty();
+							
+							//data,tbody_id,button_method_arr,button_name_arr,field_arr,check_name
+							var button_method_arr = ['$.showAdviceRecord'];
+							var button_name_arr = ['查看'];
+							var field_arr = ['school','name','class','xueguan','flag','timee'];
+							var select_lst_arr = null;
+							var check_name = null;
+							var method_param_arr = ['id','stuid'];
+							$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr);
+						}else{
+							$('#llst').empty();
+						}
+						
+					}
+				}
+			});
+
+			this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+			this.max_page = maxPage;
+			
+			if(this.max_page <= 0){
+				this.page_string = '没有符合条件的记录';
+			}
+		}
+		
+	});
+  	
+	
+	
+	//表格title checkbox 控制
+  $('#check_all').bind('click',function(){
+  	 if($('#check_all').is(':checked')){
+  	 	  $("[name='student_sel']").prop("checked",true);
+  	 	  
+  	 }else{
+  	 		 $("[name='student_sel']").prop("checked",false);
+  	 }
+  });
+  
+	
+	
+	 $('#form_advice').submit(function(event){
+	 		event.preventDefault();
+	 		
+	 		var form_data =  $('#form_advice').serializeArray();
+	 		
+	 		$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('adviceSave')}",
+				dataType:'json',
+				data:form_data,
+				success:function(msg,status){
+					ui_info('建议保存成功！');
+				}
+				});
+	 		
+	 })
+	 
+	 //回复内容保存
+	 $('#form_advice_reply').submit(function(event){
+	 		event.preventDefault();
+	 		
+	 		var form_data =  $('#form_advice_reply').serializeArray();
+	 		
+	 		$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('adviceReplySave')}",
+				dataType:'json',
+				data:form_data,
+				success:function(msg,status){
+					ui_info('回复成功！');
+					$.showAdviceRecord($('#rootTreeId').val());
+					$('#advice_reply_dialog').modal('hide');
+				}
+				});
+	 		
+	 })
+	 
+	 
+	 //ajax显示页面建议对话内容
+	 $.showAdviceRecord=function(rid,stuid){
+		 	
+		 	$.ajax({
+					type:'POST',
+					async:false,
+					cache:false,
+					url:"{:U('showAdviceAndApply')}",
+					dataType:'json',
+					data:{'id':rid},
+					success:function(msg,status){
+						 //清空旧的显示内容
+						 $('#adviceRecordDvid').empty();
+						 $('#rootTreeId').val(msg.pid);
+						 $('#rely_stuid').val(stuid);
+						 var temp_str = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
+						 
+						 temp_str += $.buildWall(msg.data); //垒墙论坛回复模式内容创建；
+						 
+						 //插入新的显示内容
+						 $('#adviceRecordDvid').append(temp_str);
+						 
+							$('#advice_dialog').modal('show');
+					}
+					});
+	 		
+	 }
+	 
+	 
+	 //显示回复窗口
+	 $.adviceReply=function(pid,stuid){
+	 	
+	 		$('#reply_pid_id').val(pid);
+	 		$('#stuid_val').val(stuid);
+	 		$('#student_name').text($("#stuid_val").find("option:selected").text());
+	 		$('#advice_reply_dialog').modal('show');
+	 }
+	 
+	 
+	 $.refreshAdvicelst=function(){
+			 	$.ajax({
+						type:'POST',
+						async:false,
+						cache:false,
+						url:"{:U('treatAdvicelst')}&pageNumber=0&pageCount=" + pageCount,
+						dataType:'json',
+						success:function(msg,status){
+							if(status=="success"){
+								currentPage = 1; //设置当前页码
+								maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+								
+								$('#pagination_advice').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+								$('#pagination_advice').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+				
+								if(msg.data != null && msg.data.length > 0 ){
+									$('#llst').empty();
+									var button_method_arr = ['$.showAdviceRecord'];
+									var button_name_arr = ['查看'];
+									var field_arr = ['school','name','class','xueguan','flag','timee'];
+									var select_lst_arr = null;
+									var check_name = null;
+									var method_param_arr = ['id','stuid'];
+									$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr);
+								}else{
+									$('#llst').empty();
+								}
+							}
+						}
+					});
+	 }
+	 
+	 
+	 $('#xueguan_rely').click(function(){
+	 	
+	 	 var param = $('#rely_form_id').serializeArray();
+	 		$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('xueguanAdviceReply')}",
+				dataType:'json',
+				data:param,
+				success:function(msg,status){
+					ui_info('回复成功！');
+				 //列表刷新动作
+				  $.refreshAdvicelst();
+					$('#advice_dialog').modal('hide');
+				}
+				});
+	 })
+});
+</script>
+<!--<include file="box" />-->
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

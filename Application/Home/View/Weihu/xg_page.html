@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>{$title|default=get_system_config("SYSTEM_NAME")}</title>
+		<link href="__INS__/css/bootstrap.min.css" rel="stylesheet">
+		<link href="__INS__/font-awesome/css/font-awesome.css" rel="stylesheet">
+		<link href="__INS__/css/animate.css" rel="stylesheet">
+	    <link href="__INS__/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+		<link href="__INS__/css/plugins/gritter/jquery.gritter.css" />
+		<include file="Layout:ins_plugin_css"/>
+		<link href="__INS__/css/style.css" rel="stylesheet">
+		<link href="__INS__/css/xiaowei.css" rel="stylesheet">
+		<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+
+		<style type="text/css">
+			.export {
+				margin-top: 5px;
+				margin-right: 5px;
+				margin-bottom: 5px;
+			}
+		</style>
+
+	</head>
+	<include file="Layout:page_script"/>
+	<body class="{$Think.CONTROLLER_NAME}">
+		<div class="shade"></div>
+		<nav class="navbar navbar-default row" role="navigation" id="top_menu">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-6">
+					<span class="sr-only">Toggle navigation</span>
+					<i class="fa fa-bars fa-lg"></i>
+				</button>
+				<div>
+					<a href="{:U('index/index')}" class="navbar-brand">&nbsp;&nbsp;&nbsp;{:get_system_config("SYSTEM_NAME")}</a>
+				</div>
+			</div>
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse" id="navbar-collapse-6">
+				<ul class="nav navbar-nav navbar-right">
+					<foreach name="top_menu" item="top_menu_vo">
+						<a class="nav-app" href="#" url="{:U($top_menu_vo['url'])}" node="{$top_menu_vo.id}" onclick="click_top_menu(this)" ><i class="{$top_menu_vo.icon}"></i>{$top_menu_vo.name}<php>
+							if(!empty($badge_count[$top_menu_vo['id']])){
+							$html='';
+							$html='<span class="label label-danger">'.$badge_count[$top_menu_vo['id']].'</span>';
+							echo $html;
+							}
+						</php></a>
+					</foreach>
+					<a class="nav-app btn-danger" href="{:U('public/logout')}"><i class="fa fa-sign-out"></i>退出</a></ul>
+			</div><!-- /.navbar-collapse -->
+		</nav>
+		<div id="wrapper">
+			<div class="sidebar navbar-static-side" id="sidebar">
+				<div id="user_info" class="text-center hidden-xs"  >
+					<span >{:get_school_name()} ：{$Think.session.user_name}</span>
+				</div>
+				<div id="nav_head" class="text-center" onclick="toggle_left_menu()">
+					<span class="menu-text">{$top_menu_name}</span>
+					<b id="left_menu_icon" class="fa fa-angle-down pull-right"></b>
+				</div>
+				{:W('Sidebar/left',array('tree'=>$left_menu,'badge_count'=>$badge_count))}
+			</div>
+			<div id="page-wrapper" class="gray-bg">
+				<div class="row wrapper border-bottom gray-bg">
+					<div class="breadcrumbs" id="breadcrumbs">
+						<ul class="breadcrumb">
+							<li>
+								<i class="fa fa-home home-icon"></i>
+								<a href="index.php">Home</a>
+							</li>
+							<li>
+								{$top_menu_name}
+							</li>
+						</ul><!-- .breadcrumb -->
+					</div>
+				</div>
+				<div class="wrapper wrapper-content">
+
+					<div>
+						<!--功能模块区域-->
+						<div class="panel panel-success" style="border:0px;">
+						    <div class="panel-heading" role="tab" id="headingQuery">
+						    	<h3>
+							       	 {$name}&nbsp;&nbsp;<small style="color: white;">同学内容管理区</small>
+						     	</h3>
+						    </div>
+						    <div class="panel-body" style="padding:0px;border:0px;">
+							  <!-- Nav tabs -->
+							  <ul class="nav nav-tabs" role="tablist">
+								<li role="presentation" class="active"><a href="#base" aria-controls="base" role="tab" data-toggle="tab">基本信息</a></li>
+							    <li role="presentation"><a href="#fankui" aria-controls="fankui" role="tab" data-toggle="tab">授课反馈</a></li>
+							    <li role="presentation"><a href="#huifang" aria-controls="huifang" role="tab" data-toggle="tab">维护回访</a></li>
+							    <li role="presentation"><a href="#score" aria-controls="score" role="tab" data-toggle="tab">成绩查询</a></li>
+							    <li role="presentation"><a href="#lesson" aria-controls="lesson" role="tab" data-toggle="tab">上课记录</a></li>
+							    <li role="presentation"><a href="{:U('Courses/index')}&id={$_GET['id']}" target="_blank">课程管理</a></li>
+							    <li role="presentation"><a href="{:U('a/enter_stuclass',['sid'=>$_GET['id']])}" target="_blank">浏览课表</a></li>
+							  </ul>
+						    </div>
+						</div>
+
+						 <!-- Tab panes -->
+						<div class="tab-content">
+
+						  <div role="tabpanel" class="tab-pane active" id="base">
+						  	<!-- 教学主人任交接内容查看 -->
+							<!--<form class="form-inline" name="form_jiaojie" id="form_jiaojie" action="" method="post">-->
+								<input type="hidden" name="std_id" id="jiaojie_stuid" value=""/>
+							  <!--学员基本信息-->
+
+							  	<div class="panel panel-primary">
+								    <div class="panel-heading" role="tab" id="headingBase">
+								    	<a class="glyphicon glyphicon-chevron-down" style="color:white;" role="button" data-toggle="collapse" href="#collapse-base-info" aria-expanded="true" aria-controls="collapse-base-info">
+								        	<div style="float:left;">基本信息</div>
+								        </a>
+
+								          <h4 class="panel-title" style="float:right;">
+								                <a class="glyphicon glyphicon-chevron-down" role="button" data-toggle="collapse" href="#collapse-base-info" aria-expanded="true" aria-controls="collapse-base-info">
+								                </a>
+								          </h4>
+								        <div style="clear: both;"></div>
+								    </div>
+								    <div id="collapse-base-info" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingBase">
+								       <div class="panel-body">
+								            <div class="col-sm-12">
+											    <form id="form_data" name="base_form" method="post" class="form-horizontal" action="{:U('student/addx')}">
+											      <input type="hidden" name="id" id="id" value="{$_GET['id']}">
+											      <table class="table table-bordered" >
+											        <tr>
+											          <th>姓名</th>
+											          <td>
+											          <input class="form-control col-sm-10" type="text" name="name"  readonly="readonly" value="{$_GET['name']}">
+											          </td>
+											          <th>联系电话</th>
+											          <td>
+											          <input  class="form-control" type="text" name="tel"  required="true">
+											          </td>
+											          <th>性别</th>
+											          <td>
+											          <select name="sex" id="sex" class="form-control col-sm-10">
+											            <option  value="1">男</option>
+											            <option value="0">女</option>
+											          </select></td>
+											          <th>家庭电话</th>
+											          <td>
+											          <input  type="text" name="tel2" class="form-control">
+											          </td>
+											        </tr>
+											        <tr>
+											          <th>年级</th>
+											          <td>
+											            <select id="grade2" name="grade" class="form-control col-sm-10">
+											            	{:fill_option_ex($gradeList)}
+											           <!-- <optgroup label="初中">
+											              <option value="初一">初一</option>
+											              <option value="初二">初二</option>
+											              <option value="初三">初三</option>
+											            </optgroup>
+											            <optgroup label="高中">
+											              <option value="高一">高一</option>
+											              <option value="高二">高二</option>
+											              <option value="高三">高三</option>
+											            </optgroup>-->
+											            </select>
+											          </td>
+											          <th>文理</th>
+											          <td><select name="wl" id="wl" class="form-control col-sm-10">
+											                <option  value="理">理</option>
+											                <option value="文">文</option>
+											              </select></td>
+											          <th>学号</th>
+											          <td><input type="text" name="std_id" class="form-control" readonly="readonly" value="" /></td>
+											          <th>学员类型</th>
+											          <td>
+											            <select class="form-control col-sm-10"  name="type" id="type2">
+											              <option>普通</option>
+											              <option>全日制</option>
+											            </select>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th>
+											            现就读学校
+											          </th>
+											          <td>
+											          <input type="text" id="schoolx" name="schoolx" class="form-control">
+											          </td>
+											          <th>
+											            家庭地址
+											          </th>
+											          <td>
+											          <input type="text" id="mobile_tel" name="address" class="form-control">
+											          </td>
+											          <th>最后更新时间</th>
+											          <td id="timestamp"></td>
+											          <th>状态</th>
+											          <td>
+											            <select class="form-control col-sm-10"  name="state" id="state2">
+											              <option value="1">正常</option>
+											              <option value="2">停课</option>
+											              <option value="3">结课</option>
+											              <option value="4">毕业</option>
+											              <option value="5">退费</option>
+											              <option value="6">自习学员</option>
+											            </select>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th>备注信息</th>
+											          <td>
+											          <input type="text" id="other" name="other" class="form-control">
+											          </td>
+											          <th>查询码</th>
+											          <td><input type="text" id="pw" name="pw" class="form-control"></td>
+											          
+											          <td colspan="4">
+											          		<div style="display:block;">
+												              <div class="center-block" style="width:250px;">
+												                <button id="tocharge" class="btn btn-success" data-id="">缴费</button>
+												                <button id="toreturn" class="btn btn-success" data-id="">退费</button>
+												                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+												                <a class="btn btn-sm btn-primary" onclick="$.sub()">保存修改</a>
+												              </div>
+												             </div>										          	
+											          </td>
+											        </tr>
+											      </table>
+											    </form>
+											  </div>
+								       </div>
+								    </div>
+								</div>
+
+								<!--学科情况-->
+								<div class="panel panel-primary">
+
+								    <div class="panel-heading" role="tab" id="headingSubject">
+								    	  <a class="glyphicon glyphicon-chevron-up" style="color:white;" role="button" data-toggle="collapse" href="#collapse-subject" aria-expanded="false" 		aria-controls="collapse-subject">
+								    	  	<div style="float:left;">学科情况</div>
+								    	  </a>
+								          <h4 class="panel-title" style="float:right;">
+								                <a class="glyphicon glyphicon-chevron-up" role="button" data-toggle="collapse" href="#collapse-subject" aria-expanded="false" aria-controls="collapse-subject">
+								                </a>
+								          </h4>
+								        <div style="clear: both;"></div>
+
+								    </div>
+
+								    <div id="collapse-subject" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSubject">
+								       <div class="panel-body">
+								            <div class="form-group">
+										    	<label for="jiaojie_score">入学各科成绩：</label>
+										    	<textarea id="jiaojie_score" name="score" class="form-control" rows="3" cols="80" readonly="readonly">{$data.score}</textarea>
+									       </div>
+
+									       <div class="form-group" style="margin-top:10px;">
+									        	<label for="jiaojie_subject">报名科目&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+									        	<textarea id="jiaojie_subject" name="subject" class="form-control" rows="3" cols="80" readonly="readonly">{$data.subject}</textarea>
+									        </div>
+
+									        <div class="form-group" style="margin-top:10px;">
+									        	<label for="jiaojie_progress">教学进度要求：</label>
+									        	<textarea id="jiaojie_progress" name="progress" class="form-control" rows="3" cols="80" readonly="readonly">{$data.progress}</textarea>
+									        </div>
+								        </div>
+								    </div>
+								</div>
+
+								<!--排课要求-->
+								<div class="panel panel-primary">
+								    <div class="panel-heading" role="tab" id="headingClass">
+								    	<a class="glyphicon glyphicon-chevron-up" style="color:white;" role="button" data-toggle="collapse" href="#collapse-class" aria-expanded="false" aria-controls="collapse-class">
+								        	<div style="float:left;">排课要求</div>
+								        </a>
+
+								          <h4 class="panel-title" style="float:right;">
+								                <a class="glyphicon glyphicon-chevron-up" role="button" data-toggle="collapse" href="#collapse-class" aria-expanded="false" aria-controls="collapse-class">
+								                </a>
+								          </h4>
+								        <div style="clear: both;"></div>
+								    </div>
+								    <div id="collapse-class" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingClass">
+								       <div class="panel-body">
+								            <div class="form-group">
+									        	<label for="jiaojie_require">老师要求&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+									        	<textarea id="jiaojie_require" name="require" class="form-control" rows="3" cols="80" readonly="readonly">{$data.require}</textarea>
+									       </div>
+									       <div class="form-group" style="margin-top:10px;">
+									        	<label for="jiaojie_time">排课时间段&nbsp;&nbsp;&nbsp;：</label>
+									        	<textarea id="jiaojie_time" name="time" class="form-control" rows="3" cols="80" readonly="readonly">{$data.time}</textarea>
+									        </div>
+
+									        <div class="form-group" style="margin-top:10px;">
+									        	<label for="jiaojie_pl">排课频率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+									        	<textarea id="jiaojie_pl" name="pl" class="form-control" rows="3" cols="80" readonly="readonly">{$data.pl}</textarea>
+									        </div>
+								       </div>
+								    </div>
+								</div>
+
+
+								<div class="panel panel-primary">
+								    <div class="panel-heading" role="tab" id="headingWeihu">
+								    	<a class="glyphicon glyphicon-chevron-up" style="color:white;" role="button" data-toggle="collapse" href="#collapse-weihu" aria-expanded="false" aria-controls="collapse-weihu">
+								               <div style="float:left;">维护需求</div>
+								        </a>
+
+								          <h4 class="panel-title" style="float:right;">
+								                <a class="glyphicon glyphicon-chevron-up" role="button" data-toggle="collapse" href="#collapse-weihu" aria-expanded="false" aria-controls="collapse-weihu">
+								                </a>
+								          </h4>
+								        <div style="clear: both;"></div>
+								    </div>
+								    <div id="collapse-weihu" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingWeihu">
+								       <div class="panel-body">
+								            <div class="form-group">
+								            	<label for="jiaojie_weihu">维护需求&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+								            	<textarea id="jiaojie_weihu" name="weihu" class="form-control" rows="3" cols="80" readonly="readonly">{$data.weihu}</textarea>
+								            </div>
+								       </div>
+								    </div>
+								</div>
+
+
+								<div class="panel panel-primary">
+								    <div class="panel-heading" role="tab" id="headingSpecial">
+								    	<a class="glyphicon glyphicon-chevron-up" style="color:white;" role="button" data-toggle="collapse" href="#collapse-special" aria-expanded="false" aria-controls="collapse-special">
+								        	<div style="float:left;">特殊注意事项</div>
+								        </a>
+
+								          <h4 class="panel-title" style="float:right;">
+								                <a class="glyphicon glyphicon-chevron-up" role="button" data-toggle="collapse" href="#collapse-special" aria-expanded="false" aria-controls="collapse-special">
+								                </a>
+								          </h4>
+								        <div style="clear: both;"></div>
+								    </div>
+								    <div id="collapse-special" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSpecial">
+								       <div class="panel-body">
+								            <div class="form-group">
+									        	<label for="jiaojie_other">特殊注意事项：</label>
+									        	<textarea id="jiaojie_other" name="other" class="form-control" rows="3" cols="80" readonly="readonly">{$data.other}</textarea>
+									    	</div>
+								       </div>
+								    </div>
+								</div>
+
+
+
+
+
+							<!--</form>-->
+
+						  </div>
+
+						   <div role="tabpanel" class="tab-pane" id="fankui">
+
+								{:W('PageHeader/search_select',array('name'=>'教学反馈信息','option'=>'WORK_COMPLETE_STATE'))}
+								<div class="row">
+								  <div class="col-sm-12">
+								    <table class="table table-bordered">
+								      <thead>
+								        <tr>
+								          <th>学员姓名</th>
+								          <th>上课日期</th>
+								          <th>科目</th>
+								          <th>开始时间</th>
+								          <th>结束时间</th>
+								          <th>授课教师</th>
+								          <th>反馈时间</th>
+								          <th>操作</th>
+								        </tr>
+								      </thead>
+								      <tbody id="llst">
+								        <volist name="fankui_data" id="v">
+									          <tr>
+									          	<td>{$v.student_set.name}</td>
+									            <td>{$v.date}</td>
+									            <td>{$v.class}</td>
+									            <td>{$v.class_set.time1}</td>
+									            <td>{$v.class_set.time2}</td>
+									            <td>{$v.teacher}</td>
+									            <td>{$v.timestamp}</td>
+									          </tr>
+								        </volist>
+								      </tbody>
+								    </table>
+								  </div>
+								    <!--教师授课课程分页插件 -->
+									 <div id="pagination_xueguan_fankui" class="pagination">
+									    <a href="#" class="first" data-action="first">&laquo;</a>
+									    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+									    <input id="pager_input" type="text" readonly="readonly" data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+									    <a href="#" class="next" data-action="next">&rsaquo;</a>
+									    <a href="#" class="last" data-action="last">&raquo;</a>
+									</div>
+								</div>
+
+								<!-- 普通学员授课反馈 -->
+								<!-- 教学授课反馈 -->
+								<div class="modal fade" id="fankui_dialog" tabindex="-1" role="dialog">
+									  <div class="modal-dialog" role="document">
+									    <div class="modal-content">
+									      <div class="modal-header">
+									        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									        <h4 class="modal-title">教学授课反馈</h4>
+									      </div>
+									      <div class="modal-body">
+									      <div class="row">
+										  <div class="col-sm-12">
+											 <form name="form_jxfankui" id="form_jxfankui" method="post" action="">
+									          		<input type="hidden" name="stuid" id="form_stuid" value=""/>
+									          		<input type="hidden" name="cid" id="form_cid" value=""/>
+									          		<input type="hidden" name="school" id="form_school" value=""/>
+									          		<input type="hidden" name="std_id" id="std_id_vid" value="{$data[0].student_set.std_id}" />
+									            	<table  class="table table-bordered">
+													    <tr>
+													      <td>上课日期</td>
+													      <td width="200px" class="date"><label id="class_timee"></label></td>
+													      <td>上课时间</td>
+													      <td class="time"><label id="class_time1"></label><label>——</label><label id="class_time2"></label></td>
+													    </tr>
+													    <tr>
+													      <td width="100px">讲师</td>
+													      <td class="teacher"><label id="class_teacher"></label></td>
+													      <td width="100px">科目</td>
+													      <td class="class"><labe id="class_subject"></labe></td>
+													    </tr>
+													    <tr>
+													      <td>授课模块</td>
+													      <td colspan="3"><input type="text" id="fk_a" name="fk_a" class="form-control" readonly="readonly"></td>
+													    </tr>
+													    <tr>
+													      <td>授课内容</td>
+													      <td colspan="3">
+													      	<select name="fk_b"  id="fk_b" disabled="disabled">
+													      		{:fill_option(get_config('TRACK_COURSE'))}
+													      	</select>
+													      </td>
+													    </tr>
+													    <tr>
+													      <td>学员听课状态</td>
+													      <td colspan="3"><input class="form-control" type="text" id="fk_c" name="fk_c" readonly="readonly"></td>
+													    </tr>
+													    <tr>
+													      <td>预留作业安排</td>
+													      <td colspan="3"><input type="text" id="fk_e" name="fk_e" class="form-control" readonly="readonly"></td>
+													    </tr>
+													    <tr>
+													      <td>作业完成情况</td>
+													      <td><input type="text" id="fk_f" class="form-control" readonly="readonly"/></td>
+													      <td>沟通需要</td>
+													      <td><input type="text" id="fk_g" name="fk_g" class="form-control" readonly="readonly"></td>
+													    </tr>
+													    <tr>
+													      <td>问题及解决方案：</td><!--由本节提升亮点字段保存问题及解决方案内容-->
+													      <td colspan="3"><input type="text" id="fk_d" name="fk_d" class="form-control" placeholder="学员存在问题及建议解决方案" readonly="readonly"></td>
+													    </tr>
+													    <tr>
+													      <td>备注信息：</td>
+													      <td colspan="3" contenteditable="true"><input type="text" id="fk_h" name="fk_h" class="form-control" readonly="readonly"></td>
+													    </tr>
+													</table>
+									          	</form>
+										  </div>
+										</div>
+								    </div>
+								  </div>
+								</div>
+								</div>
+
+						   </div>
+
+						   <div role="tabpanel" class="tab-pane" id="huifang">
+
+								<div class="panel panel-primary">
+								    <div class="panel-heading" role="tab" id="headingQueryWeihu">
+								    	<div style="float:left;">信息筛选区</div>
+									      <h4 class="panel-title" style="float:right;">
+										        <a class="glyphicon glyphicon-chevron-down" role="button" data-toggle="collapse" href="#collapseQueryWeihu" aria-expanded="true" aria-controls="collapseQueryWeihu">
+										        </a>
+									      </h4>
+									    <div style="clear: both;"></div>
+								    </div>
+								    <div id="collapseQueryWeihu" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingQueryWeihu">
+								       <div class="panel-body">
+								       		<form class="form-inline" id="visit_form_search" name="form_adv_search" action="{:U('visit_search')}" method="post">
+
+											  <div class="operate panel panel-default">
+											    <div class="panel-body">
+											      <div class="pull-left">
+
+											        <div class="input-group" style="margin-top: 5px;">
+											          <label  for="state_i" class="input-group-addon"><b>维护类型：</b></label>
+											          <select id="exam_type_id" name="weihu_type"  class="form-control">
+												      	<option value="">全部</option> {:fill_option(C('WEIHU_TYPE'))}
+													  </select>
+											        </div>
+
+													<div class="input-group" style="margin-top: 5px;">
+											          <label  for="state_i" class="input-group-addon"><b>回访方式：</b></label>
+											          <select id="exam_type_id" name="visit_type"  class="form-control">
+												      	<option value="">全部</option> {:fill_option(C('VISIT_TYPE'))}
+													  </select>
+											        </div>
+
+											      	<div class="input-group" style="margin-top: 5px;">
+											          <label  for="score_date" class="input-group-addon"><b>开始日期:</b></label>
+											          <input type="date" class="form-control" id="visit_date1" name="date1"/>
+											        </div>
+
+											        <div class="input-group" style="margin-top: 5px;">
+											          <label  for="score_date" class="input-group-addon"><b>结束日期:</b></label>
+											          <input type="date" class="form-control" id="visit_date2" name="date2"/>
+											        </div>
+											      </div>
+											      <div class="pull-right">
+											      <input type="button" class="btn btn-sm btn-primary" name="search" value="筛选" id="visit_search" />
+											      </div>
+											    </div>
+											  </div>
+											</form>
+								       </div>
+								    </div>
+								</div>
+
+
+								<div class="row">
+									<div class="col-sm-12">
+									    <table class="table table-bordered">
+									      <thead>
+									        <tr>
+									          <th>姓名</th>
+									          <th>维护类型</th>
+									          <th>维护方式</th>
+									          <th>维护内容</th>
+									          <th>维护效果</th>
+									          <th>维护日期</th>
+									        </tr>
+									      </thead>
+									      <tbody id="llst_weihu">
+
+									      </tbody>
+									    </table>
+
+									    <!-- 分页插件 -->
+										<div class="pagination" id="pagination_visit">
+										    <a href="#" class="first" data-action="first">&laquo;</a>
+										    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+										    <input id="pager_input" type="text" readonly="readonly"  onclick="return false;" data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+										    <a href="#" class="next" data-action="next">&rsaquo;</a>
+										    <a href="#" class="last" data-action="last">&raquo;</a>
+
+										</div>
+
+									</div>
+							    </div>
+
+								<div class="row">
+									<div class="col-sm-12">
+									  <form id="visit_form_data" method="post" class="table-responsive" class="form-inline" action="{:U('visit_add')}">
+										<div class="panel panel-default">
+										  <div class="panel-heading">
+										    <h3 class="panel-title">添加维护信息</h3>
+										  </div>
+										  <div class="panel-body">
+												<input type="hidden" name="std_id" value="{$data.std_id}" />
+												<input type="hidden" name="id" id="whhf_id" value="{$data.id}" />
+												<table class="table table-bordered">
+													<tbody>
+														<tr>
+															<td><b>维护日期:</b></td>
+															<td> <input type="date" class="form-control" id="weihu_timee_id" name="weihu_timee" required="required" value=""/></td>
+															<td><b>接洽家长：</b></td>
+															<td>
+																<select id="parent_type_id" class="form-control" name="parent_name"  class="form-control">
+															      	{:fill_option(C('PARENT_TYPE'))}
+																  </select>
+															</td>
+														</tr>
+														<tr>
+															<td><b>维护类型:</b></td>
+															<td>
+																 <select id="weihu_type_id" name="weihu_type"  class="form-control" required="required">
+															      	{:fill_option(C('WEIHU_TYPE'))}
+																  </select>
+															</td>
+															<td><b>回访方式:</b></td>
+															<td>
+																<select id="visit_type_id" name="weihu_way"  class="form-control" required="required">
+															      	{:fill_option(C('VISIT_TYPE'))}
+																 </select>
+															</td>
+														</tr>
+														<tr>
+															<td><b>起始时间:</b></td>
+															<td>
+																<input type="time" class="form-control" name="weihu_time1" />
+															</td>
+															<td><b>结束时间:</b></td>
+															<td>
+																 <input type="time" class="form-control" name="weihu_time2"/>
+															</td>
+														</tr>
+														<tr>
+															<td><b>家长反馈：</b></td>
+															<td colspan="3">
+																<textarea name="parents_fankui_info"  placeholder="本次家长反馈的情况" class="form-control"></textarea>
+															</td>
+														</tr>
+														<tr>
+															<td><b>维护内容：</b></td>
+															<td colspan="3">
+																<textarea name="weihu_content"  placeholder="本次维护内容" class="form-control"></textarea>
+															</td>
+														</tr>
+
+														<tbody id="meet" style="display: none;border-top-style: none;border-bottom-style: none;">
+															<tr>
+																<td><b>主持人：</b></td>
+																<td><input type="text" name="weihu_host" class="form-control"/></td>
+																<td><b>授课讲师：</b></td>
+																<td><input type="text" name="weihu_teacher" class="form-control"/></td>
+															</tr>
+															<tr>
+																<td><b>参会人员：</b></td>
+																<td><textarea name="weihu_participants"  placeholder="本次与会人员" class="form-control"></textarea></td>
+																<td><b>记录人：</b></td>
+																<td><input type="text" name="weihu_recorder" class="form-control"/></td>
+															</tr>
+															<tr>
+																<td><b>分析诊断：</b></td>
+																<td><textarea name="weihu_analys"  placeholder="关于本次会议提出的问题的分析和诊断" class="form-control"></textarea></td>
+																<td><b>家长意见：</b></td>
+																<td><textarea name="weihu_opinion"  placeholder="家长的意见" class="form-control"></textarea></td>
+															</tr>
+															<tr>
+																<td><b>解决办法：</b></td>
+																<td colspan="3"><textarea name="weihu_solution"  placeholder="本次会议提出的问题的解决方案" class="form-control"></textarea></td>
+															</tr>
+														</tbody>
+														<tbody style="border-top-style: none;">
+															<tr>
+																<td><b>维护效果：</b></td>
+																<td><input type="text" name="weihu_effect" class="form-control"/></td>
+																<td colspan="2">&nbsp;</td>
+															</tr>
+														</tbody>
+													</tbody>
+												</table>
+										    </div>
+										<div class="panel-footer">
+										  	<div class="form-control" style="text-align: center;border:0px;background-color: inherit;">
+										    	<!--<input type="submit" value="添加" class="btn btn-primary"/>-->
+										    	<input type="button" id="b_add" value="添加" class="btn btn-primary"/>
+			    								<input type="button" id="b_edit" value="维护" class="btn btn-primary" disabled="disabled"/>
+										    	<input type="reset" id="reset_visit_form" name="reset" style="display: none;"/>
+										    </div>
+										  </div>
+										</div>
+									  </form>
+									</div>
+								</div>
+						   </div>
+
+						   <div role="tabpanel" class="tab-pane" id="score">
+
+								<div class="panel panel-primary">
+								    <div class="panel-heading" role="tab" id="headingScoreQuery">
+								    	<div style="float:left;">信息筛选区</div>
+									      <h4 class="panel-title" style="float:right;">
+										        <a class="glyphicon glyphicon-chevron-down" role="button" data-toggle="collapse" href="#collapseQuery" aria-expanded="true" aria-controls="collapseQuery">
+										        </a>
+									      </h4>
+									    <div style="clear: both;"></div>
+								    </div>
+								    <div id="collapseQuery" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingScoreQuery">
+								       <div class="panel-body">
+								       		<form class="form-inline" id="score_form_search" name="form_adv_search" action="{:U('score_search')}" method="post">
+
+											  <div class="operate panel panel-default">
+											    <div class="panel-body">
+											      <div class="pull-left">
+
+											        <div class="input-group">
+											          <label  for="state_i" class="input-group-addon"><b>考试类型：</b></label>
+											          <select id="exam_type_id" name="exam_type"  class="form-control">
+												      	<option value="">全部</option> {:fill_option(C('EXAM_TYPE'))}
+													  </select>
+											        </div>
+
+											      	<div class="input-group">
+											          <label  for="score_date" class="input-group-addon"><b>开始日期:</b></label>
+											          <input type="date" class="form-control" id="score_date1" name="score_date1"/>
+											        </div>
+
+											        <div class="input-group">
+											          <label  for="score_date" class="input-group-addon"><b>结束日期:</b></label>
+											          <input type="date" class="form-control" id="score_date2" name="score_date2"/>
+											        </div>
+											      </div>
+											      <div class="pull-right">
+											      <input type="button" class="btn btn-sm btn-primary" name="search" value="筛选" id="score_search" />
+											      </div>
+											    </div>
+											  </div>
+											</form>
+								       </div>
+								    </div>
+								</div>
+
+
+
+								<div class="row">
+									<div class="col-sm-12">
+									    <table class="table table-bordered">
+									      <thead>
+									        <tr>
+									          <th>考试日期</th>
+									          <th>考试类型</th>
+									          <th>学生姓名</th>
+									          <th>语文</th>
+									          <th>数学</th>
+									          <th>英语</th>
+									          <th>物理</th>
+									          <th>化学</th>
+									          <th>生物</th>
+									          <th>地理</th>
+									          <th>政治</th>
+									          <th>历史</th>
+									          <th>体育</th>
+									          <th>总成绩</th>
+									          <th>操作</th>
+									        </tr>
+									      </thead>
+									      <tbody id="llst_score">
+
+									      </tbody>
+									    </table>
+
+									    <!-- 分页插件 -->
+										<div class="pagination" id="pagination_score">
+										    <a href="#" class="first" data-action="first">&laquo;</a>
+										    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+										    <input id="pager_input" type="text" readonly="readonly"  onclick="return false;" data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+										    <a href="#" class="next" data-action="next">&rsaquo;</a>
+										    <a href="#" class="last" data-action="last">&raquo;</a>
+
+										</div>
+
+									  </div>
+
+									<div class="col-sm-12">
+									  <form id="score_form_data" method="post" class="table-responsive" class="form-inline" action="{:U('scores_add')}">
+										<div class="panel panel-default">
+										  <div class="panel-heading">
+										    <h3 class="panel-title">添加新成绩</h3>
+										  </div>
+										  <div class="panel-body">
+												<input type="hidden" name="std_id" value="{$data.std_id}" />
+										      <div class="form-inline">
+											      <div class="input-group">
+											          <label  for="exam_type_id" class="input-group-addon" style="border: 0px;padding-top: 3px;"><b>考试类型:</b></label>
+											          <select id="exam_type_id" name="exam_type"  class="form-control" required="required">
+												      	{:fill_option(C('EXAM_TYPE'))}
+													  </select>
+													  <span class="input-group-addon" style="color: red;border: 0px;">*</span>
+										          </div>
+
+										          <div class="input-group">
+											          <label  for="exam_type_id" class="input-group-addon" style="border: 0px;padding-top: 3px;"><b>考试日期:</b></label>
+											          <input type="date" class="form-control" name="score_date" required="required"/>
+													  <span class="input-group-addon" style="color: red;border: 0px;">*</span>
+										          </div>
+									          </div>
+
+									          <hr />
+
+										      <div class="form-inline">
+											      <div class="input-group export">
+											          <label  class="input-group-addon"><input type="checkbox" name="yuwen" value="鸿文" /><b>语文成绩:</b></label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="yuwen1"><b>考试得分:</b></label><input class="form-control" type="number" id="yuwen1" name="yuwen1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="yuwen2"><b>试卷总分:</b></label><input class="form-control" type="number" id="yuwen2" name="yuwen2" />
+												      	</div>
+												      </div>
+												       <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="yuwen3"><b>语文排名:</b></label><input class="form-control" type="number" id="yuwen3" name="yuwen3" />
+												      	</div>
+												      </div>
+										          </div>
+
+
+											       <div class="input-group export">
+											          <label  class="input-group-addon"><input type="checkbox" name="shuxue" value="鸿文" /><b>数学成绩:</b></label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="shuxue1"><b>考试得分:</b></label><input class="form-control" type="number" id="shuxue1" name="shuxue1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="shuxue2"><b>试卷总分:</b></label><input class="form-control" type="number" id="shuxue2" name="shuxue2" />
+												      	</div>
+												      </div>
+												      <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="shuxue3"><b>数学排名:</b></label><input class="form-control" type="number" id="shuxue3" name="shuxue3" />
+												      	</div>
+												      </div>
+										          </div>
+
+											       <div class="input-group export">
+											          <label  class="input-group-addon"><input type="checkbox" name="english" value="鸿文" /><b>英语成绩:</b></label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="english1"><b>考试得分:</b></label><input class="form-control" type="number" id="english1" name="english1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="english2"><b>试卷总分:</b></label><input class="form-control" type="number" id="english2" name="english2" />
+												      	</div>
+												      </div>
+												      <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="english3"><b>英语排名:</b></label><input class="form-control" type="number" id="english3" name="english3" />
+												      	</div>
+												      </div>
+										          </div>
+
+
+											       <div class="input-group export">
+											          <label  class="input-group-addon"><input type="checkbox" name="wuli" value="鸿文" /><b>物理成绩:</b></label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="wuli1"><b>考试得分:</b></label><input class="form-control" type="number" id="wuli1" name="wuli1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="wuli2"><b>试卷总分:</b></label><input class="form-control" type="number" id="wuli2" name="wuli2" />
+												      	</div>
+												      </div>
+												      <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="wuli3"><b>物理排名:</b></label><input class="form-control" type="number" id="wuli3" name="wuli3" />
+												      	</div>
+												      </div>
+										          </div>
+
+
+										           <div class="input-group export">
+											          <label  class="input-group-addon"><input type="checkbox" name="huaxue" value="鸿文" /><b>化学成绩:</b></label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="huaxue1"><b>考试得分:</b></label><input class="form-control" type="number" id="huaxue1" name="huaxue1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="huaxue2"><b>试卷总分:</b></label><input class="form-control" type="number" id="huaxue2" name="huaxue2" />
+												      	</div>
+												      </div>
+												      <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="huaxue3"><b>化学排名:</b></label><input class="form-control" type="number" id="huaxue3" name="huaxue3" />
+												      	</div>
+												      </div>
+										          </div>
+
+										           <div class="input-group export">
+											          <label  class="input-group-addon"><input type="checkbox" name="shengwu" value="鸿文" /><b>生物成绩:</b></label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="shengwu1"><b>考试得分:</b></label><input class="form-control" type="number" id="shengwu1" name="shengwu1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="shengwu2"><b>试卷总分:</b></label><input class="form-control" type="number" id="shengwu2" name="shengwu2" />
+												      	</div>
+												      </div>
+												      <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="shengwu3"><b>生物排名:</b></label><input class="form-control" type="number" id="shengwu3" name="shengwu3" />
+												      	</div>
+												      </div>
+										          </div>
+
+
+										           <div class="input-group export">
+											          <label  class="input-group-addon"><input type="checkbox" name="dili" value="鸿文" /><b>地理成绩:</b></label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="dili1"><b>考试得分:</b></label><input class="form-control" type="number" id="dili1" name="dili1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="dili2"><b>试卷总分:</b></label><input class="form-control" type="number" id="dili2" name="dili2" />
+												      	</div>
+												      </div>
+												      <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="dili3"><b>地理排名:</b></label><input class="form-control" type="number" id="dili3" name="dili3" />
+												      	</div>
+												      </div>
+										          </div>
+
+
+										           <div class="input-group export">
+											          <label  class="input-group-addon"><input type="checkbox" name="zhengzhi" value="鸿文" /><b>政治成绩:</b></label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="zhengzhi1"><b>考试得分:</b></label><input class="form-control" type="number" id="zhengzhi1" name="zhengzhi1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="zhengzhi2"><b>试卷总分:</b></label><input class="form-control" type="number" id="zhengzhi2" name="zhengzhi2" />
+												      	</div>
+												      </div>
+												      <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="zhengzhi3"><b>政治排名:</b></label><input class="form-control" type="number" id="zhengzhi3" name="zhengzhi3" />
+												      	</div>
+												      </div>
+										          </div>
+
+
+										           <div class="input-group export">
+											          <label  class="input-group-addon"><input type="checkbox" name="history" value="鸿文" /><b>历史成绩:</b></label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="history1"><b>考试得分:</b></label><input class="form-control" type="number" id="history1" name="history1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="history2"><b>试卷总分:</b></label><input class="form-control" type="number" id="history2" name="history2" />
+												      	</div>
+												      </div>
+												      <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="history3"><b>历史排名:</b></label><input class="form-control" type="number" id="history3" name="history3" />
+												      	</div>
+												      </div>
+										          </div>
+
+										           <div class="input-group export">
+											          <label  class="input-group-addon"><input type="checkbox" name="sport" value="鸿文" /><b>体育成绩:</b></label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="sport1"><b>考试得分:</b></label><input class="form-control" type="number" id="sport1" name="sport1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="sport2"><b>试卷总分:</b></label><input class="form-control" type="number" id="sport2" name="sport2" />
+												      	</div>
+												      </div>
+												      <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="sport3"><b>体育排名:</b></label><input class="form-control" type="number" id="sport3" name="sport3" />
+												      	</div>
+												      </div>
+										          </div>
+										          
+										          <div class="input-group export">
+											          <label  class="input-group-addon">&nbsp;&nbsp;&nbsp;&nbsp;<b>总成绩:</b>&nbsp;&nbsp;&nbsp;</label>
+											          <div class="form-inline">
+											          	<div class="input-group">
+											          		<label  class="input-group-addon" for="all1"><b>考试总分:</b></label><input class="form-control" type="number" id="all1" name="all1" />
+											          	</div>
+											          </div>
+											          <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="all2"><b>试卷总分:</b></label><input class="form-control" type="number" id="all2" name="all2" />
+												      	</div>
+												      </div>
+												      <div class="form-inline">
+											          	<div class="input-group">
+												      		<label  class="input-group-addon" for="all3"><b>综合排名:</b></label><input class="form-control" type="number" id="all3" name="all3" />
+												      	</div>
+												      </div>
+										          </div>
+										      </div>
+
+										  </div>
+										  <div class="panel-footer">
+										  	<div class="form-control" style="text-align: center;border:0px;background-color: inherit;">
+										    	<input type="submit" value="添加" class="btn btn-primary"/>
+										    </div>
+										  </div>
+										</div>
+									  </form>
+								  	</div>
+
+								</div>
+
+
+						   </div>
+
+
+
+						   <div role="tabpanel" class="tab-pane" id="lesson">
+
+						   		<div class="panel panel-primary">
+								    <div class="panel-heading" role="tab" id="headingLessonQuery">
+								    	<div style="float:left;">信息筛选区</div>
+									      <h4 class="panel-title" style="float:right;">
+										        <a class="glyphicon glyphicon-chevron-down" role="button" data-toggle="collapse" href="#collapseQuery" aria-expanded="true" aria-controls="collapseQuery">
+										        </a>
+									      </h4>
+									    <div style="clear: both;"></div>
+								    </div>
+								    <div id="collapseQuery" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingLessonQuery">
+								       <div class="panel-body">
+								       		<form class="form-inline" id="lesson_form_search" name="form_adv_search" action="{:U('lesson_search')}" method="post">
+
+											  <div class="operate panel panel-default">
+											    <div class="panel-body">
+											      <div class="pull-left">
+											      	<div class="input-group">
+											          <label  for="state_i" class="input-group-addon"><b>科目：</b></label>
+											          <select id="exam_type_id" name="subject_type"  class="form-control">
+												      	<option value="">全部</option> {:fill_option(C('SUBJECT_TYPE'))}
+													  </select>
+											        </div>
+
+											      	<div class="input-group">
+											          <label  for="score_date" class="input-group-addon"><b>开始日期:</b></label>
+											          <input type="date" class="form-control" id="lesson_date1" name="lesson_date1"/>
+											        </div>
+
+											        <div class="input-group">
+											          <label  for="score_date" class="input-group-addon"><b>结束日期:</b></label>
+											          <input type="date" class="form-control" id="lesson_date2" name="lesson_date2"/>
+											        </div>
+											      </div>
+											      <div class="pull-right">
+											      <input type="button" class="btn btn-sm btn-primary" name="search" value="筛选" id="lesson_search" />
+											      </div>
+											    </div>
+											  </div>
+											</form>
+								       </div>
+								    </div>
+								</div>
+
+								<div class="row">
+									 <div class="panel-heading" role="tab" id="headingQuery">
+									 		<input type="button" class="btn btn-xs btn-info" id="print" value="打印上课记录" />
+									 </div>
+								  <div class="col-sm-12" id="score_print">
+								    <table class="table table-bordered">
+								      <thead>
+								        <tr>
+								          <th>学员姓名</th>
+								          <th>上课日期</th>
+								          <th>科目</th>
+								          <th>开始时间</th>
+								          <th>结束时间</th>
+								          <th>课时数(小时)</th>
+								          <th>授课教师</th>
+								        </tr>
+								      </thead>
+								      <tbody id="llst_lesson">
+
+								      </tbody>
+								    </table>
+								  </div>
+								    <!--教师授课课程分页插件 -->
+									 <div id="pagination_lesson" class="pagination">
+									    <a href="#" class="first" data-action="first">&laquo;</a>
+									    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+									    <input id="pager_input" type="text" readonly="readonly" data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+									    <a href="#" class="next" data-action="next">&rsaquo;</a>
+									    <a href="#" class="last" data-action="last">&raquo;</a>
+									</div>
+								</div>
+
+						   </div>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+		<!-- Mainly scripts -->
+		<script src="__INS__/js/jquery-2.1.1.js"></script>
+		<script src="__INS__/js/bootstrap.min.js"></script>
+		<script src="__INS__/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+		<script src="__INS__/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+		<!-- Custom and plugin javascript -->
+		<script src="__INS__/js/inspinia.js"></script>
+		<script src="__INS__/js/common.js"></script>
+		<script src="__INS__/js/plugins/pace/pace.min.js"></script>
+		<script src="__INS__/js/time/WdatePicker.js"></script>
+		<include file="Layout:ins_plugin_js"/>
+		<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+
+		<script type="text/javascript">
+
+
+		sid=0;
+		pageCount = 10; //每页显示多少条记录(全局变量)
+		currentPage = 1; //当前页码
+		maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
+		pageString = '';
+		json_data = null;
+		exam_type = {:json_encode(C('EXAM_TYPE'))};
+		weihu_type = {:json_encode(C('WEIHU_TYPE'))};
+		weihu_way = {:json_encode(C('VISIT_TYPE'))};
+		$(function(){
+
+				/**
+				 *
+				 * 绘制动态表格公用函数
+			  	 * @param {Object} data  表格实体数据，由后台返回;
+			  	 * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+			  	 * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+			  	 * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+			  	 * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+			  	 * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+			  	 * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+			  	 * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+				 * @param {Object} a_link_arr 需要超链接包围的显示字段，为数组类型;
+				 * @param {Object} a_link_url 相应位置超链接的url地址，为数组类型;
+				 * @param {Object} a_fun_arr  超链接如果有函数，这里是函数名称，为数组类型;
+				 * @param {Object} a_fun_param_arr 函数中的参数字段，该字段需要在data中存在
+				 */
+				  	$.drawTrTd=function (
+				  		data,
+				  		tbody_id,
+				  		button_method_arr,
+				  		method_param_arr,
+				  		button_name_arr,
+				  		field_arr,
+				  		check_name,
+				  		select_lst_arr,
+				  		a_link_arr,
+				  		a_link_url,
+				  		a_fun_arr,
+				  		a_fun_param_arr){
+
+				  		$.each(data, function(i,value) {
+				  			var temp_str = '';
+
+				  			$('#' + tbody_id).append('<tr id="' + value.id + '">');
+
+				  			//列表checkbox选择组件创建
+				  			if(check_name != null){
+				  				$('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class="' + value.id + '"  value="' + value.classid + '" /></td>');
+				  			}
+
+				  			for(var i=0;i<field_arr.length;i++){
+				  				//单元格起始构建
+				  				temp = '<td>';
+
+				  				//判断是否有超链接
+				  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+				  					var a_temp_str = '';
+
+				  					//超链接起始构建
+				  					a_temp_str += '<a href="' + a_link_url[$.inArray(field_arr[i],a_link_arr)] + '" ';
+				  					//onclick函数起始构建
+				  					if(a_fun_arr != null){
+				  						a_temp_str += 'onclick="' + a_fun_arr[$.inArray(field_arr[i],a_link_arr)]  + '(';
+				  					}
+
+				  					//函数的参数全构建
+				  					if(a_fun_param_arr != null){
+				  						for(var k=0;k<a_fun_param_arr.length;k++){
+			  								a_temp_str += (eval('value.' + a_fun_param_arr[k])== undefined ? '': eval('value.' + a_fun_param_arr[k])) + ",";
+				  						}
+
+				  						a_temp_str = a_temp_str.substring(0,a_temp_str.lastIndexOf(','));
+				  					}
+
+				  					a_temp_str += (')">')
+
+				  					//添加超链接起始部分
+									temp += a_temp_str;
+
+				  				}
+
+
+
+				  				//添加单元格内容部分
+				  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+				  					//单元格内容如果是select组件中的value部分，需要转义的，通过在这里实现，但是javascript脚本最开始的部分需要添加相应的php代码带获取相应的数组，这部分内容在后期会进一步完善，会把该数组也放到该函数内来实现。
+				  					temp += (eval('value.' + field_arr[i])== undefined ? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'));
+				  				}else{
+				  					temp += (eval('value.' + field_arr[i])== undefined ? '': eval('value.' + field_arr[i]));
+				  				}
+
+				  				//超链接结束标签构建
+				  				if(a_link_arr !=null && ($.inArray(field_arr[i],a_link_arr) != -1)){
+				  					temp += '</a>';
+				  				}
+
+				  				//单元格结束标签构建
+				  				temp += '</td>';
+
+				  				$('#' + value.id).append(temp);
+				  			}
+
+
+				  			if(button_method_arr != null){
+				  				for(var j=0;j<button_method_arr.length;j++){
+				  					if(method_param_arr != null){
+				  						var param_str = '';
+				  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+				  						for(var k=0;k<method_param_arr.length;k++){
+				  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+				  						}
+				  						param_str = param_str.substring(0,param_str.length-1);
+										temp_str += param_str;
+				  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+				  					}else{
+				  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+				  					}
+
+				  				}
+				  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+				  				$('#' + value.id).append('<td>' + temp_str  + '</td>');
+				  			}
+				  	});
+				 }
+
+				  	var std_id_val = $('#std_id_vid').val();
+
+//===================================控制所有tab区域的缩放图标变换==========================================================================================================================
+	$('#headingBase a').click(function() {
+
+	  if($(this).is('.glyphicon.glyphicon-chevron-down')){
+	  	$('#headingBase a').attr('class','glyphicon glyphicon-chevron-up');
+	  }else{
+	  	$('#headingBase a').attr('class','glyphicon glyphicon-chevron-down');
+	  }
+
+	});
+
+	$('#headingWeihu a').click(function() {
+
+	  if($(this).is('.glyphicon.glyphicon-chevron-down')){
+	  	$('#headingWeihu a').attr('class','glyphicon glyphicon-chevron-up');
+	  }else{
+	  	$('#headingWeihu a').attr('class','glyphicon glyphicon-chevron-down');
+	  }
+
+	});
+
+	$('#headingClass a').click(function() {
+
+	  if($(this).is('.glyphicon.glyphicon-chevron-down')){
+	  	$('#headingClass a').attr('class','glyphicon glyphicon-chevron-up');
+	  }else{
+	  	$('#headingClass a').attr('class','glyphicon glyphicon-chevron-down');
+	  }
+
+	});
+
+	$('#headingSubject a').click(function() {
+
+	  if($(this).is('.glyphicon.glyphicon-chevron-down')){
+	  	$('#headingSubject a').attr('class','glyphicon glyphicon-chevron-up');
+	  }else{
+	  	$('#headingSubject a').attr('class','glyphicon glyphicon-chevron-down');
+	  }
+
+	});
+
+	$('#headingSpecial a').click(function() {
+
+	  if($(this).is('.glyphicon.glyphicon-chevron-down')){
+	  	$('#headingSpecial a').attr('class','glyphicon glyphicon-chevron-up');
+	  }else{
+	  	$('#headingSpecial a').attr('class','glyphicon glyphicon-chevron-down');
+	  }
+
+	});
+
+	$('#headingQueryWeihu a').click(function() {
+
+	  if($(this).is('.glyphicon.glyphicon-chevron-down')){
+	  	$('#headingQueryWeihu a').attr('class','glyphicon glyphicon-chevron-up');
+	  }else{
+	  	$('#headingQueryWeihu a').attr('class','glyphicon glyphicon-chevron-down');
+	  }
+
+	});
+
+	$('#headingScoreQuery a').click(function() {
+
+	  if($(this).is('.glyphicon.glyphicon-chevron-down')){
+	  	$('#headingScoreQuery a').attr('class','glyphicon glyphicon-chevron-up');
+	  }else{
+	  	$('#headingScoreQuery a').attr('class','glyphicon glyphicon-chevron-down');
+	  }
+
+	});
+
+//=============================================================================================================================================================
+
+//==================================基本信息tab页面代码开始=====================================================================================================
+
+$.setform = function(msg) {
+    $('#form_data').find("input[name='id']").val(msg.id);
+    $('#form_data').find("input[name='std_id']").val(msg.std_id);
+    $('#form_data').find("input[name='name']").val(msg.name);
+    $('#form_data').find("input[name='pw']").val(msg.pw);
+    $("#form_data").find("select[name='sex']").val(msg.sex);
+    $("#form_data").find("select[name='wl']").val(msg.wl);
+    $('#form_data').find("input[name='tel']").val(msg.tel);
+    $('#form_data').find("input[name='tel2']").val(msg.tel2);
+    $('#form_data').find("select[name='grade']").val(msg.grade);
+    $('#form_data').find("input[name='schoolx']").val(msg.schoolx);
+    $('#form_data').find("input[name='address']").val(msg.address);
+    $('#form_data').find("select[name='xueguan']").val(msg.xueguan);
+    $('#form_data').find("select[name='jiaoxue']").val(msg.jiaoxue);
+    $('#form_data').find("input[name='other']").val(msg.other);
+    $("#form_data").find("select[name='state']").val(msg.state);
+    $("#form_data").find("select[name='type']").val(msg.type);
+
+    $("#timestamp").text(msg.timestamp);
+  }
+
+
+$.ajax({ url: "{:U('student/info')}&id=" + {$_GET['id']},dataType:"json", context: document.body, success: function(msg){
+
+              $.setform(msg);
+
+          }});
+//学员基本信息更新保存
+$.sub = function() {
+    $.post("{:U('student/savex')}", $("#form_data").serialize(),function(data){
+      if(data==1){
+        ui_info('数据更新成功……');
+      }else{
+        ui_info('数据更新失败……');
+      }
+    },"json");
+  }
+//缴费操作
+ $('#tocharge').click(function(result){
+
+        winopen(fix_url("{:U('Students/charge')}?id=" + {$_GET['id']}), 730, 500);
+        return false;
+    });
+//退费操作
+    $('#toreturn').click(function(result){
+
+        winopen(fix_url("{:U('Students/toreturn')}?id=" + {$_GET['id']}), 730, 500);
+        return false;
+    });
+
+
+	$('div .panel-body ul li:eq(0)').click(function(){
+		document.location.href="{:U('xg_base_info')}&name={$_GET['name']}&std_id={$_GET['std_id']}&id={$_GET['id']}";
+	});
+//=============================================================================================================================================================
+//===================================授课反馈tab页代码开始======================================================================================================
+
+						//教师授课反馈列表分页操作
+				   $('#pagination_xueguan_fankui').jqPagination({
+							link_string	: '/?page={page_number}',
+							max_page	: maxPage,
+							paged		: function(page) {
+
+							var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+							$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xg_skfankui')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page + "&std_id=" + {$data.std_id},
+								dataType:'json',
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst').empty();
+
+											var button_method_arr = ['$.showFankui'];
+											var button_name_arr = ['详情'];
+											var field_arr = ['student_set.name','date','class','class_set.time1','class_set.time2','teacher','timestamp'];
+											var select_lst_arr = null;
+											var check_name = null;
+											var method_param_arr = ['id'];
+											var a_link_arr = ['student_set.name'];
+											var a_link_url = ['javascript:void(0);'];
+											var a_fun_arr = ['$.showFankui'];
+											var a_fun_param_arr = ['id'];
+											
+											$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+											json_data = msg.data;
+										}else{
+											$('#llst').empty();
+										}
+
+									}
+								}
+							});
+
+							this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+							this.max_page = maxPage;
+
+							if(this.max_page <= 0){
+								this.page_string = '没有符合条件的记录';
+							}
+						}
+
+					});
+
+
+				$('#form_submit').click(function(){
+					var keyword = $('#keyword').val();
+
+					$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xg_skfankui')}&pageNumber=0&pageCount=" + pageCount + "&std_id=" +  {$data.std_id},
+								dataType:'json',
+								data:{'keyword':keyword},
+								success:function(msg,status){
+									if(status=="success" && msg.state == 'ok'){
+
+										currentPage = 1; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										$('#pagination_xueguan_fankui').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+										$('#pagination_xueguan_fankui').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst').empty();
+
+											var button_method_arr = ['$.showFankui'];
+											var button_name_arr = ['详情'];
+											var field_arr = ['student_set.name','date','class','class_set.time1','class_set.time2','teacher','timestamp'];
+											var select_lst_arr = null;
+											var check_name = null;
+											var method_param_arr = ['id'];
+											var a_link_arr = ['student_set.name'];
+											var a_link_url = ['javascript:void(0);'];
+											var a_fun_arr = ['$.showFankui'];
+											var a_fun_param_arr = ['id'];
+											
+											$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+											json_data = msg.data;
+										}else{
+											$('#llst').empty();
+										}
+									}
+								}
+							});
+
+				})
+
+
+
+				$('div .panel-body ul li:eq(1)').click(function(){
+					$.ajax({
+								type:'POST',
+								async:true,
+								cache:false,
+								url:"{:U('xg_skfankui')}&pageNumber=0&pageCount=" + pageCount + "&std_id=" + {$data.std_id},
+								dataType:'json',
+								success:function(msg,status){
+									if(status=="success" && msg.state == 'ok'){
+
+										currentPage = 1; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+										
+										maxPage = maxPage >=currentPage ? maxPage : currentPage;
+										
+										$('#pagination_xueguan_fankui').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+										$('#pagination_xueguan_fankui').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst').empty();
+
+											var button_method_arr = ['$.showFankui'];
+											var button_name_arr = ['详情'];
+											var field_arr = ['student_set.name','date','class','class_set.time1','class_set.time2','teacher','timestamp'];
+											var select_lst_arr = null;
+											var check_name = null;
+											var method_param_arr = ['id'];
+											var a_link_arr = ['student_set.name'];
+											var a_link_url = ['javascript:void(0);'];
+											var a_fun_arr = ['$.showFankui'];
+											var a_fun_param_arr = ['id'];
+
+											$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+											json_data = msg.data;
+
+										}else{
+											$('#llst').empty();
+										}
+									}
+								},
+								failure:function(msg,status){
+									ui_info('请与系统管理员联系!');
+								}
+							});
+					});
+
+				$.showFankui=function(id){
+					$.each(json_data,function(i,vo){
+						if(vo['id'] == id){
+							$('#class_timee').text(vo['date']);
+							$('#class_time1').text(vo['class_set']['time1']);
+							$('#class_time2').text(vo['class_set']['time2'])
+							$('#class_teacher').text(vo['teacher']);
+							$('#class_subject').text(vo['class']);
+							$('#fk_a').val(vo['fk_a']);
+							$('#fk_b').val(vo['fk_b']);
+							$('#fk_c').val(vo['fk_c']);
+							$('#fk_d').val(vo['fk_d']);
+							$('#fk_e').val(vo['fk_e']);
+							$('#fk_f').val(vo['fk_f']);
+							$('#fk_g').val(vo['fk_g']);
+							$('#fk_h').val(vo['fk_h']);
+							return false;
+						}
+					});
+					$('#fankui_dialog').modal('show');
+				}
+
+
+		});
+
+
+//====================================授课反馈代码结束========================================================================================
+
+//===================================成绩查询tab页代码开始=====================================================================================
+
+		$('#pagination_score').jqPagination({
+							link_string	: '/?page={page_number}',
+							max_page	: maxPage,
+							paged		: function(page) {
+
+							var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+							$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('xg_scoreslist')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page + "&std_id=" + {$data.std_id},
+								dataType:'json',
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										$('#pagination_score').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+										$('#pagination_score').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_score').empty();
+
+											var button_method_arr = ['$.del_scoreItem'];
+											var button_name_arr = ['删除'];
+											var field_arr = ['score_date','exam_type','name','yuwen','shuxue','english','wuli','huaxue','shengwu','dili','zhengzhi','history','sport','all_score'];
+											var select_lst_arr = ['exam_type'];
+											var check_name = null;
+											var method_param_arr = ['id'];
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+
+											$.drawTrTd(msg.data,'llst_score',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+
+										}else{
+											$('#llst_score').empty();
+										}
+
+									}
+								}
+							});
+
+							this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+							this.max_page = maxPage;
+
+							if(this.max_page <= 0){
+								this.page_string = '没有符合条件的记录';
+							}
+						}
+
+					});
+
+		$.del_scoreItem=function(id){
+				$.ajax({
+								type:'POST',
+								async:true,
+								cache:false,
+								url:"{:U('xg_scoredel')}",
+								dataType:'json',
+								data:{'id':id},
+								success:function(msg,status){
+									if(status=="success" && msg.state == 'ok'){
+										ui_info('成绩删除成功！');
+										$('#score_search').click();
+									}else{
+											ui_alert("<img src='__INS__/img/error.jpg' width='20%' height='20%' alt='buhaoshi'/><font color='red' style='font-size:18px;'>成绩删除失败，请与系统管理员联系！</font>");
+										}
+								},
+								failure:function(msg,status){
+									ui_alert("<img src='__INS__/img/error.jpg' width='20%' height='20%' alt='buhaoshi'/><font color='red' style='font-size:18px;'>成绩删除失败，请与系统管理员联系！</font>");
+								}
+							});	
+		}
+		
+		$('#score_form_data').submit(function(event){
+			event.preventDefault();
+
+			var data = $(this).serializeArray();
+			$.ajax({
+								type:'POST',
+								async:true,
+								cache:false,
+								url:"{:U('xg_scoreadd')}",
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success" && msg.state == 'ok'){
+										ui_info('成绩添加成功！');
+										$('#score_search').click();
+									}else{
+											ui_alert("<img src='__INS__/img/error.jpg' width='20%' height='20%' alt='buhaoshi'/><font color='red' style='font-size:18px;'>成绩添加失败，请与系统管理员联系！</font>");
+										}
+								},
+								failure:function(msg,status){
+									ui_alert("<img src='__INS__/img/error.jpg' width='20%' height='20%' alt='buhaoshi'/><font color='red' style='font-size:18px;'>成绩添加失败，请与系统管理员联系！</font>");
+								}
+							});
+
+		});
+
+	$('div .panel-body ul li:eq(3)').click(function(){
+					$.ajax({
+								type:'POST',
+								async:true,
+								cache:false,
+								url:"{:U('xg_scoreslist')}&pageNumber=0&pageCount=" + pageCount + "&std_id=" + {$data.std_id},
+								dataType:'json',
+								success:function(msg,status){
+									if(status=="success" && msg.state == 'ok'){
+
+										currentPage = 1; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										maxPage =  (currentPage>maxPage ? currentPage : maxPage);
+
+										$('#pagination_score').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+										$('#pagination_score').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_score').empty();
+
+											var button_method_arr = ['$.del_scoreItem'];
+											var button_name_arr = ['删除'];
+											var field_arr = ['score_date','exam_type','name','yuwen','shuxue','english','wuli','huaxue','shengwu','dili','zhengzhi','history','sport','all_score'];
+											var select_lst_arr = ['exam_type'];
+											var check_name = null;
+											var method_param_arr = ['id'];
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+
+											$.drawTrTd(msg.data,'llst_score',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+
+										}else{
+											$('#llst_score').empty();
+										}
+									}
+								},
+								failure:function(msg,status){
+									ui_info('请与系统管理员联系!');
+								}
+							});
+					});
+
+			$('#score_search').click(function(){
+
+				var data = $('#score_form_search').serializeArray();
+
+				$.ajax({
+								type:'POST',
+								async:true,
+								cache:false,
+								url:"{:U('xg_scoreslist')}&pageNumber=0&pageCount=" + pageCount + "&std_id=" + {$data.std_id} + "&flag=search",
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success" && msg.state == 'ok'){
+
+										currentPage = 1; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										maxPage =  (currentPage>maxPage ? currentPage : maxPage);
+
+										$('#pagination_score').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+										$('#pagination_score').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_score').empty();
+
+											var button_method_arr = ['$.del_scoreItem'];
+											var button_name_arr = ['删除'];
+											var field_arr = ['score_date','exam_type','name','yuwen','shuxue','english','wuli','huaxue','shengwu','dili','zhengzhi','history','sport','all_score'];
+											var select_lst_arr = ['exam_type'];
+											var check_name = null;
+											var method_param_arr = ['id'];
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+
+											$.drawTrTd(msg.data,'llst_score',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+											json_data = msg.data;
+
+										}else{
+											$('#llst_score').empty();
+										}
+									}
+								},
+								failure:function(msg,status){
+									ui_info('请与系统管理员联系!');
+								}
+							});
+
+			})
+//===================================成绩查询tab页代码结束=====================================================================================
+//====================================维护回访tab页代码开始====================================================================================
+
+
+$('#pagination_visit').jqPagination({
+							link_string	: '/?page={page_number}',
+							max_page	: maxPage,
+							paged		: function(page) {
+
+							var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+							$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('visit_search')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page + "&std_id=" + {$data.std_id},
+								dataType:'json',
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										$('#pagination_visit').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+										$('#pagination_visit').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_weihu').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['name','timee','class','time1','time2','teacher'];
+											var select_lst_arr = null;
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+
+											$.drawTrTd(msg.data,'llst_weihu',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+
+										}else{
+											$('#llst_weihu').empty();
+										}
+
+									}
+								}
+							});
+
+							this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+							this.max_page = maxPage;
+
+							if(this.max_page <= 0){
+								this.page_string = '没有符合条件的记录';
+							}
+						}
+
+	});
+
+
+$('div .panel-body ul li:eq(2)').click(function(){
+	$('#b_edit').attr('disabled','disabled');
+	var date_str = new Date().getFullYear() + '-' + (new Date().getMonth()+1) + '-' + (new Date().getDate()<10? ('0' + new Date().getDate()) : new Date().getDate());
+	$('#weihu_timee_id').val(date_str);
+	$.ajax({
+			type:'POST',
+			async:true,
+			cache:false,
+			url:"{:U('visit_search')}&pageNumber=0&pageCount=" + pageCount + "&std_id=" + {$data.std_id},
+			dataType:'json',
+			success:function(msg,status){
+				if(status=="success" && msg.state == 'ok'){
+
+					currentPage = 1; //设置当前页码
+					maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+					maxPage =  (currentPage>maxPage ? currentPage : maxPage);
+
+					$('#pagination_visit').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+					$('#pagination_visit').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+					if(msg.data != null && msg.data.length > 0 ){
+						$('#llst_weihu').empty();
+
+						var button_method_arr = null;
+						var button_name_arr = null;
+						var field_arr = ['name','weihu_type','weihu_way','weihu_content','weihu_effect','weihu_timee'];
+						var select_lst_arr = ['weihu_type','weihu_way'];
+						var check_name = null;
+						var method_param_arr = null;
+						var a_link_arr = null;
+						var a_link_url = null;
+						var a_fun_arr = null;
+						var a_fun_param_arr = null;
+
+						$.drawTrTd(msg.data,'llst_weihu',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+
+					}else{
+						$('#llst_weihu').empty();
+					}
+				}
+			},
+			failure:function(msg,status){
+				ui_info('请与系统管理员联系!');
+			}
+		});
+	});
+
+	$.setForm=function(data){
+		$('select[name="weihu_type"]').val(data[0]['weihu_type']);
+		$('select[name="weihu_way"]').val(data[0]['weihu_way']);
+		$('input[name="weihu_timee"]').val(data[0]['weihu_timee']);
+		$('textarea[name="weihu_content"]').val(data[0]['weihu_content']);
+		$('input[name="weihu_effect"]').val(data[0]['weihu_effect']);
+		$('input[name="weihu_time1"]').val(data[0]['weihu_time1']);
+		$('input[name="weihu_time2"]').val(data[0]['weihu_time2']);
+		$('select[name="parent_name"]').val(data[0]['parent_name']);
+		$('input[name="weihu_host"]').val(data[0]['weihu_host']);
+		$('input[name="weihu_teacher"]').val(data[0]['weihu_teacher']);
+		$('textarea[name="parents_fankui_info"]').val(data[0]['parents_fankui_info']);
+		$('input[name="weihu_recorder"]').val(data[0]['weihu_recorder']);
+		$('textarea[name="weihu_analys"]').val(data[0]['weihu_analys']);
+		$('textarea[name="weihu_solution"]').val(data[0]['weihu_solution']);
+		$('textarea[name="weihu_opinion"]').val(data[0]['weihu_opinion']);
+		$('textarea[name="weihu_participants"]').val(data[0]['weihu_participants']);
+		$('#visit_type_id').change();
+
+
+	}
+	
+	
+	
+	//列表项选择事件操作
+	$("#llst_weihu").on('click','tr',null,function(){
+
+          $("#llst_weihu tr").removeClass("active");
+		  $(this).attr("class", "active");
+		  $('#b_edit').removeAttr('disabled');
+		  
+		  sid=$(this).attr('id');
+		  
+		  $('#whhf_id').val(sid);
+		  
+          if(sid != 0){
+		          $.ajax({
+		          	type:'POST',
+		          	cache:false,
+		          	async:true,
+		          	url: "{:U('visit_search')}&std_id=" + {$data.std_id},
+		          	data:{"id": sid},
+		          	dataType:"json",
+		          	success: function(msg){
+
+//		          	 $('#add').attr("disabled",true);
+					  $('#reset_visit_form').click();
+		              $.setForm(msg.data);
+
+		          	},
+		          	failure:function(err){
+
+		          		ui_error('error!');
+		          	}
+		          	});
+          }
+
+
+    });
+
+	$('#visit_search').click(function(){
+
+		var data = $('#visit_form_search').serializeArray();
+
+		$.ajax({
+						type:'POST',
+						async:true,
+						cache:false,
+						url:"{:U('visit_search')}&pageNumber=0&pageCount=" + pageCount + "&std_id=" + {$data.std_id},
+						dataType:'json',
+						data:data,
+						success:function(msg,status){
+							if(status=="success" && msg.state == 'ok'){
+
+								currentPage = 1; //设置当前页码
+								maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+								maxPage =  (currentPage>maxPage ? currentPage : maxPage);
+
+								$('#pagination_visit').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+								$('#pagination_visit').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+								if(msg.data != null && msg.data.length > 0 ){
+									$('#llst_weihu').empty();
+
+									var button_method_arr = null;
+									var button_name_arr = null;
+									var field_arr = ['name','weihu_type','weihu_way','weihu_content','weihu_effect','weihu_timee'];
+									var select_lst_arr = ['weihu_type','weihu_way'];
+									var check_name = null;
+									var method_param_arr = null;
+									var a_link_arr = null;
+									var a_link_url = null;
+									var a_fun_arr = null;
+									var a_fun_param_arr = null;
+
+									$.drawTrTd(msg.data,'llst_weihu',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+
+
+								}else{
+									$('#llst_weihu').empty();
+								}
+							}
+						},
+						failure:function(msg,status){
+							ui_info('请与系统管理员联系!');
+						}
+					});
+
+	});
+
+
+	//回访类型控制显示内容
+	$('#visit_type_id').change(function(){
+
+		if(this.value != '14'){
+			$('#meet').css('display','none');
+		}else{
+			$('#meet').css('display','table-row-group');
+		}
+	});
+
+
+/*	//维护回访内容的保存
+	$('#visit_form_data').submit(function(){
+
+		event.preventDefault();
+
+		var data = $('#visit_form_data').serializeArray();
+
+		$.ajax({
+				type:'POST',
+				async:true,
+				cache:false,
+				url:"{:U('visit_add')}",
+				dataType:'json',
+				data:data,
+				success:function(msg,status){
+					if(status=="success" && msg.state == 'ok'){
+						ui_info('信息添加成功!');
+						$('#reset_visit_form').click();
+						$('div .panel-body ul li:eq(2)').click();
+					}
+				},
+				failure:function(msg,status){
+					ui_info('请与系统管理员联系!');
+				}
+			});
+
+	})*/
+
+
+		//维护回访内容的保存
+	$.saveFormData=function(submit_type){
+
+		var data = $('#visit_form_data').serializeArray();
+
+		$.ajax({
+				type:'POST',
+				async:true,
+				cache:false,
+				url:"{:U('visit_add')}&type=" + submit_type,
+				dataType:'json',
+				data:data,
+				success:function(msg,status){
+					if(status=="success" && msg.state == 'ok'){
+						if(submit_type == 'add'){
+							ui_info('信息添加成功!');
+						}else if(submit_type == 'edit'){
+							ui_info('信息维护成功!');
+						}
+						$('#b_edit').attr('disabled','disabled');
+						$('#reset_visit_form').click();
+						$('#visit_search').click();
+					}
+				},
+				failure:function(msg,status){
+					ui_info('请与系统管理员联系!');
+				}
+			});
+
+	};
+
+
+	$('#b_add').click(function(){
+		var submit_type = 'add';
+		$.saveFormData(submit_type);
+	});
+
+	$('#b_edit').click(function(){
+		var submit_type = 'edit';
+		$.saveFormData(submit_type);
+	});
+
+
+
+
+//======================================维护回访tab页代码结束===================================================================================
+//===================================上课记录代码开始==========================================================================================
+$('#print').click(function(){
+	$('#score_print').printArea();	
+});
+
+
+$('#pagination_lesson').jqPagination({
+							link_string	: '/?page={page_number}',
+							max_page	: maxPage,
+							paged		: function(page) {
+
+							var pageNumber = (page-1)*pageCount //从第几行开始查询
+
+							$.ajax({
+								type:'POST',
+								async:false,
+								cache:false,
+								url:"{:U('lesson_search')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page + "&std_id=" + {$data.std_id},
+								dataType:'json',
+								success:function(msg,status){
+									if(status=="success"){
+										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+										currentPage = page; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										$('#pagination_lesson').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+										$('#pagination_lesson').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_lesson').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['name','timee','class','time1','time2','count','teacher'];
+											var select_lst_arr = null;
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+
+											$.drawTrTd(msg.data,'llst_lesson',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+
+										}else{
+											$('#llst_lesson').empty();
+										}
+
+									}
+								}
+							});
+
+							this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+							this.max_page = maxPage;
+
+							if(this.max_page <= 0){
+								this.page_string = '没有符合条件的记录';
+							}
+						}
+
+					});
+
+
+$('div .panel-body ul li:eq(4)').click(function(){
+					$.ajax({
+								type:'POST',
+								async:true,
+								cache:false,
+								url:"{:U('lesson_search')}&pageNumber=0&pageCount=" + pageCount + "&std_id=" + {$data.std_id},
+								dataType:'json',
+								success:function(msg,status){
+									if(status=="success" && msg.state == 'ok'){
+
+										currentPage = 1; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										maxPage =  (currentPage>maxPage ? currentPage : maxPage);
+
+										$('#pagination_lesson').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+										$('#pagination_lesson').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_lesson').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['name','timee','class','time1','time2','count','teacher'];
+											var select_lst_arr = null;
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+
+											$.drawTrTd(msg.data,'llst_lesson',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+
+										}else{
+											$('#llst_lesson').empty();
+										}
+									}
+								},
+								failure:function(msg,status){
+									ui_info('请与系统管理员联系!');
+								}
+							});
+					});
+
+
+	$('#lesson_search').click(function(){
+
+				var data = $('#lesson_form_search').serializeArray();
+
+				$.ajax({
+								type:'POST',
+								async:true,
+								cache:false,
+								url:"{:U('lesson_search')}&pageNumber=0&pageCount=" + pageCount + "&std_id=" + {$data.std_id},
+								dataType:'json',
+								data:data,
+								success:function(msg,status){
+									if(status=="success" && msg.state == 'ok'){
+
+										currentPage = 1; //设置当前页码
+										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+
+										maxPage =  (currentPage>maxPage ? currentPage : maxPage);
+
+										$('#pagination_lesson').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+										$('#pagination_lesson').jqPagination('option',{'max_page':maxPage,'trigger': false}); //设置分页插件的最大页码
+										if(msg.data != null && msg.data.length > 0 ){
+											$('#llst_lesson').empty();
+
+											var button_method_arr = null;
+											var button_name_arr = null;
+											var field_arr = ['name','timee','class','time1','time2','count','teacher'];
+											var select_lst_arr = null;
+											var check_name = null;
+											var method_param_arr = null;
+											var a_link_arr = null;
+											var a_link_url = null;
+											var a_fun_arr = null;
+											var a_fun_param_arr = null;
+
+											$.drawTrTd(msg.data,'llst_lesson',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr,a_link_arr,a_link_url,a_fun_arr,a_fun_param_arr);
+
+
+										}else{
+											$('#llst_lesson').empty();
+										}
+									}
+								},
+								failure:function(msg,status){
+									ui_info('请与系统管理员联系!');
+								}
+							});
+
+			});
+
+//====================================上课记录代码结束==========================================================================================
+		</script>
+<script type="text/javascript" src="__INS__/js/plugins/jquery.PrintArea/jquery.PrintArea.js"></script>
+	</body>
+</html>

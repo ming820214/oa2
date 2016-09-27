@@ -1,0 +1,285 @@
+<extend name="Layout/ins_xg_page" />
+<block name="content">
+<link href="__INS__/js/plugins/jqPagination/css/jqpagination.css" rel="stylesheet"/>
+ {:W('PageHeader/search_select',array('name'=>'教学反馈信息','option'=>'WORK_COMPLETE_STATE'))}	
+<div class="row">
+  <div class="col-sm-12">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>学员姓名</th>
+          <th id="test_id">上课日期</th>
+          <th>科目</th>
+          <th>开始时间</th>
+          <th>结束时间</th>
+          <th>授课教师</th>
+          <th>反馈时间</th>
+        </tr>
+      </thead>
+      <tbody id="llst">
+        <volist name="data" id="v">
+	          <tr>
+	          	<td>{$v.student_set.name}</td>
+	            <td>{$v.date}</td>
+	            <td>{$v.class}</td>
+	            <td>{$v.class_set.time1}</td>
+	            <td>{$v.class_set.time2}</td>
+	            <td>{$v.teacher}</td>
+	            <td>{$v.timestamp}</td>
+	          </tr>
+        </volist>
+      </tbody>
+    </table>
+  </div>
+    <!--教师授课课程分页插件 -->
+	 <div id="pagination_xueguan_fankui" class="pagination">
+	    <a href="#" class="first" data-action="first">&laquo;</a>
+	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
+	    <input id="pager_input" type="text" readonly="readonly" data-max-page="(({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1"/>
+	    <a href="#" class="next" data-action="next">&rsaquo;</a>
+	    <a href="#" class="last" data-action="last">&raquo;</a>
+	</div>
+</div>
+
+
+<!-- 普通学员授课反馈 -->
+<!-- 教学授课反馈 -->
+<div class="modal fade" id="fankui_dialog" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document" style="width:800px;">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title">教学授课反馈</h4>
+	      </div>
+	      <div class="modal-body">
+	      <div class="row">  									
+		  <div class="col-sm-12">
+			 <form name="form_jxfankui" id="form_jxfankui" method="post" action="">
+	          		<input type="hidden" name="stuid" id="form_stuid" value=""/>
+	          		<input type="hidden" name="cid" id="form_cid" value=""/>
+	          		<input type="hidden" name="school" id="form_school" value=""/>
+	          		<input type="hidden" name="std_id" id="std_id_vid" value="{$data[0].student_set.std_id}" />
+	            	<table  class="table table-bordered" style="background-color:white;width:720px;">
+					    <tr>
+					      <td>上课日期<input type="hidden" name="date" id="form_date"/></td>
+					      <td width="200px" class="date"><label id="class_timee"></label></td>
+					      <td>上课时间</td>
+					      <td class="time"><label id="class_time1"></label><label>——</label><label id="class_time2"></label></td>
+					    </tr>
+					    <tr>
+					      <td width="100px">讲师<input type="hidden" name="teacher" id="form_teacher"/></td>
+					      <td class="teacher"><label id="class_teacher"></label></td>
+					      <td width="100px">科目<input type="hidden" name="class" id="form_class"/></td>
+					      <td class="class"><labe id="class_subject"></labe></td>
+					    </tr>
+					    <tr>
+					      <td>授课模块</td>
+					      <td colspan="3"><input type="text" name="fk_a" class="form-control"></td>
+					    </tr>
+					    <tr>
+					      <td>授课内容</td>
+					      <td colspan="3">
+					      	<select name="fk_b" id="fk_course_type_id">
+					      		{:fill_option(get_config('TRACK_COURSE'))}
+					      	</select>
+					      </td>
+					    </tr>
+					    <tr>
+					      <td>学员听课状态</td>
+					      <td colspan="3"><input style="height:20px;" type="text" name="fk_c"></td>
+					    </tr>
+					    <tr>
+					      <td>预留作业安排</td>
+					      <td colspan="3"><input type="text" name="fk_e" class="form-control" ></td>
+					    </tr>
+					    <tr>
+					      <td>作业完成情况</td>
+					      <td><input type="radio" name="fk_f" value="没有完成">没有完成<input type="radio" name="fk_f" value="部分完成">部分完成<br/><input type="radio" name="fk_f" value="全部完成"  checked="checked">全部完成</td>
+					      <td>沟通需要</td>
+					      <td><input type="radio" name="fk_g" value="需与学管沟通">需与学管沟通<input type="radio" name="fk_g" value="需与家长沟通">需与家长沟通<br/><input type="radio" name="fk_g" value="无需与家长沟通"  checked="checked">无需与家长沟通</td>
+					    </tr>
+					    <tr>
+					      <td>问题及解决方案：</td><!--由本节提升亮点字段保存问题及解决方案内容-->
+					      <td colspan="3"><input type="text" name="fk_d" class="form-control" placeholder="学员存在问题及建议解决方案"></td>
+					    </tr>
+					    <tr>
+					      <td>备注信息：</td>
+					      <td colspan="3" contenteditable="true" name="fk_h"><input type="text" name="fk_h" class="form-control"></td>
+					    </tr>
+					    <tr>
+					    	<td colspan="4" align="center">
+					    		<input type="submit" class="bt" name="add" value="更新保存" />
+					    	</td>
+					    </tr>
+					</table>
+	          	</form>
+		  </div>  
+		</div>
+    </div>
+  </div>
+</div>
+</div>
+
+ 
+</block>
+<block name="js">
+
+<script type="text/javascript">
+
+$('div .panel-body ul li').removeClass('active')
+$('div .panel-body ul li:eq(1)').addClass('active')
+sid=0;
+pageCount = 10; //每页显示多少条记录(全局变量)
+currentPage = 1; //当前页码
+maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
+pageString = '';
+
+$(function(){
+	
+/**
+  	 * 绘制动态表格公用函数
+  	 * @param {Object} data  表格实体数据，由后台返回;
+  	 * @param {Object} tbody_id 涵盖该 tr的tbody的ID，为字符串类型;
+  	 * @param {Object} button_method_arr 每行最后一格中的按钮对应的函数名称，为数组类型;
+  	 * @param {Object} method_param_arr 按钮调用的方法的参数数组，为数组类型；
+  	 * @param {Object} button_name_arr 每行最后一格中的按钮对应的名称，这里要和button_method_arr中的数据的顺序一致，为数组类型;
+  	 * @param {Object} field_arr 表格中显示的各个内容对应的数据表的字段名称，这个要和数据库表的名称一致,为数组类型;
+  	 * @param {Object} check_name 代表checkbox复选框的name的名称，方便后续的复选框操作，为字符串类型;
+  	 * @param {Object} select_lst_arr  值为数字或者字符串，显示为汉字的下拉列表，对应的数组的名字,为数组类型;
+  	 */
+  	$.drawTrTd=function (data,tbody_id,button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr){
+  		
+  		$.each(data, function(i,value) {
+  			var temp_str = '';
+  			
+  			$('#' + tbody_id).append('<tr id="' + value.id + '">');
+  			
+  			if(check_name != null){
+  				$('#' + value.id).append('<td><input type="checkbox" name="' + check_name + '" id="check' + value.id + '" class="' + value.id + '"  value="' + value.classid + '" /></td>');	
+  			}
+  			
+  			
+  			for(var i=0;i<field_arr.length;i++){
+  				if($.inArray(field_arr[i],select_lst_arr) != -1){
+  					$('#' + value.id).append('<td>' + (eval('value.' + field_arr[i])== undefined ? '': eval(field_arr[i] + '['  + eval('value.' + field_arr[i]) + ']'))  + '</td>');
+  				}else{
+  					$('#' + value.id).append('<td>' + (eval('value.' + field_arr[i])== undefined ? '': eval('value.' + field_arr[i]))  + '</td>');	
+  				}
+  				
+  			}
+  			
+  			if(button_method_arr != null){
+  				for(var j=0;j<button_method_arr.length;j++){
+  					if(method_param_arr != null){
+  						var param_str = '';
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  						for(var k=0;k<method_param_arr.length;k++){
+  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  						}
+  						param_str = param_str.substring(0,param_str.length-1);
+						temp_str += param_str;  						
+  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}else{
+  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';	
+  					}
+  					
+  				}	
+  				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
+  				$('#' + value.id).append('<td>' + temp_str  + '</td>');
+  			}
+  			
+  			
+  		});
+  	}
+  	
+  	var std_id_val = $('#std_id_vid').val();
+  	
+		//教师授课反馈列表分页操作
+   $('#pagination_xueguan_fankui').jqPagination({
+			link_string	: '/?page={page_number}',
+			max_page	: maxPage,
+			paged		: function(page) {
+		
+			var pageNumber = (page-1)*pageCount //从第几行开始查询
+						
+			$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('xg_skfankui')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page + "&std_id=" + std_id_val,
+				dataType:'json',
+				success:function(msg,status){
+					if(status=="success"){
+						var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
+						currentPage = page; //设置当前页码
+						maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+						
+						if(msg.data != null && msg.data.length > 0 ){
+							$('#llst').empty();
+							
+							var button_method_arr = null;
+							var button_name_arr = null;
+							var field_arr = ['student_set.name','date','class','class_set.time1','class_set.time2','teacher','timestamp'];
+							var select_lst_arr = null;
+							var check_name = null;
+							var method_param_arr = null;
+							$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr);
+						}else{
+							$('#llst').empty();
+						}
+						
+					}
+				}
+			});
+
+			this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+			this.max_page = maxPage;
+			
+			if(this.max_page <= 0){
+				this.page_string = '没有符合条件的记录';
+			}
+		}
+		
+	});
+	
+
+$('#form_submit').click(function(){
+	var keyword = $('#keyword').val();
+	
+	$.ajax({
+				type:'POST',
+				async:false,
+				cache:false,
+				url:"{:U('xg_skfankui')}&pageNumber=0&pageCount=" + pageCount + "&std_id=" + std_id_val,
+				dataType:'json',
+				data:{'keyword':keyword},
+				success:function(msg,status){
+					if(status=="success" && msg.state == 'ok'){
+						
+						currentPage = 1; //设置当前页码
+						maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
+						
+						if(msg.data != null && msg.data.length > 0 ){
+							$('#llst').empty();
+	            
+							var button_method_arr = null;
+							var button_name_arr = null;
+							var field_arr = ['student_set.name','date','class','class_set.time1','class_set.time2','teacher','timestamp'];
+							var select_lst_arr = null;
+							var check_name = null;
+							var method_param_arr = null;
+							$.drawTrTd(msg.data,'llst',button_method_arr,method_param_arr,button_name_arr,field_arr,check_name,select_lst_arr);
+						}else{
+							$('#llst').empty();
+						}
+					}
+				}
+			});
+			
+})
+});
+
+</script>
+
+<script type="text/javascript" src="__INS__/js/plugins/jqPagination/jquery.jqpagination.js"></script>
+</block>

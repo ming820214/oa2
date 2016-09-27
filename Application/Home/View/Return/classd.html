@@ -1,0 +1,147 @@
+﻿<extend name="Layout/ins_page" />
+<block name="content">
+<form method="post" action="{:U()}" name="date">
+<div class="operate panel panel-default">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-6 col-md-offset-4">
+        <div class="input-group">
+            <span class="input-group-addon">选择日期</span>
+            <input name="date" class="input-date form-control" onclick="WdatePicker()" value="{$date}" id="get_date">
+          <if condition="get_school_name() eq '集团'">
+            <span class="input-group-addon">切换校区</span>
+            <select name="school" class="form-control" id="get_school"><option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+          </if>
+        </div>
+      </div>
+      <div class="col-md-2">
+          <button class="btn btn-sm btn-primary" type="submit">查询</button>
+      </div>
+    </div>
+  </div> 
+</div>
+</form>
+<h3>提示：遇到提示订单剩余课时不足的情况点击订单序号查看详情订单情况</h3>
+<form method="post">
+<div class="operate panel panel-default" id="save" style="display:none;">
+  <div class="panel-body">
+    <div class="pull-left"><input type="hidden" name="id" id="saveid">
+      <div class="form-inline">
+        <input class="form-control" type="hidden" name="timee" value="{$date}">
+        <div class="input-group">
+          <b class="input-group-addon">开始时间：</b>
+          <input class="form-control" type="text" name="time1" onclick="WdatePicker({dateFmt:'HH:mm'})" required id="time1">
+          <b class="input-group-addon">结束时间：</b>
+          <input class="form-control" type="text" name="time2" onclick="WdatePicker({dateFmt:'HH:mm'})" required id="time2">
+        </div>
+        <div class="input-group">
+          <b class="input-group-addon">实际课时：</b>
+          <select class="form-control" name="count" required><option></option><for start="0.25" end="4"  step="0.25"><option>{$i}</option></for></select>
+        </div>
+        <div class="input-group">
+          <b class="input-group-addon">完成状态：</b>
+          <select class="form-control" name="state"><option value="1">完成</option><option value="2">旷课</option></select>
+        </div>
+        <div class="input-group">
+         <b class="input-group-addon">变更说明：</b>
+         <input class="form-control" type="text" name="why">
+        </div>
+        <div class="input-group">
+          <b class="input-group-addon">订单序号：</b>
+          <input class="form-control" type="text" name="course_id" id="courseid">
+        </div>
+      </div>
+    </div>
+    <div class="pull-right">
+      <input type="submit" class="btn btn-sm btn-primary" name="save" value="保存">
+      <a class="btn btn-sm btn-primary" onclick="$('#save').hide()">关闭</a>
+    </div>
+  </div>
+</div>
+</form>
+<table class="table table-bordered table-condensed">
+  <tr>
+    <th>开始时间</th>
+    <th>结束时间</th>
+    <th>类型</th>
+    <th>上课学员</th>
+    <th>科目</th>
+    <th>讲师</th>
+    <th>课时量</th>
+    <th width="200px;">变更说明</th>
+    <th>完成状态</th>
+    <th>关联订单</th>
+    <th>添加人</th>
+    <th>教务确认</th>
+    <th>财务确认</th>
+    <th>操作</th>
+  </tr>
+  <volist name="list" id="v">
+    <tr cid="{$v.id}" gid="{$v.grade}" courseid="{$v.course_id}">
+      <td>{$v.time1}</td>
+      <td>{$v.time2}</td>
+      <td><if condition="$v.grade eq 0">一对一<else/>小组课</if></td>
+      <td>{$v.student}</td>
+      <td>{$v.class}</td>
+      <td>{$v.teacher}</td>
+      <td>{$v.count}</td>
+      <td>{$v.why}</td>
+      <td><if condition="$v.state eq 1">已完成<elseif condition="$v.state eq 2"/>旷课<else/></if></td>
+      <td><a href="{:U('Courses/forcourse',['id'=>$v['course_id']])}" target="_blank">{$v.course_id}</a></td>
+      <td>{$v.add}</td>
+      <td>{$v.qr}</td>
+      <td>{$v.cwqr}</td>
+      <td>
+        <if condition="($v.qr neq '')and($v.timee elt date('Y-m-d'))">
+          <empty name="v.cwqr">
+            <a onclick="queren(this)" class="btn btn-sm btn-primary">确认</a>
+            |<a class="btn btn-sm btn-primary" onclick="change(this)">修改</a>
+          </empty>
+        <else/>
+          <a style="color: red;">等待教务先确认……</a>
+        </if>
+        <if condition="(get_school_name() eq '集团')and($v.cwqr eq '')">
+          |<a onclick="delt(this)" class="btn btn-sm btn-danger">删除</a>
+        </if>
+      </td>
+    </tr>
+  </volist>
+</table>
+</block>
+<block name="js">
+<script>
+//修改功能
+  function change(th){
+    $('#save').show();
+    $('#saveid').val($(th).parents('tr').attr('cid'));
+    $('#time1').val($(th).parents('tr').find('td').eq(0).text());
+    $('#time2').val($(th).parents('tr').find('td').eq(1).text());
+    // $('#courseid').val($(th).parents('tr').attr('courseid'));
+  }
+// 确认课时 
+  function queren (th) {
+    var qr = $(th).parents("tr").attr('cid');
+    $.get("{:U()}",{qr:qr},function(msg){
+      if(msg=='ok'){
+        $(th).parents("td").html(msg);
+      }else{
+        ui_error(msg);
+      }
+    })
+  }
+// 删除课时 
+  function delt(th) {
+    if(confirm("确定要删除吗？该操作无法恢复……")){
+      var delt = $(th).parents("tr").attr('cid');
+      $.get("{:U()}",{delt:delt},function(msg){
+        if(msg=='ok'){
+          $(th).parents("tr").remove();
+        }else{
+          ui_error(msg);
+        }
+      })
+    }
+  }
+<notempty name="_POST['school']">$("#get_school").val("{$_POST['school']}");</notempty> 
+</script>
+</block>

@@ -1,0 +1,579 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	<meta http-equiv="cache-control" content="no-cache">
+	<link rel="stylesheet" href="__INS__/financeSys/css/common.css">
+	<div id="finance-main-container-box" class="finance-main-container-box">
+
+		<!-- 校区财务数据录入 Start -->
+		<div class="finance-page-header">
+			<h1 class="finance-h1">校区业务数据录入</h1>
+		</div>
+
+		<div class="finance-basic-entry-container">
+			<form action="" id="basic-info-submit">
+				<input type="hidden" id="id" value="" />
+				<input type="hidden" id="status" value="1" />
+				<table class="basic-type-entry-content" >
+					<tr>
+						<td class="label_align_right_col"><label for="checkout_date">结算日期</lable></td>
+						<td><input type="date" id="checkout_date" readonly/></td>
+						<td class="label_align_right_col"><label for="receipt_card">收据编号</lable></td>
+						<td><input type="text" id="receipt_card"></td>
+					</tr>
+					
+					<tr>
+						<td class="label_align_right_col"><label for="checkout_username">结账人</lable></td>
+						<td><input type="text" id="checkout_username" readonly></td>
+						<td class="label_align_right_col"><label for="teaching_userid">教学主任</lable></td>
+						<td>
+							<select id="teaching_userid" style='width:100%;margin: 5px 0;'>
+								<option value="">请选择</option>
+							</select>
+						</td>
+					</tr>
+					
+					<tr>
+						<td class="label_align_right_col"><label for="study_userid">学习管理师</lable></td>
+						<td>
+							<select id="study_userid" style='width:100%;margin: 5px 0;'>
+								<option value="">请选择</option>
+							</select>
+						</td>
+						<td class="label_align_right_col"><label for="achievement_type">业绩类型</lable></td>
+						<td>
+							<select id="achievement_type" style='width:100%;margin: 5px 0;'>
+								
+							</select>
+						</td>
+					</tr>
+					
+					<tr>
+						<td class="label_align_right_col"><label for="charge_type">收费类型</lable></td>
+						<td>
+							<select id="charge_type" style='width:100%;margin: 5px 0;'>
+								
+							</select>
+						</td>
+						<td class="label_align_right_col"><label for="student_name">学员姓名</lable></td>
+						<td><input type="text" id="student_name"></td>
+					</tr>
+					
+					<tr>
+						<td class="label_align_right_col"><label for="grade">年级</lable></td>
+						<td><input type="text" id="grade"></td>
+						<td class="label_align_right_col"><label for="achievement_date">收费日期</lable></td>
+						<td><input type="date" id="achievement_date"></td>
+					</tr>
+					
+					<tr>
+						<td class="label_align_right_col"><label for="curriculum_type">常规课程类型</lable></td>
+						<td>
+							<select id="curriculum_type" style='width:100%;margin: 5px 0;'>
+								<option value="">请选择</option>
+							</select>
+						</td>
+						<td class="label_align_right_col"><label for="not_curriculum_type">非常规课程类型</lable></td>
+						<td>
+							<select id="not_curriculum_type" style='width:100%;margin: 5px 0;'>
+								<option value="">请选择</option>
+							</select>
+						</td>
+					</tr>
+					
+					<tr>
+						<td class="label_align_right_col"><label for="curriculum_name">课程名称</lable></td>
+						<td>
+							<select id="curriculum_name" style='width:100%;margin: 5px 0;'>
+							</select>
+						</td>
+						<td class="label_align_right_col"><label for="teacher_name">讲师</lable></td>
+						<td><input type="text" id="teacher_name"></td>
+					</tr>
+					
+					<tr>
+						<td class="label_align_right_col"><label for="charge_class_num">交费课时数</lable></td>
+						<td><input type="number" id="charge_class_num"></td>
+						<td class="label_align_right_col"><label for="charge_money">交费金额</lable></td>
+						<td><input type="number" id="charge_money" step="1000"></td>
+					</tr>
+					
+					<tr>
+						<td class="label_align_right_col"><label for="new_signing_ratio">归属新签比例</lable></td>
+						<td><input type="number" id="new_signing_ratio" value="0" readonly></td>
+						<td class="label_align_right_col"><label for="old_signing_ratio">归属续签比例</lable></td>
+						<td><input type="number" id="old_signing_ratio" value="0" readonly></td>
+					</tr>
+					
+					<tr>
+						<td class="label_align_right_col"><label for="receivables_type">收款类型</lable></td>
+						<td>
+							<select id="receivables_type" style='width:100%;margin: 5px 0;'>
+								
+							</select>
+						</td>
+						<td class="label_align_right_col"><label for="content">备注</lable></td>
+						<td><input type="text" id="content"></td>
+					</tr>
+					
+					
+					<tr>
+						<td></td><td></td>
+						<td class="label_align_right_col"></td>
+						<td style="text-align:right;min-width: 405px;"><input type="button" id="resetAll" value="清空" >
+						<input type="submit" id="saveData" value="保存"></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		
+		<div class="finance-page-header">
+			<h1 class="finance-h1">已保存数据 (保存后的数据需要提交后，才能传给集团财务！)</h1>
+		</div>
+		
+		<div class="finance-basic-entry-container">
+			<div id="" style='overflow: auto;height: 500px;'>
+				<table style="border-collapse: collapse;width: 2300px;border: 1px solid #CCC;text-align: center;" id="saveAndNotSubmitData">
+					<tr style="background: #888; color: white;">
+						<th style="width: 120px;">操作</th>
+						<th style="width: 120px;">结算日期</th>
+						<th style="width: 64px;">记录ID</th>
+						<th style="width: 80px;">收据编号</th>
+						<th style="width: 48px;">结账人</th>
+						<th style="width: 64px;">教学主任</th>
+						<th style="width: 80px;">学习管理师</th>
+						<th style="width: 64px;">业绩类型</th>
+						<th style="width: 64px;">收费类型</th>
+						<th style="width: 64px;">学员姓名</th>
+						<th style="width: 48px;">年级</th>
+						<th style="width: 120px;">收费日期</th>
+						<th style="width: 96px;">常规课程类型</th>
+						<th style="width: 112px;">非常规课程类型</th>
+						<th style="width: 64px;">课程名称</th>
+						<th style="width: 220px;">讲师</th>
+						<th style="width: 80px;">交费课时数</th>
+						<th style="width: 64px;">交费金额</th>
+						<th style="width: 96px;">归属新签比例</th>
+						<th style="width: 96px;">归属续签比例</th>
+						<th style="width: 64px;">收款类型</th>
+						<th style="">备注</th>
+					</tr>
+					
+				</table>
+			</div>	
+			
+		</div>
+		<input type="button" id="submitAll" style="float: right;" value="提交数据" >
+		<div style="clear: both;margin-bottom: 10px;">
+			
+		</div>
+	</div>
+	</block>
+	<block name="js">
+	<script src="__INS__/financeSys/js/basic.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+var cbj=0;
+		+(function(){
+			checkout_date.value = new Date().toISOString().substr(0,10);
+			var basicTypeData ={};
+			var school_id = Cookie.get('school_id');
+			var user_id   = Cookie.get('user_id');
+			var user_name = Cookie.get('user_name');
+			document.$("#checkout_username").value = user_name;
+			document.$("#achievement_date").value = new Date().toISOString().substr(0,10);
+			
+			
+			//刷新未提交数据
+			function refreshNotSubmitData(){
+				AJAX({
+					url : IPaddr + 'index.php?c=PersonalCount&a=Personal_target_find&school_id=' + school_id + '&status=1,4',
+					success : function( data ){
+						console.log(IPaddr + 'index.php?c=PersonalCount&a=Personal_target_find&school_id=' + school_id + '&status=1,4')
+						if( data === null ){
+							return;
+						}
+						addSaveDataToNotSubmitTable(data);
+					}
+				})
+			}
+			//获取基本类型数据;
+			function getBasicTypeData(){
+				AJAX({
+					url	: IPaddr + 'index.php/Home/PersonalCount/Json_file_get',
+					success : function(data){
+						basicTypeData.achievement_type			 = data.achievement_type.split(';');  //业绩类型
+						basicTypeData.charge_type 				 = data.charge_type.split(';');  //收费类型
+						basicTypeData.curriculum_type	 		 = data.curriculum_type.split(';'); //常规课程类型
+						basicTypeData.not_curriculum_type		 = data.not_curriculum_type.split(';');  //非常规课程类型
+						basicTypeData.curriculum_name			 = data.curriculum_name.split(';');  //课程名称
+						basicTypeData.receivables_type			 = data.receivables_type.split(';');  //收款类型
+//						console.log(JSON.toString(basicTypeData));debugger;
+						for(var key in basicTypeData){
+							var el = document.$("#" + key);
+							if(el !== null){
+								for(var i = 0; i < basicTypeData[key].length; i++){
+									var op = document.createElement('option');
+									el.options.add(op);
+									op.value = op.text = basicTypeData[key][i];
+								}
+							}
+						}
+					},
+					error : function(err){
+						Toast(err,"网络连接中断或者服务器错误，请联系相关人员！");
+					}
+				}, refreshNotSubmitData);
+			}
+			
+			//获取校区个人基本数据;
+			try{
+				AJAX({
+					url	: IPaddr + 'index.php?m=&c=PersonalCount&a=Campus_target_find&school_id=' + school_id,
+					success : function(data){
+						if( data.personal_target.length === 0){
+							Toast('没有个人业绩目标，请联系集团财务中心，给 ' + data.school_name + ' 制定业绩目标计划！' , 10);
+							return;
+						}
+						basicTypeData.teaching_userid = []; //教学主任、咨询主管列表
+						basicTypeData.study_userid	  = []; //学习管理师、维护主管列表
+						
+						var teaching_userid			  = document.$("#teaching_userid");
+						var study_userid			  = document.$("#study_userid");
+						for(var i = 0; i < data.personal_target.length; i++){
+							//咨询主管理 及 教学主任
+							if( data.personal_target[i].post_id === '11' || data.personal_target[i].post_id === '19'  ){
+								basicTypeData.teaching_userid.push( data.personal_target[i].name);
+								/*var op = document.createElement('option');
+									teaching_userid.options.add(op);
+									op.value = op.text = data.personal_target[i].name;*/
+							}
+							
+							//维护主管 及 学习管理师
+							if( data.personal_target[i].post_id === '12' || data.personal_target[i].post_id === '18'  ){
+								basicTypeData.study_userid.push( data.personal_target[i].name);
+								/*var op = document.createElement('option');
+									study_userid.options.add(op);
+									op.value = op.text = data.personal_target[i].name;*/
+							}
+						}
+					}
+				},getBasicTypeData);
+			}catch(e){
+				alert(e);
+			}
+						
+			
+			//每条个人校区财务业线数据格式
+			var personalAchievementDocument = {
+				
+			};
+			/*var checkout_date	 	= document.$("#checkout_date"),
+				receipt_card	 	= document.$("#receipt_card"),
+				checkout_username 	= document.$("#checkout_username"),
+				teaching_userid	 	= document.$("#teaching_userid"),
+				study_userid	 	= document.$("#study_userid"),
+				achievement_type 	= document.$("#achievement_type"),
+				charge_type		 	= document.$("#charge_type"),
+				student_name	 	= document.$("#student_name"),
+				grade			 	= document.$("#grade"),
+				achievement_date	= document.$("#achievement_date"),
+				curriculum_type		= document.$("#curriculum_type"),
+				not_curriculum_type = document.$("#not_curriculum_type"),
+				curriculum_name	 	= document.$("#curriculum_name"),
+				teacher_name	 	= document.$("#teacher_name"),
+				charge_class_num 	= document.$("#charge_class_num"),
+				charge_money	 	= document.$("#charge_money"),
+				new_signing_ratio	= document.$("#new_signing_ratio"),
+				old_signing_ratio	= document.$("#old_signing_ratio"),
+				receivables_type 	= document.$("#receivables_type"),
+				content			 	= document.$("#content");*/
+			
+			//获取、清空、添加个人业绩
+			//没有参数为获取，参数为{}空对象为清空DOM，参数有对象为添加到DOM
+			function getOrResetPersonalAchievement( data ){
+				data = data || {};
+				
+				var personalData = {
+					school_id		 	: school_id,
+					checkout_userid	 	: user_id,
+					checkout_username	: user_name,
+					status				: data.status || 1,
+					id					: data.id || "",
+					checkout_date	 	: data.checkout_date || new Date().toISOString().substr(0,10),
+					receipt_card	 	: data.receipt_card || '',
+					teaching_userid	 	: data.teaching_userid || '',
+					study_userid	 	: data.study_userid || '',
+					achievement_type 	: data.achievement_type || basicTypeData.achievement_type[0],
+					charge_type		 	: data.charge_type || basicTypeData.charge_type[0],
+					student_name	 	: data.student_name || '',
+					grade			 	: data.grade || '',
+					achievement_date	: data.achievement_date || new Date().toISOString().substr(0,10),
+					curriculum_type		: data.curriculum_type || '',
+					not_curriculum_type : data.not_curriculum_type || '',
+					curriculum_name	 	: data.curriculum_name || basicTypeData.curriculum_name[0],
+					teacher_name	 	: data.teacher_name || '',
+					charge_class_num 	: data.charge_class_num || '',
+					charge_money	 	: data.charge_money || '',
+					new_signing_ratio	: data.new_signing_ratio || 0,
+					old_signing_ratio	: data.old_signing_ratio || 0,
+					receivables_type 	: data.receivables_type || basicTypeData.receivables_type[0],
+					content			 	: data.content || ''
+				};
+				
+				//如果参数为空则返回数据
+				if( arguments.length === 0){
+					for(var key in personalData){
+						var el = document.$("#" + key);
+						if(el !== null){ 
+							var value = el.value.trim();	
+							if( el.getAttribute('type') !== null && el.getAttribute('type').toLowerCase() === 'number'){
+								personalData[key]= parseFloat( value );
+							} else {
+								personalData[key]= value;
+							}
+						}
+					}
+					return personalData;
+				}
+				
+				//清空或显示数据
+				if(typeof data === 'object'){
+					for(var key in personalData){
+						var el = document.$("#" + key);
+						if(el !== null) el.value = personalData[key];
+					}	
+				} 
+				
+			};
+			
+			//添加保存数据至待提交列表或将一组数据添加至提交列表
+			function addSaveDataToNotSubmitTable( data ){
+				var dataBridEl = document.$("#saveAndNotSubmitData>tbody");
+				var tr = dataBridEl.$$('tr');
+				for(var i = 1; i < tr.length; i++){
+							dataBridEl.removeChild( tr[i] );
+						}
+				if(!data) return;
+				var createOneRowBrid = function( cellData ){
+					var tr = document.createElement('tr');
+					tr.dataset.id = cellData.id;
+					tr.innerHTML = '<td data-option>' + '<input type="button" style="background-color:#e4393c" value="删除"><input type="button" value="修改">' +'</td>' +
+								   '<td data-name="checkout_date" >' 		+ cellData.checkout_date 				+ '</td>' +
+								   '<td data-name="id" >' 					+ cellData.id 							+ '</td>' +
+								   '<td data-name="receipt_card" >' 		+ cellData.receipt_card 				+ '</td>' +
+								   '<td data-name="checkout_username" >' 	+ (cellData.checkout_username||'-') 	+ '</td>' +
+								   '<td data-name="teaching_userid" >' 		+ (cellData.teaching_userid || '-') 	+ '</td>' +
+								   '<td data-name="study_userid" >' 		+ (cellData.study_userid || '-') 		+ '</td>' +
+								   '<td data-name="chievement_type" >' 		+ cellData.achievement_type 			+ '</td>' +
+								   '<td data-name="charge_type" >' 			+ cellData.charge_type 					+ '</td>' +
+								   '<td data-name="student_name" >' 		+ cellData.student_name 				+ '</td>' +
+								   '<td data-name="grade" >' 				+ cellData.grade 						+ '</td>' +
+								   '<td data-name="achievement_date" >' 	+ cellData.achievement_date 			+ '</td>' +
+								   '<td data-name="curriculum_type" >' 		+ (cellData.curriculum_type || '-') 	+ '</td>' +
+								   '<td data-name="not_curriculum_type" >' 	+ (cellData.not_curriculum_type || '-') + '</td>' +
+								   '<td data-name="curriculum_name" >' 		+ cellData.curriculum_name 				+ '</td>' +
+								   '<td data-name="teacher_name" >' 		+ cellData.teacher_name 				+ '</td>' +
+								   '<td data-name="charge_class_num" >' 	+ cellData.charge_class_num 			+ '</td>' +
+								   '<td data-name="charge_money" >' 		+ cellData.charge_money 				+ '</td>' +
+								   '<td data-name="new_signing_ratio" >' 	+ (cellData.new_signing_ratio || '-') 	+ '</td>' +
+								   '<td data-name="old_signing_ratio" >' 	+ (cellData.old_signing_ratio || '-')	+ '</td>' +
+								   '<td data-name="receivables_type" >' 	+ cellData.receivables_type 			+ '</td>' +
+								   '<td style="text-align:left;"  data-name="content" >' + cellData.content 		+ '</td>';
+					dataBridEl.appendChild( tr );
+				};				
+				switch ( true ){
+					case Array.isArray( data ):
+						data.forEach(function( val ){
+							createOneRowBrid( val )
+						});
+						break;
+					case Array.isArray( data ) === false && typeof data === 'object':
+						
+						createOneRowBrid(data);
+						break;
+				}
+				
+			}
+			
+			//监听交费金额文本框,如果业绩类型为转介绍，则自动添加新签、续签归属比例。
+			var chargeMoneyText = document.$("#charge_money");
+			chargeMoneyText.addEventListener('input', function(e){ 
+				if( document.$("#achievement_type").value === '转介绍' ){
+					document.$("#new_signing_ratio").value = parseFloat(this.value) * 0.5;
+					document.$("#old_signing_ratio").value = parseFloat(this.value) * 0.5;
+				}
+			}, false);
+			
+			//监听业绩类型列表，如果为转介绍，查看交费金额不为空时，则自动添加新签、续签归属比例。
+			var achievementTypeSelect = document.$("#achievement_type");
+			achievementTypeSelect.addEventListener('change',function(){
+				if( this.value === '转介绍' && parseFloat( document.$("#charge_money").value ) > 0 ){
+					document.$("#new_signing_ratio").value = parseFloat(document.$("#charge_money").value) * 0.5;
+					document.$("#old_signing_ratio").value = parseFloat(document.$("#charge_money").value) * 0.5;
+				} else {
+					document.$("#new_signing_ratio").value = 0;
+					document.$("#old_signing_ratio").value = 0;
+				}
+			}, false)
+			
+			//重置清空按钮
+			var resetAllBtn = document.$("#resetAll");
+			resetAllBtn.addEventListener('click', function(e){
+				getOrResetPersonalAchievement({});
+			},false);
+			
+			
+			//个人业绩保存按钮
+			var personalAchievementBtn = document.$("#saveData");
+			personalAchievementBtn.addEventListener('click', function(e){
+				e.preventDefault();
+				var  confirmSubmit =  confirm('请确定输入数据已经准确无误，点击取消后重新录入。');
+				if(!confirmSubmit){
+					document.$("#receipt_card").focus();
+					return;
+				}
+				//判断各项目填写是否正确
+				switch (true){
+					case document.$("#receipt_card").value.trim() === '':
+							Toast('收据编号为必须填写字段。');
+							document.$("#receipt_card").focus();
+							return;
+						break;
+					case document.$("#teaching_userid").value.trim() === '' &&  document.$("#study_userid").value.trim() === '':
+							Toast('教学主任或学习管理师不能全部为空。');
+							document.$("#teaching_userid").focus();
+							return;
+						break;
+					case document.$("#student_name").value.trim() === '':
+							Toast('学生姓名为必须填写字段。');
+							document.$("#student_name").focus();
+							return;
+						break;
+					/*case document.$("#teacher_name").value.trim() === '':
+							Toast('讲师姓名为必须填写字段。');
+							document.$("#teacher_name").focus();
+							return;
+						break;*/
+					case document.$("#charge_class_num").value.trim() === '':
+							Toast('交费课时数为必须填写字段。');
+							document.$("#charge_class_num").focus();
+							return;
+						break;
+					case document.$("#charge_money").value.trim() === '':
+							Toast('交费金额为必须填写字段。');
+							document.$("#charge_money").focus();
+							return;
+						break;
+					case document.$("#curriculum_type").value === '' && document.$("#not_curriculum_type").value === '' :
+							Toast('常规课程类型及非常规课程类型必选项且只能选择其中之一。');
+							document.$("#curriculum_type").focus();
+							return;
+						break;
+					case document.$("#curriculum_type").value !== '' && document.$("#not_curriculum_type").value !== '' :
+							Toast('常规课程类型及非常规课程类型必选项且只能选择其中之一。');
+							document.$("#curriculum_type").focus();
+							return;
+						break;
+				};
+				
+				var personalAchievementDocument = getOrResetPersonalAchievement();
+				AJAX({
+					url: IPaddr + 'index.php?c=PersonalCount&a=Personal_target_add',
+					data: '&data=' + JSON.stringify( personalAchievementDocument ),
+					success: function(data){
+						if(data.status === true){
+							addSaveDataToNotSubmitTable(data.data);
+							Toast(data.content);
+							getOrResetPersonalAchievement({});
+						} else {
+							Toast(data.content);
+						}
+					}
+				},refreshNotSubmitData);
+				
+				
+			},false);
+			
+			
+			
+			function getOneNotSubmitRecord(el,status){
+				
+				if(status === 0){
+					return { id	: el.dataset.id, status : status }; //如果传值为0，则只返回id及status。
+				}
+				
+				var status = status || 1;
+				var dataRecord	= {
+					id			: el.dataset.id,
+					status		: status
+				};
+				
+				for(var i = 1; i < el.children.length; i++){
+					var content = el.children[i].innerText;
+					if( content === '-') content = '';
+					dataRecord[ el.children[i].dataset.name ] = content;
+				}
+				return dataRecord;
+			}
+			
+			//监听待提交数据的修改、删除按钮
+			var deleteAndModifyBtn = document.$("#saveAndNotSubmitData");
+			deleteAndModifyBtn.addEventListener("click", function(e){
+				var Target		= e.target,
+					recordEl	= Target.parentNode.parentNode;
+				if( Target.tagName !== 'INPUT') return;
+				
+				switch (Target.value){
+					case '删除':
+							if(confirm("确定删除数据！")){
+								AJAX({
+									url : IPaddr + 'index.php?m=&c=PersonalCount&a=Personal_target_save&',
+									success: function(data){
+											if(data.status === true){
+												Toast("删除成功！");
+												refreshNotSubmitData();//刷新表格数据
+											} else {
+												Toast(data.content);
+											}
+										},
+									data: 'data=' + JSON.stringify( getOneNotSubmitRecord(recordEl,0) ),
+									type: 'post'
+								});
+							}
+						break;
+					case '修改':
+							getOrResetPersonalAchievement( getOneNotSubmitRecord(recordEl) );
+							document.$("#receipt_card").focus();
+					break;
+				}
+			}, false)
+			
+			//监听提交数据按钮
+			var submitAll = document.$("#submitAll");
+			submitAll.addEventListener('click', function(){
+				var  confirmSubmit =  confirm('请确定已保存的数据已经准确无误，点击取消后可重新修改数据。');
+				if(!confirmSubmit){
+					return;
+				}
+				var tr = document.$("#saveAndNotSubmitData").$$('tr');
+				var submitData = [];
+				for(var i = 1; i < tr.length; i++){
+					submitData.push( {id:getOneNotSubmitRecord(tr[i]).id,status:2} );
+				}
+				AJAX({
+					url	: IPaddr + 'index.php?m=&c=PersonalCount&a=Personal_target_save',
+					data: '&data=' + JSON.stringify(submitData),
+					success : function(data){
+							if( data.status === true ){
+								Toast(data.content);
+								addSaveDataToNotSubmitTable();
+							} else {
+								Toast(data.content);							
+							}
+						},
+					type: 'post'
+				})
+			}, false)
+			
+		})();
+	</script>
+</block>

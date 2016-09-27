@@ -1,0 +1,146 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+  {:W('PageHeader/simple',array('name'=>'月度新续数据'))}
+<form method="get">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div class="pull-right form-inline">
+        <div class="input-group">
+          <span class="input-group-addon"><b>月份切换:</b></span>
+          <input type="text" class="form-control" name="date1" onfocus="WdatePicker({dateFmt:'yyyy-MM'})" value="{$Think.get.month|default=date('Y-m')}" onchange='document.location.href="{:U()}&month="+this.value' required>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="row">
+   <div class="col-md-6">
+    <!-- 新招业绩 -->
+    <div class="panel panel-warning">
+      <div class="panel-heading"><h3>【教学主任】（新招业绩）</h3></div>
+      <div class="panel-body">
+        <table class="table">    	
+          <thead>
+            <tr>
+              <th>校区</th>
+              <th>新招目标</th>
+              <th>新招总业绩</th>
+              <th>新招完成率</th>
+              <th>今日</th>
+            </tr>
+          </thead>
+          <tbody>
+            <volist name="list" id="v">
+              <tr>
+              	<td>{$key}</td>
+                <td>{$v.xinzhao_target}<php>$xinzhao_target+=$v['xinzhao_target'];</php></td>
+                <td>{$v.xinzhao_value}<php>$xinzhao_value+=$v['xinzhao_value'];</php></td>
+                <td>{:round($v['xinzhao_value']/$v['xinzhao_target'],4)*100}%</td>
+                <td>{$v.xinzhao_day}<php>$xinzhao_day+=$v['xinzhao_day'];</php></td>
+              </tr>
+            </volist>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th>集团</th>
+              <th>{$xinzhao_target}</th>
+              <th>{$xinzhao_value}</th>
+              <th>{:round($xinzhao_value/$xinzhao_target,4)*100}%</th>
+              <th>{$xinzhao_day}</th>
+            </tr>
+          </tfoot>
+        </table>  
+      </div>
+    </div>
+   </div>
+   <div class="col-md-6">
+    <!-- 续费业绩 -->
+    <div class="panel panel-danger">
+      <div class="panel-heading"><h3>【学 管 师】（续费业绩）</h3></div>
+      <div class="panel-body">
+        <table class="table">     
+          <thead>
+            <tr>
+              <th>校区</th>
+              <th>续费目标</th>
+              <th>续费总业绩</th>
+              <th>续费完成率</th>
+              <th>今日</th>
+            </tr>
+          </thead>
+          <tbody>
+            <volist name="list" id="v">
+              <tr>
+                <td>{$key}</td>
+                <td>{$v.xufei_target}<php>$xufei_target+=$v['xufei_target'];</php></td>
+                <td>{$v.xufei_value}<php>$xufei_value+=$v['xufei_value'];</php></td>
+                <td>{:round($v['xufei_value']/$v['xufei_target'],4)*100}%</td>
+                <td>{$v.xufei_day}<php>$xufei_day+=$v['xufei_day'];</php></td>
+              </tr>
+            </volist>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th>集团</th>
+              <th>{$xufei_target}</th>
+              <th>{$xufei_value}</th>
+              <th>{:round($xufei_value/$xufei_target,4)*100}%</th>
+              <th>{$xufei_day}</th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+   </div>
+</div>
+
+<!-- 新招+续费 -->
+<div class="panel panel-success">
+  <div class="panel-heading"><h3>【新招+续费】</h3></div>
+  <div class="panel-body">
+    <table class="table">     
+      <thead>
+        <tr>
+          <th>校区</th>
+          <th>总目标</th>
+          <th>1V1/多收费</th>
+          <th>特训营业绩</th>
+          <th>完成率(不含特训营)</th>
+          <th>总业绩</th>
+          <th>今日</th>
+        </tr>
+      </thead>
+      <tbody>
+        <volist name="list" id="v">
+          <tr>
+            <td>{$key}</td>
+            <td>{$v['xufei_target']+$v['xinzhao_target']}<php>$com_target+=$v['xufei_target']+$v['xinzhao_target'];</php></td>
+            <td>{$v['xufei_value']+$v['xinzhao_value']-$v['TeXunYin']}<php>$com_value+=$v['xufei_value'];</php></td>
+            <td>{$v.TeXunYin}<php>$com_TeXunYin+=$v['TeXunYin'];</php></td>
+            <td>{:round(($v['xufei_value']+$v['xinzhao_value']-$v['TeXunYin'])/($v['xufei_target']+$v['xinzhao_target']),4)*100}%</td>
+            <td>{$v['xufei_value']+$v['xinzhao_value']}<php>$com_com+=$v['xufei_value']+$v['xinzhao_value'];</php></td>
+            <td>{$v['xufei_day']+$v['xinzhao_day']}<php>$com_day+=$v['xufei_day']+$v['xinzhao_day'];</php></td>
+          </tr>
+        </volist>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>集团</th>
+          <th>{$com_target}</th>
+          <th>{$com_value}</th>
+          <th>{$com_TeXunYin}</th>
+          <th>{:round($com_value/$com_target,4)*100}%</th>
+          <th>{$com_com}</th>
+          <th>{$com_day}</th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+</block>
+<block name="js">
+<script type="text/javascript">
+</script>
+</block>

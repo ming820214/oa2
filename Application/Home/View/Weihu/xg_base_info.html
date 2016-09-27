@@ -1,0 +1,90 @@
+<extend name="Layout/ins_xg_page" />
+
+<block name="content">
+	
+<!-- 教学主人任交接内容查看 -->
+<form class="form-inline" name="form_jiaojie" id="form_jiaojie" action="" method="post">
+<input type="hidden" name="std_id" id="jiaojie_stuid" value=""/>
+
+   <!--学科情况-->
+	<div class="panel panel-success">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">学科情况</h3>
+	  </div>
+	  <div class="panel-body">
+	    <div class="form-group">
+    	<label for="jiaojie_score">入学各科成绩：</label>
+    	<textarea id="jiaojie_score" name="score" class="form-control" rows="3" cols="80" readonly="readonly">{$data.score}</textarea>
+       </div>
+       
+       <div class="form-group" style="margin-top:10px;">
+        	<label for="jiaojie_subject">报名科目&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+        	<textarea id="jiaojie_subject" name="subject" class="form-control" rows="3" cols="80" readonly="readonly">{$data.subject}</textarea>
+        </div>
+        
+        <div class="form-group" style="margin-top:10px;">
+        	<label for="jiaojie_progress">教学进度要求：</label>
+        	<textarea id="jiaojie_progress" name="progress" class="form-control" rows="3" cols="80" readonly="readonly">{$data.progress}</textarea>
+        </div>
+	  </div>
+	</div>
+
+  <!--排课要求-->
+	<div class="panel panel-success">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">排课要求</h3>
+	  </div>
+	  <div class="panel-body">
+	    <div class="form-group">
+        	<label for="jiaojie_require">老师要求&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+        	<textarea id="jiaojie_require" name="require" class="form-control" rows="3" cols="80" readonly="readonly">{$data.require}</textarea>
+       </div>
+       <div class="form-group" style="margin-top:10px;">
+        	<label for="jiaojie_time">排课时间段&nbsp;&nbsp;&nbsp;：</label>
+        	<textarea id="jiaojie_time" name="time" class="form-control" rows="3" cols="80" readonly="readonly">{$data.time}</textarea>
+        </div>
+        
+        <div class="form-group" style="margin-top:10px;">
+        	<label for="jiaojie_pl">排课频率&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+        	<textarea id="jiaojie_pl" name="pl" class="form-control" rows="3" cols="80" readonly="readonly">{$data.pl}</textarea>
+        </div>	
+       </div>
+	</div>
+				
+				
+	<!--维护需求-->
+	<div class="panel panel-success">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">维护需求</h3>
+		  </div>
+		  <div class="panel-body">
+		    <div class="form-group">
+            	<label for="jiaojie_weihu">维护需求&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
+            	<textarea id="jiaojie_weihu" name="weihu" class="form-control" rows="3" cols="80" readonly="readonly">{$data.weihu}</textarea>
+            </div>
+		</div>
+	</div>
+				
+	<!--特殊注意事项-->
+	<div class="panel panel-success">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">特殊注意事项</h3>
+	  </div>
+	  <div class="panel-body">
+	    <div class="form-group">
+        	<label for="jiaojie_other">特殊注意事项：</label>
+        	<textarea id="jiaojie_other" name="other" class="form-control" rows="3" cols="80" readonly="readonly">{$data.other}</textarea>
+    	</div>
+		</div>
+	</div>
+</form>
+</block>
+	
+<block name="js">
+<script type="text/javascript">
+	$(function(){
+		$('div .panel-body ul li').removeClass('active')
+		$('div .panel-body ul li:eq(0)').addClass('active')
+	})
+</script>	
+</block>

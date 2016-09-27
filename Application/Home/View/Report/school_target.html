@@ -1,0 +1,56 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+{:W('PageHeader/finance',array('name'=>'校区目标设置&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;','search'=>'A'))}
+<form action="" method="post">
+	<div class="operate panel panel-default">
+		<div class="panel-body">
+			<div class="pull-left form-inline">
+				<div class="input-group">
+					<a class="input-group-addon">设置校区：</a>
+					<select class="form-control" name="school">{:fill_option_ex(C('SCHOOL'))}</select>
+				</div>
+				<div class="input-group">
+					<a class="input-group-addon">新招目标：</a>
+					<input class="form-control" type="text" name="xinzhao">
+				</div>
+				<div class="input-group">
+					<a class="input-group-addon">消耗目标：</a>
+					<input class="form-control" type="text" name="xiaohao">
+				</div>
+				<div class="input-group">
+					<a class="input-group-addon">续费目标：</a>
+					<input class="form-control" type="text" name="xufei">
+				</div>
+			</div>
+			<div class="pull-right">
+				<input type="submit" class="btn btn-sm btn-primary" value="添加目标">
+			</div>
+		</div>
+	</div>
+</form>
+<div class="row">
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>校区</th>
+				<th>新招目标</th>
+				<th>消耗目标</th>
+				<th>续费目标</th>
+				<th>删除</th>
+			</tr>
+		</thead>
+		<tbody>
+			<volist name='data' id='vo'>
+			<tr>
+				<td>{$vo.school|get_school_name}</td>
+				<td>{$vo.xinzhao}</td>
+				<td>{$vo.xiaohao}</td>
+				<td>{$vo.xufei}</td>
+				<td><a href="{:U()}&delt={$vo.id}" class="btn btn-xs btn-primary">删除</a></td>
+			</tr>
+			</volist>
+		</tbody>
+	</table>
+</div>
+<div>{$page}</div>
+</block>
