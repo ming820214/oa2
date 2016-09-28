@@ -653,11 +653,6 @@ class PersonalCountController extends HomeController {
                     $count_rate = sprintf("%.2f", $count_num/sprintf("%.2f", $value['new_target']));
                     $value['count_rate'] = $count_rate;//团队所有人完成率
 
-                    $other_num = $count_num - $money_num;
-                    $value['other_num'] = $other_num;//团队其他人业绩
-
-                    $other_rate = sprintf("%.2f", $other_num/sprintf("%.2f", $value['new_target']));
-                    $value['other_rate'] = $other_rate;//团队其他人完成率
 
 
                     $relegation_complete = "";//保级所需完成率
@@ -667,6 +662,11 @@ class PersonalCountController extends HomeController {
 
 
                     if(!empty($value['personal_num']) && $value['personal_num']){
+                        $other_num = $count_num - $money_num;
+                        $value['other_num'] = $other_num;//团队其他人业绩
+
+                        $other_rate = sprintf("%.2f", $other_num/sprintf("%.2f", $value['new_target']));
+                        $value['other_rate'] = $other_rate;//团队其他人完成率
                         if($value['level'] == 1){
                             $relegation_complete = "";
                             $all_complete = 1.00;
