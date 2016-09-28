@@ -647,6 +647,11 @@ class PersonalCountController extends HomeController {
                     $count_num_con = $model->query("SELECT tab1. NAME AS school_name, CASE WHEN round(sum(tab2.je), 2) IS NULL THEN '0.00' ELSE round(sum(tab2.je), 2) END AS count_num FROM ( SELECT * FROM hongwen_oa.oa_foo_info AS info WHERE info.pid = 15 AND info.id != 174 AND info.is_del = 0 ) AS tab1 LEFT JOIN ( SELECT * FROM hw003.money_return AS moneyRe WHERE 1 = 1 AND moneyRe.time3 between '".$begin_date."-01' and '".$end_date."-".$day_count."' AND moneyRe.kf_type = '转介绍' AND moneyRe.state = 6 AND moneyRe.class1 NOT IN (5, 7, 8, 9, 10)) AS tab2 ON tab1. NAME = tab2.school WHERE tab1.id = ".$value['campus_id']." group by school_name");
 
 
+                    $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
+                    $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'campus_id' => $value['campus_id'] , 'status' => 2 ,'not_curriculum_type' => ""))->sum('charge_money');
+                    $personal_rate = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num1/2));
+
+
                     $count_num = $personal_rate - $count_num_new[0]['count_num'] - ($count_num_con[0]['count_num']/2);
                     $value['count_num'] = $count_num;//团队所有人业绩
 
@@ -655,18 +660,18 @@ class PersonalCountController extends HomeController {
 
 
 
-                    $relegation_complete = "";//保级所需完成率
-                    $upgrade_complete = "";//升级所需完成率
-                    $other_complete = "";//团队其他所需完成率
-                    $all_complete = "";//团队所需完成率
+                    $relegation_complete = 0;//保级所需完成率
+                    $upgrade_complete = 0;//升级所需完成率
+                    $other_complete = 0;//团队其他所需完成率
+                    $all_complete = 0;//团队所需完成率
+                    $other_num = 0;//团队其他人业绩
+                    $other_rate = 0;//团队其他人完成率
 
 
                     if(!empty($value['personal_num']) && $value['personal_num']){
                         $other_num = $count_num - $money_num;
-                        $value['other_num'] = $other_num;//团队其他人业绩
 
                         $other_rate = sprintf("%.2f", $other_num/sprintf("%.2f", $value['new_target']));
-                        $value['other_rate'] = $other_rate;//团队其他人完成率
                         if($value['level'] == 1){
                             $relegation_complete = "";
                             $all_complete = 1.00;
@@ -820,6 +825,8 @@ class PersonalCountController extends HomeController {
                     }else{
                         $content = "暂无";
                     }
+                    $value['other_num'] = $other_num;//团队其他人业绩
+                    $value['other_rate'] = $other_rate;//团队其他人完成率
                     $value['relegation_complete'] = $relegation_complete;
                     $value['upgrade_complete'] = $upgrade_complete;
                     $value['other_complete'] = $other_complete;
