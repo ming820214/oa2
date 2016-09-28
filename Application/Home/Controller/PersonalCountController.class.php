@@ -603,6 +603,7 @@ class PersonalCountController extends HomeController {
                     }else if($value['post_id'] == "19" || $value['post_id'] == "11"){
                         $type = '新签';
                         $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'status' => 2 , 'not_curriculum_type' => "" , 'teaching_userid' => $value['user_id']))->sum('charge_money');
+                        
                         $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'status' => 2 , 'not_curriculum_type' => "" , 'teaching_userid' => $value['user_id']))->sum('charge_money');
                     }
                     $money_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num1));
@@ -634,25 +635,198 @@ class PersonalCountController extends HomeController {
                     $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'status' => 2 , 'not_curriculum_type' => "" , 'teaching_userid' => $value['user_id']))->sum('charge_money');
 
                     $money_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num1));
-                    $value['money_num'] = $money_num;
+                    $value['money_num'] = $money_num;//个人业绩
 
-                    $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
-                    $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'campus_id' => $value['campus_id'] , 'status' => 2 ,'not_curriculum_type' => ""))->sum('charge_money');
-                    $personal_rate = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num1/2));
+                    $personal = sprintf("%.2f", $money_num/sprintf("%.2f", $value['new_target']));
+                    $value['personal'] = $personal;//个人完成率
                     
-                    $value['personal_rate'] = sprintf("%.2f", sprintf("%.2f", $money_num)/$personal_rate);
-
+                    //退费
                     $count_num_new = $model->query("SELECT tab1. NAME AS school_name, CASE WHEN round(sum(tab2.je), 2) IS NULL THEN '0.00' ELSE round(sum(tab2.je), 2) END AS count_num FROM ( SELECT * FROM hongwen_oa.oa_foo_info AS info WHERE info.pid = 15 AND info.id != 174 AND info.is_del = 0 ) AS tab1 LEFT JOIN ( SELECT * FROM hw003.money_return AS moneyRe WHERE 1 = 1 AND moneyRe.time3 between '".$begin_date."-01' and '".$end_date."-".$day_count."' AND moneyRe.kf_type = '新签' AND moneyRe.state = 6 AND moneyRe.class1 NOT IN (5, 7, 8, 9, 10)) AS tab2 ON tab1. NAME = tab2.school WHERE tab1.id = ".$value['campus_id']." group by school_name");
 
+                    //转介绍退费
                     $count_num_con = $model->query("SELECT tab1. NAME AS school_name, CASE WHEN round(sum(tab2.je), 2) IS NULL THEN '0.00' ELSE round(sum(tab2.je), 2) END AS count_num FROM ( SELECT * FROM hongwen_oa.oa_foo_info AS info WHERE info.pid = 15 AND info.id != 174 AND info.is_del = 0 ) AS tab1 LEFT JOIN ( SELECT * FROM hw003.money_return AS moneyRe WHERE 1 = 1 AND moneyRe.time3 between '".$begin_date."-01' and '".$end_date."-".$day_count."' AND moneyRe.kf_type = '转介绍' AND moneyRe.state = 6 AND moneyRe.class1 NOT IN (5, 7, 8, 9, 10)) AS tab2 ON tab1. NAME = tab2.school WHERE tab1.id = ".$value['campus_id']." group by school_name");
 
-                    $count_num = $personal_rate - $count_num_new[0]['count_num'] - ($count_num_con[0]['count_num']/2) - $money_num;
-                    $value['count_num'] = $count_num;
 
-                    $value['count_rate'] = sprintf("%.2f", $count_num/sprintf("%.2f", $value['new_target']));
+                    $count_num = $personal_rate - $count_num_new[0]['count_num'] - ($count_num_con[0]['count_num']/2);
+                    $value['count_num'] = $count_num;//团队所有人业绩
+
+                    $count_rate = sprintf("%.2f", $count_num/sprintf("%.2f", $value['new_target']));
+                    $value['count_rate'] = $count_rate;//团队所有人完成率
+
+                    $other_num = $count_num - $money_num;
+                    $value['other_num'] = $other_num;//团队其他人业绩
+
+                    $other_rate = sprintf("%.2f", $other_num/sprintf("%.2f", $value['new_target']));
+                    $value['other_rate'] = $other_rate;//团队其他人完成率
 
 
-                    if(!empty($value['upgrade']) || !empty($value['relegation'])){
+                    $relegation_complete = "";//保级所需完成率
+                    $upgrade_complete = "";//升级所需完成率
+                    $other_complete = "";//团队其他所需完成率
+                    $all_complete = "";//团队所需完成率
+
+
+                    if(!empty($value['personal_num']) && $value['personal_num']){
+                        if($value['level'] == 1){
+                            $relegation_complete = "";
+                            $all_complete = 1.00;
+                            if($value['personal_num'] == 1){
+                                $upgrade_complete = 1.0;
+
+                                if($money_num >= $value['new_target']){
+                                    $content = "升级";
+                                }else{
+                                    $content = "保级";
+                                }
+                            }else if($value['personal_num'] == 2){
+                                $upgrade_complete = 0.30;
+                                $other_complete = 0.40;
+                                if($personal >=$upgrade_complete && $other_num >= $other_complete && $count_rate >= $all_complete){
+                                    $content = "升级";
+                                }else{
+                                    $content = "保级";
+                                }
+                            }else if($value['personal_num'] == 3){
+                                $upgrade_complete = 0.25;
+                                $other_complete = 0.60;
+                                if($personal >=$upgrade_complete && $other_num >= $other_complete && $count_rate >= $all_complete){
+                                    $content = "升级";
+                                }else{
+                                    $content = "保级";
+                                }
+                            }else if($value['personal_num'] == 4){
+                                $upgrade_complete = 0.20;
+                                $other_complete = 0.70;
+                                if($personal >=$upgrade_complete && $other_num >= $other_complete && $count_rate >= $all_complete){
+                                    $content = "升级";
+                                }else{
+                                    $content = "保级";
+                                }
+                            }
+                        }else if($value['level'] == 2){
+                            $relegation_complete = 1.00;
+                            $all_complete = 1.10;
+                            if($value['personal_num'] == 1){
+                                $upgrade_complete = "";
+                                $other_complete = "";
+                                if($count_rate >= $upgrade_complete){
+                                    $content = "升级";
+                                }else if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }else if($value['personal_num'] == 2){
+                                $upgrade_complete = 0.30;
+                                $other_complete = 0.40;
+                                if($personal >=$upgrade_complete && $other_num >= $other_complete && $count_rate >= $all_complete){
+                                    $content = "升级";
+                                }else if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }else if($value['personal_num'] == 3){
+                                $upgrade_complete = 0.25;
+                                $other_complete = 0.60;
+                                if($personal >=$upgrade_complete && $other_num >= $other_complete && $count_rate >= $all_complete){
+                                    $content = "升级";
+                                }else if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }else if($value['personal_num'] == 4){
+                                $upgrade_complete = 0.20;
+                                $other_complete = 0.70;
+                                if($personal >=$upgrade_complete && $other_num >= $other_complete && $count_rate >= $all_complete){
+                                    $content = "升级";
+                                }else if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }
+                        }else if($value['level'] == 3){
+                            $relegation_complete = 1.10;
+                            $all_complete = 1.20;
+                            if($value['personal_num'] == 1){
+                                if($count_rate >= 1.20){
+                                    $content = "升级";
+                                }else if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }else if($value['personal_num'] == 2){
+                                $upgrade_complete = 0.30;
+                                $other_complete = 0.40;
+                                if($personal >=$upgrade_complete && $other_num >= $other_complete && $count_rate >= $all_complete){
+                                    $content = "升级";
+                                }else if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }else if($value['personal_num'] == 3){
+                                $upgrade_complete = 0.25;
+                                $other_complete = 0.60;
+                                if($personal >=$upgrade_complete && $other_num >= $other_complete && $count_rate >= $all_complete){
+                                    $content = "升级";
+                                }else if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }else if($value['personal_num'] == 4){
+                                $upgrade_complete = 0.20;
+                                $other_complete = 0.70;
+                                if($personal >=$upgrade_complete && $other_num >= $other_complete && $count_rate >= $all_complete){
+                                    $content = "升级";
+                                }else if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }
+                        }else if($value['level'] == 4){
+                            $relegation_complete = 1.20;
+                            if($value['personal_num'] == 1){
+                                if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }else if($value['personal_num'] == 2){
+                                if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }else if($value['personal_num'] == 3){
+                                if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }else if($value['personal_num'] == 4){
+                                if($count_rate >= $relegation_complete){
+                                    $content = "保级";
+                                }else{
+                                    $content = "降级";
+                                }
+                            }
+                        }
+                    }else{
+                        $content = "暂无";
+                    }
+                    $value['relegation_complete'] = $relegation_complete;
+                    $value['upgrade_complete'] = $upgrade_complete;
+                    $value['other_complete'] = $other_complete;
+                    $value['all_complete'] = $all_complete;
+
+
+                    /*if(!empty($value['upgrade']) || !empty($value['relegation'])){
                         if($value['personal_rate'] < $value['relegation']){
                             $content = "降级";
                         }else if($value['count_rate'] < $value['upgrade']){
@@ -662,8 +836,10 @@ class PersonalCountController extends HomeController {
                         }
                     }else{
                         $content = "暂无";
-                    }
+                    }*/
                     $value['content_str'] = $content;
+                    $value['level_last'] = "";
+                    $value['content'] = "";
                 }
             }else{
                 foreach($target_arr as &$value){
@@ -2286,7 +2462,7 @@ class PersonalCountController extends HomeController {
         }
         if($_SESSION['level_post_id'] == '11'){
             //表头数组
-            $tableheader = array('集团排名' ,'姓名','校区','职务级别','校区月业绩目标','配置人数','保级所需要完成率','升级所需团队完成率','个人完成业绩','个人完成率','团队完成业绩','团队完成率','升降情况');
+            $tableheader = array('集团排名' ,'姓名','校区','职务级别','校区月业绩目标','配置人数','保级所需团队完成率','升级所需个人完成率','升级所需团队其他人完成率','升级所需团队完成率','个人完成业绩','个人完成率','团队完成业绩','团队是完成率','团队其他人完成业绩','团队其他人完成率','升降情况','调整后级别','备注');
             //表格数组
             foreach($content_arr as $key => $val){
                 $data[$key][0] = $val["num"];
@@ -2295,13 +2471,19 @@ class PersonalCountController extends HomeController {
                 $data[$key][3] = $val["level"];
                 $data[$key][4] = $val["new_target"];
                 $data[$key][5] = $val["personal_num"];
-                $data[$key][6] = $val["relegation"];
-                $data[$key][7] = $val["upgrade"];
-                $data[$key][8] = $val["money_num"];
-                $data[$key][9] = $val["personal_rate"];
-                $data[$key][10] = $val["count_num"];
-                $data[$key][11] = $val["count_rate"];
-                $data[$key][12] = $val["content_str"];
+                $data[$key][6] = $val["relegation_complete"];
+                $data[$key][7] = $val["upgrade_complete"];
+                $data[$key][8] = $val["other_complete"];
+                $data[$key][9] = $val["all_complete"];
+                $data[$key][10] = $val["money_num"];
+                $data[$key][11] = $val["personal"];
+                $data[$key][12] = $val["count_num"];
+                $data[$key][13] = $val["count_rate"];
+                $data[$key][14] = $val["other_num"];
+                $data[$key][15] = $val["other_rate"];
+                $data[$key][16] = $val["content_str"];
+                $data[$key][17] = $val["level_last"];
+                $data[$key][18] = $val["content"];
             }
         }
         if($_SESSION['level_post_id'] == '12'){
