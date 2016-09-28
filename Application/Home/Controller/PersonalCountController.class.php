@@ -619,8 +619,12 @@ class PersonalCountController extends HomeController {
                     }else{
                         $value['relegation_difference'] = $value['relegation_num']-$value['money_num'];
                     }
-                    $value['upgrade_num_num'] = sprintf("%.2f", $value['money_num']/$value['upgrade_num']);
-                    $value['relegation_num_num'] = sprintf("%.2f", $value['money_num']/$value['relegation_num']);
+                    $value['upgrade_num_num'] = sprintf("%01.2f", $value['money_num']/$value['upgrade_num']*100).'%';
+                    $value['relegation_num_num'] = sprintf("%01.2f", $value['money_num']/$value['relegation_num']*100).'%';
+
+                    $value['upgrade'] = sprintf("%01.2f", $value['upgrade']*100).'%';
+                    $value['relegation'] = sprintf("%01.2f", $value['relegation']*100).'%';
+
                 }
             }else if($post_id == '11'){
                 foreach($target_arr as &$value){
@@ -637,8 +641,8 @@ class PersonalCountController extends HomeController {
                     $money_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num1));
                     $value['money_num'] = $money_num;//个人业绩
 
-                    $personal = sprintf("%.2f", $money_num/sprintf("%.2f", $value['new_target']));
-                    $value['personal'] = $personal;//个人完成率
+                    $personal = sprintf("%.4f", $money_num/sprintf("%.4f", $value['new_target']));
+                    $value['personal'] = sprintf("%01.2f", $personal*100).'%';//个人完成率
                     
                     //退费
                     $count_num_new = $model->query("SELECT tab1. NAME AS school_name, CASE WHEN round(sum(tab2.je), 2) IS NULL THEN '0.00' ELSE round(sum(tab2.je), 2) END AS count_num FROM ( SELECT * FROM hongwen_oa.oa_foo_info AS info WHERE info.pid = 15 AND info.id != 174 AND info.is_del = 0 ) AS tab1 LEFT JOIN ( SELECT * FROM hw003.money_return AS moneyRe WHERE 1 = 1 AND moneyRe.time3 between '".$begin_date."-01' and '".$end_date."-".$day_count."' AND moneyRe.kf_type = '新签' AND moneyRe.state = 6 AND moneyRe.class1 NOT IN (5, 7, 8, 9, 10)) AS tab2 ON tab1. NAME = tab2.school WHERE tab1.id = ".$value['campus_id']." group by school_name");
@@ -649,14 +653,14 @@ class PersonalCountController extends HomeController {
 
                     $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
                     $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'campus_id' => $value['campus_id'] , 'status' => 2 ,'not_curriculum_type' => ""))->sum('charge_money');
-                    $personal_rate = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num1/2));
+                    $personal_rate = sprintf("%.4f", sprintf("%.4f", $oa_achievement_num)+sprintf("%.4f", $oa_achievement_num1/2));
 
 
                     $count_num = sprintf("%.2f", $personal_rate - sprintf("%.2f", $count_num_new[0]['count_num']) - sprintf("%.2f", ($count_num_con[0]['count_num']/2)));
                     $value['count_num'] = $count_num;//团队所有人业绩
 
-                    $count_rate = sprintf("%.2f", $count_num/sprintf("%.2f", $value['new_target']));
-                    $value['count_rate'] = $count_rate;//团队所有人完成率
+                    $count_rate = sprintf("%.4f", $count_num/sprintf("%.4f", $value['new_target']));
+                    $value['count_rate'] = sprintf("%01.2f", $count_rate*100).'%';//团队所有人完成率
 
 
 
@@ -669,9 +673,9 @@ class PersonalCountController extends HomeController {
 
 
                     if(!empty($value['personal_num']) && $value['personal_num']){
-                        $other_num = $count_num - $money_num;
+                        $other_num = sprintf("%.2f", $count_num - $money_num);
 
-                        $other_rate = sprintf("%.2f", $other_num/sprintf("%.2f", $value['new_target']));
+                        $other_rate = sprintf("%.4f", $other_num/sprintf("%.4f", $value['new_target']));
                         if($value['level'] == 1){
                             $relegation_complete = "";
                             $all_complete = 1.00;
@@ -826,11 +830,11 @@ class PersonalCountController extends HomeController {
                         $content = "暂无";
                     }
                     $value['other_num'] = $other_num;//团队其他人业绩
-                    $value['other_rate'] = $other_rate;//团队其他人完成率
-                    $value['relegation_complete'] = $relegation_complete;
-                    $value['upgrade_complete'] = $upgrade_complete;
-                    $value['other_complete'] = $other_complete;
-                    $value['all_complete'] = $all_complete;
+                    $value['other_rate'] = sprintf("%01.2f", $other_rate*100).'%'; //团队其他人完成率
+                    $value['relegation_complete'] = sprintf("%01.2f", $relegation_complete*100).'%';
+                    $value['upgrade_complete'] = sprintf("%01.2f", $upgrade_complete*100).'%';
+                    $value['other_complete'] = sprintf("%01.2f", $other_complete*100).'%';
+                    $value['all_complete'] = sprintf("%01.2f", $all_complete*100).'%';
 
 
                     /*if(!empty($value['upgrade']) || !empty($value['relegation'])){
@@ -855,6 +859,7 @@ class PersonalCountController extends HomeController {
                     $campus_arrs = $oa_foo_info->where(array('id' => $value['campus_id']))->find();
                     $value['school_name'] = $campus_arrs['name'];
                     $type = '续签';
+
                     $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
                     $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
 
@@ -865,8 +870,8 @@ class PersonalCountController extends HomeController {
 
 
 
-                    $count_rate = sprintf("%.2f", ($oa_achievement_num + ($oa_achievement_num1 / 2) - $count_num_new[0]['count_num'] - ($count_num_con[0]['count_num']/2))/$value['old_target']);
-                    $value['count_rate'] = $count_rate;
+                    $count_rate = sprintf("%.4f", ($oa_achievement_num + ($oa_achievement_num1 / 2) - $count_num_new[0]['count_num'] - ($count_num_con[0]['count_num']/2))/$value['old_target']);
+                    $value['count_rate'] = sprintf("%01.2f", $count_rate*100).'%';//业绩完成率
 
                     if(!empty($value['upgrade']) || !empty($value['relegation']) || !empty($value['upgrade_consume']) || !empty($value['relegation_consume']) || !empty($value['consume'])){
                         if($value['consume'] >= $value['upgrade_consume'] || $count_rate >= $value['upgrade']){
@@ -879,9 +884,16 @@ class PersonalCountController extends HomeController {
                     }else{
                         $content = "暂无";
                     }
+
+                    $value['relegation_consume'] = sprintf("%01.2f", $relegation_consume*100).'%';
+                    $value['relegation'] = sprintf("%01.2f", $relegation*100).'%';
+                    $value['upgrade_consume'] = sprintf("%01.2f", $upgrade_consume*100).'%';
+                    $value['upgrade'] = sprintf("%01.2f", $upgrade*100).'%';
+                    $value['consume'] = sprintf("%01.2f", $consume*100).'%';
                     $value['content_str'] = $content;
                     $value['level_last'] = "";
                     $value['content'] = "";
+                    
                 }
             }
             if($post_id == '12'){
@@ -1460,7 +1472,7 @@ class PersonalCountController extends HomeController {
                         $cooperation_target = $model1->where(array('achievement_date' => array('like' , "%".$date."%") , 'status' => 2 , 'not_curriculum_type' => array("like","%合作项目%") , 'teaching_userid' => $val['user_id']))->sum('charge_money');
                     }
                     $data[$keys][$key]['type'] = $type;
-                    $data[$keys][$key]['count_target'] = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", ($oa_achievement_num1/2)));
+                    $data[$keys][$key]['count_target'] = sprintf("%.4f", sprintf("%.4f", $oa_achievement_num)+sprintf("%.4f", ($oa_achievement_num1/2)));
                     $data[$keys][$key]['special_target'] = $special_target;
                     $data[$keys][$key]['cooperation_target'] = $cooperation_target;
 
@@ -1620,7 +1632,7 @@ class PersonalCountController extends HomeController {
                                 }
                             }
                         }else if($value['name'] == $type.'完成率(常规)'){
-                            $value['count'][$k]['count_num'] = sprintf("%.3f", ( $top['achievement']['count'][$k]['count_num'] - $top['refund']['count'][$k]['count_num'] )/$top['target']['count'][$k]['count_num']);
+                            $value['count'][$k]['count_num'] = sprintf("%01.2f", sprintf("%.4f", ( $top['achievement']['count'][$k]['count_num'] - $top['refund']['count'][$k]['count_num'] )/$top['target']['count'][$k]['count_num'])*100).'%';
                         }else if($value['name'] == '特训营业绩'){
 	                        if($val['id'] == '100000'){
 	                            $special_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'not_curriculum_type' => array("like","%特训营%") , 'status' => 2))->sum('charge_money');
@@ -1785,11 +1797,11 @@ class PersonalCountController extends HomeController {
                             }
                         }else if($value['name'] == $value['type'].'完成率(常规)'){
                             if($value['type'] == '新签'){
-                                $value['count'][$k]['count_num'] = sprintf("%.3f", ( $top['achievement_new']['count'][$k]['count_num'] - $top['refund_new']['count'][$k]['count_num'] )/$top['target_new']['count'][$k]['count_num']);
+                                $value['count'][$k]['count_num'] = sprintf("%01.2f", sprintf("%.4f", ( $top['achievement_new']['count'][$k]['count_num'] - $top['refund_new']['count'][$k]['count_num'] )/$top['target_new']['count'][$k]['count_num'])*100).'%';
                             }else if($value['type'] == '续签'){
-                                $value['count'][$k]['count_num'] = sprintf("%.3f", ( $top['achievement_old']['count'][$k]['count_num'] - $top['refund_old']['count'][$k]['count_num'] )/$top['target_old']['count'][$k]['count_num']);
+                                $value['count'][$k]['count_num'] = sprintf("%01.2f", sprintf("%.4f", ( $top['achievement_old']['count'][$k]['count_num'] - $top['refund_old']['count'][$k]['count_num'] )/$top['target_old']['count'][$k]['count_num'])*100).'%';
                             }else{
-                                $value['count'][$k]['count_num'] = sprintf("%.3f", ( $top['achievement']['count'][$k]['count_num'] - $top['refund']['count'][$k]['count_num'] )/$top['target']['count'][$k]['count_num']);
+                                $value['count'][$k]['count_num'] = sprintf("%01.2f", sprintf("%.4f", ( $top['achievement']['count'][$k]['count_num'] - $top['refund']['count'][$k]['count_num'] )/$top['target']['count'][$k]['count_num'])*100).'%';
                             }
                             
                         }else if($value['name'] == $value['type'].'特训营业绩'){
