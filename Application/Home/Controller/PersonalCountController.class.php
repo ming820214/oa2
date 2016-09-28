@@ -652,7 +652,7 @@ class PersonalCountController extends HomeController {
                     $personal_rate = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num1/2));
 
 
-                    $count_num = $personal_rate - $count_num_new[0]['count_num'] - ($count_num_con[0]['count_num']/2);
+                    $count_num = sprintf("%.2f", $personal_rate - sprintf("%.2f", $count_num_new[0]['count_num']) - sprintf("%.2f", ($count_num_con[0]['count_num']/2)));
                     $value['count_num'] = $count_num;//团队所有人业绩
 
                     $count_rate = sprintf("%.2f", $count_num/sprintf("%.2f", $value['new_target']));
