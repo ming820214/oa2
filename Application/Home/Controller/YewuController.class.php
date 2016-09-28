@@ -314,6 +314,23 @@ class YewuController extends HomeController {
         $w['track_time']=I('post.date1')?['BETWEEN',[I('post.date1').' 00:00:00',I('post.date2').' 23:59:59']]:['like',date('Y-m-d').'%'];
         $w['track_user']=I('post.track_user');
         $data=D('Yewu')->where($w)->select();
+        foreach ($data as &$obj){
+        	switch($obj['grade']){
+        		case "22":$obj['grade'] = "高三";break;
+        		case "21":$obj['grade'] = "高二";break;
+        		case "20":$obj['grade'] = "高一";break;
+        		case "50":$obj['grade'] = "九年级";break;
+        		case "40":$obj['grade'] = "八年级";break;
+        		case "39":$obj['grade'] = "七年级";break;
+        		case "38":$obj['grade'] = "六年级";break;
+        		case "93":$obj['grade'] = "五年级";break;
+        		case "100":$obj['grade'] = "四年级";break;
+        		case "101":$obj['grade'] = "三年级";break;
+        		case "102":$obj['grade'] = "二年级";break;
+        		case "103":$obj['grade'] = "一年级";break;
+        	}
+        	
+        }
         $this->ajaxReturn($data);
     }
 /**
@@ -504,6 +521,23 @@ class YewuController extends HomeController {
             $ids=I('ids');
             if(!empty($ids))
             $data=M('yewu_students')->where(['id'=>['in',$ids]])->select();
+            foreach ($data as &$obj){
+            	switch($obj['grade']){
+            		case "22":$obj['grade'] = "高三";break;
+            		case "21":$obj['grade'] = "高二";break;
+            		case "20":$obj['grade'] = "高一";break;
+            		case "50":$obj['grade'] = "九年级";break;
+            		case "40":$obj['grade'] = "八年级";break;
+            		case "39":$obj['grade'] = "七年级";break;
+            		case "38":$obj['grade'] = "六年级";break;
+            		case "93":$obj['grade'] = "五年级";break;
+            		case "100":$obj['grade'] = "四年级";break;
+            		case "101":$obj['grade'] = "三年级";break;
+            		case "102":$obj['grade'] = "二年级";break;
+            		case "103":$obj['grade'] = "一年级";break;
+            	}
+            	 
+            }
             $this->ajaxReturn($data);
         }
     }
