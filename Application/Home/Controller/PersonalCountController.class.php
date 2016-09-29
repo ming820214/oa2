@@ -599,10 +599,19 @@ class PersonalCountController extends HomeController {
                     if($value['post_id'] == "18" || $value['post_id'] == "12"){
                         $type = '续签';
                         $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'status' => 2 , 'not_curriculum_type' => "" , 'study_userid' => $value['user_id']))->sum('charge_money');
+                        $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%") , 'study_userid' => $value['user_id']))->sum('charge_money');
+                        $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%") , 'study_userid' => $value['user_id']))->sum('charge_money');
+
+                        $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
                         $oa_achievement_num1 = 0;
                     }else if($value['post_id'] == "19" || $value['post_id'] == "11"){
                         $type = '新签';
                         $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'status' => 2 , 'not_curriculum_type' => "" , 'teaching_userid' => $value['user_id']))->sum('charge_money');
+
+                        $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%") , 'teaching_userid' => $value['user_id']))->sum('charge_money');
+                        $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%") , 'teaching_userid' => $value['user_id']))->sum('charge_money');
+
+                        $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
                         
                         $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'status' => 2 , 'not_curriculum_type' => "" , 'teaching_userid' => $value['user_id']))->sum('charge_money');
                     }
@@ -612,7 +621,7 @@ class PersonalCountController extends HomeController {
                     if($value['money_num'] >= $value['upgrade_num']){
                         $value['upgrade_difference'] = 0;
                     }else{
-                        $value['upgrade_difference'] = $value['upgrade_num']-$value['money_num'];
+                        $value['upgrade_difference'] = sprintf("%.2f", sprintf("%.2f", $value['upgrade_num'])-sprintf("%.2f", $value['money_num']));
                     }
                     if($value['money_num'] >= $value['relegation_num']){
                         $value['relegation_difference'] = 0;
@@ -636,6 +645,12 @@ class PersonalCountController extends HomeController {
 
                     $type = '新签';
                     $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'status' => 2 , 'not_curriculum_type' => "" , 'teaching_userid' => $value['user_id']))->sum('charge_money');
+
+                    $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%") , 'teaching_userid' => $value['user_id']))->sum('charge_money');
+                    $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%") , 'teaching_userid' => $value['user_id']))->sum('charge_money');
+
+                    $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
+
                     $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'status' => 2 , 'not_curriculum_type' => "" , 'teaching_userid' => $value['user_id']))->sum('charge_money');
 
                     $money_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num1));
@@ -652,6 +667,12 @@ class PersonalCountController extends HomeController {
 
 
                     $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
+
+                    $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%")))->sum('charge_money');
+                    $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%")))->sum('charge_money');
+
+                    $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
+
                     $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'campus_id' => $value['campus_id'] , 'status' => 2 ,'not_curriculum_type' => ""))->sum('charge_money');
                     $personal_rate = sprintf("%.4f", sprintf("%.4f", $oa_achievement_num)+sprintf("%.4f", $oa_achievement_num1/2));
 
@@ -861,9 +882,17 @@ class PersonalCountController extends HomeController {
                     $type = '续签';
 
                     $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
-                    $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
+
+                    $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%")))->sum('charge_money');
+                    $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => $type , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%")))->sum('charge_money');
+
+                    $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
+
+                    $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('between' , $begin_date.'-01,'.$end_date."-$day_count") , 'achievement_type' => '转介绍' , 'campus_id' => $value['campus_id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
 
                     $count_num_new = $model->query("SELECT tab1. NAME AS school_name, CASE WHEN round(sum(tab2.je), 2) IS NULL THEN '0.00' ELSE round(sum(tab2.je), 2) END AS count_num FROM ( SELECT * FROM hongwen_oa.oa_foo_info AS info WHERE info.pid = 15 AND info.id != 174 AND info.is_del = 0 ) AS tab1 LEFT JOIN ( SELECT * FROM hw003.money_return AS moneyRe WHERE 1 = 1 AND moneyRe.time3 between '".$begin_date."-01' and '".$end_date."-".$day_count."' AND moneyRe.kf_type = '续签' AND moneyRe.state = 6 AND moneyRe.class1 NOT IN (5, 7, 8, 9, 10)) AS tab2 ON tab1. NAME = tab2.school WHERE tab1.id = ".$value['campus_id']." group by school_name");
+
+
 
 
                     $count_num_con = $model->query("SELECT tab1. NAME AS school_name, CASE WHEN round(sum(tab2.je), 2) IS NULL THEN '0.00' ELSE round(sum(tab2.je), 2) END AS count_num FROM ( SELECT * FROM hongwen_oa.oa_foo_info AS info WHERE info.pid = 15 AND info.id != 174 AND info.is_del = 0 ) AS tab1 LEFT JOIN ( SELECT * FROM hw003.money_return AS moneyRe WHERE 1 = 1 AND moneyRe.time3 between '".$begin_date."-01' and '".$end_date."-".$day_count."' AND moneyRe.kf_type = '转介绍' AND moneyRe.state = 6 AND moneyRe.class1 NOT IN (5, 7, 8, 9, 10)) AS tab2 ON tab1. NAME = tab2.school WHERE tab1.id = ".$value['campus_id']." group by school_name");
@@ -1577,7 +1606,8 @@ class PersonalCountController extends HomeController {
                     'complete' => array('name' => $type.'完成率(常规)' , 'count' => array()) , 
                     'not_refund' => array('name' => '非常规课程退费' , 'count' => $return_money[1]) , 
                     'special' => array('name' => '特训营业绩' , 'count' => array()) , 
-                    'cooperation' => array('name' => '合作项目业绩' , 'count' => array()) , 
+                    'cooperation' => array('name' => '合作项目业绩' , 'count' => array()) ,  
+                    'theHigh' => array('name' => '高考报考业绩' , 'count' => array()) ,  
                     'achievement_count' => array('name' => '月'.$type.'总业绩' , 'count' => array()));
                 foreach($top as &$value){
                     foreach($campus_arr as $k=> $val){
@@ -1611,6 +1641,12 @@ class PersonalCountController extends HomeController {
                         }else if($value['name'] == $type.'总业绩(常规)'){
                             if($val['id'] == '100000'){
                                 $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
+
+                                $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%")))->sum('charge_money');
+                                $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%")))->sum('charge_money');
+
+                                $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
+
                                 $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => '转介绍' , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
                                 if($type == '新签'){
                                     $money_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", ($oa_achievement_num1/2)));
@@ -1621,6 +1657,13 @@ class PersonalCountController extends HomeController {
                                 }
                             }else{
                                 $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'campus_id' => $val['id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
+
+
+                                $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'campus_id' => $val['id'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%")))->sum('charge_money');
+                                $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'campus_id' => $val['id'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%")))->sum('charge_money');
+
+                                $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
+
                                 $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => '转介绍' , 'campus_id' => $val['id'] , 'status' => 2 ,'not_curriculum_type' => ""))->sum('charge_money');
                                 $money_num = '';
                                 if($type == '新签'){
@@ -1641,12 +1684,19 @@ class PersonalCountController extends HomeController {
 	                        }
                             $value['count'][$k]['count_num'] = sprintf("%.2f", $special_num);
                         }else if($value['name'] == '合作项目业绩'){
-	                        if($val['id'] == '100000'){
-	                            $cooperation_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'not_curriculum_type' => array("like","%合作项目%") , 'status' => 2))->sum('charge_money');
-	                        }else{
-	                            $cooperation_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'not_curriculum_type' => array("like","%合作项目%") , 'campus_id' => $val['id'] , 'status' => 2))->sum('charge_money');
-	                        }
+                            if($val['id'] == '100000'){
+                                $cooperation_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'not_curriculum_type' => array("like","%合作项目%") , 'status' => 2))->sum('charge_money');
+                            }else{
+                                $cooperation_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'not_curriculum_type' => array("like","%合作项目%") , 'campus_id' => $val['id'] , 'status' => 2))->sum('charge_money');
+                            }
                             $value['count'][$k]['count_num'] = sprintf("%.2f", $cooperation_num);
+                        }else if($value['name'] == '高考报考业绩'){
+                            if($val['id'] == '100000'){
+                                $theHigh_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'not_curriculum_type' => array("like","%高考报考%") , 'status' => 2))->sum('charge_money');
+                            }else{
+                                $theHigh_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $type , 'not_curriculum_type' => array("like","%高考报考%") , 'campus_id' => $val['id'] , 'status' => 2))->sum('charge_money');
+                            }
+                            $value['count'][$k]['count_num'] = sprintf("%.2f", $theHigh_num);
                         }else if($value['name'] == '月'.$type.'总业绩'){
     						
     						if($val['id'] == '100000'){
@@ -1707,6 +1757,7 @@ class PersonalCountController extends HomeController {
                     'not_refund_new' => array('name' => '新签非常规课程退费' , 'count' => $return_money_new[1] , 'type' => '新签') , 
                     'special_new' => array('name' => '新签特训营业绩' , 'count' => array() , 'type' => '新签') , 
                     'cooperation_new' => array('name' => '新签合作项目业绩' , 'count' => array() , 'type' => '新签') , 
+                    'theHigh_new' => array('name' => '新签高考报考业绩' , 'count' => array() , 'type' => '新签') ,  
                     'achievement_count_new' => array('name' => '月新签总业绩' , 'count' => array() , 'type' => '新签'),
                     'null1' => array('name' => '' , 'count' => array() , 'type' => '新签'),
 
@@ -1717,6 +1768,7 @@ class PersonalCountController extends HomeController {
                     'not_refund_old' => array('name' => '续签非常规课程退费' , 'count' => $return_money_old[1] , 'type' => '续签') , 
                     'special_old' => array('name' => '续签特训营业绩' , 'count' => array() , 'type' => '续签') , 
                     'cooperation_old' => array('name' => '续签合作项目业绩' , 'count' => array() , 'type' => '续签') , 
+                    'theHigh_old' => array('name' => '续签高考报考业绩' , 'count' => array() , 'type' => '续签') , 
                     'achievement_count_old' => array('name' => '月续签总业绩' , 'count' => array() , 'type' => '续签'),
                     'null2' => array('name' => '' , 'count' => array() , 'type' => '续签'),
 
@@ -1727,6 +1779,7 @@ class PersonalCountController extends HomeController {
                     'not_refund' => array('name' => $type.'非常规课程退费' , 'count' => $return_money[1] , 'type' => '招生') , 
                     'special' => array('name' => $type.'特训营业绩' , 'count' => array() , 'type' => '招生') , 
                     'cooperation' => array('name' => $type.'合作项目业绩' , 'count' => array() , 'type' => '招生') , 
+                    'theHigh' => array('name' => $type.'高考报考业绩' , 'count' => array() , 'type' => '招生') , 
                     'achievement_count' => array('name' => '月'.$type.'总业绩' , 'count' => array() , 'type' => '招生')
                 );
                 foreach($top as &$value){
@@ -1767,6 +1820,12 @@ class PersonalCountController extends HomeController {
                         }else if($value['name'] == $value['type'].'总业绩(常规)'){
                             if($val['id'] == '100000'){
                                 $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $value['type'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
+
+                                $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $value['type'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%")))->sum('charge_money');
+                                $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $value['type'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%")))->sum('charge_money');
+
+                                $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
+                                
                                 $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => '转介绍' , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
                                 if($value['type'] == '新签'){
                                     $money_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", ($oa_achievement_num1/2)));
@@ -1776,11 +1835,23 @@ class PersonalCountController extends HomeController {
                                     $value['count'][$k]['count_num'] = $money_num;
                                 }else{
                                     $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'status' => 2, 'not_curriculum_type' => ""))->sum('charge_money');
+
+                                    $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%")))->sum('charge_money');
+                                    $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%")))->sum('charge_money');
+
+                                    $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
+                                
                                     $money_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num1));
                                     $value['count'][$k]['count_num'] = $money_num;
                                 }
                             }else{
                                 $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $value['type'] , 'campus_id' => $val['id'] , 'status' => 2 , 'not_curriculum_type' => ""))->sum('charge_money');
+
+                                $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $value['type'] , 'campus_id' => $val['id'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%")))->sum('charge_money');
+                                $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $value['type'] , 'campus_id' => $val['id'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%")))->sum('charge_money');
+
+                                $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
+                                
                                 $oa_achievement_num1 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => '转介绍' , 'campus_id' => $val['id'] , 'status' => 2 ,'not_curriculum_type' => ""))->sum('charge_money');
                                 $money_num = '';
                                 if($value['type'] == '新签'){
@@ -1791,6 +1862,12 @@ class PersonalCountController extends HomeController {
                                     $value['count'][$k]['count_num'] = $money_num;
                                 }else{
                                     $oa_achievement_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'campus_id' => $val['id'] , 'status' => 2, 'not_curriculum_type' => ""))->sum('charge_money');
+
+                                    $oa_achievement_num2 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'campus_id' => $val['id'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%高考报考%")))->sum('charge_money');
+                                    $oa_achievement_num3 = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'campus_id' => $val['id'] , 'status' => 2 , 'curriculum_type' => "" , 'not_curriculum_type' => array("like","%自主招生%")))->sum('charge_money');
+
+                                    $oa_achievement_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num2)+sprintf("%.2f", $oa_achievement_num3));
+                                
                                     $money_num = sprintf("%.2f", sprintf("%.2f", $oa_achievement_num)+sprintf("%.2f", $oa_achievement_num1));
                                     $value['count'][$k]['count_num'] = $money_num;
                                 }
@@ -1834,6 +1911,21 @@ class PersonalCountController extends HomeController {
                                 }
                             }
                             $value['count'][$k]['count_num'] = sprintf("%.2f", $cooperation_num);
+                        }else if($value['name'] == $value['type'].'高考报考业绩'){
+                            if($value['type'] == '招生'){
+                                if($val['id'] == '100000'){
+                                    $theHigh_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'not_curriculum_type' => array("like","%高考报考%") , 'status' => 2))->sum('charge_money');
+                                }else{
+                                    $theHigh_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'not_curriculum_type' => array("like","%高考报考%") , 'campus_id' => $val['id'] , 'status' => 2))->sum('charge_money');
+                                }
+                            }else{
+                                if($val['id'] == '100000'){
+                                    $theHigh_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $value['type'] , 'not_curriculum_type' => array("like","%高考报考%") , 'status' => 2))->sum('charge_money');
+                                }else{
+                                    $theHigh_num = $oa_achievement->where(array('achievement_date' => array('like' , $date.'%') , 'achievement_type' => $value['type'] , 'not_curriculum_type' => array("like","%高考报考%") , 'campus_id' => $val['id'] , 'status' => 2))->sum('charge_money');
+                                }
+                            }
+                            $value['count'][$k]['count_num'] = sprintf("%.2f", $theHigh_num);
                         }else if($value['name'] == '月'.$value['type'].'总业绩'){
                             $money_num = '';
                             if($val['id'] == '100000'){
