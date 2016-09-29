@@ -34,6 +34,11 @@ class StudentController extends HomeController {
 			}else{
 				$w['school'] = array('neq','大连校区');
 			}*/
+            
+            if($_SESSION['position_id'] == 19){
+            	$w['jiaoxue'] = $_SESSION['user_name'];
+            }
+            
             if(I('param.xueguan'))$w['xueguan']=I('param.xueguan');
             if(I('param.jiaoxue'))$w['jiaoxue']=I('param.jiaoxue');
             if(I('param.state')){

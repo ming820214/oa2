@@ -29,7 +29,7 @@
 		    		<td width="59.5px" style="padding-left: 5px;"><!--业务类型-->{$v.type}</td>
 		    		<td width="91px" style="padding-left: 5px;"><!--课程类型-->{$v.order_course_type}</td>
 		    		<td width="108.5px" style="padding-left: 5px;"><!--课程方案-->{$v.order_plan}</td>
-		    		<td width="66.5px" style="padding-left: 5px;"><!--订购数量-->{$v.order_hour}</td>
+		    		<td width="66.5px" style="padding-left: 5px;"><!--订购数量--><if condition="$v.type eq '订购'"><if condition="($v.order_hour gt 0) AND ($v.order_ext_hour gt 0)">订购{$v.order_hour} 赠送 {$v.order_ext_hour}<else/>订购{$v.order_hour}</if></if></td>
 		    		<td width="52.5px" style="padding-left: 5px;"><!--缴费金-->{$v.value}</td>
 		    		<td width="98px" style="padding-left: 5px;"><!--备注--><if condition="$v.order_ext_hour gt 0">赠送{$v.order_ext_hour}课时</if></td>
                 </tr>

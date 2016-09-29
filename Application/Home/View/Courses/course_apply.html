@@ -219,12 +219,23 @@ function loadData(offset) {
             }else{
                 result.data[x].state = STATE[result.data[x].type_state];
             }
+            
+            //增加特殊优惠审批中，辨别是订购申请还是退课申请;
+            if(result.data[x].type_state < 40){
+            	result.data[x].apply_type = '订购申请';
+            }else if(result.data[x].type_state > 40){
+            	result.data[x].apply_type = '退课申请';
+            }else if(result.data[x].type_state == 40){
+            	result.data[x].apply_type = '订单使用中';
+            }
+            
             result.data[x].school = SCHOOL[result.data[x].school];
         }
         if (result.state == 'ok') {
             Ycom.table('#apply_list', {
                 '_checkbox':'<input type="checkbox" id="checkbox">',
                 'id':'序号',
+                'apply_type':'申请类型',
                 'state':'审核状态',
                 'school':'申请校区',
                 'name':'学员',
