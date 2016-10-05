@@ -2112,6 +2112,8 @@ class PersonalCountController extends HomeController {
                 $begin_date = $_GET['begin_date'];
                 $end_date = $_GET['end_date'];
                 $where_arr['achievement_date'] = array('between' , $begin_date.','.$end_date);
+            }else{
+            	$where_arr['campus_id'] = $campus_id;
             }
             $where_user = array();
         }else{
@@ -2122,6 +2124,8 @@ class PersonalCountController extends HomeController {
                 $end_date = $_GET['end_date'];
                 $where_arr['campus_id'] = $campus_id;
                 $where_arr['achievement_date'] = array('between' , $begin_date.','.$end_date);
+            }else{
+            	$where_arr['campus_id'] = $campus_id;
             }
             $where_school = array('id' => $campus_id);
             $school_name = $oa_foo_info->where($where_school)->find();
@@ -2196,7 +2200,7 @@ class PersonalCountController extends HomeController {
         $data = array();
         $user_arrs = array();
         $data = $model->where($where_arr)->order('id desc')->select();
-
+		//echo $model->getLastsql();die;
         $user_arrs = $person_all->select();//
         $school_arr = $oa_foo_info->where(array('pid' => 15 , 'is_del' => 0))->select();
         $count_num = 0;
