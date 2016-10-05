@@ -66,6 +66,7 @@ class PersonalCountController extends HomeController {
         $model5 = M('position');
         $data = array();
         $data2 = array();
+        $dats = array();
         if(empty($_GET['school_id'])){
             $data_arr = $model1->where(array('date'=>$date))->select();
             if($data_arr){
@@ -112,6 +113,9 @@ class PersonalCountController extends HomeController {
 	            $campus_arr = $model4->where(array('pid' => 15 , 'is_del' => 0))->select();
 	            foreach($campus_arr as $val){
 	                $dats['campus_id'] = $val['id'];
+	                $dats['new_target'] = 0;
+	                $dats['old_target'] = 0;
+	                $dats['count_target'] = 0;
 	                $dats['date'] = date("Y-m",time());
 	                $model1->add($dats);
 	            }
@@ -2104,10 +2108,7 @@ class PersonalCountController extends HomeController {
         }
 
         if(empty($_GET['school_id'])){
-            if(empty($_GET['begin_date']) && empty($_GET['end_date'])){
-                $date = date("Y-m",time());
-                $where_arr['achievement_date'] = array('like' , '%'.$date.'%');
-            }else{
+            if(!empty($_GET['begin_date']) && !empty($_GET['end_date'])){
                 $begin_date = $_GET['begin_date'];
                 $end_date = $_GET['end_date'];
                 $where_arr['achievement_date'] = array('between' , $begin_date.','.$end_date);
@@ -2116,11 +2117,7 @@ class PersonalCountController extends HomeController {
         }else{
             $school_name = array();
             $campus_id = $_GET['school_id'];
-            if(empty($_GET['begin_date']) && empty($_GET['end_date'])){
-                $date = date("Y-m",time());
-                $where_arr['campus_id'] = $campus_id;
-                $where_arr['achievement_date'] = array('like' , '%'.$date.'%');
-            }else{
+            if(!empty($_GET['begin_date']) && !empty($_GET['end_date'])){
                 $begin_date = $_GET['begin_date'];
                 $end_date = $_GET['end_date'];
                 $where_arr['campus_id'] = $campus_id;
