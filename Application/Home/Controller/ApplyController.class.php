@@ -49,6 +49,13 @@ class ApplyController extends HomeController {
 	public function manage(){
         $this -> display('index');
 	}
+	
+	/**
+	 * 各个岗位浏览自己审核过的数据
+	 */
+	public function checked_list(){
+		$this -> display('list_checked_info');
+	}
 
 /**
 ####################################增删改查
@@ -122,6 +129,25 @@ class ApplyController extends HomeController {
     	}
     }
 
+    /*
+     *各个岗位自己已审核的页面数据列表
+     */
+    public function ajax_checked_list(){
+    	if(IS_AJAX){
+    		$w=I('get.search');
+    		array_empty_delt($w);
+    		if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 00:00:00']];
+    		$w['_string'] = "LOCATE('" . $_SESSION['user_name'] . "',record) != 0"; 
+    		$data=M('apply')->where($w)->order('state asc,money_time asc,school asc,subject asc,type asc,id desc')->field('record',true)->limit(I('get.offset'),I('get.count'))->select();
+    		$total=M('apply')->where($w)->count();
+    		$count=$this->get_count($w);
+    		
+    		$this->ajaxReturn(['state'=>'ok','data'=>$data,'total'=>$total,'count'=>$count]);
+    	}else{
+    		$this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+    	}
+    }
+    
     //计算统计各阶段的金额统计
     private function get_count($w){
     	$data=M('apply')->where($w)->getField('id,state,unit_price,count,money');
