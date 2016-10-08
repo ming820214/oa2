@@ -21,6 +21,10 @@
             <a class="btn btn-sm btn-info input-group-addon">选择期次：</a>
             <input  class="form-control" type="text" name="date" value="{$Think.session.date}" onclick="WdatePicker({dateFmt:'yyyy-MM'})" readonly="readonly">
         </div>
+        <div class="input-group">
+            <a class="btn btn-sm btn-info input-group-addon">明细内容：</a>
+            <input  class="form-control" type="text" name="info" value="{$Think.session.info}"/>
+        </div>
         <input type="submit" class="btn btn-sm btn-info" value="确定">
     </form>
     <div class="col-sm-1">
@@ -84,6 +88,10 @@
 	                <a class="input-group-addon">申请人</a>
 	                <input name="add_user_name" class="form-control">
 	            </div>
+	            <div class="input-group">
+		            <a class="btn btn-sm btn-info input-group-addon">明细内容：</a>
+		            <input  class="form-control" type="text" name="info" value="{:session('info')}"/>
+		        </div>
 	            <div class="input-group col-15">
 	                <a class="input-group-addon">序号</a>
 	                <input name="id" class="form-control">
@@ -105,6 +113,12 @@
 <div class="panel-body">
     <ul id="pagination" class="pagination pull-right" data-offset="0" data-count="30" data-total="300">
     </ul>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h4 class="pull-left" id="money"></h4>
+    </div>
 </div>
 
 <div class="loading"></div>
@@ -136,7 +150,10 @@
         $(this).addClass('success');
     })
     
-
+	//全选/取消
+    $("#apply_list").on('click','#checkbox',function(){
+        $("#apply_list tbody input[type=checkbox]").prop('checked',($(this).prop('checked')==true)?true:false);
+    })
 
  
 
@@ -145,7 +162,7 @@ function loadData(offset) {
     Ycom.loading.show();
     var search = $('#adv_search').serializeJson();
     var count = $('#pagination').data('count');
-    
+    var money = 0 ;//项目合计金额
     $.ajax({
         url: '{:U("Apply/ajax_checked_list")}',
         type: 'GET',
@@ -176,7 +193,7 @@ function loadData(offset) {
             result.data[x].subject = SUBJECT[result.data[x].subject];
             result.data[x]._money = (result.data[x].unit_price * result.data[x].count).toFixed(2);
             result.data[x].buy_type = result.data[x].buy_type!='0'?CG_TYPE[result.data[x].buy_type]:'';
-
+            money+=parseFloat((result.data[x].unit_price * result.data[x].count).toFixed(2));
         }
         if (result.state == 'ok') {
             Ycom.table('#apply_list', {
@@ -211,7 +228,7 @@ function loadData(offset) {
                 'update_time':'最后审核时间',
                 'create_time':'数据创建时间',
             }, result.data);
-           
+            $('#money').text(result.count[1]+result.count[0]);// 显示页面合计金额
             Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
             
             $('[data-toggle="tooltip"]').tooltip();
