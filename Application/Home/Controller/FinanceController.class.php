@@ -21,6 +21,8 @@ class FinanceController extends HomeController {
     	
     	if($_POST['info']){
     		session('info', $_POST['info']);
+    	}else{
+    		session('info', null);
     	}
     	
     	if($_POST['date']){
