@@ -136,6 +136,7 @@ class ApplyController extends HomeController {
     	if(IS_AJAX){
     		$w=I('get.search');
     		array_empty_delt($w);
+    		if($w['info']) $w['info'] = array('like','%' . $w['info'] . '%');
     		if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 00:00:00']];
     		$w['_string'] = "LOCATE('" . $_SESSION['user_name'] . "',record) != 0"; 
     		$data=M('apply')->where($w)->order('state asc,money_time asc,school asc,subject asc,type asc,id desc')->field('record',true)->limit(I('get.offset'),I('get.count'))->select();
