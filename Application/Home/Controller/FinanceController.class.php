@@ -13,11 +13,22 @@ class FinanceController extends HomeController {
     }
 
     public function changeMonth(){
-        if($_POST['date']){
+        /* if($_POST['date']){
             session('date', $_POST['date']);
             $this->success('所在期次设置成功！');
 			
-        }
+        } */
+    	
+    	if($_POST['info']){
+    		session('info', $_POST['info']);
+    	}
+    	
+    	if($_POST['date']){
+    		session('date', $_POST['date']);
+    		$this->success('所在期次设置成功！');
+    	}
+    	
+    	
     }
 
 }
