@@ -75,7 +75,8 @@ class StudentController extends HomeController {
 				$w2['school']=session('school_id');	
 			}
 			
-            $w2['position_id']=get_position_id('学习管理师');
+//             $w2['position_id']=get_position_id('学习管理师');
+			$w2['position_id']=array('in','12,13,18');
             $w2['is_del'] = 0;
             $this->xueguan=M('user')->where($w2)->getField('name',true);
             //教学主任输出
