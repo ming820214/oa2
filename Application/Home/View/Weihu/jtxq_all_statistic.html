@@ -363,12 +363,27 @@
 	
 	<!-- 维护学生列表 -->
 	<div id="wh_lst" class="hidden">
+		<form method="post" id="frequency_form_search" name="form_adv_search">
+		  <div class="operate panel panel-default">
+		    <div class="panel-body">
+		      <div class="pull-left form-inline">
+		        <label  for="xueguan"><b>学习管理师:</b></label>
+		        <select id="xueguan_lst" name="xueguan_s" class="form-control col-10">
+		          <option value="">全部</option>
+		          {:fill_option($xueguan)}
+		        </select>&nbsp;&nbsp;&nbsp;
+		        <input type="button" class="btn btn-sm btn-primary" name="search" value="查询" id="xg_search" />
+		      </div>
+		    </div>
+		  </div>
+		</form>
+
 		<input type="hidden" name="school_wh" id="school_wh"/>
 		  <table class="table table-bordered" style="table-layout:fixed;">
 	      <thead>
 	        <tr>
-	        	<th>校区</th>
-	        	<th>学员编号</th>
+	          <th>校区</th>
+	          <th>学员编号</th>
 	          <th>姓名</th>
 	          <th>年级</th>
 	          <th>学习管理师</th>
@@ -955,6 +970,8 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
+						
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1029,6 +1046,8 @@ $(function(){
 						var school = $('#school_yxrs').val();
 						
 						data.push({name:'school',value:school});
+						
+						var param_tail = "";
 						
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
@@ -1105,6 +1124,7 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1181,6 +1201,7 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1258,6 +1279,7 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1334,6 +1356,7 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1410,6 +1433,7 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1485,6 +1509,7 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1562,6 +1587,7 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1638,8 +1664,12 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
-						var param_tail = "";
+						var xueguan = $('#xueguan_lst').val();
+						if(xueguan){
+							data.push({name:'xueguan',value:xueguan});
+						}
 						
+						param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1657,6 +1687,13 @@ $(function(){
 								data:data,
 								success:function(msg,status){
 									if(status=="success"){
+										if(msg.xueguan && msg.xueguan.length>0){
+											$('#xueguan_lst').empty();
+											$('#xueguan_lst').append("<option value=''>全部</option>");
+											for(var i =0;i<msg.xueguan.length;i++){
+												$('#xueguan_lst').append("<option value='" + msg.xueguan[i] + "'>" + msg.xueguan[i] + "</option>");	
+											}
+										}
 										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
 										currentPage = page; //设置当前页码
 										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
@@ -1717,6 +1754,7 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1792,6 +1830,7 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -1867,6 +1906,7 @@ $(function(){
 						
 						data.push({name:'school',value:school});
 						
+						var param_tail = "";
 						if($('#cycle').val() == 1){
 							 param_tail = "&statistic_day=" + $('#statistic_day').val();
 						}
@@ -2134,6 +2174,9 @@ $.viewWHDetail = function(opt){
 	$('#tj_content .panel-heading').html('<b>' + $('#cycle').find("option:selected").text() + '维护情况</b>');
 }
 
+$('#xg_search').click(function(){
+	$('#pagination_stu_wh').jqPagination('option',{'current_page':1,'trigger': true}); //设置分页插件的当前页码
+});
 
 $.viewYXDetail = function(opt){
 	$('#tj_content').removeClass('hidden');

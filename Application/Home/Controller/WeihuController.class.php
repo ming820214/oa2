@@ -6048,6 +6048,15 @@ class WeihuController extends HomeController {
 				$w_wh .= "  and DATE_FORMAT(weihu_timee, '%Y-%m-%d') <='" . $endDate . "' ";
 			}
 			
+			if(isset($_POST['xueguan'])){
+				$w_wh .= " and st.xueguan='" . $_POST['xueguan'] . "' ";
+			}
+			
+			$w2['school']= I('post.school');
+			$w2['position_id']=array('in','12,13,18');
+			$w2['is_del'] = 0;
+			$xg_front_lst = M('user')->where($w2)->getField('name',true);
+			
 			//今日维护人数
 			unset($sql_str);
 			$sql_str = "select count(*) as count from hongwen_oa.oa_weihu as wh,hw001.student as st where st.school='" . $school . "' and wh.std_id = st.std_id " . $w_wh  . " order by st.school, wh.std_id";
@@ -6065,7 +6074,8 @@ class WeihuController extends HomeController {
 				$this->ajaxReturn([
 					'state'=>'ok',//查询结果
 					'maxCount'=>$maxCount,//查询到数据库有多少条满足条件记录
-					'data'=>$wh_lst
+					'data'=>$wh_lst,
+					'xueguan'=>$xg_front_lst
 				  ]);
 			}
 			
