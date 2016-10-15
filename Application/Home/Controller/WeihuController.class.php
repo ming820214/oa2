@@ -6052,7 +6052,7 @@ class WeihuController extends HomeController {
 				$w_wh .= " and st.xueguan='" . $_POST['xueguan'] . "' ";
 			}
 			
-			$w2['school']= I('post.school');
+			$w2['school']= get_school_id(I('post.school'));
 			$w2['position_id']=array('in','12,13,18');
 			$w2['is_del'] = 0;
 			$xg_front_lst = M('user')->where($w2)->getField('name',true);
