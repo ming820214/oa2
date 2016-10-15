@@ -376,8 +376,8 @@ class CoursesController extends HomeController {
 		$rd_count = $newcourse['count']; //周、月课时量
         $price = $course['price'];
         $factor = $course['factor'];
-//		$priceNew = $_GET['hour']*$unitprice*$factor; //缺少对按周、月计算的情况 edit by zhangxm at 2016-03-12 16:02
-        $priceNew = $_GET['hour'] * $rd_count * $unitprice*$factor;
+		$priceNew = $_GET['hour']*$unitprice*$factor; //缺少对按周、月计算的情况 edit by zhangxm at 2016-03-12 16:02
+//         $priceNew = $_GET['hour'] * $rd_count * $unitprice*$factor;
 
         $result = [
             'state'    => 'ok',

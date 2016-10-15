@@ -31,7 +31,7 @@ class CourseModel extends CommonModel{
 
         $course['hour']*=$course['count'];
 		
-//      $course['unitprice']/=$course['count']; //针对按周、月有30课时的单价方案无法正确计算，故此处删除 zhangxm edit at 2016-03-12 14:47
+     	$course['unitprice']/=$course['count']; //针对按周、月有30课时的单价方案无法正确计算，故此处删除 zhangxm edit at 2016-03-12 14:47
 		
         $course['school']=session('school_id');
         if($this->create($course)){
