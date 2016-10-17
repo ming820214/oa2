@@ -108,6 +108,7 @@ class PersonalCountController extends HomeController {
             }else{
                 $data = array();
             }
+
 			
 	        if(empty($data[0]['id'])){
 	            $campus_arr = $model4->where(array('pid' => 15 , 'is_del' => 0))->select();
@@ -118,6 +119,25 @@ class PersonalCountController extends HomeController {
 	                $dats['count_target'] = 0;
 	                $dats['date'] = date("Y-m",time());
 	                $model1->add($dats);
+	            }
+
+	            //下面是获取上一月的数据
+	            $data_c = $this->year_month_day_old();
+	            $year_day = $data_c['year_day'];//哪一年
+            	$month_day = $data_c['month_day'];//哪一月
+	            	
+	            $data_arr2 = $model2->where(array('date' => $year_day."-".$month_day))->select();
+	            foreach($data_arr2 as $key => $value){
+	            	$value['id'] = '';
+	            	$value['target'] = 0;
+	            	$value['upgrade'] = 0;
+	            	$value['relegation'] = 0;
+	            	$value['target_consume'] = 0;
+	            	$value['upgrade_consume'] = 0;
+	            	$value['relegation_consume'] = 0;
+	            	$value['consume'] = 0;
+	            	$value['personal_num'] = 0;
+	            	$model2->add($value);
 	            }
 	            $this->Campus_target_find();
 	        }
@@ -165,8 +185,41 @@ class PersonalCountController extends HomeController {
                // 发送给页面的数据
 		$this->ajaxReturn($data);
     }
-
-
+    
+    
+    //每到月一号计算上个月年，月，日，总共多少天
+    function year_month_day_old(){
+    	//下面是获取上一月的数据
+    	//获取月份当前
+    	$data = array();
+    	$now_time = Intval(date("m",time()));
+    	//如果当前月份不等于一月并且小于等于十月则当前月份-1前加0
+    	if($now_time !=1 && $now_time<=10){
+    		$year_day = date("Y",time());
+    		$month_day = "0".($now_time-1);
+    		$check_content = $year_day."-".$month_day."-";
+    		//如果当前月份不等于一月并且大于十月则当前月份-1不加0
+    	}elseif($now_time !=1 && $now_time>10){
+    		$year_day = date("Y",time());
+    		$month_day = $now_time-1;
+    		$check_content = $year_day."-".$month_day."-";
+    		//如果当前月份等于一月则当前年份-1当前月份定位12月
+    	}elseif($now_time ==1){
+    		$year_day = Intval(date("Y",time()))-1;
+    		$month_day = 12;
+    		$check_content = $year_day."-12-";
+    	}
+    	$data['now_time'] = $now_time;
+    	$data['year_day'] = $year_day;
+    	$data['month_day'] = $month_day;
+    	$data['check_content'] = $check_content;
+    	//计算每月一共有多少天
+    	$data['day_count']=date('j',mktime(0,0,1,($month_day==12?1:$month_day+1),1,($month_day==12?$year_day+1:$year_day))-24*3600);
+    	//var_dump($data);
+    	return $data;
+    }
+    
+    
 
     //财务系统校区录入业绩目标删除
     function Campus_target_del(){
