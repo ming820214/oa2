@@ -370,7 +370,7 @@
 		        <label  for="xueguan"><b>学习管理师:</b></label>
 		        <select id="xueguan_lst" name="xueguan_s" class="form-control col-10">
 		          <option value="">全部</option>
-		          {:fill_option($xueguan)}
+		          
 		        </select>&nbsp;&nbsp;&nbsp;
 		        <input type="button" class="btn btn-sm btn-primary" name="search" value="查询" id="xg_search" />
 		      </div>
@@ -395,6 +395,7 @@
 	      	
 	      </tbody>
 		</table>
+		<div>共:<span id="countNum"></span>条记录</div>
 		<div id="pagination_stu_wh" class="pagination" style="float:right;margin-right:35px;">
 	    <a href="#" class="first" data-action="first">&laquo;</a>
 	    <a href="#" class="previous" data-action="previous">&lsaquo;</a>
@@ -706,7 +707,7 @@ $(function(){
 			$('#statistic_day').prop("disabled","true");
 		}
 		
-		if($('#cycle').val() == 4){debugger;
+		if($('#cycle').val() == 4){
 			$('#during').css("display","block");
 			$('#begin').prop('disabled',"");
 			$('#end').prop('disabled',"");
@@ -1694,10 +1695,19 @@ $(function(){
 												$('#xueguan_lst').append("<option value='" + msg.xueguan[i] + "'>" + msg.xueguan[i] + "</option>");	
 											}
 										}
+										
+										if(msg.xueguan_s){
+											$('#xueguan_lst').val(msg.xueguan_s);	
+										}else{
+											$('#xueguan_lst').val("");
+										}
+										
+										
 										var page = this.url.split('&')[5].substr(5); //通过url请求路径中添加的参数来获取当前页码;
 										currentPage = page; //设置当前页码
 										maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1; //最大页码;
 										
+										$('#countNum').text(msg.maxCount); 
 										if(msg.data != null && msg.data.length > 0 ){
 											$('#llst_stu_wh').empty();
 

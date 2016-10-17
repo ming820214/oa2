@@ -6048,6 +6048,7 @@ class WeihuController extends HomeController {
 				$w_wh .= "  and DATE_FORMAT(weihu_timee, '%Y-%m-%d') <='" . $endDate . "' ";
 			}
 			
+			
 			if(isset($_POST['xueguan'])){
 				$w_wh .= " and st.xueguan='" . $_POST['xueguan'] . "' ";
 			}
@@ -6071,12 +6072,22 @@ class WeihuController extends HomeController {
 			
 			if(IS_AJAX && I('get.pageCount')){
 				// 发送给页面的数据
-				$this->ajaxReturn([
-					'state'=>'ok',//查询结果
-					'maxCount'=>$maxCount,//查询到数据库有多少条满足条件记录
-					'data'=>$wh_lst,
-					'xueguan'=>$xg_front_lst
-				  ]);
+				if(isset($_POST['xueguan'])){
+					 $this->ajaxReturn([
+					 		'state'=>'ok',//查询结果
+					 		'maxCount'=>$maxCount,//查询到数据库有多少条满足条件记录
+					 		'data'=>$wh_lst,
+					 		'xueguan'=>$xg_front_lst,
+					 		'xueguan_s' =>$_POST['xueguan']
+					 ]);
+				}else{
+					$this->ajaxReturn([
+							'state'=>'ok',//查询结果
+							'maxCount'=>$maxCount,//查询到数据库有多少条满足条件记录
+							'data'=>$wh_lst,
+							'xueguan'=>$xg_front_lst
+					]);
+				}
 			}
 			
 		}
