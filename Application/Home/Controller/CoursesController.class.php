@@ -376,7 +376,14 @@ class CoursesController extends HomeController {
 		$rd_count = $newcourse['count']; //周、月课时量
         $price = $course['price'];
         $factor = $course['factor'];
-		$priceNew = $_GET['hour']*$unitprice*$factor; //缺少对按周、月计算的情况 edit by zhangxm at 2016-03-12 16:02
+        //针对周月走规则的按is_join==2 流程走，否则的话，按else走
+        if($newcourse['is_join'] == 2){
+        	$priceNew = $_GET['hour'] * $rd_count * $unitprice*$factor;
+        }else{
+        	$priceNew = $_GET['hour']*$unitprice*$factor;
+        	$unitprice = $newcourse['unitprice']/$newcourse['count'];
+        }
+// 		$priceNew = $_GET['hour']*$unitprice*$factor; //缺少对按周、月计算的情况 edit by zhangxm at 2016-03-12 16:02
 //         $priceNew = $_GET['hour'] * $rd_count * $unitprice*$factor;
 
         $result = [

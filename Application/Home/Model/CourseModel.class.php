@@ -31,7 +31,12 @@ class CourseModel extends CommonModel{
 
         $course['hour']*=$course['count'];
 		
-     	$course['unitprice']/=$course['count']; //针对按周、月有30课时的单价方案无法正确计算，故此处删除 zhangxm edit at 2016-03-12 14:47
+        $plan=M('UnitpriceRole')->find($course['unit_plan']);
+        //针对周月走规则的按is_join==2 流程走，否则的话，就不进行操作
+        if($plan['is_join'] != 2){
+        	$course['unitprice']/=$course['count'];
+        }
+//      $course['unitprice']/=$course['count']; //针对按周、月有30课时的单价方案无法正确计算，故此处删除 zhangxm edit at 2016-03-12 14:47
 		
         $course['school']=session('school_id');
         if($this->create($course)){
@@ -168,7 +173,8 @@ class CourseModel extends CommonModel{
             'count' => $plan['count'],
             'factor' => $plan['factor'],
             'ext_hour' => 0,
-            'price' => 0
+            'price' => 0,
+        	'is_join' => $plan['is_join'],
         ];
 
         //参与赠送的计算
