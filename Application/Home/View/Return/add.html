@@ -44,12 +44,12 @@
 			</tr>
 			<tr>
 				<td>课程类型：</td>
-				<td><input type="text" name="class"/><select class="class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select>&nbsp;&nbsp;<select name="class2" class="sub_type" required="required"></select></td>
-				<td>交费日期：</td>
+				<td><!-- <input type="text" name="class"/> --><select class="class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select>&nbsp;&nbsp;<select name="class2" class="sub_type" required="required"></select></td>
+				<td>退出费用缴费日期：</td>
 				<td><input type="text" name="timed" required="true" onclick="WdatePicker()" /></td>
-				<td>交费总额:</td>
+				<td>缴费总额:</td>
 				<td><input type="number" name="ze" required="true"/></td>
-				<td>交费课时：</td>
+				<td>缴费课时：</td>
 				<td><input type="text" name="count" required="true"/></td>
 				<td>已上课时:</td>
 				<td><input type="text"  name="countd" required="true"></td>
@@ -59,7 +59,7 @@
 				<td><input type="text" name="km" required="true"></td>
 				<td>剩余计算：</td>
 				<td colspan="3">
-					<textarea name="sy" cols="50" rows="4" required="true" ></textarea><span class="red_star">(**必填项**)</span>
+					<textarea name="sy" cols="60" rows="4" required="true" ></textarea><span class="red_star">(**必填项**)</span>
 				</td>
 				<td>应退金额：</td>
 				<td><input type="number" name="je" required="true" step="0.01"/></td>
@@ -91,9 +91,11 @@
 			</tr>
 			<tr>
 				<td>具体原因：</td>
-				<td colspan="5">
+				<td colspan="3">
 					<textarea name="why2" cols="80" rows="4" required="true" ></textarea><span class="red_star">(**必填项**)</span>
 				</td>
+				<td>首次缴费日期</td>
+				<td><input type="text" name="first_time" required="true" onclick="WdatePicker()" /></td>
 				<td>备注：</td>
 				<td colspan="3"><input type="text" name="other" style="min-width: 137px;max-width: 440px;width: 100%;" maxlength="15"></td>
 			</tr>
@@ -136,12 +138,12 @@
 			</tr>
 			<tr>
 				<td>课程类型：</td>
-				<td><input type="text" name="class"/><select class="class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select>&nbsp;&nbsp;<select name="class2" class="sub_type" required="required"></select></td>
-				<td>交费日期：</td>
+				<td><!-- <input type="text" name="class"/> --><select class="class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select>&nbsp;&nbsp;<select name="class2" class="sub_type" required="required"></select></td>
+				<td>退出费用缴费日期：</td>
 				<td><input type="text" name="timed" required="true" onclick="WdatePicker()" /></td>
-				<td>交费总额:</td>
+				<td>缴费总额:</td>
 				<td><input type="number" name="ze" required="true"/></td>
-				<td>交费课时：</td>
+				<td>缴费课时：</td>
 				<td><input type="text" name="count" required="true"/></td>
 				<td>已上课时:</td>
 				<td><input type="text"  name="countd" required="true"></td>
@@ -169,9 +171,12 @@
 			</tr>
 			<tr>
 				<td>具体原因：</td>
-				<td colspan="5">
+				<td colspan="3">
 					<textarea name="why2" cols="80" rows="2" required="true" ></textarea><span class="red_star">(**必填项**)</span>
 				</td>
+				
+				<td>首次缴费日期</td>
+				<td><input type="text" name="first_time" required="true" onclick="WdatePicker()" /></td>
 				
 				<td>备注：</td>
 				<td colspan="3"><input type="text" name="other" style="min-width: 137px;max-width: 440px;width: 100%;" maxlength="15"></td>
@@ -186,33 +191,34 @@
 <a  class="btn btn-primary">执行流程：退费申请->财务核算->校区审批->总部沟通->中心审批->财务批款->退款确认</a>
 
 		<div style="overflow-x:auto;overflow-y:auto;max-height: 500px;">
-			<div class="ul_table message-container" style="width:3500px;">
-				<table class="table table-bordered" id="llst" width="110%" border="1px solid">
+			<div class="ul_table message-container" style="width:3800px;">
+				<table class="table table-bordered" id="llst" width="120%" border="1px solid">
 					<thead>
 						<th width="1%" style="text-align: center;">
 							<input class="ace" type="checkbox" name="id-toggle-all" id="id-toggle-all"/>
 							<span class="lbl"></span>
 						</th>
-						<th width="3%" style="text-align: center;">状态</th>
+						<th width="2%" style="text-align: center;">状态</th>
 						<th width="3%" style="text-align: center;">校区</th>
 						<th width="3%" style="text-align: center;">学员姓名</th>
 						<th width="2%" style="text-align: center;">年级</th>
 						<th width="3%" style="text-align: center;">联系电话</th>
 						<th width="3%" style="text-align: center;">教学主任</th>
 						<th width="3%" style="text-align: center;">学习管理师</th>
+						<!-- <th width="4%" style="text-align: center;">课程类型</th> -->
 						<th width="5%" style="text-align: center;">课程类型</th>
-						<th width="5%" style="text-align: center;">课程类型2</th>
-						<th width="3%" style="text-align: center;">交费日期</th>
-						<th width="2%" style="text-align: center;">交费总额</th>
-						<th width="2%" style="text-align: center;">交费课时</th>
+						<th width="3%" style="text-align: center;">首次缴费日期</th>
+						<th width="3%" style="text-align: center;">退出费用缴费日期</th>
+						<th width="2%" style="text-align: center;">缴费总额</th>
+						<th width="2%" style="text-align: center;">缴费课时</th>
 						<th width="2%" style="text-align: center;">已上课时</th>
-						<th width="5%" style="text-align: center;">科目/教师</th>
-						<th width="7%" style="text-align: center;">剩余计算</th>
+						<th width="4%" style="text-align: center;">科目/教师</th>
+						<th width="6%" style="text-align: center;">剩余计算</th>
 						<th width="2%" style="text-align: center;">应退金额</th>
-						<th width="7%" style="text-align: center;">退费原因</th>
-						<th width="7%" style="text-align: center;">校区反馈</th>
-						<th width="7%" style="text-align: center;">校长沟通</th>
-						<th width="7%" style="text-align: center;">总部沟通</th>
+						<th width="6%" style="text-align: center;">退费原因</th>
+						<th width="6%" style="text-align: center;">校区反馈</th>
+						<th width="6%" style="text-align: center;">校长沟通</th>
+						<th width="6%" style="text-align: center;">总部沟通</th>
 						<th width="3%" style="text-align: center;">申请时间</th>
 						<th width="3%" style="text-align: center;">财务确认时间</th>
 						<th width="3%" style="text-align: center;">校区审核时间</th>
@@ -263,8 +269,9 @@
 								<td>{$vo.tel}</td>
 								<td>{$vo.aa}</td>
 								<td>{$vo.bb}</td>
-								<td>{$vo.class}</td>
+								<!-- <td>{$vo.class}</td> -->
 								<td>{$vo.class1}=>{$vo.class2}</td>
+								<td>{$vo.first_time}</td>
 								<td>{$vo.timed}</td>
 								<td>{$vo.ze}</td>
 								<td>{$vo.count}</td>
@@ -328,8 +335,9 @@
 								<td>{$voo.tel}</td>
 								<td>{$voo.aa}</td>
 								<td>{$voo.bb}</td>
-								<td>{$voo.class}</td>
+								<!-- <td>{$voo.class}</td> -->
 								<td>{$voo.class1}=>{$voo.class2}</td>
+								<td>{$voo.first_time}</td>
 								<td>{$voo.timed}</td>
 								<td>{$voo.ze}</td>
 								<td>{$voo.count}</td>
@@ -379,7 +387,7 @@
 		         	$("#adv_aa").find("input[name='tel']").val(msg.tel);
 		         	$("#adv_aa").find("input[name='aa']").val(msg.aa);
 		         	$("#adv_aa").find("input[name='bb']").val(msg.bb);
-		         	$("#adv_aa").find("input[name='class']").val(msg.class);
+		         	/* $("#adv_aa").find("input[name='class']").val(msg.class); */
 		         	$("#adv_aa").find("select[name='class1']").val(msg.class1);
 		         	$('#adv_aa .class_type').change();
 		         	$("#adv_aa").find("select[name='class2']").val(msg.class2);
@@ -395,6 +403,7 @@
 		         	$("#adv_aa").find("input[name='why3']").val(msg.why3);
 		         	$("#adv_aa").find("input[name='other']").val(msg.other);
 		         	$("#adv_aa").find("select[name='yj_type']").val(msg.yj_type);
+		         	$("#adv_aa").find("input[name='first_time']").val(msg.first_time);
 		         }
 		      });
 	}

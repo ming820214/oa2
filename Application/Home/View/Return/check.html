@@ -51,12 +51,12 @@
 			<empty name="why3">
 			<tr>
 				<td>课程类型：</td>
-				<td><input type="text" name="class" /><select class="class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select>&nbsp;&nbsp;<select name="class2" class="sub_type" required="required"></select></td>
-				<td>交费日期：</td>
+				<td><!-- <input type="text" name="class" /> --><select class="class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select>&nbsp;&nbsp;<select name="class2" class="sub_type" required="required"></select></td>
+				<td>退出费用缴费日期：</td>
 				<td><input type="text" name="timed" required="true" onclick="WdatePicker()" /></td>
-				<td>交费总额:</td>
+				<td>缴费总额:</td>
 				<td><input type="number" name="ze" required="true"/></td>
-				<td>交费课时：</td>
+				<td>缴费课时：</td>
 				<td><input type="text" name="count" required="true"/></td>
 				<td>已上课时:</td>
 				<td><input type="text"  name="countd" required="true"></td>
@@ -105,8 +105,11 @@
 					</select>
 				</td> -->
 				
+				<td>首次缴费日期</td>
+				<td><input type="text" name="first_time" required="true" onclick="WdatePicker()" /></td>
+				
 				<td>备注：</td>
-				<td colspan="3"><input type="text" name="other" style="min-width: 137px;max-width: 440px;width: 100%;"  maxlength="15"></td>
+				<td><input type="text" name="other" style="min-width: 137px;max-width: 440px;width: 100%;"  maxlength="15"></td>
 			</tr>
 			<if condition="$module == 'xqsh' ">
 			<tr>
@@ -192,9 +195,10 @@
 						<th width="3%" style="text-align: center;">学习管理师</th>
 						<!--<th width="2%" style="text-align: center;">课程类型</th>-->
 						<th width="5%" style="text-align: center;">课程类型</th>
-						<th width="3%" style="text-align: center;">交费日期</th>
-						<th width="2%" style="text-align: center;">交费总额</th>
-						<th width="2%" style="text-align: center;">交费课时</th>
+						<th width="3%" style="text-align: center;">首次缴费日期</th>
+						<th width="3%" style="text-align: center;">退出费用缴费日期</th>
+						<th width="2%" style="text-align: center;">缴费总额</th>
+						<th width="2%" style="text-align: center;">缴费课时</th>
 						<th width="2%" style="text-align: center;">已上课时</th>
 						<th width="5%" style="text-align: center;">科目/教师</th>
 						<th width="7%" style="text-align: center;">剩余计算</th>
@@ -258,6 +262,7 @@
 								<td>{$vo.bb}</td>
 								<!--<td>{$vo.class}</td>-->
 								<td>{$vo.class1}=>{$vo.class2}</td>
+								<td>{$vo.first_time}</td>
 								<td>{$vo.timed}</td>
 								<td>{$vo.ze}</td>
 								<td>{$vo.count}</td>
@@ -327,6 +332,7 @@
 								<td>{$voo.bb}</td>
 								<!--<td>{$voo.class}</td>-->
 								<td>{$voo.class1}=>{$voo.class2}</td>
+								<td>{$voo.first_time}</td>
 								<td>{$voo.timed}</td>
 								<td>{$voo.ze}</td>
 								<td>{$voo.count}</td>
@@ -508,7 +514,7 @@
 		         	$("#adv_aa").find("input[name='tel']").val(msg.tel);
 		         	$("#adv_aa").find("input[name='aa']").val(msg.aa);
 		         	$("#adv_aa").find("input[name='bb']").val(msg.bb);
-		         	$("#adv_aa").find("input[name='class']").val(msg.class);
+		         	/* $("#adv_aa").find("input[name='class']").val(msg.class); */
 		         	$("#adv_aa").find("select[name='class1']").val(msg.class1);
 		         	$('#adv_aa .class_type').change();
 		         	$("#adv_aa").find("select[name='class2']").val(msg.class2);
@@ -526,6 +532,7 @@
 		         	$("#adv_aa").find("input[name='other']").val(msg.other);
 		         	$("#adv_aa").find("select[name='yj_type']").val(msg.yj_type);
 		         	$("#adv_aa").find("select[name='kf_type']").val(msg.kf_type);
+		         	$("#adv_aa").find("input[name='first_time']").val(msg.first_time);
 		         }
 		      });
 	}
