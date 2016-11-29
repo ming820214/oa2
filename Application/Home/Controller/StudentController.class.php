@@ -82,6 +82,7 @@ class StudentController extends HomeController {
             //教学主任输出
             $w3['school']=session('school_id');
             $w3['position_id']=['in', [C('POSITION_ID')['SCHOOL_DIRECTOR'],C('POSITION_ID')['SCHOOL_CONSULTS_XZ'],C('POSITION_ID')['SCHOOL_DIRECTOR_XZ']]];
+            $w3['is_del'] = 0;
             $this->jiaoxue=M('user')->where($w3)->getField('name',true);
 			
 			//设置年级列表
