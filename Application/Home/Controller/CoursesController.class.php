@@ -414,16 +414,21 @@ class CoursesController extends HomeController {
         $data        = json_decode($_POST['new'], true);
 
         $oldCourse = $Course->find((int)$data['id']);
-
-        $payInfo['student'] = $payInfo['name'];
-
-        if ($data['hour'] < 0 || ($data['hour']*$data['count']+$data['ext_hour'])<($oldCourse['used_hour']+$this->getUnconfirmedCount($data['id']))) {
-            $returnData = ['state' => 'error', 'info'  => '课时错误！'];
-        } elseif (round($Consumption->getBalance($payInfo['std_id']),2) < round($payInfo['pay_due'],2)) {
-            $returnData = ['state' => 'error', 'info'  => '充值金额不足'];
-        } elseif ($Course->renewal($payInfo, $data, $oldCourse)) {
-            $returnData = ['state' => 'ok', 'info'  => '调课成功'];
-        }
+        
+		if((time()-$oldCourse['create_time'])>15*24*60*60){
+			$returnData = ['state' => 'error', 'info'  => '课时订购已超过15天！'];
+		}else{
+			$payInfo['student'] = $payInfo['name'];
+			
+			if ($data['hour'] < 0 || ($data['hour']*$data['count']+$data['ext_hour'])<($oldCourse['used_hour']+$this->getUnconfirmedCount($data['id']))) {
+				$returnData = ['state' => 'error', 'info'  => '课时错误！'];
+			} elseif (round($Consumption->getBalance($payInfo['std_id']),2) < round($payInfo['pay_due'],2)) {
+				$returnData = ['state' => 'error', 'info'  => '充值金额不足'];
+			} elseif ($Course->renewal($payInfo, $data, $oldCourse)) {
+				$returnData = ['state' => 'ok', 'info'  => '调课成功'];
+			}	
+		}
+        
 
         $this->ajaxReturn($returnData);
     }
