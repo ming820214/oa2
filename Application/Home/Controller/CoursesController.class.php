@@ -415,7 +415,7 @@ class CoursesController extends HomeController {
 
         $oldCourse = $Course->find((int)$data['id']);
         
-		if((time()-$oldCourse['create_time'])>15*24*60*60){
+		if($data['add_hour']>0 && ((time()-$oldCourse['create_time'])>15*24*60*60)){
 			$returnData = ['state' => 'error', 'info'  => '课时订购已超过15天！'];
 		}else{
 			$payInfo['student'] = $payInfo['name'];
