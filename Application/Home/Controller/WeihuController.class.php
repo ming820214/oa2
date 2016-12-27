@@ -884,14 +884,16 @@ class WeihuController extends HomeController {
 
 		$clas = D('class');
 		$stu = D('students');
-
+		$course = M('course');
+		
 		$student = $stu->getByStdId($std_id);
-
+		$course_ids = $course->where(["std_id" => $std_id,"is_del"=>0])->getField('id',true);
+		
 		$w['std_id'] = $std_id; //学生的学员编号
 
 		$w['state'] = 1; //教师的上课状态为上课
 		$w['trim(cwqr)'] = array('neq',''); //财务确认上课后会进行签名录入，只要该字段不为空，则说明该节课程已经上了
-
+		$w['course_id'] = array('in',$course_ids); //有效的订单ID
 		$sub_type = I('post.subject_type');
 		$time1 = I('post.lesson_date1');
 		$time2 = I('post.lesson_date2');
