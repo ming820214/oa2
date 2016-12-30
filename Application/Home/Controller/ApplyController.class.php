@@ -10,7 +10,7 @@ class ApplyController extends HomeController {
 			$school[$v['id']]=$v['name'];
 		}
 		$this->assign('school',$school);//校区
-		$subject=M("FinanceType")->where('pid=268')->select();
+		$subject=M("FinanceType")->where('pid=268')->order("sort ASC")->select();
 		foreach ($subject as $v) {
 			$subjectId[$v['id']]=$v['name'];
 		}
