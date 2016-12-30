@@ -16,7 +16,7 @@ class ReturnController extends HomeController {
 			
             if($_POST['x'])$m->state=1;
             if($m->save()){
-			if((session('auth_id') != 90) && (session('auth_id') != 89))
+			if((session('auth_id') != 90) && (session('auth_id') != 89) && (session('auth_id') != 69))
 				  {
 			       
 				   
@@ -477,10 +477,12 @@ class ReturnController extends HomeController {
 					$record_xq = M('hw003.return','money_')->where($w)->find();
 					if($record_xq){
 						//如果是王思雷，则只能审核高报项目
-						if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10)){
+						if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12)){
 //							$user[0]= 'ZXhld001'; //邹德涛
 							$user[0]= 'XGryxc22'; //邹婧
 			        		//M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid							
+						}elseif(($record_xq['class1'] == 12)){
+							$user[0]= 'AAA'; //李文龙
 						}else{
 // 							$user[0]= 'Azl'; //王思雷
 							$user[0]= 'XZdl01'; //张玉珠
@@ -508,11 +510,22 @@ class ReturnController extends HomeController {
 					$info='点击可直接进入审核……';
 					
 			        $wx= getWechatObj();
-			        $wx->sendNewsMsg(
-			            [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/gt')),'')],
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['TZTX']
-			        );
+			        
+			        if(($record_xq['class1'] == 12)){
+			        	$wx->sendNewsMsg(
+			        			[$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check3')),'')],
+			        			['touser'=>$user],
+			        			C('WECHAT_APP')['TZTX']
+			        			);
+			        	
+			        }else{
+			        	$wx->sendNewsMsg(
+			        			[$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/gt')),'')],
+			        			['touser'=>$user],
+			        			C('WECHAT_APP')['TZTX']
+			        			);
+			        }
+			        
 			        /*$wx->sendTextMsg("特殊优惠有新的动态，请查看",
 			            ['touser'=>$user],
 			            C('WECHAT_APP')['TZTX']);*/
@@ -774,9 +787,12 @@ class ReturnController extends HomeController {
                 R('Return/record',array($value,'数据退回'));
 				
 				{
-					$xueguan = M('hw003.return','money_')->where($w)->getField('bb');
+// 					$xueguan = M('hw003.return','money_')->where($w)->getField('bb');
+					$data_t = M('hw003.return','money_')->where($w)->getField('bb,school');
+					$xueguan = array_keys($data_t)[0];
+					$school = array_values($data_t)[0];
 					
-					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
+					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
 					
 					if($xg){
 						$user[]= $xg;	
@@ -831,9 +847,13 @@ class ReturnController extends HomeController {
                 R('Return/record',array($value,'删除'));
 				
 				{
-					$xueguan = M('hw003.return','money_')->where(['id'=>$value])->getField('bb');
+// 					$xueguan = M('hw003.return','money_')->where(['id'=>$value])->getField('bb');
+
+					$data_t = M('hw003.return','money_')->where(['id'=>$value])->getField('bb,school');
+					$xueguan = array_keys($data_t)[0];
+					$school = array_values($data_t)[0];
 					
-					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
+					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
 					
 					if($xg){
 						$user[]= $xg;	
@@ -894,7 +914,16 @@ class ReturnController extends HomeController {
 			} */
 			
             $w['state']=3;
-            $w['why3']=array('neq','');
+            
+            //李文龙查看长颈鹿项目退费
+            if(session('auth_id') == 69){
+            	$w['class1'] = array('in',[12]); //长颈鹿项目
+            }else{
+            	$w['class1'] = array('not in',[12]); //非长颈鹿项目
+            	$w['why3']=array('neq','');
+            }
+            
+            
             $w['date']=session('date');
             $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
 			
@@ -962,6 +991,7 @@ class ReturnController extends HomeController {
 		
     	$this->module = ACTION_NAME; //设置前端变量，在进行总部沟通保存的时候进行判断，是否添加总部沟通的时间保存；
         if($_POST['aax']){
+        	//此处代码不走，已经作废！
             foreach ($_POST['id'] as $key => $value) {
                 $w['id']=$value;
                 $d['state']=5;
@@ -984,9 +1014,14 @@ class ReturnController extends HomeController {
                 R('Return/record',array($value,'数据退回'));
 				
 				{
-					$xueguan = M('hw003.return','money_')->where($w)->getField('bb');
+// 					$xueguan = M('hw003.return','money_')->where($w)->getField('bb');
+
+					$data_t = M('hw003.return','money_')->where($w)->getField('bb,school');
+					$xueguan = array_keys($data_t)[0];
+					$school = array_values($data_t)[0];
 					
-					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
+					
+					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
 					
 					if($xg){
 						$user[]= $xg;	
@@ -1051,8 +1086,9 @@ class ReturnController extends HomeController {
 			}else{
 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','%港澳台%'),'AND');
 				
-				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (8,9,10) OR (`class1` is null))";
+				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (8,9,10,12) OR (`class1` is null))";
 			}
+			
             $w['state']=3;
             $w['date']=session('date');
             $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
@@ -1131,10 +1167,16 @@ class ReturnController extends HomeController {
                 R('Return/record',array($value,'集团审核'));
 				
 				{
-					$blr = M('hw003.return','money_')->where($w)->getField('ka');
+// 					$blr = M('hw003.return','money_')->where($w)->getField('ka');
+					
+						
+					$data_t = M('hw003.return','money_')->where($w)->getField('ka,school');
+					$blr = array_keys($data_t)[0];
+					$school = array_values($data_t)[0];
+					
 					
 					$cond['is_del'] = 0;
-					$cond['school'] = get_school_id();
+					$cond['school'] = get_school_id($school);
 					if($blr){
 						$cond['_string'] = " position_id=22 OR name='" . $blr .  "'";	
 					}else{
@@ -1190,9 +1232,13 @@ class ReturnController extends HomeController {
                 R('Return/record',array($value,'数据退回'));
 				
 				{
-					$xueguan = M('hw003.return','money_')->where($w)->getField('bb');
+// 					$xueguan = M('hw003.return','money_')->where($w)->getField('bb');
 					
-					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
+					$data_t = M('hw003.return','money_')->where($w)->getField('bb,school');
+					$xueguan = array_keys($data_t)[0];
+					$school = array_values($data_t)[0];
+					
+					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
 					
 					if($xg){
 						$user[]= $xg;	
@@ -1246,9 +1292,14 @@ class ReturnController extends HomeController {
                 $rr=M('hw003.return','money_')->where($w)->delete();
                 R('Return/record',array($value,'删除'));
 				{
-					$xueguan = M('hw003.return','money_')->where(['id'=>$value])->getField('bb');
+// 					$xueguan = M('hw003.return','money_')->where(['id'=>$value])->getField('bb');
+
 					
-					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
+					$data_t = M('hw003.return','money_')->where(['id'=>$value])->getField('bb,school');
+					$xueguan = array_keys($data_t)[0];
+					$school = array_values($data_t)[0];
+					
+					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
 					
 					if($xg){
 						$user[]= $xg;	
@@ -1540,7 +1591,7 @@ class ReturnController extends HomeController {
                         $state='部门审核';
                         break;
                     case '4':
-                        $state='集团审批';
+                        $state='财务审批';
                         break;
                     case '5':
                         $state='退款确认';
@@ -1563,6 +1614,7 @@ class ReturnController extends HomeController {
 					case 101: $grade = "三年级";break;
 					case 102: $grade = "二年级";break;	
 					case 103: $grade = "一年级";break;
+					case 217: $grade = "其他";break;
 				}
 //          $output .= "<tr><td>".$m['id']."</td><td>".$state."</td><td>".$m['date']."</td><td>".$m['school']."</td><td>".$m['student']."</td><td>".$m['grade']."</td><td>".$m['tel']."</td><td>".$m['aa']."</td><td>".$m['bb']."</td><td>".$m['class']."</td><td>".$m['timed']."</td><td>".$m['ze']."</td><td>".$m['count']."</td><td>".$m['countd']."</td><td>".$m['km']."</td><td>".$m['sy']."</td><td>".$m['je']."</td><td>".$m['why1']."</td><td>".$m['why2']."</td><td>".$m['why3']."</td><td>".$m['time3']."</td><td>".$m['ka']."</td><td>".$m['time1']."</td><td>".$m['kb']."</td><td>".$m['time2']."</td><td>".$m['other']."</td></tr>";
 
