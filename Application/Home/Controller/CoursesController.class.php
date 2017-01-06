@@ -412,10 +412,17 @@ class CoursesController extends HomeController {
         $Consumption = D('Consumption');
         $payInfo     = json_decode($_POST['pay_info'], true);
         $data        = json_decode($_POST['new'], true);
-
+		$foo = M("FooInfo");
+		
+		$foo_ids = $foo->where("pid=17 and `group` in (2,3) and is_del=0")->getField('id',true);
+		
         $oldCourse = $Course->find((int)$data['id']);
         
-		if($data['add_hour']>0 && ((time()-$oldCourse['create_time'])>15*24*60*60)){
+        $unitprice = M("UnitpriceRole");
+        
+        $plan_course = $unitprice->where(["id"=>$oldCourse['unit_plan']])->getField('course');
+        
+		if($data['add_hour']>0 && ((time()-$oldCourse['create_time'])>15*24*60*60) && !(in_array($plan_course,$foo_ids))){
 			$returnData = ['state' => 'error', 'info'  => '课时订购已超过15天！'];
 		}else{
 			$payInfo['student'] = $payInfo['name'];
