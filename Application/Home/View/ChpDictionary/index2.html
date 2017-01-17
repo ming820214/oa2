@@ -1,0 +1,235 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	{:W('PageHeader/simple',array('name'=>'CHP 方案管理','search'=>'N'))}
+	<form id="form_search" name="form_search" method="post" action="">
+		<div class="operate panel panel-default">
+			<div class="panel-body">
+				<div class="pull-left col-md-3">
+					<select name="eq_pid" id="eq_pid" class="form-control" onchange="submit_search();">
+						{:fill_option($groupList)}
+					</select>
+				</div>
+				<div class="pull-right">
+					<a onclick="add();" class="btn btn-sm btn-primary">新增</a>
+					<a onclick="save();"  class="btn btn-sm btn-primary" style="display:none;" id="save">修改</a>
+					|
+					<a onclick="del();"  class="btn btn-sm btn-danger">删除</a>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="row">
+		<div class="col-sm-4 sub_left_menu">
+			<div class="well" style="overflow-y: auto;max-height: 400px;">
+				<?php echo $menu ?>
+			</div>
+		</div>
+		<div class="col-sm-8 sub_content">
+			<form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+				<input type="hidden" name="id" id="id">
+				<input type="hidden" name="ajax" id="ajax" value="1">
+				<input type="hidden" name="opmode" id="opmode" value="">
+				<select name="node_list" id="node_list" class="hidden">
+					{:fill_option($node_list)}
+				</select>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="name">名称*：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="name" name="name" check="require" msg="请输入名称">
+					</div>
+				</div>
+				
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="leaf">是否属于分值项：</label>
+					<div class="col-sm-8">
+						<select   name="leaf" id="leaf" class="form-control">
+							<option  value="1">是</option>
+							<option value="2">否</option>
+						</select>
+					</div>
+				</div>
+				
+				<div class="form-group col-xs-12 worth" style="display:none;">
+					<label class="col-sm-4 control-label" for="worth">分值：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="number" id="worth" name="worth">
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label">方案所属部门：</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+							<input name="dept_name" class="form-control val" id="dept_name" type="text"  readonly="readonly"/>
+							<input name="dept_id"  id="dept_id" type="hidden" msg="请选择方案所属部门" check="require" />
+							<span class="input-group-btn">
+								<button class="btn btn-sm btn-primary" onclick="select_dept_id()" type="button">
+									选择
+								</button> </span>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="url">父节点：</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+							<input name="node_name" class="form-control val" id="node_name" type="text"  readonly="readonly"/>
+							<input name="pid"  id="pid" type="hidden" msg="请选择父节点" check="require"  />
+							<span class="input-group-btn">
+								<button class="btn btn-sm btn-primary" onclick="select_pid()" type="button">
+									选择
+								</button> </span>
+						</div>
+					</div>
+				</div>
+				
+				
+				<div class="form-group col-xs-12">
+					<label class="col-xs-4 control-label" for="group">所属分组：</label>
+					<div class="col-sm-8">
+						<select name="group" id="group" class="form-control" value="1">
+						{:fill_option(get_config('SCORE_GROUP'))}
+						</select>
+					</div>
+				</div>
+				
+<!-- 				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="icon">图标：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="icon" name="icon" >
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="badge_function">统计函数：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="badge_function" name="badge_function" >
+					</div>
+				</div>
+ -->				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="sort">排序：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="sort" name="sort" >
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="is_del">状态*：</label>
+					<div class="col-sm-8">
+						<select   name="is_del" id="is_del" class="form-control">
+							<option  value="1">启用</option>
+							<option value="2">禁用</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="descp" >备注：</label>
+					<div class="col-sm-8" >
+						<textarea class="form-control" name="descp" rows="5" class="col-xs-12" ></textarea>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		function add() {
+			winopen("{:U('add')}",730,550);
+		};
+
+		function del() {
+			var vars = $("#form_data").serialize();
+			ui_confirm('确定要删除吗?', function() {
+				sendAjax("{:U('del')}", vars, function(data) {
+					if (data.status) {
+						ui_alert(data.info, function() {
+							$("#form_search").submit();
+						});
+					} else {
+						ui_alert(data.info, function() {
+						});
+					}
+				});
+			});
+		}
+
+		function save() {
+			if (check_form("form_data")) {
+				sendForm("form_data", "{:U('ChpDictionary/save')}", fix_url("{:U('ChpDictionary/index')}?eq_pid=" + $("#eq_pid").val()));
+			}
+		}
+
+		function select_pid() {
+			winopen("{:U('winpop')}", 730, 500);
+		}
+
+		function select_dept_id() {
+			winopen("{:U('depts?xid=dept_id&xname=dept_name')}", 730, 500);
+		}
+
+		/* function select_dept_id2(id, name) {
+			winopen("{:U('depts?xid=dept_id2&xname=dept_name2')}", 730, 500);
+		} */
+
+		function showdata(result) {
+			for (var s in result.data) {
+				set_val(s, result.data[s]);
+			}
+			$("#node_name").val($("#node_list option[value='" + $("#pid").val() + "']").text());
+			$("#opmode").val("edit");
+			
+			if($('#leaf').val() == 1){
+				$('.worth').show();
+			}else{
+				$('.worth').hide();
+			}
+		}
+
+
+		$(document).ready(function() {
+			set_return_url();
+			set_val('eq_pid', '{$eq_pid}');
+			$(".sub_left_menu .tree_menu a").click(function() {
+				$("#save").show();
+				$(".sub_left_menu .tree_menu  a").each(function() {
+					$(this).attr("class", "");
+				});
+
+				$('input[name=dept_name]').val('');
+				$('input[name=dept_id]').val('');
+				/* $('input[name=dept_name2]').val('');
+				$('input[name=dept_id2]').val(''); */
+
+				if($(this).data('level') == 2){
+					$('.dept_id_box').show();
+				}else{
+					$('.dept_id_box').hide();
+				}
+				$(this).attr("class", "active");
+				sendAjax("{:U('read')}", "id=" + $(this).attr("node"), function(data) {
+					showdata(data);
+				});
+				
+				return false;
+			});
+			sendAjax("{:U('read')}", "id={$eq_pid}", function(data) {
+				showdata(data);
+			});
+			
+			
+			$('#leaf').on('change',function(){
+				
+				if($('#leaf').val() == 1){
+					$('.worth').show();
+				}else{
+					$('.worth').hide();
+				}					
+			});
+		});
+
+	</script>
+
+</block>
