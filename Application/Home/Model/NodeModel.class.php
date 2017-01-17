@@ -7,7 +7,6 @@
 
   Author:
 
-  Support: https://git.oschina.net/smeoa/xiaowei
  -------------------------------------------------------------------------*/
 
 
