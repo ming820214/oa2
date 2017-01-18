@@ -169,6 +169,28 @@ class ChpController extends HomeController {
         	$mod->updator=session('auth_id');
         	$mod->update_time = date('Y-m-d H:i:s');
             if($mod->save()){
+            	
+            	{
+            		$user[]=M('user')->where(['is_del'=>0,'id'=>session('auth_id')])->getField('wechat_userid');//wechat_userid
+            			
+            		$user=array_unique($user);
+            			
+            		//微信通知
+            		if(empty($user)){
+            			return;
+            		}
+            			
+            		$info='点击可直接进入查看……';
+            			
+            		$wx= getWechatObj();
+            		$wx->sendNewsMsg(
+            				[$wx->buildNewsItem("请注意：您有一项积分活动被更新！",$info,wx_oauth(C('WWW').'/oa_old/weixin.php/chp/chp'),'')],
+            				['touser'=>$user],
+            				C('WECHAT_APP')['TZTX']
+            				);
+            			
+            	}
+            	
             	$this->ajaxReturn('ok');
 			}
         }else{
@@ -183,6 +205,38 @@ class ChpController extends HomeController {
             	$this->ajaxReturn('录入有重复……   ：    积分描述： ' . $repeat['descp']);
 			}
 	    	if($mod->add()) {
+	    		
+	    		
+	    		{
+	    			$user[]=M('user')->where(['is_del'=>0,'id'=>session('auth_id')])->getField('wechat_userid');//wechat_userid
+	    			 
+	    			$user=array_unique($user);
+	    				
+	    			//微信通知
+	    			if(empty($user)){
+	    				return;
+	    			}
+	    				
+	    			$info='点击可直接进入查看……';
+	    				
+	    			$wx= getWechatObj();
+	    			$wx->sendNewsMsg(
+	    					[$wx->buildNewsItem("恭喜您，您又获得了积分",$info,wx_oauth(C('WWW').'/oa_old/weixin.php/chp/chp'),'')],
+	    					['touser'=>$user],
+	    					C('WECHAT_APP')['TZTX']
+	    					);
+	    			/*$wx->sendTextMsg("特殊优惠有新的动态，请查看",
+	    			 ['touser'=>$user],
+	    			 C('WECHAT_APP')['TZTX']);*/
+	    		
+	    			/*$wx->sendNewsMsg(
+	    			 [$wx->buildNewsItem("有特殊优惠待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=CoursesApply/examine')),'')],
+	    			 ['touser'=>$user],
+	    			 C('WECHAT_APP')['XZMS']
+	    			 );*/
+	    					
+	    		}
+	    		
 	    		$this->ajaxReturn('ok');
 			}
         }
@@ -201,6 +255,28 @@ class ChpController extends HomeController {
 				$mod->update_time = date('Y-m-d H:i:s');
 				$mod->is_del = 2;
 				if($mod->save()){
+					
+					{
+						$user[]=M('user')->where(['is_del'=>0,'id'=>session('auth_id')])->getField('wechat_userid');//wechat_userid
+						 
+						$user=array_unique($user);
+						 
+						//微信通知
+						if(empty($user)){
+							return;
+						}
+						 
+						$info='点击可直接进入查看……';
+						 
+						$wx= getWechatObj();
+						$wx->sendNewsMsg(
+								[$wx->buildNewsItem("请注意：您有一项积分被删除！",$info,wx_oauth(C('WWW').'/oa_old/weixin.php/chp/chp'),'')],
+								['touser'=>$user],
+								C('WECHAT_APP')['TZTX']
+								);
+					
+					}
+					
 					$this->ajaxReturn('ok');
 				}
 			}
@@ -223,6 +299,27 @@ class ChpController extends HomeController {
 				$mod->update_time = date('Y-m-d H:i:s');
 				$mod->flag = 2;
 				if($mod->save()){
+					
+					{
+						$user[]=M('user')->where(['is_del'=>0,'id'=>session('auth_id')])->getField('wechat_userid');//wechat_userid
+							
+						$user=array_unique($user);
+							
+						//微信通知
+						if(empty($user)){
+							return;
+						}
+							
+						$info='点击可直接进入查看……';
+							
+						$wx= getWechatObj();
+						$wx->sendNewsMsg(
+								[$wx->buildNewsItem("恭喜您：您有一份积分兑换已通过！",$info,wx_oauth(C('WWW').'/oa_old/weixin.php/chp/chp'),'')],
+								['touser'=>$user],
+								C('WECHAT_APP')['TZTX']
+								);
+							
+					}
 					$this->ajaxReturn('ok');
 				}
 			}else{
