@@ -176,9 +176,14 @@
               <td>{$data.item2}</td>
               <td>{$data.flag}</td>
               <td>
-              	<button class="btn btn-xs btn-info" onclick="$.showBaseInfo({$data.id})">编辑</button>|
-              	<button class="btn btn-xs btn-info" onclick="$.delChpInfo({$data.id})">删除</button>|
-              	<button class="btn btn-xs btn-info" onclick="$.doReceiveInfo({$data.id})">确认兑换</button>
+              <if condition="$data.record_type neq 2">
+              	<button class="btn btn-xs btn-primary" onclick="$.showBaseInfo({$data.id})">编辑</button>|
+              </if>
+              	
+              	<button class="btn btn-xs btn-primary" onclick="$.delChpInfo({$data.id})">删除</button>
+              <if condition="$data.record_type eq 2 AND $data.flag eq 1">
+              	<button class="btn btn-xs btn-primary" onclick="$.doReceiveInfo({$data.id})">|确认兑换</button>
+              </if>
               </td>
             </tr>
           </volist>
