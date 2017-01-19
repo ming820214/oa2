@@ -142,8 +142,7 @@
       </div>
       <div class="pull-right">
       	<input type="button" id="add_show" class="btn btn-sm btn-primary" name="add" value="新增" /> &nbsp;&nbsp;
-      <input type="button" class="btn btn-sm btn-primary" name="search" value="筛选" id="search" />&nbsp;&nbsp;
-       <a class="btn btn-sm btn-danger" data-toggle="modal" data-target="#import">数据批量导入</a>
+      	<input type="button" class="btn btn-sm btn-primary" name="search" value="筛选" id="search" />&nbsp;&nbsp;
       </div>
     </div>
   </div>
@@ -199,32 +198,6 @@
 	    <a href="#" class="last" data-action="last">&raquo;</a>
 	    
 	</div>
-</div>
-
-
-
-<!-- 数据导入 -->
-<div class="modal fade" id="import">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>数据导入(用wps打开模版文件,把数据复制到模版中,并清除页面中的所有文字格式保存！导入系统会自动删除重复数据)</h3>
-            </div>
-            <div class="modal-body">
-                <div class="panel panel-success">
-                    <div class="panel-body">
-                        <a href="{:U('import_template')}" target="_blank" class="btn btn-primary pull-left">下载模版文件</a>
-                    </div>
-                </div>
-                <div class="panel">
-                    <form  method="post" enctype="multipart/form-data" action="{:U('import')}">
-                        <input type="file" name="file" required/>
-                        <button  class="btn btn-primary pull-right">执行导入</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 </block>
