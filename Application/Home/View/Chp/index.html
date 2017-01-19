@@ -175,13 +175,14 @@
               <td>{$data.item2}</td>
               <td>{$data.flag}</td>
               <td>
-              <if condition="$data.record_type neq 2">
+             
+              <if condition="$data['record_type'] neq '兑换'">
               	<button class="btn btn-xs btn-primary" onclick="$.showBaseInfo({$data.id})">编辑</button>|
               </if>
               	
-              	<button class="btn btn-xs btn-primary" onclick="$.delChpInfo({$data.id})">删除</button>
-              <if condition="$data.record_type eq 2 AND $data.flag eq 1">
-              	<button class="btn btn-xs btn-primary" onclick="$.doReceiveInfo({$data.id})">|确认兑换</button>
+              	<button class="btn btn-xs btn-primary" onclick="$.delChpInfo({$data.id})">删除</button>|
+              <if condition="($data['flag'] eq '申请积分兑换') AND ($data['record_type'] eq '兑换')">
+              	<button class="btn btn-xs btn-primary" onclick="$.doReceiveInfo({$data.id})">确认兑换</button>
               </if>
               </td>
             </tr>
@@ -327,7 +328,7 @@ $(function(){
   			if(button_method_arr != null){
   				for(var j=0;j<button_method_arr.length;j++){
   					if(button_name_arr[j] == '确认兑换'){
-  						if(value.record_type == 2 && value.flag ==1){
+  						if(value.record_type == '兑换' && value.flag == '申请积分兑换'){
   							if(method_param_arr != null){
   		  						var param_str = '';
   		  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
@@ -342,7 +343,7 @@ $(function(){
   		  					}
   						}
   					}else if(button_name_arr[j] == '编辑'){
-  						if(value.record_type != 2){
+  						if(value.record_type != '兑换'){
   							if(method_param_arr != null){
   	  	  						var param_str = '';
   	  	  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
