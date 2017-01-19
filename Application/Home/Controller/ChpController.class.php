@@ -54,7 +54,7 @@ class ChpController extends HomeController {
         $this->user_list = $user_list;
         
         //CHP积分方案列表
-        $scheme_list = M('chpDictionary')->where("pid=0 and is_del=1 and dept_id = " . session('dept_id'))->order('sort')->select();
+        $scheme_list = M('chpDictionary')->where("pid=0 and is_del=1 and `group` = 1 and dept_id = " . session('dept_id'))->order('sort')->select();
 		
         $this->scheme_list = $scheme_list;
         

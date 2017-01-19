@@ -348,18 +348,51 @@ $(function(){
 
   			if(button_method_arr != null){
   				for(var j=0;j<button_method_arr.length;j++){
-  					if(method_param_arr != null){
-  						var param_str = '';
-  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
-  						for(var k=0;k<method_param_arr.length;k++){
-  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  					if(button_name_arr[j] == '确认兑换'){
+  						if(value.record_type == 2 && value.flag ==1){
+  							if(method_param_arr != null){
+  		  						var param_str = '';
+  		  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  		  						for(var k=0;k<method_param_arr.length;k++){
+  		  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  		  						}
+  		  						param_str = param_str.substring(0,param_str.length-1);
+  								temp_str += param_str;
+  		  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  		  					}else{
+  		  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  		  					}
   						}
-  						param_str = param_str.substring(0,param_str.length-1);
-						temp_str += param_str;
-  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  					}else if(button_name_arr[j] == '编辑'){
+  						if(value.record_type != 2){
+  							if(method_param_arr != null){
+  	  	  						var param_str = '';
+  	  	  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  	  	  						for(var k=0;k<method_param_arr.length;k++){
+  	  	  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  	  	  						}
+  	  	  						param_str = param_str.substring(0,param_str.length-1);
+  	  							temp_str += param_str;
+  	  	  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  	  	  					}else{
+  	  	  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  	  	  					}
+  						}
   					}else{
-  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  						if(method_param_arr != null){
+  	  						var param_str = '';
+  	  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(';
+  	  						for(var k=0;k<method_param_arr.length;k++){
+  	  							param_str += "'" + (eval('value.' + method_param_arr[k]) == undefined ? '':eval('value.' + method_param_arr[k])) + "',"
+  	  						}
+  	  						param_str = param_str.substring(0,param_str.length-1);
+  							temp_str += param_str;
+  	  						temp_str += ')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  	  					}else{
+  	  						temp_str += '<button class="btn btn-xs btn-primary" onclick="' + button_method_arr[j] + '(' + value.id +')">' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';
+  	  					}
   					}
+  					
 
   				}
   				temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
