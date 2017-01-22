@@ -139,6 +139,11 @@
            <input type="text" id="filter_t_s" class="form-control" placeholder="此处可列表项内容筛选">
         </div>
         
+        <div class="input-group export">
+          <label class="input-group-addon"><b>积分兑换申请时间：</b></label>
+          <input type="date" name="beginDate"/>——<input type="date" name="endDate"/>
+        </div>
+        
       </div>
       <div class="pull-right">
       	<input type="button" id="add_show" class="btn btn-sm btn-primary" name="add" value="新增" /> &nbsp;&nbsp;
@@ -160,6 +165,7 @@
           <th>积分项1</th>
           <th>积分项2</th>
           <th>兑换状态</th>
+          <th>兑换申请时间</th>
           <th>操作</th>
         </tr>
       </thead>
@@ -174,6 +180,7 @@
               <td>{$data.item1}</td>
               <td>{$data.item2}</td>
               <td>{$data.flag}</td>
+              <td>{$data.exchange_time}</td>
               <td>
              
               <if condition="$data['record_type'] neq '兑换'">
@@ -414,7 +421,7 @@ $(function(){
 
 											var button_method_arr = ['$.showBaseInfo','$.delInfo','$.doReceiveInfo'];
 											var button_name_arr = ['编辑','删除','确认兑换'];
-											var field_arr = ['user_id','record_type','descp','worth','scheme','item1','item2','flag'];
+											var field_arr = ['user_id','record_type','descp','worth','scheme','item1','item2','flag','exchange_time'];
 											var select_lst_arr = null;
 											var check_name = null;
 											var method_param_arr = ['id'];

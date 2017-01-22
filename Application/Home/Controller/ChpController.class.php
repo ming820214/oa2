@@ -109,6 +109,15 @@ class ChpController extends HomeController {
 			}
 			
 			
+			if($condition['beginDate'] && $condition['endDate']){
+				$condition['exchange_time'] = array('between',array($condition['beginDate'],$condition['endDate']));
+			}else if($condition['beginDate']){
+				$condition['exchange_time'] = array('egt',$condition['beginDate']);
+			}else if($condition['endDate']){
+				$condition['exchange_time'] = array('elt',$condition['endDate']);
+			}
+			
+			
             array_empty_delt($condition);
     		$count=$mod->where($condition)->count();//满足条件的记录总数
     		$data=$mod->where($condition)->limit($page,$page_count)->order('create_time desc,update_time desc')->select();//获取到数据
@@ -119,6 +128,7 @@ class ChpController extends HomeController {
         		$v['record_type'] = "积分";
         	}else if($v['record_type'] == 2){
         		$v['record_type'] = "兑换";
+        		$v['worth'] = -$v['worth']; 
         	}
         	
         	if($v['flag'] == 1){
