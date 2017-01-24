@@ -161,6 +161,7 @@
           <th>记录类型</th>
           <th>明细描述</th>
           <th>积分值</th>
+          <th>积分获得时间</th>
           <th>积分方案</th>
           <th>积分项1</th>
           <th>积分项2</th>
@@ -170,12 +171,13 @@
         </tr>
       </thead>
       <tbody id="llst">
-          <volist name="list" id="data">
+          <volist name="list" id="data" >
             <tr id="{$data.id}">
               <td>{$data.user_id}</td>
               <td>{$data.record_type}</td>
               <td>{$data.descp}</td>
               <td>{$data.worth}</td>
+              <td>{$data.create_time}</td>
               <td>{$data.scheme}</td>
               <td>{$data.item1}</td>
               <td>{$data.item2}</td>
@@ -212,7 +214,7 @@
 <block name="js">
 <script type="text/javascript">
 
-pageCount = 1; //每页显示多少条记录(全局变量)
+pageCount = 10; //每页显示多少条记录(全局变量)
 currentPage = 1; //当前页码
 maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
 pageString = '';
@@ -421,7 +423,7 @@ $(function(){
 
 											var button_method_arr = ['$.showBaseInfo','$.delInfo','$.doReceiveInfo'];
 											var button_name_arr = ['编辑','删除','确认兑换'];
-											var field_arr = ['user_id','record_type','descp','worth','scheme','item1','item2','flag','exchange_time'];
+											var field_arr = ['user_id','record_type','descp','worth','create_time','scheme','item1','item2','flag','exchange_time'];
 											var select_lst_arr = null;
 											var check_name = null;
 											var method_param_arr = ['id'];
@@ -492,7 +494,11 @@ $(function(){
     
     
   	$('#add_show').click(function(){
-	  		$('#reset_b').trigger('click'); 
+	  		$('#reset_b').trigger('click');
+	  		$('#scheme').val(17);
+            $('#scheme').trigger('change');
+          	
+	          	
 		   	$('#chpInfo_dialog').modal('show');
 	});
 	  
