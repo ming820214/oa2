@@ -11,6 +11,10 @@ class ChpController extends HomeController {
 		$mod = M('chpInfo');
 		$condition['is_del'] = 1; //正常记录
 		
+		$dic = M("chpDictionary")->where(['dept_id'=>session('dept_id'),'leaf'=>1])->getField('id',true);
+		
+		$condition['item1|item2'] = array('in',$dic);
+		
         $list=$mod->where($condition)->limit($pageNumber,$pageCount)->select();
 		
        
