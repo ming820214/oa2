@@ -122,6 +122,10 @@ class ChpController extends HomeController {
 			}
 			
 			
+			$dic = M("chpDictionary")->where(['dept_id'=>session('dept_id'),'leaf'=>1])->getField('id',true);
+			
+			$condition['item1|item2'] = array('in',$dic);
+			
             array_empty_delt($condition);
     		$count=$mod->where($condition)->count();//满足条件的记录总数
     		$data=$mod->where($condition)->limit($page,$page_count)->order('create_time desc,update_time desc')->select();//获取到数据
@@ -179,13 +183,14 @@ class ChpController extends HomeController {
 	public function addChpInfo(){
 		$mod=M('chpInfo');
         $mod->create();
+        $web_chat = $mod->user_id;
         if(I('post.id')){
         	$mod->updator=session('auth_id');
         	$mod->update_time = date('Y-m-d H:i:s');
             if($mod->save()){
             	
             	{
-            		$user[]=M('user')->where(['is_del'=>0,'id'=>session('auth_id')])->getField('wechat_userid');//wechat_userid
+            		$user[]=M('hw003.person_all',null)->where(['state'=>1,'id'=>$web_chat])->getField('userid');//wechat_userid
             			
             		$user=array_unique($user);
             			
@@ -222,7 +227,7 @@ class ChpController extends HomeController {
 	    		
 	    		
 	    		{
-	    			$user[]=M('user')->where(['is_del'=>0,'id'=>session('auth_id')])->getField('wechat_userid');//wechat_userid
+	    			$user[]=M('hw003.person_all',null)->where(['state'=>1,'id'=>$web_chat])->getField('userid');//wechat_userid
 	    			 
 	    			$user=array_unique($user);
 	    				
@@ -260,6 +265,7 @@ class ChpController extends HomeController {
 	public function delChpInfo(){
 		$mod=M('chpInfo');
 		$mod->create();
+		//$web_chat = $mod->user_id;
 		if(I('post.id')){
 			
 			$condition['id']=I('post.id');
@@ -271,7 +277,7 @@ class ChpController extends HomeController {
 				if($mod->save()){
 					
 					{
-						$user[]=M('user')->where(['is_del'=>0,'id'=>session('auth_id')])->getField('wechat_userid');//wechat_userid
+						$user[]=M('hw003.person_all',null)->where(['state'=>1,'id'=>$repeat['user_id']])->getField('userid');//wechat_userid
 						 
 						$user=array_unique($user);
 						 
@@ -304,6 +310,7 @@ class ChpController extends HomeController {
 	public function doReceiveInfo(){
 		$mod=M('chpInfo');
 		$mod->create();
+		//$web_chat = $mod->user_id;
 		if(I('post.id')){
 				
 			$condition['id']=I('post.id');
@@ -315,8 +322,8 @@ class ChpController extends HomeController {
 				if($mod->save()){
 					
 					{
-						$user[]=M('user')->where(['is_del'=>0,'id'=>session('auth_id')])->getField('wechat_userid');//wechat_userid
-							
+						//$user[]=M('user')->where(['is_del'=>0,'id'=>$repeat['user_id']])->getField('wechat_userid');//wechat_userid
+						$user[]=M('hw003.person_all',null)->where(['state'=>1,'id'=>$repeat['user_id']])->getField('userid');//wechat_userid
 						$user=array_unique($user);
 							
 						//微信通知
