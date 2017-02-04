@@ -13,74 +13,8 @@
   
 </style>
  
-{:W('PageHeader/search_ajax',array('name'=>'CHP积分信息管理','search'=>'S'))}
+{:W('PageHeader/search_ajax',array('name'=>'CHP积分审核历史信息查询','search'=>'S'))}
   
-  <!-- 跟进记录列表 -->
-<div class="modal fade" id="chpInfo_dialog" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">CHP信息录入</h4>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          	 <!-- 新增录入修改 -->
-			<form id="form_data" method="post" class="form-horizontal">
-			<input type="hidden" name="id" id="id_t" value=""/>
-			<table class="table table-bordered">
-			    <tr>
-			        <th>员工</th>
-			        <td>
-			             <select name="user_id" id="user_id" class="form-control" required="required" msg="请选择相应的员工">
-			                <volist name="user_list" id="data">
-			                	<option value="{$data.id}">{$data.school}&nbsp;&nbsp;{$data.position}&nbsp;&nbsp;{$data.name}</option>
-        								</volist>
-        								
-			            </select>
-			            <br/>
-			            <input type="text" id="filter_t" placeholder="此处可进行下拉列表项内容筛选">
-			        </td>
-			    </tr>
-			    <tr>
-			        <th>
-			            <nobr>积分方案</nobr>
-			        </th>
-			        <td>
-			            <select name="scheme" id="scheme" class="form-control" required="required" msg="请选择相应的积分方案">
-			            	<option value="">请选择积分方案</option>
-			                {:fill_option($scheme_list)}
-			            </select>->
-			            <select name="item1" id="item1" class="form-control" required="required" msg="请选择相应的积分项">
-			            </select>->
-			            <select name="item2" id="item2" class="form-control"></select>
-			            	<br/>
-			            	获得积分：
-			            <input type="text" name="worth" id="worth" readonly="readonly" required="required" msg="请选择相应的积分值"/>
-			        </td>
-			    </tr>
-			    <tr>
-			        <th>积分描述</th>
-			        <td>
-			            <textarea class="form-control" rows="10" cols="50" name="descp" required="required" msg="请对本次积分进行描述"></textarea>
-			        </td>
-			    </tr>
-			   							    
-			    <tr>
-			    	<td align="center" colspan="8">
-			    		  <input type="submit" id="add" class="btn btn-sm btn-primary" name="add" value="保存" />
-		            <input type="reset" class="btn btn-sm btn-primary" id="reset_b" name="reset_b" value="重置" />
-			    	</td>
-			    </tr>
-			</table>
-			</form>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
- 
 <!-- 列表页面 -->
 <form method="post" id="d_form_search" name="form_adv_search"  class="form-inline">  
 <input type="hidden" name="keyword" id="keyword_id" value=""/>
@@ -90,8 +24,8 @@
       <div class="pull-left">
 		
 		<div class="input-group export">
-          <label  for="flag" class="input-group-addon"><b>积分兑换状态：</b></label>
-          <select id="flag" name="flag" class="form-control"><option value="" selected>全部</option><option value="1">申请积分兑换</option><option value="2">兑换完成</option></select>
+          <label  for="is_del" class="input-group-addon"><b>记录状态：</b></label>
+          <select id="is_del" name="is_del" class="form-control"><option value="" selected>全部</option><option value="2">删除</option><option value="3">退回</option></select>
         </div>
         
       	<div class="input-group export">
@@ -146,7 +80,6 @@
         
       </div>
       <div class="pull-right">
-      	<input type="button" id="add_show" class="btn btn-sm btn-primary" name="add" value="新增" /> &nbsp;&nbsp;
       	<input type="button" class="btn btn-sm btn-primary" name="search" value="筛选" id="search" />&nbsp;&nbsp;
       </div>
     </div>
@@ -167,7 +100,7 @@
           <th>积分项2</th>
           <th>兑换状态</th>
           <th>兑换申请时间</th>
-          <th>操作</th>
+          <th>退回原因</th>
         </tr>
       </thead>
       <tbody id="llst">
@@ -183,25 +116,7 @@
               <td>{$data.item2}</td>
               <td>{$data.flag}</td>
               <td>{$data.exchange_time}</td>
-              <td>
-             
-              <if condition="$data['record_type'] neq '兑换'">
-              	<button class="btn btn-xs btn-primary" onclick="$.showBaseInfo({$data.id})">编辑</button>|
-              </if>
-              
-              <if condition="'兑换完成' neq $data['flag']">
-              	<if condition="$data['flag'] neq null">
-              		<button class="btn btn-xs btn-primary" onclick="$.delChpInfo('{$data.flag}',{$data.id})">删除</button>|
-              		<else/>
-              		<button class="btn btn-xs btn-primary" onclick="$.delChpInfo('',{$data.id})">删除</button>|
-              	</if>
-              	
-              </if>	
-              	
-              <if condition="($data['flag'] eq '申请积分兑换') AND ($data['record_type'] eq '兑换')">
-              	<button class="btn btn-xs btn-primary" onclick="$.doReceiveInfo({$data.id})">确认兑换</button>
-              </if>
-              </td>
+              <td>{$data.reason}</td>
             </tr>
           </volist>
       </tbody>
@@ -418,7 +333,7 @@ $(function(){
 								type:'POST',
 								async:false,
 								cache:false,
-								url:"{:U('pager')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
+								url:"{:U('distory_pager')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page,
 								dataType:'json',
 								data:data,
 								success:function(msg,status){
@@ -430,12 +345,12 @@ $(function(){
 										if(msg.data != null && msg.data.length > 0 ){
 											$('#llst').empty();
 
-											var button_method_arr = ['$.showBaseInfo','$.delChpInfo','$.doReceiveInfo'];
-											var button_name_arr = ['编辑','删除','确认兑换'];
-											var field_arr = ['user_id','record_type','descp','worth','create_time','scheme','item1','item2','flag','exchange_time'];
+											var button_method_arr = null;//['$.showBaseInfo','$.delChpInfo','$.doReceiveInfo'];
+											var button_name_arr = null;//['编辑','删除','确认兑换'];
+											var field_arr = ['user_id','record_type','descp','worth','create_time','scheme','item1','item2','flag','exchange_time','reason'];
 											var select_lst_arr = null;
 											var check_name = null;
-											var method_param_arr = ['id'];
+											var method_param_arr = null;//['id'];
 											var a_link_arr = null;
 											var a_link_url = null;
 											var a_link_param = null;
