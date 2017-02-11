@@ -32,6 +32,16 @@
 				<select name="node_list" id="node_list" class="hidden">
 					{:fill_option($node_list)}
 				</select>
+				
+				<div id="course_type" class="form-group col-xs-12" style="display:none;">
+					<label class="col-sm-4 control-label" for="sort">前端是否隐藏：</label>
+					<div class="col-sm-8" style="text-align: left;">
+						<select class="form-control" name="display" id="displays" disabled="disabled">
+							<option value="1">不隐藏</option>
+							<option value="2">隐藏</option>
+						</select>
+					</div>
+				</div>
 				<div class="form-group col-xs-12">
 					<label class="col-sm-4 control-label" for="name">名称*：</label>
 					<div class="col-sm-8">
@@ -80,6 +90,7 @@
 </block>
 <block name="js">
 	<script type="text/javascript">
+	
 		function add() {
 			winopen("{:U('add')}",704,500);
 		};
@@ -133,7 +144,15 @@
 				$(".sub_left_menu .tree_menu  a").each(function() {
 					$(this).attr("class", "");
 				});
-
+				
+				if($('#eq_pid').val() == 17){
+					$('#course_type').css('display','block');
+					$('#displays').attr('disabled',false);
+				}else{
+					$('#course_type').css('display','none');
+					$('#displays').attr('disabled','disabled');
+				}
+				
 				$('input[name=dept_name]').val('');
 				$('input[name=dept_id]').val('');
 				$('input[name=dept_name2]').val('');

@@ -30,11 +30,15 @@ class UnitpriceRoleController extends HomeController {
 
     public function add(){
         $node = M("UnitpriceRole");
+        $fooInfo = M("FooInfo");
         $list = $node -> order('sort asc') -> getField('id,name');
         $this -> assign('groupList', $list);
         $this->assign('schoolList', C('SCHOOL'));
         $this->assign('gradeList', C('SCHOOL_GRADE'));
-        $this->assign('courseList', C('SCHOOL_COURSE'));
+        //$this->assign('courseList', C('SCHOOL_COURSE'));
+        
+        $courseList = $fooInfo->where('pid='.C('SCHOOL_COURSE_ROOT_ID').' AND is_del=0 AND display=1 ')->order('sort asc,id asc')->select();
+        $this->assign('courseList', $courseList);
         $this->assign('subjectList', C('SCHOOL_SUBJECT'));
         $this->assign('teacherLevelList', C('SCHOOL_TEACHER_LEVEL'));
 

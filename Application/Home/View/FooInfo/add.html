@@ -9,6 +9,17 @@
 				<select name="node_list" id="node_list" class="hidden">
 					{:fill_option($node_list)}
 				</select>
+				
+				<div id="course_type" class="form-group col-xs-12" style="display:none;">
+					<label class="col-xs-3 control-label" for="displays">前端是否隐藏：</label>
+					<div class="col-xs-9" style="text-align: left;">
+						<select class="form-control" name="display" id="displays" disabled="disabled">
+							<option value="1">不隐藏</option>
+							<option value="2">隐藏</option>
+						</select>
+					</div>
+				</div>
+				
 				<div class="form-group col-xs-12">
 					<label class="col-xs-3 control-label" for="name">名称*：</label>
 					<div class="col-xs-9">
@@ -52,9 +63,14 @@
 		$('#pid').change(function(){
 			if($(this).val()=='17'){
 				$('#group').removeClass('hide');
+				$('#course_type').css('display','block');
+				$('#displays').attr('disabled',false);
 			}else{
 				$('#group').addClass('hide');
+				$('#course_type').css('display','none');
+				$('#displays').attr('disabled','disabled');
 			}
+			
 		})
 
 		function select_pid() {
