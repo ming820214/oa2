@@ -202,7 +202,7 @@ class PublicController extends Controller {
             $url = "https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=$access_token&userid=$user_id";
             $user_info=url_get($url);
 			// 将获取到的值存储到seccion
-			$auth_info=M('user')->where(['name'=>$user_info['name'],'wechat_userid'=>$user_info['userid'],'is_del'=>0])->order('school')->find();
+			$auth_info=M('user')->where(['name'=>$user_info['name'],'wechat_userid'=>$user_info['userid'],'is_del'=>0,'wx_flag'=>1])->find();
 			// var_dump($auth_info);die;
 	    	
 			if(!$auth_info){

@@ -79,13 +79,15 @@
 						</td>
 					</tr>
 					<tr>
-					<!-- <tr>
-						<th>电子邮箱</th>
+					<tr>
+						<th>启动微信端OA</th>
 						<td colspan="3">
-						<p class="form-control-static">
-							{$vo.email}
-						</p></td>
-					</tr> -->
+						<select name="wx_flag" id="wx_flag" class="form-control col-10">
+							<option  value="1">启动</option>
+							<option value="2">不启动</option>
+						</select>
+						</td>
+					</tr>
 					<!-- <tr>
 						<th>
 						<nobr>
@@ -116,6 +118,7 @@
 		$(document).ready(function() {
 		set_return_url();
 		set_val('sex','{$vo.sex}');
+		set_val('wx_flag','{$vo.wx_flag}');
 		});
 	</script>
 
