@@ -19,7 +19,7 @@ class TongjiController extends HomeController {
             }
             $aa['timee']=array('like',"$date%");
             $aa['state']=array('NEQ',2);
-            $aa['stuid'] = array('not in',array('77777','88888','99999'));
+            $aa['stuid'] = array('not in',array('77777','88888','99999','66666'));
             $class=M('hw001.class',null)->where($aa)->order('timee asc,grade asc,time1 asc,class asc,teacher asc,state asc')->select();
 
                     $ss=$value1['school'];
@@ -384,7 +384,7 @@ class TongjiController extends HomeController {
         $w['timee']=array('between',[$t1,$t2]);
         $w['grade']=0;
         $w['state']=['neq',2];
-        $w['stuid'] = array('not in',array('77777','88888','99999'));
+        $w['stuid'] = array('not in',array('77777','88888','99999','66666'));
         if($school)$w['school']=$school;
         if($teacher)$w['teacher']=$teacher;
         $data1=M('hw001.class',null)->where($w)->sum('count');
