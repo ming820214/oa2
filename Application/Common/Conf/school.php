@@ -37,6 +37,7 @@ return array(
     		'师训部',
     		'初中部',
     		'教研部',
+    	'沈阳品牌中心',
         '总裁'
     ],
     'SCHOOL_POSITION' =>[
