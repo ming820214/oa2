@@ -163,7 +163,8 @@ class TongjiController extends HomeController {
             $aa['timee']=array('like',"$date%");
             if($_POST['time']&&$_POST['time2'])$aa['timee']=array('between',[$_POST['time'],$_POST['time2']]);
             $aa['state']=array('NEQ',2);
-            $class=M('hw001.class',null)->where($aa)->order('school asc,class asc,teacher asc,grade asc,timee asc,time1 asc')->field('class,teacher,timee,time1,grade,count')->select();
+            $aa['stuid'] = array('not in',array('77777','88888','99999','66666'));
+            $class=M('hw001.class',null)->where($aa)->order('school asc,class asc,teacher asc,grade asc,timee asc,time1 asc')->field('class,teacher,timee,time1,grade,count,stuid')->select();
 					if(get_school_name() == '阜新实验校区' || get_school_name() == '阜新二部'){
 							$aa['school']= '阜新实验校区';
 						}else{
