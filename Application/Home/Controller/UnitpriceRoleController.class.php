@@ -119,7 +119,19 @@ class UnitpriceRoleController extends HomeController {
 
 
     function del($id){
-        $this -> _del($id);
+    	$course = M('course');
+    	$result = $course->where(['unit_plan' => $id,'is_del' => 0])->select();
+    	if($result){
+    		$data = [
+    				'status'    => '',
+    				'info'   => '该方案已经有关联的订单，暂不能删除！',
+    		];
+    		
+    		$this->ajaxReturn($data);
+    	}else{
+    		$this -> _del($id);
+    	}
+//         $this -> _del($id);
     }
 
     function list_to_tree($list, $root = 0, $pk = 'id', $pid = 'pid', $child = '_child') {
