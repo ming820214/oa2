@@ -45,6 +45,10 @@ class UserController extends HomeController {
 		// $map['is_del'] = array('eq', $eq_is_del);
 		if(I('param.school')||I('param.school')==='0')$map['school']= I('param.school');
 		if(I('param.position_id'))$map['position_id']= I('param.position_id');
+		
+		if(I('param.dept_id')){
+			$map['dept_id']= I('param.dept_id'); 
+		}
 
 		$model = D("User");
 

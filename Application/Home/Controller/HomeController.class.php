@@ -33,11 +33,17 @@ class HomeController extends Controller {
         										->order('sort asc,id asc')->select();
         $teacherLevelList = $fooInfo->where('pid='.C('SCHOOL_TEACHER_LEVEL_ROOT_ID').' AND is_del=0')
         										->order('sort asc,id asc')->select();
+        
+        //获取集团所有部门信息列表
+        $deptInfo = M("dept");
+        $deptList = $deptInfo->where("is_del=0")->select();
+        
         C('SCHOOL', array_merge(C('SCHOOL_DEFAULT'), $schoolList));
         C('SCHOOL_GRADE', $gradeList);
         C('SCHOOL_COURSE', $courseList);
         C('SCHOOL_SUBJECT', $subjectList);
         C('SCHOOL_TEACHER_LEVEL', $teacherLevelList);
+        C('ORG_DEPT',$deptList);
 	}
 
 	protected function _assign_menu() {
