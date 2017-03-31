@@ -421,7 +421,8 @@ class XueguanController extends HomeController {
 //页面js调用
 //=============相关页面独立调用==================
     public function fankui_api($cid){
-        $m=M('hw001.class',null)->field('stuid,timee,teacher,class,time1,time2')->find($cid);
+//         $m=M('hw001.class',null)->field('stuid,timee,teacher,class,time1,time2')->find($cid);
+    	$m=M('hw001.class',null)->field('stuid,timee,teacher,class,time1,time2')->where("id=".$cid)->find();
         print(json_encode($m));
     }
 //==============共用box调用=========================

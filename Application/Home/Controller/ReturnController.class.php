@@ -1727,7 +1727,7 @@ class ReturnController extends HomeController {
             if(!$_POST['why'])unset($_POST['why']);
 			
 			//edit by zhangxm 监控财务数据修改，进而排查调课排课冲突问题；
-			$classR= $md->find(I('id'));
+			$classR= $md->where("id=". I('id'))->find();
 			if($classR){
 				$temp_str = "财务修改之前的数据如下：" . $classR['course_id'] . "_" . $classR['std_id'] . "_"  . $classR['stuid'] . "_" . $classR['time1'] . "_" . $classR['time2'] . "_" . session('user_name');
 			}
