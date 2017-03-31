@@ -1695,7 +1695,13 @@ class ReturnController extends HomeController {
         try{
         	$md=M('hw001.class',null);
 
-        $info=$md->find($_GET['qr']);
+        //$info=$md->find($_GET['qr']);
+        if($_GET['qr']){
+        	$info=$md->where("id=" . $_GET['qr'])->find();
+        }else{
+        	$info=$md->find();
+        }
+        	
         if($_GET['qr']){
             if($info['course_id']){
                 if($info['state']==1){
