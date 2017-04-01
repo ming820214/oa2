@@ -157,7 +157,7 @@
 <div class="panel panel-default">
     <div class="panel-body">
         <if condition="ACTION_NAME eq 'index'"><button class="btn btn-info" onclick="check(1);">计划提交</button></if>
-        <if condition="ACTION_NAME eq 'apply'"><button class="btn btn-info" onclick="check(1);">申请使用</button></if>
+        <if condition="(ACTION_NAME eq 'apply') AND ($_SESSION['position_id'] eq 22)"><button class="btn btn-info" onclick="check(1);">申请使用</button></if>
         <if condition="ACTION_NAME eq 'cost'"><button class="btn btn-info" onclick="check(1);">报销申请</button></if>
 
         <if condition="(ACTION_NAME eq 'examine')OR(ACTION_NAME eq 'manage')">
