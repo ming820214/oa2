@@ -39,6 +39,9 @@ class UserController extends HomeController {
 		$this -> assign('position_id', I('param.position_id'));
 
 		$map = $this -> _search();
+		if(!$eq_is_del){
+			$map['is_del'] = array('eq',0);
+		}
 		if (method_exists($this, '_search_filter')) {
 			$this -> _search_filter($map);
 		}
