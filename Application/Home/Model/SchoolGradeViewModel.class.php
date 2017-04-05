@@ -25,7 +25,7 @@ class  SchoolGradeViewModel extends Model {
     protected $trueTableName = 'user';
     // protected $autoCheckFields =false;
     // protected $tablePrefix = 'school';
-    protected $connection = 'mysql://root:ihongwen@localhost:3306/hw001';
+    protected $connection = 'mysql://root:ihongwen@localhost:1209/hw001';
     // protected $dbName = 'hw001';
 
   // 	protected $viewFields=array(

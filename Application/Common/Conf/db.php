@@ -7,7 +7,7 @@ return array(
         'DB_NAME'=>'hongwen_oa',
         'DB_USER'=>'root',
         'DB_PWD'=>'ihongwen',
-        'DB_PORT'=>'3306',
+        'DB_PORT'=>'1209',
         'DB_PREFIX'=>'oa_',
 
         // 'DB_TYPE'   => 'pdo', // 数据库类型
@@ -17,6 +17,6 @@ return array(
         // 'DB_CHARSET'=> 'utf8', // 字符集
         // 'DB_DSN'    => 'mysql:host=localhost;dbname=hongwen_oa;port=3306'
         
-        'HW001_DSN' => 'mysql://root:ihongwen@localhost:3306/hw001',
+        'HW001_DSN' => 'mysql://root:ihongwen@localhost:1209/hw001',
 
     );
