@@ -125,6 +125,52 @@ class AaController extends Controller {
             }
         }
     }
+    
+    public function process_bj_class(){//班级课不完整处理 add by zhangxm
+    	$class=M('hw001.class',null);
+    	$grade=M('hw001.stu_grade',null);
+    	$stu = M('hw001.student',null);
+    	
+    	$w['timee']=array('egt',date('Y-m-d'));//需要设置开始时间
+    	$w['grade']=array('neq',0);
+    	$m=$class->where($w)->select();
+    	foreach ($m as $v) {
+    		//unset($v['id'],$v['stuid'],$v['timestamp'],$v['std_id'],$v['course_id'],$v['state']);
+    		$c['school'] = $v['school'];
+    		$c['grade'] = $v['grade'];
+    		$c['tid'] = $v['tid'];
+    		$c['teacher'] = $v['teacher'];
+    		$c['class'] = $v['class'];
+    		$c['time1'] = $v['time1'];
+    		$c['time2'] = $v['time2'];
+    		$c['timee'] = $v['timee'];
+    		$c['count'] = $v['count'];
+    		
+    		$con1=count($class->where($c)->select());
+    		//$sids=$grade->where(array('gid'=>$v['grade']))->getField('stuid',true);
+    		$grade_list = $grade->where(array('gid'=>$v['grade']))->select();
+    		//$sids = array_column($grade_list,'stuid');
+    		if(count($grade_list)!=$con1){
+
+    			//$class->where($v)->delete();
+    			foreach ($grade_list as $val) {
+    				if($val['stuid'] != $v['stuid']){
+    					unset($v['id'],$v['stuid'],$v['timestamp'],$v['std_id'],$v['course_id'],$v['cwqr']);
+    					$v['stuid']=$val['stuid'];
+    					$v['course_id'] = $val['course_id'];
+    					$v['std_id'] = $stu->where(['id'=>$val['stuid'],'state'=>1])->getField('std_id');
+    					$v['cwqr'] = '';
+    					if($v['std_id']){
+    						$class->add($v);
+    					}
+    					
+    				}
+    				
+    			}
+    			echo "1";
+    		}
+    	}
+    }
 /**
 员工薪酬主表添加
 */
