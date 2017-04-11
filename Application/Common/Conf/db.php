@@ -5,8 +5,8 @@ return array(
         'DB_TYPE'=>'mysql',
         'DB_HOST'=>'127.0.0.1',
         'DB_NAME'=>'hongwen_oa',
-        'DB_USER'=>'root',
-        'DB_PWD'=>'ihongwen',
+        'DB_USER'=>'SeaOA',
+        'DB_PWD'=>'*Sea^09!1_1',
         'DB_PORT'=>'1209',
         'DB_PREFIX'=>'oa_',
 
@@ -17,6 +17,6 @@ return array(
         // 'DB_CHARSET'=> 'utf8', // 字符集
         // 'DB_DSN'    => 'mysql:host=localhost;dbname=hongwen_oa;port=3306'
         
-        'HW001_DSN' => 'mysql://root:ihongwen@localhost:1209/hw001',
+        'HW001_DSN' => 'mysql://SeaOA:*Sea^09!1_1@localhost:1209/hw001',
 
     );
