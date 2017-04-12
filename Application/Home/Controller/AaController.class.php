@@ -126,12 +126,16 @@ class AaController extends Controller {
         }
     }
     
-    public function process_bj_class(){//班级课不完整处理 add by zhangxm
+    public function process_bj_class($begin,$end){//班级课不完整处理 add by zhangxm
     	$class=M('hw001.class',null);
     	$grade=M('hw001.stu_grade',null);
     	$stu = M('hw001.student',null);
+    	if($begin){
+    		$w['timee']=array(array('egt',$begin),array('elt',$end));//需要设置开始时间
+    	}else{
+    		$w['timee']=array('egt',date('Y-m-d'));//需要设置开始时间
+    	}
     	
-    	$w['timee']=array('egt',date('Y-m-d'));//需要设置开始时间
     	$w['grade']=array('neq',0);
     	$m=$class->where($w)->select();
     	foreach ($m as $v) {
