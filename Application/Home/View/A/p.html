@@ -2,7 +2,7 @@
 <block name="content">
 {:W('PageHeader/simple',array('name'=>'排课账号管理'))}
 <div style="text-align: center;margin: 10px;background-color: darkgray;padding: 5px;">
-<form action="__URL__/add" method="post">
+<form action="__URL__/add" method="post" id="search_form">
 	所属校区<select name="school">{:fill_option_val(C('SCHOOL'))}</select>
 	职务：<select name="position">
 		<option>学习管理师</option>
@@ -15,7 +15,8 @@
 	姓名：<input type="text" name="user" required="true" />
 	联系电话：<input type="text" name="tel" required="true"/>
 	备注：<input type="text" name="other"/>
-	<input type="submit" value="添加" />
+	<input type="submit" value="添加" id="btn_add"/>&nbsp;&nbsp;
+	<input type="submit" value="查询" id="btn_search"/>
 </form>
 </div>
 <table class="table">
@@ -41,4 +42,19 @@
   <div class="pagination">
     {$page}
   </div>
+</block>
+<block name="js">
+<script type="text/javascript">
+	$('#btn_search').click(function(){
+		var ac = $('#search_form').attr('action',"__URL__/search");
+	    $('input[name="user"]').removeAttr("required")
+	    $('input[name="tel"]').removeAttr("required")
+		//alert($('#search_form').attr('action'));
+	});
+	$('#btn_add').click(function(){
+		var ac = $('#search_form').attr('action',"__URL__/add");
+		 $('input[name="user"]').attr("required","true");
+		 $('input[name="tel"]').attr("required","true");
+	});
+</script>
 </block>
