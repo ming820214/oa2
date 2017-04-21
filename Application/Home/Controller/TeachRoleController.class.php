@@ -9,7 +9,7 @@ class TeachRoleController extends HomeController {
 
     public function index($uid){
         $this->assign('teacherName', M('User')->where("id={$uid}")->getField('name'));
-        $this->assign('planList', M('UnitpriceRole')->where("is_del=0")->field('id,school,name')->select());
+        $this->assign('planList', M('UnitpriceRole')->where("is_del=0 AND displays='0'")->field('id,school,name')->select());
         $this->assign('subjectList', C('SCHOOL_SUBJECT'));
         $this->assign('uid', $uid);
         $this->display();
