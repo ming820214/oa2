@@ -61,8 +61,8 @@ class TeachRoleController extends HomeController {
     public function getList(){
         $order = '`id` desc';
         $listCondition = array(
-            'is_del' => array('eq', 0),
-            'uid' => array('eq', (int)$_GET['uid']),
+            'oa_teach_role.is_del' => array('eq', 0),
+            'oa_teach_role.uid' => array('eq', (int)$_GET['uid']),
             );
 
         $TeachRole = D('TeachRole');
