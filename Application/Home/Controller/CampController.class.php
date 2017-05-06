@@ -9,7 +9,7 @@ namespace Home\Controller;
 class CampController extends HomeController {
 	
 	private $pageNumber=0;
-	private $pageCount=1;
+	private $pageCount=10;
 	
 	public function class_teacher() {
 		

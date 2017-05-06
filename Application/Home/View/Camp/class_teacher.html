@@ -97,7 +97,7 @@
 	<script type="text/javascript">
 		var op_type= 'save';
 		sid=0;
-		pageCount = 1; //每页显示多少条记录(全局变量)
+		pageCount = 10; //每页显示多少条记录(全局变量)
 		currentPage = 1; //当前页码
 		maxPage = (({$maxCount} % pageCount) == 0) ?  {$maxCount}/pageCount: parseInt({$maxCount}/pageCount)+1; //最大页码
 		pageString = '';
