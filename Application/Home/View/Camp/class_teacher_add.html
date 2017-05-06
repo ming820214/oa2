@@ -1,0 +1,81 @@
+<extend name="Layout/ins_popup" />
+<block name="content">
+		<div class="col-sm-5">
+			<form id="form_data" name="form_data" method="post" class="form-horizontal">
+				<div class="pull-right">
+					<input type="button" onclick="save()" class="btn btn-sm btn-primary" value="保存"></input>
+					<input type="button" onclick="closeW()" class="btn btn-sm btn-primary" value="关闭"></input>
+					<!-- <input type="hidden" name="ajax" id="ajax" value="1"> -->
+				</div>
+				<p>
+				<table class="table table-bordered" >
+					<tr>
+						<th class="col-10">班级</th>
+						<td>
+							<select name="grade_id" id="grade_id" class="form-control" msg="请选择班级" check="require">
+								<option value="">选择班级</option>
+								<volist name="grade_list" id="grade">
+	                				<option value="{$grade.id}">{$grade.name}</option>
+	     						</volist>
+							</select>
+						</td>
+						
+					</tr>
+					<tr>
+						<th class="col-10">班主任*</th>
+						<td>
+							<select name="teacher_name" id="teacher_name" class="form-control" msg="请选择班级负责人" check="require">
+								<option value="">选择班级负责人</option>
+								<volist name="teacher_list" id="data">
+	                				<option value="{$data.name}">{$data.school}&nbsp;&nbsp;{$data.position}&nbsp;&nbsp;{$data.name}</option>
+	     						</volist>
+							</select>
+							<br/>
+			            	<input type="text" id="filter_t" placeholder="此处可进行下拉列表项内容筛选">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		$('#filter_t').on('keyup',function(e){
+	  		$('#teacher_name option').show();
+	  		$('#teacher_name option').each(function(){
+	  			if($(this).text().indexOf($('#filter_t').val()) == -1){
+	  				$(this).attr('dq','1'); //该属性，无任何意义，就是为了实现某种显示效果
+	  				$(this).hide();
+	  			}else{
+	  				$(this).attr('dq','2');
+	  			}
+	  		});
+	  		$('#teacher_name option[dq=2]:first').prop('selected',true)
+	  		
+	  	});
+		
+		function save()
+		{
+			if (check_form("form_data")) {
+				var vars = $("#form_data").serialize();
+				
+				 sendAjax("{:U('addClassTeacher')}", vars, function(data) {
+					if (data.status) {
+						ui_alert(data.info, function() {
+							parent.location.reload(true);
+							myclose();
+						});
+					} else {
+						ui_error(data.info);
+					}
+				}); 
+			}
+		}
+		
+		function closeW(){
+			myclose();
+		}
+
+	</script>
+</block>

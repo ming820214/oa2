@@ -95,10 +95,16 @@
           <th>学号</th>
           <td id="std_id"></td>
         </tr>
-        <tr>
+        <if condition="strpos($con_school,'特训营') === false">
+	        <tr>
+	          <th>关联课程</th>
+	          <td colspan="3"><select name="course_id" class="form-control"></select></td>
+	        </tr>
+        </if>
+        <!-- <tr>
           <th>关联课程</th>
           <td colspan="3"><select name="course_id" class="form-control"></select></td>
-        </tr>
+        </tr> -->
         <tr><td colspan="4">
             <a class="btn btn-sm btn-primary" onclick="save_student()">保存修改</a>|
             <a class="btn btn-sm btn-primary" onclick="delt_student()">删除学员</a>
@@ -126,10 +132,16 @@
             </div>
           </td>
         </tr>
-        <tr>
+        <if condition="strpos($con_school,'特训营') === false">
+	        <tr>
+	          <th>关联课程</th>
+	          <td><select name="course_id" class="form-control"></select></td>
+	        </tr>
+        </if>
+        <!-- <tr>
           <th>关联课程</th>
           <td><select name="course_id" class="form-control"></select></td>
-        </tr>
+        </tr> -->
         <tr>
           <td colspan="2">
             <div class="pull-right">
@@ -236,7 +248,25 @@
   function add_student(){
     var data = $("#add").serialize();
     var gid = $(".sub_left_menu tbody tr.active").attr('id');
-    if(!$('#add select[name=course_id]').val()){
+    
+    if("{$con_school}".indexOf("特训营") != -1){
+    	$.get("{:U('grade_student_add')}"+'&gid='+gid,data,function(msg){
+  	        if(msg=='ok')ui_info('添加成功');
+  	        if(msg=='error')ui_error('添加失败,请选择关联课程。');
+  	        rest();
+  	      });
+    }else{
+    	if(!$('#add select[name=course_id]').val()){
+  	      ui_error('添加失败,请选择关联课程。');
+  	    }else{
+  	      $.get("{:U('grade_student_add')}"+'&gid='+gid,data,function(msg){
+  	        if(msg=='ok')ui_info('添加成功');
+  	        if(msg=='error')ui_error('添加失败,请选择关联课程。');
+  	        rest();
+  	      });
+  	    }
+    }
+   /*  if(!$('#add select[name=course_id]').val()){
       ui_error('添加失败,请选择关联课程。');
     }else{
       $.get("{:U('grade_student_add')}"+'&gid='+gid,data,function(msg){
@@ -244,7 +274,7 @@
         if(msg=='error')ui_error('添加失败,请选择关联课程。');
         rest();
       });
-    }
+    } */
   }
 // 修改学员绑定信息
   function save_student(){

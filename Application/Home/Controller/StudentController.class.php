@@ -158,6 +158,9 @@ class StudentController extends HomeController {
     public function grade(){
 
         $mod=M('hw001.school_grade',null);
+        
+        $con_school = I('post.school')?I('post.school'):get_school_name();
+        
         if(IS_POST){
             $mod->create();
             $mod->school=I('post.school')?I('post.school'):get_school_name();
@@ -168,16 +171,27 @@ class StudentController extends HomeController {
         $w['is_del']=0;
         $list=$mod->where($w)->select();
         foreach ($list as $k=>$v) {
-            $stus=M('hw001.stu_grade',null)->where(['gid'=>$v['id']])->select();//小组成员列表
+        	if(strpos($con_school,'特训营') === false){
+        		$stus=M('hw001.stu_grade',null)->where(['gid'=>$v['id']])->select();//小组成员列表
+        	}else{
+        		$stus=M('hw001.stu_grade_t',null)->where(['gid'=>$v['id']])->select();//小组成员列表
+        	}
+//             $stus=M('hw001.stu_grade',null)->where(['gid'=>$v['id']])->select();//小组成员列表
             foreach ($stus as $v2) {
-                if(!M('course')->where(['id'=>$v2['course_id'],'state'=>200])->find())
-                $list[$k]['bd']='异常';
+            	if(strpos($con_school,'特训营') === false){
+            		if(!M('course')->where(['id'=>$v2['course_id'],'state'=>200])->find()){
+            			$list[$k]['bd']='异常';
+            		}
+            	}
+                /* if(!M('course')->where(['id'=>$v2['course_id'],'state'=>200])->find())
+                $list[$k]['bd']='异常'; */
                 $list[$k]['students'].=','.$v2['name'];
             }
         }
         $this->list = $list;
         $w['state']=1;
         $this->list2=M('hw001.student',null)->where($w)->order('p')->getField('id,p,name');//校区所有学员列表
+        $this->con_school = get_school_name();//单独为特训营设置的校区变量；
         $this->display();
     }
 
@@ -195,7 +209,12 @@ class StudentController extends HomeController {
     public function ajax_grade_info($gid){
         if(IS_AJAX){
             $grade=M('hw001.school_grade',null)->find($gid);
-            $students=M('hw001.stu_grade',null)->where(['gid'=>$gid])->select();
+            if(strpos(get_school_name(),'特训营') === false){
+            	$students=M('hw001.stu_grade',null)->where(['gid'=>$gid])->select();
+            }else{
+            	$students=M('hw001.stu_grade_t',null)->where(['gid'=>$gid])->select();
+            }
+//             $students=M('hw001.stu_grade',null)->where(['gid'=>$gid])->select();
             $this->ajaxReturn([$grade,$students]);
         }
     }
@@ -223,8 +242,14 @@ class StudentController extends HomeController {
     public function grade_student_add(){
         //删除
         if(I('get.delt')&&IS_AJAX){
-            $id=M('hw001.stu_grade',null)->where(['gid'=>I('get.gid'),'stuid'=>I('get.delt')])->delete();
-            $this->reset_grade_class(I('get.gid'));
+        	if(strpos(get_school_name(),'特训营') === false){
+        		$id=M('hw001.stu_grade',null)->where(['gid'=>I('get.gid'),'stuid'=>I('get.delt')])->delete();
+        		$this->reset_grade_class(I('get.gid'));
+        	}else{
+        		$id=M('hw001.stu_grade_t',null)->where(['gid'=>I('get.gid'),'stuid'=>I('get.delt')])->delete();
+        	}
+//             $id=M('hw001.stu_grade',null)->where(['gid'=>I('get.gid'),'stuid'=>I('get.delt')])->delete();
+//             $this->reset_grade_class(I('get.gid'));
             if($id)$this->ajaxReturn('ok');
         }
         //修改、新增
@@ -233,19 +258,38 @@ class StudentController extends HomeController {
             $info=M('hw001.student',null)->find(I('get.stuid'));
             $d['stuid']=I('get.stuid');
             $d['gid']=I('get.gid');
-            $d['course_id']=I('get.course_id');
+//             $d['course_id']=I('get.course_id');
             $d['name']=$info['name'];
             $d['school']=$info['school'];
-            $id=M('hw001.stu_grade',null)->where(['stuid'=>I('get.stuid'),'gid'=>I('get.gid')])->find();
+            if(strpos(get_school_name(),'特训营') === false){
+            	$d['course_id']=I('get.course_id');
+            	$id=M('hw001.stu_grade',null)->where(['stuid'=>I('get.stuid'),'gid'=>I('get.gid')])->find();
+            }else{
+            	$id=M('hw001.stu_grade_t',null)->where(['stuid'=>I('get.stuid'),'gid'=>I('get.gid')])->find();
+            }
+//             $id=M('hw001.stu_grade',null)->where(['stuid'=>I('get.stuid'),'gid'=>I('get.gid')])->find();
             if($id){
-                $cc=M('hw001.stu_grade',null)->where(['id'=>$id['id']])->save($d);
+            	if(strpos(get_school_name(),'特训营') === false){
+            		$cc=M('hw001.stu_grade',null)->where(['id'=>$id['id']])->save($d);
+            	}else{
+            		$cc=M('hw001.stu_grade_t',null)->where(['id'=>$id['id']])->save($d);
+            	}
+//                 $cc=M('hw001.stu_grade',null)->where(['id'=>$id['id']])->save($d);
                 $cc2=M('hw001.school_grade',null)->where(['id'=>$id['gid']])->save(['name'=>I('get.name'),'other'=>I('get.other')]);
                 $cc=$cc?$cc:$cc2;
             }else{
-                $cc=M('hw001.stu_grade',null)->add($d);
+            	if(strpos(get_school_name(),'特训营') === false){
+            		$cc=M('hw001.stu_grade',null)->add($d);
+            	}else{
+            		$cc=M('hw001.stu_grade_t',null)->add($d);
+            	}
+//                 $cc=M('hw001.stu_grade',null)->add($d);
             }
             if($cc){
-                $this->reset_grade_class(I('get.gid'));
+            	if(strpos(get_school_name(),'特训营') === false){
+            		$this->reset_grade_class(I('get.gid'));
+            	}
+//                 $this->reset_grade_class(I('get.gid'));
                 $this->ajaxReturn('ok');
             }else{
                 $this->ajaxReturn('error');

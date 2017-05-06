@@ -1,0 +1,101 @@
+<extend name="Layout/ins_popup" />
+<block name="content">
+		<div class="col-sm-5">
+			<form id="form_data" name="form_data" method="post" class="form-horizontal">
+				<div class="pull-right">
+					<input type="button" onclick="save()" class="btn btn-sm btn-primary" value="保存"></input>
+					<input type="button" onclick="closeW()" class="btn btn-sm btn-primary" value="关闭"></input>
+				</div>
+				<p>
+				<table class="table table-bordered" >
+					<tr>
+						<th class="col-10">楼层*</th>
+						<td>
+							<select name="floor" check="require" class="form-control" msg="请选择楼层">
+								<option value="">请选择楼层</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th class="col-10">房间名称*</th>
+						<td>
+							<input name="class_name" check="require" class="form-control" msg="请输入房间名称" placeholder="请输入房间名称"/>
+						</td>
+					</tr>
+					<tr>
+						<th class="col-10">教室（房间）负责人*</th>
+						<td>
+							<select name="class_responsor" id="class_responsor" class="form-control" msg="请选择教室（房间）负责人" check="require">
+								<option value="">请选择教室（房间）负责人</option>
+								<volist name="teacher_list" id="data">
+	                				<option value="{$data.name}">{$data.school}&nbsp;&nbsp;{$data.position}&nbsp;&nbsp;{$data.name}</option>
+	     						</volist>
+							</select>
+							<br/>
+			            	<input type="text" id="filter_t" placeholder="此处可进行下拉列表项内容筛选">
+						</td>
+					</tr>
+					<tr>
+						<th class="col-10">所属班级</th>
+						<td>
+							<select name="grade_id" id="grade_id" class="form-control" msg="请选择教室关联的班级">
+								<option value="">请选择教室关联的班级</option>
+								<volist name="grade_list" id="data">
+	                				<option value="{$data.id}">{$data.school}->{$data.name}</option>
+	     						</volist>
+							</select>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		$('#filter_t').on('keyup',function(e){
+	  		$('#class_responsor option').show();
+	  		$('#class_responsor option').each(function(){
+	  			if($(this).text().indexOf($('#filter_t').val()) == -1){
+	  				$(this).attr('dq','1'); //该属性，无任何意义，就是为了实现某种显示效果
+	  				$(this).hide();
+	  			}else{
+	  				$(this).attr('dq','2');
+	  			}
+	  		});
+	  		$('#class_responsor option[dq=2]:first').prop('selected',true)
+	  		
+	  	});
+		
+		function save()
+		{
+			if (check_form("form_data")) {
+				var vars = $("#form_data").serialize();
+				
+				 sendAjax("{:U('addClassRoom')}", vars, function(data) {
+					if (data.status) {
+						ui_alert(data.info, function() {
+							parent.location.reload(true);
+							myclose();
+						});
+					} else {
+						ui_error(data.info);
+					}
+				}); 
+			}
+		}
+		
+		function closeW(){
+			myclose();
+		}
+
+	</script>
+</block>
