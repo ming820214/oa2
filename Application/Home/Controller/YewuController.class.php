@@ -119,7 +119,7 @@ class YewuController extends HomeController {
 
         foreach ($data as &$v) {//跟踪人
             $v['track_user']=M('user')->where(['id'=>$v['track_user']])->getField('name');
-            $record=M('YewuTrack')->where(['stuid'=>$v['id']])->order('track_next desc')->find();
+            $record=M('YewuTrack')->where(['stuid'=>$v['id']])->order('track_next desc,timestamp desc')->find();
             if($record){
                 $v['track_time']=substr($record['track_time'],0,10);
                 $v['track_next']=substr($record['track_next'],0,10);
@@ -424,7 +424,7 @@ class YewuController extends HomeController {
     public function import_template(){
 
         $output='父母姓名(5个字以内),联系电话1(11位数字),联系电话2(11位数字),学员姓名,性别(男/女),年级,文理,就读的学校,备注(把多余的信息放在备注里)';
-        header("Content-type:application/vnd.ms-excel");
+        header("Content-type:application/vnd.ms-excel;charset=utf8");
         header("Content-disposition: attachment; filename=业务数据导入模版文件.csv");
         header("Cache-control: private");
         header("Pragma: private");
