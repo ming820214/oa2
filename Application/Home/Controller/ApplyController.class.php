@@ -196,7 +196,7 @@ class ApplyController extends HomeController {
 		if($w['stage']==3){
 			$w['state']=['between','80,160'];
 //			if(session('user_name')=='刘丹丹'){
-			if(session('user_name')=='王丽丽'){
+			if(session('user_name')=='王丽丽' || session('user_name')=='张晓明' || session('user_name')=='齐静'){
 				$w['school|receive_school']=session('school_id');
 				unset($w['add_user']);
 			}
@@ -225,7 +225,7 @@ class ApplyController extends HomeController {
 			// 	$w['_string']='(state=60) OR (state=140) OR (state=30 AND dept2=32) OR (state=120 AND dept2=32)';
 			// }
 			//集团大财务
-			if(session('user_name')=='齐静' || session('user_name')=='张晓明'){
+			if((session('user_name')=='齐静' || session('user_name')=='张晓明') && $w['stage']!=3){
 				unset($w['state'],$w['dept1'],$w['dept2']);
 				$w['_string']='(state=30 AND dept2=32) OR (state=40 AND type=10) OR (state=60) OR (state=70) OR (state=120 AND dept2=32) OR (state=140) OR (state=150)';
 			}
@@ -264,7 +264,16 @@ class ApplyController extends HomeController {
 
 				// 一些环节的特殊处理，stage 1计划申请阶段，2资金计划申请阶段，3资金报销申请阶段，4申请审核，5数据管理
 //				if(get_school_name()=='集团'&&$w['stage']==3&&session('user_name')!='刘丹丹')$v['edit']=0;//集团只能丹丹报销
-				if(get_school_name()=='集团'&&$w['stage']==3&&session('user_name')!='王丽丽')$v['edit']=0;//集团只能王丽丽报销。
+// 				if(get_school_name()=='集团'&&$w['stage']==3&&(session('user_name')!='王丽丽'))$v['edit']=0;//集团只能王丽丽报销。
+				if(get_school_name()=='集团'&&$w['stage']==3){
+					switch (session('user_name')){
+						case '张晓明':break;
+						case '齐静':break;
+						case '王丽丽': break;
+						default:$v['edit']=0;break;
+					}
+				}
+				
 				if(get_position_name()=='校长'&&($v['state']==50||$v['state']==80))$v['edit']=0;//校长不许用资金申请和报销申请
 				if(get_position_name()=='校长'&&$v['state']==50&&$v['add_user']==session('auth_id'))$v['edit']=1;//校长可以资金申请自己的
 
