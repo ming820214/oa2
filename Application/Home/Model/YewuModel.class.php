@@ -7,14 +7,14 @@ class YewuModel extends ViewModel{
     protected $autoCheckFields  =   false;
     public $viewFields = [
             'YewuStudents' => ['id','school','grade','schoolx','name','parents','parent_type','tel1','tel2','yixiang_qiang','address','state','_type'=>'LEFT'],
-            'YewuTrack' => ['track_time','interest','track_user','direct','flag','info','track_effect','track_next','way','_on'=>'YewuTrack.stuid=YewuStudents.id']
+            'YewuTrack' => ['id'=>'ids','track_time','interest','track_user','direct','flag','info','track_effect','track_next','way','_on'=>'YewuTrack.stuid=YewuStudents.id']
         ];
         
     
     public function get_list($condition,$count)
     {
     	//$data=M('yewu_students')->where($condition)->order('id desc')->limit($count)->select();
-    	$data=$this->where($condition)->order('id desc')->limit($count)->select();
+    	$data=$this->where($condition)->order('ids desc')->limit($count)->select();
 
         foreach ($data as &$v) {
             $v['track_user']=M('user')->where(['id'=>$v['track_user']])->getField('name');
