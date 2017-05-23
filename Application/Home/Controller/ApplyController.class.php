@@ -196,9 +196,13 @@ class ApplyController extends HomeController {
 		if($w['stage']==3){
 			$w['state']=['between','80,160'];
 //			if(session('user_name')=='刘丹丹'){
-			if(session('user_name')=='王丽丽' || session('user_name')=='张晓明' || session('user_name')=='齐静'){
+			if(session('user_name')=='王丽丽'){
 				$w['school|receive_school']=session('school_id');
 				unset($w['add_user']);
+			}
+			if(session('user_name')=='张晓明' || session('user_name')=='齐静'){
+				$w['school|receive_school']=session('school_id');
+				//unset($w['add_user']);
 			}
 		}
 
