@@ -13,7 +13,8 @@ class YewuModel extends ViewModel{
     
     public function get_list($condition,$count)
     {
-    	$data=M('yewu_students')->where($condition)->order('id desc')->limit($count)->select();
+    	//$data=M('yewu_students')->where($condition)->order('id desc')->limit($count)->select();
+    	$data=$this->where($condition)->order('id desc')->limit($count)->select();
 
         foreach ($data as &$v) {
             $v['track_user']=M('user')->where(['id'=>$v['track_user']])->getField('name');
