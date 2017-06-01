@@ -75,6 +75,20 @@
     </div>
   </div>
 </div>
+
+<!-- 弹出层，跟进详情 -->
+<div class="modal fade" role="dialog" id="tel_info">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 id="telinfo_list"></h4>
+      </div>
+      <div class="modal-body" id="content_tel"></div>
+    </div>
+  </div>
+</div>
+
 </block>
 <block name="js">
 <script type="text/javascript">
@@ -101,7 +115,7 @@ function track_info(track_user){
                     <td>家长姓名</td>\
                     <td>'+ msg[x]['parents'] +'</td>\
                     <td>电话：</td>\
-                    <td>'+ msg[x]['tel1'] +'</td>\
+                    <td><a href="javascript:void(0)" onclick="track_tel_info(' + msg[x]["tel1"] + ',' +  msg[x]["track_user"] +  ')">'+ msg[x]['tel1'] +'</a></td>\
                   </tr>\
                   <tr>\
                     <td>孩子姓名</td>\
@@ -124,6 +138,55 @@ function track_info(track_user){
         html+= '</table>';
         $("#content").html(html);
     });
+}
+
+
+function track_tel_info(tel,user){
+	 $('#tel_info').modal('show');
+	 //alert(tel + "," + user);
+	 $('#telinfo_list').text("电话" + tel + "跟进情况详情");
+	 var data =  $('form').serializeArray();
+	 data.push({name:'track_user',value:user});
+	 data.push({name:'tel1',value:tel});
+	 
+	 
+	 var html ='';
+	    $.post("{:U('tongji_ajax')}",data,function(msg){
+	        html +='<table class="table">';
+	        for(x in msg){
+	            html+='<thead><tr class="success">\
+	                    <th>跟进时间</th>\
+	                    <th>'+ msg[x]['track_time'].substr(0,10) +'</th>\
+	                    <th></th>\
+	                    <th></th>\
+	                  </tr></thead>\
+	                  <tr>\
+	                    <td>家长姓名</td>\
+	                    <td>'+ msg[x]['parents'] +'</td>\
+	                    <td>电话：</td>\
+	                    <td>'+ msg[x]['tel1'] +'</td>\
+	                  </tr>\
+	                  <tr>\
+	                    <td>孩子姓名</td>\
+	                    <td>'+ msg[x]['name'] +'</td>\
+	                    <td>年级：</td>\
+	                    <td>'+ msg[x]['grade'] +'</td>\
+	                  </tr>\
+	                  <tr>\
+	                    <td><nobr>跟进方式：</nobr></td>\
+	                    <td>'+ msg[x]['way'] +'</td>\
+	                    <td><nobr>意向强度：</nobr></td>\
+	                    <td>'+ yixiang_qiang[msg[x]['interest']] +'</td>\
+	                  </tr>\
+	                  <tr>\
+	                    <td>跟进详情：</td>\
+	                    <td colspan="3">'+ msg[x]['info'] +'</td>\
+	                  </tr>\
+	                  ';
+	        }
+	        html+= '</table>';
+	        $("#content_tel").html(html);
+	    });
 }
 </script>
 </block>
