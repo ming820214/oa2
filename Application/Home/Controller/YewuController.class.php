@@ -311,8 +311,13 @@ class YewuController extends HomeController {
 
     //页面查询任务跟进记录
     public function tongji_ajax(){
-        $w['track_time']=I('post.date1')?['BETWEEN',[I('post.date1').' 00:00:00',I('post.date2').' 23:59:59']]:['like',date('Y-m-d').'%'];
-        $w['track_user']=I('post.track_user');
+        $w['YewuTrack.track_time']=I('post.date1')?['BETWEEN',[I('post.date1').' 00:00:00',I('post.date2').' 23:59:59']]:['like',date('Y-m-d').'%'];
+        $w['YewuTrack.track_user']=I('post.track_user');
+        
+        if(I('post.tel1')){
+        	$w['YewuStudents.tel1']=I('post.tel1');
+        }
+        
         $data=D('Yewu')->where($w)->select();
         foreach ($data as &$obj){
         	switch($obj['grade']){
