@@ -226,8 +226,12 @@ class CourseModel extends CommonModel{
         $discountHour = 0;
         foreach ($roles as $role) {
             if ($role['bottom'] <= $classHour && $classHour < $role['top']) {
-                $discountHour = $role['value'];
+//                 $discountHour = $role['value'];
+                $discountHour =  $classHour-$role['bottom']>=$role['value']?$role['value']:$ext_hour_last;//根据实际消耗计算，赠送课时，32增2，65增5，110增10
+                break;
             }
+            //取上一次的赠送课时量
+            $ext_hour_last = $role['value'];
         }
 
         return $discountHour;
