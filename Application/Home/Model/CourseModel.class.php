@@ -246,10 +246,17 @@ class CourseModel extends CommonModel{
 
         $returnHour    = $usedHour;
         foreach ($roles as $role) {
-            if ($role['bottom'] <= $usedHour && $usedHour < $role['top']) {
+            /* if ($role['bottom'] <= $usedHour && $usedHour < $role['top']) {
                 $returnHour    = max($usedHour-$role['value'], $role['bottom']);
                 $ext_hour_last = max($role['bottom']+$role['value']-$usedHour, 0);
                 $ext_hour = $role['value'];//赠送剩余
+            } */
+            if ($role['bottom'] <= $usedHour && $usedHour < $role['top']) {
+                $returnHour    = max($usedHour-$role['value'], $role['bottom']);
+                
+                $ext_hour_last = 0;
+                
+                $ext_hour =$usedHour-$role['bottom'];//赠送剩余
             }
         }
 
