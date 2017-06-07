@@ -257,7 +257,7 @@ class CourseModel extends CommonModel{
                 $returnHour = $usedHour-$role['bottom']>=$role['value']?($usedHour-$role['value']):($usedHour-$ext_hour_last);
                 $ext_hour =$usedHour-$role['bottom']>=$role['value']?$role['value']:$ext_hour_last;//赠送课时
                 //未消耗课时
-                $ext_hour_last = $usedHour-$role['bottom']>=$role['value']?0:(($usedHour-$role['bottom'])>$ext_hour_last?0:($ext_hour_last-($usedHour-$role['bottom'])));
+                $ext_hour_last = 0;//$usedHour-$role['bottom']>=$role['value']?0:(($usedHour-$role['bottom'])>$ext_hour_last?0:($ext_hour_last-($usedHour-$role['bottom'])));
                 break;
             }
             //取上一次的赠送课时量
