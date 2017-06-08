@@ -179,7 +179,12 @@ class CourseModel extends CommonModel{
 
         //参与赠送的计算
         if($plan['is_join']==1){
-            $result['ext_hour']=$this->_getExtHour($hour,$plan['school']);
+         if($type == 1){
+           $result['ext_hour']=$this->_getExtHour($hour,$plan['school']);
+         }else if($type ===0 || $type == 2){
+           $result['ext_hour']=$this->getExtHour($hour,$plan['school']);
+         }
+            
         }
 
         //使用特殊规则计算订单
@@ -212,7 +217,7 @@ class CourseModel extends CommonModel{
 
 
     /**
-     * 订购或调课下的赠送策略
+     * 退课下的赠送策略
      * @param  float $classHour 选课的课时
      * @return float            赠送的课时
      */
@@ -227,7 +232,7 @@ class CourseModel extends CommonModel{
         foreach ($roles as $role) {
             if ($role['bottom'] <= $classHour && $classHour < $role['top']) {
 //                 $discountHour = $role['value'];
-                $discountHour =  $classHour-$role['bottom']>=$role['value']?$role['value']:$ext_hour_last;//根据实际消耗计算，赠送课时，32增2，65增5，110增10
+                $discountHour =  ($classHour-$role['bottom'])>=$role['value']?$role['value']:$ext_hour_last;//根据实际消耗计算，赠送课时，32增2，65增5，110增10
                 break;
             }
             //取上一次的赠送课时量
@@ -236,7 +241,29 @@ class CourseModel extends CommonModel{
 
         return $discountHour;
     }
-
+    
+    /**
+     * 订购或调课下的赠送策略
+     * @param  float $classHour 选课的课时
+     * @return float            赠送的课时
+     */
+    private function getExtHour($classHour, $school = -1) {
+     $DiscountRole = D('DiscountRole');
+     $roles = $DiscountRole->where([
+       'is_del' => ['eq', 0],
+       'pid'    => ['eq', C('DISCOUNT_ID')['HOUR']],
+       'school' => ['in', [-1, $school]],
+     ])->select();
+     $discountHour = 0;
+     foreach ($roles as $role) {
+      if ($role['bottom'] <= $classHour && $classHour < $role['top']) {
+             $discountHour = $role['value'];
+       }
+     }
+    
+     return $discountHour;
+    }
+    
     /**
      * 退费情况下的赠送策略
      * @param  float $usedHour 已经上过的课时数
