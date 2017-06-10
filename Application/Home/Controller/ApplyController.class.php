@@ -196,7 +196,7 @@ class ApplyController extends HomeController {
 		if($w['stage']==3){
 			$w['state']=['between','80,160'];
 //			if(session('user_name')=='刘丹丹'){
-			if(session('user_name')=='王丽丽'){
+			if(session('user_name')=='王丽丽' || session('user_name')=='刘悦'){
 				$w['school|receive_school']=session('school_id');
 				unset($w['add_user']);
 			}
@@ -274,6 +274,7 @@ class ApplyController extends HomeController {
 						case '张晓明':break;
 						case '齐静':break;
 						case '王丽丽': break;
+						case '刘悦': break;
 						default:$v['edit']=0;break;
 					}
 				}
