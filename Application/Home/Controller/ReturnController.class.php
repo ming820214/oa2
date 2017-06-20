@@ -132,7 +132,7 @@ class ReturnController extends HomeController {
             $w['date']=session('date');
             $w['state']=array('elt','1');
             $w['school']=get_school_name();
-            $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
+            $list=M('hw003.money_return',null)->where($w)->order('id desc,state asc')->select();
 			foreach($list as &$vor){
 				foreach($class2 as $cl2){
 					if($vor['class2'] == $cl2['id']){
@@ -336,9 +336,12 @@ class ReturnController extends HomeController {
             }
         }elseif ($_POST['dl']) {
             foreach ($_POST['id'] as $key => $value) {
+//                 $w['id']=$value;
+//                 $w['state']=array('in','0,-1');
+//                 $rr=M('hw003.return','money_')->where($w)->delete();
                 $w['id']=$value;
-                $w['state']=array('in','0,-1');
-                $rr=M('hw003.return','money_')->where($w)->delete();
+                $data['state'] = -2;
+                $rr=M('hw003.return','money_')->where($w)->save($data);
                 R('Return/record',array($value,'删除'));
 				
 				{
@@ -604,9 +607,12 @@ class ReturnController extends HomeController {
             }
         }elseif ($_POST['dl']) {
             foreach ($_POST['id'] as $key => $value) {
+//                 $w['id']=$value;
+//                 $w['state']=array('in','0,-1');
+//                 $rr=M('hw003.return','money_')->where($w)->delete();
                 $w['id']=$value;
-                $w['state']=array('in','0,-1');
-                $rr=M('hw003.return','money_')->where($w)->delete();
+                $data['state'] = -2;
+                $rr=M('hw003.return','money_')->where($w)->save($data);
                 R('Return/record',array($value,'删除'));
 				
 				{
@@ -1288,8 +1294,10 @@ class ReturnController extends HomeController {
         }elseif ($_POST['dl']) {
             foreach ($_POST['id'] as $key => $value) {
                 $w['id']=$value;
-                $w['state']=array('in','0,-1');
-                $rr=M('hw003.return','money_')->where($w)->delete();
+//                 $w['state']=array('in','0,-1');
+                $data['state'] = -2;
+//                 $rr=M('hw003.return','money_')->where($w)->delete();
+                $rr=M('hw003.return','money_')->where($w)->save($data);
                 R('Return/record',array($value,'删除'));
 				{
 // 					$xueguan = M('hw003.return','money_')->where(['id'=>$value])->getField('bb');
@@ -1384,6 +1392,7 @@ class ReturnController extends HomeController {
             $this -> display('check');
 
         }
+        
     }
 
 //退款确认
