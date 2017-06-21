@@ -57,11 +57,13 @@
 						<select class="form-control" name="grade" id="grade">{:fill_option($gradeList)}</select>
 					</div>
 				</div>
-								<div class="form-group col-xs-12">
+				<div class="form-group col-xs-12">
 					<label class="col-xs-3 control-label" for="url">课程类型：</label>
 					<div class="col-xs-9">
-						<select class="form-control" name="course" id="course">{:fill_option($courseList)}</select>
+						<select class="form-control" name="course" id="course">{:fill_option($courseList)}</select><br/>
+						<input type="text" id="filter_t" placeholder="筛选课程类型项">
 					</div>
+					
 				</div>
 				<div class="form-group col-xs-12">
 					<label class="col-xs-3 control-label" for="url">老师级别：</label>
@@ -124,6 +126,20 @@
 					+$('#grade option:selected').text()+ ' '
 					+$('#levelx option:selected').text());
 			});
+			
+			$('#filter_t').on('keyup',function(e){
+		  		$('#course option').show();
+		  		$('#course option').each(function(){
+		  			if($(this).text().indexOf($('#filter_t').val()) == -1){
+		  				$(this).attr('dq','1'); //该属性，无任何意义，就是为了实现某种显示效果
+		  				$(this).hide();
+		  			}else{
+		  				$(this).attr('dq','2');
+		  			}
+		  		});
+		  		$('#course option[dq=2]:first').prop('selected',true)
+		  		
+		  	});
 		});
 	</script>
 
