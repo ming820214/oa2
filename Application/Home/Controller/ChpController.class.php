@@ -13,7 +13,9 @@ class ChpController extends HomeController {
 		
 		$dic = M("chpDictionary")->where(['dept_id'=>session('dept_id'),'leaf'=>1])->getField('id',true);
 		
-		$condition['item1|item2'] = array('in',$dic);
+		if($dic){
+		 $condition['item1|item2'] = array('in',$dic);
+		}
 		
         $list=$mod->where($condition)->limit($pageNumber,$pageCount)->select();
 		
@@ -125,8 +127,10 @@ class ChpController extends HomeController {
 			
 			
 			$dic = M("chpDictionary")->where(['dept_id'=>session('dept_id'),'leaf'=>1])->getField('id',true);
+			if($dic){
+			 $condition['item1|item2'] = array('in',$dic);
+			}
 			
-			$condition['item1|item2'] = array('in',$dic);
 			
             array_empty_delt($condition);
     		$count=$mod->where($condition)->count();//满足条件的记录总数
