@@ -260,7 +260,7 @@ $(document).ready(function($){
         var data = {};
         $('.apply_form').each(function() {
             data[$(this).attr('id')] = JSON.stringify($(this).serializeJson());
-            if (Number($(this).find('input[name=price]').val()) <= 0.00)flag = false;
+            if (Number($(this).find('input[name=price]').val()) < 0.00)flag = false;
             if (!$(this).find('select[name=unit_plan]').val()){
                 ui_error('课程方案不能为空');
                 flag = false;
