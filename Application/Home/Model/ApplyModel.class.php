@@ -148,7 +148,11 @@ class ApplyModel extends CommonModel{
 				
 				
 				//通知财务毅哥 dept2 29 总裁办 54 人事中心
-				if(($v['state']==30&&$v['dept2']==54)||($v['state']==120&&$v['dept2']==54))$w['name']='张毅';
+				//if(($v['state']==30&&$v['dept2']==54)||($v['state']==120&&$v['dept2']==54))$w['name']='张毅';
+                if(($v['state']==30&&$v['dept2']==54)||($v['state']==120&&$v['dept2']==54))$w['name']='侯海洋';
+               
+                if(($v['state']==30&&$v['dept2']==29)||($v['state']==120&&$v['dept2']==29))$w['name']='张毅';
+               
 				
             if($w)
             $user[]=M('user')->where(['is_del'=>0])->where($w)->getField('wechat_userid');//wechat_userid
