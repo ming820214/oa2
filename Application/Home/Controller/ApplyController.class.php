@@ -241,9 +241,15 @@ class ApplyController extends HomeController {
 			$uname='张毅';
 			if(session('user_name') == $uname || session('user_name')=='张晓明'){
 				unset($w['state'],$w['dept1'],$w['dept2']);
-				$w['_string']='(state=30 AND dept2=54) OR (state=30 AND dept2=29) OR (state=120 AND dept2=54) OR (state=120 AND dept2=29) ';
+				//$w['_string']='(state=30 AND dept2=54) OR (state=30 AND dept2=29) OR (state=120 AND dept2=54) OR (state=120 AND dept2=29) ';
+				$w['_string']=' (state=30 AND dept2=29) OR (state=120 AND dept2=29) ';
 			}
 			
+			$uname2='侯海洋';
+			if(session('user_name') == $uname2 || session('user_name')=='张晓明'){
+			 unset($w['state'],$w['dept1'],$w['dept2']);
+			 $w['_string']=' (state=30 AND dept2=54) OR (state=120 AND dept2=54) ';
+			}
 			// 集团大总裁
 			if(session('user_name')=='李文龙' || session('user_name')=='张晓明'){
 				unset($w['state'],$w['dept1'],$w['dept2']);
@@ -286,7 +292,7 @@ class ApplyController extends HomeController {
 			}elseif($w['stage']==4){
 				$v['edit']=1;
 			}elseif($w['stage']==5&&get_school_name()=='集团'){
-				if(session('user_name')=='张晓明'||session('user_name')=='齐静'||session('user_name')=='张毅')
+				if(session('user_name')=='张晓明' || session('user_name')=='齐静' || session('user_name')=='张毅' || session('user_name')=='侯海洋')
 				$v['edit']=1;
 			}
 		}
