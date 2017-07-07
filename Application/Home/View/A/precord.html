@@ -43,8 +43,17 @@
 		<td>{$vo.15}</td>
 		<td>{$vo.11}</td>
 		<td>{$vo.24}</td>
+		<if condition="strstr($vo[0],'删除') === false">
+		<td>{$vo.27}</td>
+		<else/>
 		<td>{$vo.26}</td>
-		<td>{$vo.28|date="m/d H:i:s",###}</td>
+		</if>
+		<if condition="strstr($vo[0],'删除') === false">
+			<td>{$vo.29|date="m/d H:i:s",###}</td>
+		<else/>
+			<td>{$vo.28|date="m/d H:i:s",###}</td>
+		</if>
+		
 	</tr>
 	</volist>
 </table>
