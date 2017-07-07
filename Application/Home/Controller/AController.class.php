@@ -158,8 +158,8 @@ class AController extends HomeController {
         $m=M('hw001.school',null)->where($w)->field('record')->select();
 		$n = 0;
 		foreach($m as $ms){
-//			$m2=explode('#',$m,300);
-			$m2=explode('#',$ms['record'],300);
+//			$m2=explode('#',$ms['record'],300);
+			$m2=explode('#',$ms['record'],1200);
 			unset($data);
 	        foreach ($m2 as $v2) {
 	            $data[]=explode(',',$v2);
