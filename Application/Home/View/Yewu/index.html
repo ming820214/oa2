@@ -381,8 +381,8 @@
               <td>{$data.track_time}</td>
               <td>{$data.track_next}</td>
               <td>
-              	<button class="btn btn-xs btn-info" onclick="$.showBaseInfo({$data.id})">编辑</button>&nbsp;|&nbsp;
-                <button class="btn btn-xs btn-primary" onclick="genzhong({$data.id})">查看记录</button>&nbsp;|&nbsp;
+              	<button class="btn btn-xs btn-info" onclick="$.showBaseInfo({$data.id})">编辑</button>
+                <button class="btn btn-xs btn-primary" onclick="genzhong({$data.id})">查看记录</button>
                 <button class="btn btn-xs btn-success" onclick="weihu({$data.id})">添加记录</button>
                 <button class="btn btn-xs btn-default" onclick="$.del_record({$data.id})">删除记录</button>
               </td>
@@ -715,7 +715,7 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
         			temp_str += 'class="' + button_cls_arr[j] + '" ';
         	}
         		
-            temp_str += '>' + button_name_arr[j] + '</button>&nbsp;|&nbsp;';  
+            temp_str += '>' + button_name_arr[j] + '</button>&nbsp;';  
           }
         temp_str = temp_str.substring(0,temp_str.lastIndexOf('>')+1);
         $('#' + value.id).append('<td>' + temp_str  + '</td>');
