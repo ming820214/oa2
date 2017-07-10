@@ -279,8 +279,15 @@
           <label class="input-group-addon"><b>电话：</b></label>
           <input type="text" name="tel1|tel2" class="form-control">
         </div>
-        
-				 <div class="input-group export-w">
+         <div class="input-group export">
+              <label for="time1" class="input-group-addon">创建开始时间</label>
+              <input id="time1" type="text" name="time1"  class="form-control" readonly onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+         </div>
+         <div class="input-group export">
+              <label for="time2" class="input-group-addon">创建结束时间</label>
+              <input id="time2" type="text" name="time2"  class="form-control" readonly onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+        </div>
+		<div class="input-group export-w">
           <label class="input-group-addon"><b>就读学校：</b></label>
 			<select id="school_one2" name="city_id" onchange="school_change('2')" class="form-control">
 				<option value="0" selected>请选择地区
@@ -296,6 +303,8 @@
 			</select>
 			<span id="school_two_span2"></span>
         </div>
+        
+       
       </div>
       <div class="pull-right">
       	<input type="button" id="add_show" class="btn btn-sm btn-primary" name="add" value="新增" /> &nbsp;&nbsp;

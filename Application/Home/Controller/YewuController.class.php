@@ -112,6 +112,18 @@ class YewuController extends HomeController {
 				$condition['school'] = '';
 			}
 			
+			if($condition['time1'] && $condition['time2']){
+			  $condition['create_time'] = array('between',array($condition['time1'] . " 00:00:00",$condition['time2'] . " 23:59:59"));
+			  unset($condition['time1']);
+			  unset($condition['time2']);
+			}elseif($condition['time1']){
+			  $condition['create_time'] = array('EGT',$condition['time1'] . " 00:00:00");
+			  unset($condition['time1']);
+			}elseif($condition['time2']){
+			  $condition['create_time'] = array('ELT',$condition['time2'] . " 23:59:59");
+			  unset($condition['time2']);
+			}
+			
             array_empty_delt($condition);
     		$count=$mod->where($condition)->count();//满足条件的记录总数
     		$data=$mod->where($condition)->limit($page,$page_count)->order('id desc')->select();//获取到数据
