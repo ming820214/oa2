@@ -107,7 +107,8 @@ class UserController extends HomeController {
 		} else {
 			// 写入帐号数据
 			$model -> letter = get_letter($model -> name);
-			$model -> password = md5($model -> emp_no);
+			//$model -> password = md5($model -> emp_no); 由原来的账户名变成6个1；
+			$model -> password = md5('111111');
 			$emp_no = $model -> emp_no;
 			$name = $model -> name;
 			$mobile_tel = $model -> mobile_tel;
