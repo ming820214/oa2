@@ -6,6 +6,11 @@ class TongjiController extends HomeController {
 
         //循环校区
         $w['school']=array('neq','集团');
+        
+        if(get_school_name() == '营口盖州一高校区' ){
+          $w['school']=array('eq','营口盖州一高校区');
+        }
+        
         $school=M('hw001.school',null)->where($w)->select();
         foreach ($school as  $value1) {
             //循环校区查询
