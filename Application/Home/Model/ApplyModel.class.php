@@ -144,11 +144,11 @@ class ApplyModel extends CommonModel{
                     F('tz',$f);
                 }
                 //通知财务齐姐
-                if(($v['state']==40&&$v['type']==10)||($v['state']==30&&$v['dept2']==29)||$v['state']==70||$v['state']==140||$v['state']==150)$w['name']='齐静';
+                if(($v['state']==40&&$v['type']==10)||($v['state']==30&&$v['dept2']==29)||$v['state']==60||$v['state']==140||$v['state']==150)$w['name']='齐静';
                 
                 //if(in_array($v['state'],[60,140]))$w['name']='齐静';
                 
-                if($v['state'] == 60){
+                if($v['state'] == 70){
                   $w['name']='王丽丽';
                 }
                  

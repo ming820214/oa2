@@ -232,12 +232,12 @@ class ApplyController extends HomeController {
 			if((session('user_name')=='齐静' || session('user_name')=='张晓明') && $w['stage']!=3){
 				unset($w['state'],$w['dept1'],$w['dept2']);
 				//$w['_string']='(state=30 AND dept2=32) OR (state=40 AND type=10) OR (state=60) OR (state=70) OR (state=120 AND dept2=32) OR (state=140) OR (state=150)';
-				$w['_string']='(state=30 AND dept2=32) OR (state=40 AND type=10) OR (state=70) OR (state=120 AND dept2=32) OR (state=140) OR (state=150)';
+				$w['_string']='(state=30 AND dept2=32) OR (state=40 AND type=10) OR (state=60) OR (state=120 AND dept2=32) OR (state=140) OR (state=150)';
 			}
 			
 			if((session('user_name')=='王丽丽' || session('user_name')=='张晓明') && $w['stage']!=3){
 			    unset($w['state'],$w['dept1'],$w['dept2']);
-			    $w['_string']= '(state=60)';
+			    $w['_string']= '(state=70)';
 			}
 			
 //			-10=>审核失败,0=>待提交,5=>计划退回,10=>校长审核,20=>部门审核,30=>中心审核,40=>总裁审核,
