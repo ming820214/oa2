@@ -65,7 +65,8 @@ class ApplyModel extends CommonModel{
                 if(($v['state']==110&&$v['dept1']==0))$v['state']=120;
                 if(($v['state']==120&&$v['dept2']==0))$v['state']=130;
 
-                if($v['state']==70)$v['state']+=10;
+                //if($v['state']==70)$v['state']+=10; 齐静将资金申请审核的环节交给王丽丽处理；
+                
                 if($v['state']==120&&$v['dept2']==32)$v['state']+=10;
                 //计划申请金额等于0的项目跳过总裁审核
                 if($v['state']==130&&round($v['unit_price']*$v['count'],2)==0)$v['state']=140;
@@ -143,8 +144,14 @@ class ApplyModel extends CommonModel{
                     F('tz',$f);
                 }
                 //通知财务齐姐
-                if(($v['state']==40&&$v['type']==10)||($v['state']==30&&$v['dept2']==29)||$v['state']==70||$v['state']==150)$w['name']='齐静';
-                if(in_array($v['state'],[60,140]))$w['name']='齐静';
+                if(($v['state']==40&&$v['type']==10)||($v['state']==30&&$v['dept2']==29)||$v['state']==70||$v['state']==140||$v['state']==150)$w['name']='齐静';
+                
+                //if(in_array($v['state'],[60,140]))$w['name']='齐静';
+                
+                if($v['state'] == 60){
+                  $w['name']='王丽丽';
+                }
+                 
 				
 				
 				//通知财务毅哥 dept2 29 总裁办 54 人事中心
