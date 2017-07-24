@@ -755,7 +755,7 @@ class ReturnController extends HomeController {
             }
             if($rr){
             	{
-			       	$user[0]= 'A02';//wechat_userid 齐静	
+			       	$user[0]= 'YX005';//王丽丽 ；'A02';//wechat_userid 齐静	
 			        	
 			        //存储一下被通知过的人,方便后期查看
 			        $ff=(array)F('weixin_tfgl_bm');
