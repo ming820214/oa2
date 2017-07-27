@@ -16,7 +16,7 @@ class ReturnController extends HomeController {
 			
             if($_POST['x'])$m->state=1;
             if($m->save()){
-			if((session('auth_id') != 90) && (session('auth_id') != 89) && (session('auth_id') != 69))
+			if((session('auth_id') != 90) && (session('auth_id') != 89) && (session('auth_id') != 69) && (session('auth_id') != 1283) )
 				  {
 			       
 				   
@@ -25,15 +25,15 @@ class ReturnController extends HomeController {
 						$record_gt = M('hw003.return','money_')->where(['id'=>$_POST['id']])->find();
 						if($record_gt && $record_gt['state'] == 3 && $record_gt['why3']){
 							
-							$user[]= 'YY001'; //王胜鑫
-							/* 退费项目默认都是交由王胜鑫处理的，之前是把这个项目交由赵锡睿处理，现在是又归还给王胜鑫处理；
-							 * //如果是王思雷，则只能审核高报项目
+							
+							/* 退费项目默认都是交由王胜鑫处理的，之前是把这个项目交由赵锡睿处理，现在是又归还给张玉珠处理；*/
+							 //如果是王思雷，则只能审核高报项目
 							if((strpos($record_gt['class'], '高考志愿填报') === FALSE) && (strpos($record_gt['class'], '自主招生') === FALSE) && (strpos($record_gt['class'], '港澳台') === FALSE) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10)){ //将高报退费转到王胜鑫那里
 								$user[]= 'YY001'; //王胜鑫
 				        		//M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid							
 							}else{
-								$user[]= ['YX001']; //赵锡睿
-							} */
+								$user[]= ['XZdl01']; //张玉珠
+							} 
 						}
 					}
 			        
@@ -488,7 +488,7 @@ class ReturnController extends HomeController {
 							$user[0]= 'AAA'; //李文龙
 						}else{
 // 							$user[0]= 'Azl'; //王思雷
-							$user[0]= 'XZdl01'; //张玉珠
+							$user[0]= 'QThwzb002'; //刘媛媛
 							
 						}
 					}
@@ -909,15 +909,15 @@ class ReturnController extends HomeController {
 			$class2 = $foo->where(['pid'=>17,'is_del'=>array('neq',1)])->field('id,name,`group`')->order('`group`,sort')->select();
 			$this->class2=$class2;
 			
-			/* 此处审核交由王胜鑫处理，默认情况下，都是由王胜鑫处理的，所以这里屏蔽就可以了。（之前是交由赵锡睿处理的）
-			 * if(session('auth_id') == 90){
+			/* 此处审核交由张玉珠处理，默认情况下，都是由王胜鑫处理的。（之前是交由赵锡睿处理的）*/
+			  if(session('auth_id') == 1283){
 				//如果是王思雷，则只能审核高报项目
 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','港澳台'),'OR');
 				$w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(8,9,10)";
 			}else{
 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','港澳台'),'AND');
 				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (8,9,10) OR (`class1` is null))";
-			} */
+			} 
 			
             $w['state']=3;
             
@@ -1083,8 +1083,8 @@ class ReturnController extends HomeController {
 			$this->class2=$class2;
 			
 // 			if(session('auth_id') == 93){
-			if(session('auth_id') == 1283){
-				//此处交由张玉珠处理，之前是王思雷处理的
+			if(session('auth_id') == 1292){
+				//此处交由刘媛媛处理，之前是王思雷处理的,
 				//如果是王思雷，则只能审核高报项目
 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','%港澳台%'),'OR');
 				
