@@ -320,6 +320,8 @@
         <div class="panel-body">
           <div class="pull-left">
             <input type="button" name="zhipai" id="zhipai_b" class="btn btn-sm btn-primary" value="指派"/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="button" name="recycle_cus" id="recycle_cus" class="btn btn-sm btn-primary" value="客户资源回收"/>
           </div>
           <div class="pull-right">
             <a class="btn btn-sm btn-danger" data-toggle="modal" data-target="#import">数据批量导入</a>
@@ -448,6 +450,39 @@
         </div>
         <div class="content"></div>
       </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- 客户资源回收 -->
+<div class="modal fade" id="recycle" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document" style="width:800px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">客户资源回收</h4>
+      </div>
+      <div class="modal-body">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="col-md-9">
+              <div class="input-group col-md-8">
+                <label for="workered" class="input-group-addon">回收该教学主任名下的客户资源：</label>
+                <select name="recycle_worker" id="recycle_worker" class="form-control" required="required">
+                	<option value="">请选择</option>
+                  <volist name="user" id="worker">
+                    <option value="{$worker.id}">{$worker.name}</option>                  
+                  </volist>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-success pull-right" id="b_recycle">回收</button>
+          </div>
+        </div>
+      </div>
+      
     </div>
   </div>
 </div>
@@ -1139,7 +1174,13 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
     $("#zhipai").modal('show');
     
   });
-
+	
+  
+  $('#recycle_cus').bind('click',function(){
+	   	    
+	    $("#recycle").modal('show');
+	    
+	  });
   
   //弹出的指派层页面中的指派按钮，完成真正的指派工作。
   $('#zhipai_e').click(function(){ 
@@ -1162,6 +1203,36 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
   	});
   	
   });
+  
+  $('#b_recycle').click(function(){
+	  
+		var workerId = $('#recycle_worker').val();
+	  	var workerName = $('#recycle_worker :selected').text();
+	  	
+	  	if(workerId != '' && workerId != undefined){
+	  		if(confirm('确认回收' + workerName + '名下的客户资源么？')){
+		  		$.ajax({
+			  		type:"post",
+			  		url:"{:U('recycleCustomers')}",
+			  		async:true,
+			  		dataType:'json',
+			  		data:{'recycle_worker':workerId},
+			  		success:function(msg,status){
+			  			if(status=='success' && msg.stated == 'success'){
+			  				ui_info(workerName + "名下的客户资源回收成功！");
+			  				$('#search').click();
+			  				$("#recycle").modal('hide');
+			  			}else{
+			  				ui_error(workerName + "客户资源回收失败！");
+			  			}
+			  		}
+			  	});
+		  	}
+	  	}else{
+	  		ui_error('注意：请选择要回收哪位员工名下的客户资源！');
+	  	}
+	  });
+  
   
   //是否继续跟进，checkbox操作控制
   $('#flag').click(function(){
