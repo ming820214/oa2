@@ -282,7 +282,28 @@ class YewuController extends HomeController {
 		$this->gradelst = $gradelst;
         $this->display('index');
     }
-
+    
+    
+    
+    public function recycleCustomers(){
+      
+      $trackUserId = I('post.recycle_worker');
+      
+      $w['school'] = session('school_id');
+      $w['track_user'] = $trackUserId;
+      $w['state'] = array('neq',30);
+      
+      $data['track_user'] = null;
+      
+      if(IS_AJAX && $trackUserId){
+         $mod = M('YewuStudents');
+         $mod->where($w)->save($data);
+         $this->ajaxReturn(['stated'=>'success']);
+      }else{
+        $this->ajaxReturn(['stated'=>'failure']);
+      }
+      
+    }
 /**
 跟进统计
 */
