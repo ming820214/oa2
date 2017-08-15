@@ -848,6 +848,7 @@ Ycom = {
                           input[type=text][name='+x+'],\
                           input[type=date][name='+x+'],\
                           input[type=number][name='+x+'],\
+                          input[type=checkbox][name="'+x+'[]"],\
                           textarea[name='+x+'],\
                           select[name="'+x+'[]"],\
                           select[name='+x+']').not(ignore).val(data[x]);
@@ -863,6 +864,7 @@ Ycom = {
         $(form).find('input[type=hidden],\
                       input[type=text],\
                       input[type=number],\
+        			  input[type=file],\
                       textarea').not(ignore).val('');
         $(form).find('select').find('option:first').not(ignore).prop('selected','selected');
             // TODO radio checked。。。
