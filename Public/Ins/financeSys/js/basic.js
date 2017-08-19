@@ -1,5 +1,5 @@
 "use strict";
-var IPaddr	= 'http://121.42.236.42:88/oa2/';
+var IPaddr	= 'http://i.ihongwen.com/oa2/';
 //var IPaddr	= 'http://192.168.2.211/oa2/';
 
 HTMLElement.prototype.$ = function( el ){
