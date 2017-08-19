@@ -56,7 +56,7 @@ $array=array(
         ),
 	'TMPL_ACTION_ERROR'     =>  APP_PATH.'Home/View/dispatch_jump.tpl', // 默认错误跳转对应的模板文件
 	'TMPL_ACTION_SUCCESS'   =>  APP_PATH.'Home/View/dispatch_jump.tpl', // 默认成功跳转对应的模板文件
-    'WWW' => 'http://121.42.236.42:88'//程序地址，微信通知用
+    'WWW' => 'http://i.ihongwen.com'//程序地址，微信通知用
 
 );
 
