@@ -1092,7 +1092,7 @@ class ReturnController extends HomeController {
 			}else{
 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','%港澳台%'),'AND');
 				
-				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (8,9,10,12) OR (`class1` is null))";
+				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (8,9,10,12,13,14) OR (`class1` is null))";
 			}
 			
             $w['state']=3;
