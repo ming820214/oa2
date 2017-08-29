@@ -28,7 +28,7 @@ class ReturnController extends HomeController {
 							
 							/* 退费项目默认都是交由王胜鑫处理的，之前是把这个项目交由赵锡睿处理，现在是又归还给张玉珠处理；*/
 							 //如果是王思雷，则只能审核高报项目
-							if((strpos($record_gt['class'], '高考志愿填报') === FALSE) && (strpos($record_gt['class'], '自主招生') === FALSE) && (strpos($record_gt['class'], '港澳台') === FALSE) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10)){ //将高报退费转到王胜鑫那里
+						    if((strpos($record_gt['class'], '高考志愿填报') === FALSE) && (strpos($record_gt['class'], '自主招生') === FALSE) && (strpos($record_gt['class'], '港澳台') === FALSE) && ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 14)){ //将高报退费转到王胜鑫那里
 								$user[]= 'YY001'; //王胜鑫
 				        		//M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid							
 							}else{
@@ -480,7 +480,7 @@ class ReturnController extends HomeController {
 					$record_xq = M('hw003.return','money_')->where($w)->find();
 					if($record_xq){
 						//如果是王思雷，则只能审核高报项目
-					    if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14)){
+					    if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14)){
 //							$user[0]= 'ZXhld001'; //邹德涛
 							$user[0]= 'XGryxc22'; //邹婧
 			        		//M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid							
@@ -913,10 +913,10 @@ class ReturnController extends HomeController {
 			  if(session('auth_id') == 1283){
 				//如果是王思雷，则只能审核高报项目
 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','港澳台'),'OR');
-				$w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(8,9,10,14)";
+				$w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(7,8,9,10,14)";
 			}else{
 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','港澳台'),'AND');
-				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (8,9,10) OR (`class1` is null))";
+				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10) OR (`class1` is null))";
 			} 
 			
             $w['state']=3;
@@ -1088,11 +1088,11 @@ class ReturnController extends HomeController {
 				//如果是王思雷，则只能审核高报项目
 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','%港澳台%'),'OR');
 				
-				$w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(8,9,10,14)";
+				$w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(7,8,9,10,14)";
 			}else{
 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','%港澳台%'),'AND');
 				
-				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (8,9,10,12,13,14) OR (`class1` is null))";
+				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,12,13,14) OR (`class1` is null))";
 			}
 			
             $w['state']=3;
