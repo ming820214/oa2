@@ -221,6 +221,7 @@ class AaController extends Controller {
                         $v['cwqr'] = '';
                         if($v['std_id']){
                             $class->add($v);
+                            echo "2";
                         }
                         
                     }
