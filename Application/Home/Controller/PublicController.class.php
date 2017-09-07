@@ -219,8 +219,7 @@ class PublicController extends Controller {
 			session('position_id', $auth_info['position_id']);
 			session('school_id', $auth_info['school']);
 			session('date', date('Y-m'));
-			//$this -> redirect($urll);
-			$this->success('登陆成功！',$urll,1);
+			$this -> redirect($urll);
 	    }else{
 	    	$this->error('没有相关权限',U('login'));
 	    }
