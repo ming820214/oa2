@@ -177,7 +177,7 @@ class AaController extends Controller {
     }
     
     //针对具体校区，具体班级的班级课不完整处理,缺课的补上即可，不缺课的不进行处理 add by zhangxm
-    public function process_bj_class_school($begin,$end,$graded,$school){
+   /*  public function process_bj_class_school($begin,$end,$graded,$school){
       
         $class=M('hw001.class',null);
         $grade=M('hw001.stu_grade',null);
@@ -284,7 +284,7 @@ class AaController extends Controller {
             }
         }
     }
-    
+     */
 /**
 员工薪酬主表添加
 */
