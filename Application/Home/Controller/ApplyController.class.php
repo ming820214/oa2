@@ -57,6 +57,13 @@ class ApplyController extends HomeController {
 		$this -> display('list_checked_info');
 	}
 
+	/**
+	 * 各个校区浏览自己校区的财务数据
+	 */
+	public function export_list(){
+	    $this -> display('export_list');
+	}
+	
 /**
 ####################################增删改查
 */
@@ -147,6 +154,31 @@ class ApplyController extends HomeController {
     	}else{
     		$this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
     	}
+    }
+    
+    
+    /*
+     *各个校区自己申请的财务页面数据列表
+     */
+    public function ajax_export_list(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            if($w['info']) $w['info'] = array('like','%' . $w['info'] . '%');
+            if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 00:00:00']];
+            
+            if(session('school_id')!=0){
+                $w['school'] = session('school_id');
+            }
+            
+            $data=M('apply')->where($w)->order('state asc,money_time asc,school asc,subject asc,type asc,id desc')->field('record',true)->limit(I('get.offset'),I('get.count'))->select();
+            $total=M('apply')->where($w)->count();
+            $count=$this->get_count($w);
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data,'total'=>$total,'count'=>$count]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
     }
     
     //计算统计各阶段的金额统计
@@ -307,8 +339,13 @@ class ApplyController extends HomeController {
 	//数据导出功能
 	public function export(){
 
-		if(session('school_id')!=0)die;
+// 		if(session('school_id')!=0)die;
+	    
 		$w=I('post.');
+		
+		if(session('school_id')!=0){
+		    $w['school'] = session('school_id');
+		}
 		array_empty_delt($w);
 		unset($w['stage']);
 		$w['is_del']=0;
