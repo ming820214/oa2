@@ -41,11 +41,11 @@ class ReturnController extends HomeController {
 							}  */
 						}else if($record_gt && $record_gt['state'] == 9 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 14))){
 						    if($record_gt['region'] == '辽宁'){
-						        $user[]= ['XZsmqh28']; //姜博文
+						        $user[]= 'XZsmqh28'; //姜博文
 						    }else if($record_gt['region'] == '吉林'){
-						        $user[]= ['XZfx01']; //王大鹏
+						        $user[]= 'XZfx01'; //王大鹏
 						    }else if($record_gt['region'] == '黑龙江'){
-						        $user[]= ['XZsy01']; //何亮
+						        $user[]= 'XZsy01'; //何亮
 						    }
 						      
 						}
@@ -1023,7 +1023,7 @@ class ReturnController extends HomeController {
             }
             if($rr){
                 {
-                    $user[0]= 'YY001';//王丽丽 ；'A02';//wechat_userid 齐静
+                    $user[]= 'YY001';//王胜鑫 ；'A02';//wechat_userid 齐静
                     
                     //存储一下被通知过的人,方便后期查看
                     $ff=(array)F('weixin_tfgl_region');
