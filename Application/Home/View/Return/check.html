@@ -108,6 +108,10 @@
 				<td>首次缴费日期</td>
 				<td><input type="text" name="first_time" required="true" onclick="WdatePicker()" /></td>
 				
+				<td>校区区域：</td>
+				<td><select name="region" required="required"><option value="">请选择校区</option><option value="辽宁">辽宁</option><option value="吉林">吉林</option><option value="黑龙江">黑龙江</option></select></td>
+			</tr>
+			<tr>
 				<td>备注：</td>
 				<td><input type="text" name="other" style="min-width: 137px;max-width: 440px;width: 100%;"  maxlength="15"></td>
 			</tr>
@@ -129,7 +133,7 @@
 			<else />
 				<tr>
 					<td>总部沟通：</td>
-					<td colspan="4"><input type="text" name="why3" required="true" style="width:100%;"></td>
+					<td colspan="4"><input type="text" name="why3" required="true" style="width:100%;"><input type="hidden" name="action_node" value="zbgt"/> </td>
 				</tr>
 			</empty>
 		</table>
@@ -187,6 +191,7 @@
 						</th>
 						<th width="1%" style="text-align: center;">序号</th>
 						<th width="2%" style="text-align: center;">状态</th>
+						<th width="2%" style="text-align: center;">区域</th>
 						<th width="3%" style="text-align: center;">校区</th>
 						<th width="2%" style="text-align: center;">学员姓名</th>
 						<th width="2%" style="text-align: center;">年级</th>
@@ -237,8 +242,11 @@
 									<case value="4"><a style="color:#333333;">财务批款</a></case>
 									<case value="5"><a style="color:#009933;">退款确认</a></case>
 									<case value="6"><a style="color:#009933;">退款完成</a></case>
+									<case value="9"><a style="color:#009933;">区域审核</a></case>
+									<case value="8"><a style="color:#009933;">总部沟通</a></case>
 									</switch>
 								</td>
+								<td>{$vo.region}</td>
 								<td>{$vo.school}</td>
 								<td>{$vo.student}</td>
 								<td>
@@ -308,8 +316,11 @@
 									<case value="4"><a style="color:#333333;">财务批款</a></case>
 									<case value="5"><a style="color:#009933;">退款确认</a></case>
 									<case value="6"><a style="color:#009933;">退款完成</a></case>
+									<case value="9"><a style="color:#009933;">区域审核</a></case>
+									<case value="8"><a style="color:#009933;">总部沟通</a></case>
 									</switch>
 								</td>
+								<td>{$voo.region}</td>
 								<td>{$voo.school}</td>
 								<td>{$voo.student}</td>
 								<td>
@@ -535,6 +546,7 @@
 		         	$("#adv_aa").find("select[name='yj_type']").val(msg.yj_type);
 		         	$("#adv_aa").find("select[name='kf_type']").val(msg.kf_type);
 		         	$("#adv_aa").find("input[name='first_time']").val(msg.first_time);
+		         	$("#adv_aa").find("select[name='region']").val(msg.region);
 		         }
 		      });
 	}

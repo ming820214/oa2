@@ -15,25 +15,39 @@ class ReturnController extends HomeController {
             $m->create();
 			
             if($_POST['x'])$m->state=1;
+            
+            if($_POST['action_node'] && $_POST['why3'] && $_POST['action_node'] == 'zbgt'){
+                $m->state = 9;
+            }
             if($m->save()){
-			if((session('auth_id') != 90) && (session('auth_id') != 89) && (session('auth_id') != 69) && (session('auth_id') != 1283) )
+                if((session('auth_id') != 90) && (session('auth_id') != 89) && (session('auth_id') != 69) && (session('auth_id') != 1283) && (session('auth_id') != 1293) && (session('auth_id') != 651) && (session('auth_id') != 439) )
 				  {
 			       
 				   
 				   	{
 					   	 
 						$record_gt = M('hw003.return','money_')->where(['id'=>$_POST['id']])->find();
-						if($record_gt && $record_gt['state'] == 3 && $record_gt['why3']){
+						if($record_gt && $record_gt['state'] == 9 && $record_gt['why3'] && ( ($record_gt['class1'] == 7) || ($record_gt['class1'] == 8) || ($record_gt['class1'] == 9) || ($record_gt['class1'] == 10) || ($record_gt['class1'] == 14))){
+						    
 							
-							
+						    $user[]= 'XZdl01'; //张玉珠
 							/* 退费项目默认都是交由王胜鑫处理的，之前是把这个项目交由赵锡睿处理，现在是又归还给张玉珠处理；*/
 							 //如果是王思雷，则只能审核高报项目
-						    if((strpos($record_gt['class'], '高考志愿填报') === FALSE) && (strpos($record_gt['class'], '自主招生') === FALSE) && (strpos($record_gt['class'], '港澳台') === FALSE) && ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 14)){ //将高报退费转到王胜鑫那里
+						    /* if((strpos($record_gt['class'], '高考志愿填报') === FALSE) && (strpos($record_gt['class'], '自主招生') === FALSE) && (strpos($record_gt['class'], '港澳台') === FALSE) && ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 14)){ //将高报退费转到王胜鑫那里
 								$user[]= 'YY001'; //王胜鑫
 				        		//M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid							
 							}else{
 								$user[]= ['XZdl01']; //张玉珠
-							} 
+							}  */
+						}else if($record_gt && $record_gt['state'] == 9 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 14))){
+						    if($record_gt['region'] == '辽宁'){
+						        $user[]= ['XZsmqh28']; //姜博文
+						    }else if($record_gt['region'] == '吉林'){
+						        $user[]= ['XZfx01']; //王大鹏
+						    }else if($record_gt['region'] == '黑龙江'){
+						        $user[]= ['XZsy01']; //何亮
+						    }
+						      
 						}
 					}
 			        
@@ -470,7 +484,7 @@ class ReturnController extends HomeController {
         if($_POST['aax']){
             foreach ($_POST['id'] as $key => $value) {
                 $w['id']=$value;
-                $d['state']=3;
+                $d['state']=8;
 				$d['xqsh_time'] =  date("Y-m-d H:i:s"); 
                 $rr=M('hw003.return','money_')->where($w)->save($d);
                 //审核记录
@@ -914,12 +928,14 @@ class ReturnController extends HomeController {
 				//如果是王思雷，则只能审核高报项目
 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','港澳台'),'OR');
 				$w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(7,8,9,10,14)";
+				$w['state']=9;
 			}else{
 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','港澳台'),'AND');
 				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10) OR (`class1` is null))";
+				$w['state']=3;
 			} 
 			
-            $w['state']=3;
+            /* $w['state']=3; */
             
             //李文龙查看长颈鹿项目、童话项目退费
             if(session('auth_id') == 69){
@@ -987,6 +1003,225 @@ class ReturnController extends HomeController {
         }
     }
 
+    
+    //区域审核
+    public function region_check3(){
+        
+        $this->assign('gradeList', C('SCHOOL_GRADE'));
+        $grade_lst = C('SCHOOL_GRADE');
+        $gradelst = array_column($grade_lst,'name','id');
+        $this->gradelst = $gradelst;
+        
+        if($_POST['aax']){
+            foreach ($_POST['id'] as $key => $value) {
+                $w['id']=$value;
+                $d['state']=3;
+                $d['region_time']=date('Y-m-d H:i:s');
+                $rr=M('hw003.return','money_')->where($w)->save($d);
+                //审核记录
+                R('Return/record',array($value,'区域审核'));
+            }
+            if($rr){
+                {
+                    $user[0]= 'YY001';//王丽丽 ；'A02';//wechat_userid 齐静
+                    
+                    //存储一下被通知过的人,方便后期查看
+                    $ff=(array)F('weixin_tfgl_region');
+                    $f2=array_merge($ff,$user);
+                    F('weixin_tfgl_region',$f2);
+                    
+                    $info='点击可直接进入审核……';
+                    
+                    $wx= getWechatObj();
+                    $wx->sendNewsMsg(
+                        [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check3')),'')],
+                        ['touser'=>$user],
+                        C('WECHAT_APP')['TZTX']
+                        );
+                    
+                }
+                $this->success('审核完成！');
+            }else{
+                $this->success('选择要审核的条目！');
+            }
+        }elseif($_POST['bt']){
+            foreach ($_POST['id'] as $key => $value) {
+                $w['id']=$value;
+                $d['state']=0;
+                $rr=M('hw003.return','money_')->where($w)->save($d);
+                R('Return/record',array($value,'数据退回'));
+                
+                {
+                    // 					$xueguan = M('hw003.return','money_')->where($w)->getField('bb');
+                    $data_t = M('hw003.return','money_')->where($w)->getField('bb,school');
+                    $xueguan = array_keys($data_t)[0];
+                    $school = array_values($data_t)[0];
+                    
+                    $xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
+                    
+                    if($xg){
+                        $user[]= $xg;
+                    }
+                    
+                    
+                }
+            }
+            if($rr){
+                {
+                    
+                    $user=array_unique($user);
+                    
+                    //微信通知
+                    if(empty($user)){
+                        return;
+                    }
+                    
+                    //存储一下被通知过的人,方便后期查看
+                    $ff=(array)F('weixin_tfgl_bm_th');
+                    $f2=array_merge($ff,$user);
+                    F('weixin_tfgl_bm_th',$f2);
+                    
+                    $info='点击可直接进入审核……';
+                    
+                    $wx= getWechatObj();
+                    $wx->sendNewsMsg(
+                        [$wx->buildNewsItem("您有退费申请被退回，请及时查看！",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/add')),'')],
+                        ['touser'=>$user],
+                        C('WECHAT_APP')['TZTX']
+                        );
+                    
+                }
+                $this->success('数据已退回！');
+            }else{
+                $this->error('选择要退回的数据！');
+            }
+        }elseif ($_POST['dl']) {
+            foreach ($_POST['id'] as $key => $value) {
+                $w['id']=$value;
+                $w['state']=array('in','0,-1');
+                $rr=M('hw003.return','money_')->where($w)->delete();
+                R('Return/record',array($value,'删除'));
+                
+                {
+                    $data_t = M('hw003.return','money_')->where(['id'=>$value])->getField('bb,school');
+                    $xueguan = array_keys($data_t)[0];
+                    $school = array_values($data_t)[0];
+                    
+                    $xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
+                    
+                    if($xg){
+                        $user[]= $xg;
+                    }
+                    
+                    $del_id[] = $value;
+                }
+            }
+            if($rr)
+            {
+                
+                $user=array_unique($user);
+                
+                //微信通知
+                if(empty($user)){
+                    return;
+                }
+                
+                //存储一下被通知过的人,方便后期查看
+                $ff=(array)F('weixin_tfgl_bm_sc');
+                $f2=array_merge($ff,$user);
+                F('weixin_tfgl_bm_sc',$f2);
+                
+                $info='点击可直接进入审核……';
+                
+                $del_id_str = implode("__", $del_id);
+                $wx= getWechatObj();
+                $wx->sendNewsMsg(
+                    [$wx->buildNewsItem("您有退费申请被删除". $del_id_str ,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/add')),'')],
+                    ['touser'=>$user],
+                    C('WECHAT_APP')['TZTX']
+                    );
+                $this->success('删除成功！');
+            }
+        }else{
+            
+            $foo = M("FooInfo");
+            $class2 = $foo->where(['pid'=>17,'is_del'=>array('neq',1)])->field('id,name,`group`')->order('`group`,sort')->select();
+            $this->class2=$class2;
+            
+            /* 此处审核辽宁的交由姜博文、吉林的交由王大鹏、黑龙江的交由何亮处理*/
+            if(session('auth_id') == 1293){
+                $w['region'] = "辽宁";
+            }else if(session('auth_id') == 651){
+                $w['region'] = "吉林";
+            }else if(session('auth_id') == 439){
+                $w['region'] = "黑龙江";
+            }
+            
+            $w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10) OR (`class1` is null))";
+            
+            $w['state']=9;
+            $w['class1'] = array('not in',[12,13,14]); //非长颈鹿项目、童话
+            $w['why3']=array('neq','');
+            
+            
+            
+            $w['date']=session('date');
+            $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
+            
+            foreach($list as &$vor){
+                foreach($class2 as $cl2){
+                    if($vor['class2'] == $cl2['id']){
+                        $vor['class2'] = $cl2['name'];
+                        break;
+                    }
+                }
+                
+                $class1 = get_config('COURSE_GROUP');
+                foreach($class1 as $key=>$value){
+                    if((string)$vor['class1'] === (string)$key){
+                        $vor['class1'] = $value;
+                        break;
+                    }
+                }
+            }
+            unset($vor);
+            unset($cl2);
+            unset($key);
+            unset($value);
+            
+            $this->list=$list;
+            
+            $w['state']=array('in','4,5');
+            $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
+            
+            foreach($list as &$vor){
+                foreach($class2 as $cl2){
+                    if($vor['class2'] == $cl2['id']){
+                        $vor['class2'] = $cl2['name'];
+                        break;
+                    }
+                }
+                
+                $class1 = get_config('COURSE_GROUP');
+                foreach($class1 as $key=>$value){
+                    if((string)$vor['class1'] === (string)$key){
+                        $vor['class1'] = $value;
+                        break;
+                    }
+                }
+            }
+            unset($vor);
+            unset($cl2);
+            unset($key);
+            unset($value);
+            
+            $this->list2=$list;
+            
+            $this -> display('check');
+            
+        }
+    }
+    
 //总部沟通
     public function gt(){
     	
@@ -1095,7 +1330,7 @@ class ReturnController extends HomeController {
 				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,12,13,14) OR (`class1` is null))";
 			}
 			
-            $w['state']=3;
+            $w['state']=8;
             $w['date']=session('date');
             $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
 			
