@@ -195,10 +195,10 @@
 
 <a  class="btn btn-sm btn-info" onclick="submit_delt()" >删除</a>
 <a  class="btn btn-sm btn-info" onclick="change()">修改</a>
-<a  class="btn btn-primary">执行流程：退费申请->财务核算->校区审批->总部沟通->中心审批->财务批款->退款确认</a>
+<a  class="btn btn-primary">执行流程：退费申请->财务核算->校区审批->总部沟通->区域审核->中心审批->财务批款->退款确认</a>
 
 		<div style="overflow-x:auto;overflow-y:auto;max-height: 500px;">
-			<div class="ul_table message-container" style="width:3800px;">
+			<div class="ul_table message-container" style="width:5000px;">
 				<table class="table table-bordered" id="llst" width="120%" border="1px solid">
 					<thead>
 						<th width="1%" style="text-align: center;">
@@ -231,6 +231,7 @@
 						<th width="3%" style="text-align: center;">财务确认时间</th>
 						<th width="3%" style="text-align: center;">校区审核时间</th>
 						<th width="3%" style="text-align: center;">总部沟通时间</th>
+						<th width="3%" style="text-align: center;">区域审核时间</th>
 						<th width="3%" style="text-align: center;">部门审批</th>
 						<th width="3%" style="text-align: center;">财务审批时间</th>
 						<th width="3%" style="text-align: center;">退费时间</th>
@@ -300,6 +301,7 @@
 								<td><empty name="vo.cwqr_time">0000-00-00<else />{$vo.cwqr_time}</empty></td>
 								<td><empty name="vo.xqsh_time">0000-00-00<else />{$vo.xqsh_time}</empty></td>
 								<td><empty name="vo.zbgt_time">0000-00-00<else />{$vo.zbgt_time}</empty></td>
+								<td><empty name="vo.region_time">0000-00-00<else />{$vo.region_time}</empty></td>
 								<td><empty name="vo.time2">0000-00-00<else />{$vo.time2}</empty></td>
 								<td><empty name="vo.jtsp_time">0000-00-00<else />{$vo.jtsp_time}</empty></td>
 								<td><empty name="vo.time3">0000-00-00<else />{$vo.time3}</empty></td>
@@ -370,6 +372,7 @@
 								<td><empty name="voo.cwqr_time">0000-00-00<else />{$voo.cwqr_time}</empty></td>
 								<td><empty name="voo.xqsh_time">0000-00-00<else />{$voo.xqsh_time}</empty></td>
 								<td><empty name="voo.zbgt_time">0000-00-00<else />{$voo.zbgt_time}</empty></td>
+								<td><empty name="voo.region_time">0000-00-00<else />{$voo.region_time}</empty></td>
 								<td><empty name="voo.time2">0000-00-00<else />{$voo.time2}</empty></td>
 								<td><empty name="voo.jtsp_time">0000-00-00<else />{$voo.jtsp_time}</empty></td>
 								<td><empty name="voo.time3">0000-00-00<else />{$voo.time3}</empty></td>
