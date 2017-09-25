@@ -65,7 +65,7 @@ class ReturnController extends HomeController {
 						
 				        $wx= getWechatObj();
 				        $wx->sendNewsMsg(
-				            [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check3')),'')],
+				            [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/region_check3')),'')],
 				            ['touser'=>$user],
 				            C('WECHAT_APP')['TZTX']
 				        );
