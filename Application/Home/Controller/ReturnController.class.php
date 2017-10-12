@@ -86,9 +86,9 @@ class ReturnController extends HomeController {
 						
 			        }
 					
-					R('Return/record',array($value,'修改'));//记录修改
+			        R('Return/record',array($_POST['id'],'修改'));//记录修改
 				}else{
-					R('Return/record',array($value,'修改'));//记录修改
+				    R('Return/record',array($_POST['id'],'修改'));//记录修改
 				}
 			}   
                 $this->success('数据修改成功……');
@@ -936,7 +936,7 @@ class ReturnController extends HomeController {
 				$w['state']=9;
 			}else{
 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','港澳台'),'AND');
-				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10) OR (`class1` is null))";
+				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,14) OR (`class1` is null))";
 				$w['state']=3;
 			} 
 			
@@ -946,7 +946,7 @@ class ReturnController extends HomeController {
             if(session('auth_id') == 69){
             	$w['class1'] = array('in',[12,13]); //长颈鹿项目、童话
             }else{
-                $w['class1'] = array('not in',[12,13,14]); //非长颈鹿项目、童话
+                $w['class1'] = array('not in',[12,13]); //非长颈鹿项目、童话
             	$w['why3']=array('neq','');
             }
             
