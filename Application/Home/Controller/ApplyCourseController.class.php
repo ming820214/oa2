@@ -15,6 +15,11 @@ class ApplyCourseController extends HomeController {
 		/* foreach ($lst as &$val){
 		  $val['name'] = $val['school'] . ' ' .$val['name'];
 		} */
+		
+		$grade_lst = C('SCHOOL_GRADE');
+		//array_unshift($grade_lst,array('id'=>'','name'=>"选择课程年级",'remark'=>'','sort'=>'0','pid'=>'16','group'=>'16','ext'=>'','is_del'=>'0')); //增加前端年级选项变动，调动相应的js事件
+		$this->assign('gradeList'        , $grade_lst);
+		
 		$this->assign('rector',$lst);
 		
 		$this->assign('school',$school);//校区
@@ -68,6 +73,7 @@ class ApplyCourseController extends HomeController {
 		$mod->create();
 		$mod->subject = implode(",",$mod->subject);
 		$mod->marketing = implode(",",$mod->marketing);
+		$mod->grade = implode(",",$mod->grade);
 		//修改
 		if(I('post.id')){
 		    
@@ -76,7 +82,7 @@ class ApplyCourseController extends HomeController {
 			$this->ajaxReturn('更新成功');
 		}
 
-		$mod->school=session('school_id');
+	//	$mod->school=session('school_id');
 		$mod->add_user=session('auth_id');
 		$mod->add_user_name=session('user_name');
 		//新增
@@ -116,12 +122,22 @@ class ApplyCourseController extends HomeController {
          		   $w['school'] = session('school_id');
          		 }
          		 
-         		 if(get_school_name()=='集团' && (session('auth_id') == '1293'  || session('auth_id') == '1')){
+         		 if(get_school_name()=='集团' && session('auth_id') == '1293'  ){
          		  //姜博文
          		  unset($w['school']);
          		  $w['area'] = array('in',['辽宁']);
          		  $w['state'] = 10;
-         		 } elseif(get_school_name()=='集团' && (session('auth_id') == '89')){
+         		 } else if(session('auth_id') == '651'  ){
+         		     //姜博文
+         		     unset($w['school']);
+         		     $w['area'] = array('in',['吉林']);
+         		     $w['state'] = 10;
+         		 } else if(session('auth_id') == '439'  ){
+         		     //姜博文
+         		     unset($w['school']);
+         		     $w['area'] = array('in',['黑龙江']);
+         		     $w['state'] = 10;
+         		 }elseif(get_school_name()=='集团' && (session('auth_id') == '89')){
          		  //王胜鑫
          		  unset($w['school']);
          		  unset($w['area']);
@@ -139,9 +155,34 @@ class ApplyCourseController extends HomeController {
     		
     		
     		
-    		$data=M('applyCourse')->where($w)->order('state desc,school asc,id desc')->field('id, state, school, area,apply_user, substring_index(apply_user,"#",1) as apply_user2, course_info, class_type, activity_begin, activity_end, subject, charge_descp, marketing, course_point, expect_date, other, why, create_time, update_time, is_del, add_user, add_user_name, back')->limit(I('get.offset'),I('get.count'))->select();
+    		$data=M('applyCourse')->where($w)->order('state desc,school asc,id desc')->field('id, state, school, area,apply_user, substring_index(apply_user,"#",1) as apply_user2, course_info,grade,grade as graded, class_type, activity_begin, activity_end, subject, charge_descp, marketing, course_point, expect_date, other, why, create_time, update_time, is_del, add_user, add_user_name, back')->limit(I('get.offset'),I('get.count'))->select();
     		
-    		if(get_school_name()!='集团'){
+    		foreach ($data as &$obj){
+    		    $mo = explode(",",$obj['graded']);
+    		    $obj['grade'] = explode(",",$obj['graded']);
+
+    		    foreach($mo as $k=>$v){
+    		        switch($v){
+    		            case "22":$mo[$k]= "高三";break;
+    		            case "21":$mo[$k]= "高二";break;
+    		            case "20":$mo[$k]= "高一";break;
+    		            case "50":$mo[$k]= "九年级";break;
+    		            case "40":$mo[$k]= "八年级";break;
+    		            case "39":$mo[$k]= "七年级";break;
+    		            case "38":$mo[$k]= "六年级";break;
+    		            case "93":$mo[$k]= "五年级";break;
+    		            case "100":$mo[$k]= "四年级";break;
+    		            case "101":$mo[$k]= "三年级";break;
+    		            case "102":$mo[$k]= "二年级";break;
+    		            case "103":$mo[$k]= "一年级";break;
+    		            case "217":$mo[$k]= "其他";break;
+    		        }
+    		    }
+    		    $obj['graded'] = implode(",",$mo); 
+    		    
+    		}
+    		
+    		if(get_school_name()!='集团' && (session('auth_id') != '651') && (session('auth_id') != '439')){
     		  foreach ($data as &$vo){
     		    $vo['subject'] = explode(",",$vo['subject']);
     		    $vo['marketing'] = explode(",",$vo['marketing']);

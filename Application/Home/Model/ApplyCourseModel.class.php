@@ -36,13 +36,7 @@ class ApplyCourseModel extends CommonModel{
     public function check_access(&$list){
         foreach ($list as &$v) {
                 $v['back'] =null;             
-                if($v['area'] == '辽宁'){
-                   $v['state']=$v['state']+=10;
-                }else if(!$v['state']){
-                  $v['state']=$v['state']+=20;
-                }else{
-                  $v['state']=$v['state']+=10;
-                }
+                $v['state']=$v['state']+10;
         }
     }
 
@@ -51,14 +45,8 @@ class ApplyCourseModel extends CommonModel{
     */
     public function check_back(&$list,$why){
         foreach ($list as &$v) {
-            if($v['area'] == '辽宁'){
-              $v['state']-=10;
-              $v['back'] = 1;
-            }else{
-             $v['state']=0;
-             $v['back'] = 1;
-            }
-         
+            $v['state']=0;
+            $v['back'] = 1;
             $v['why']=$why;
         }
     }
@@ -96,6 +84,12 @@ class ApplyCourseModel extends CommonModel{
             if($v['state'] == '10' && $v['area'] == '辽宁'){
                //姜博文
                array_push($user, "XZsmqh28");
+            }else if($v['state'] == '10' && $v['area'] == '黑龙江'){
+                //何亮
+                array_push($user, "XZsy01");
+            }else if($v['state'] == '10' && $v['area'] == '吉林'){
+                //王大鹏
+                array_push($user, "XZfx01");
             }else if($v['state'] == '20'){
              //王胜鑫
               array_push($user, "YY001");

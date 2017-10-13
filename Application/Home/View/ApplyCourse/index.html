@@ -111,7 +111,7 @@
 </form>
 
 <!-- 录入修改部分 -->
-<form id="apply_form" class="panel panel-default" <if condition="ACTION_NAME neq 'index'">style="display:none;"</if>>
+<form id="apply_form" class="panel panel-default" <if condition="ACTION_NAME neq 'index'"> style="display:none;"</if>>
     <div class="panel-heading">
         <div class="pull-right">
             <if condition="ACTION_NAME eq 'index'"><button type="submit" class="btn btn-danger" id="bt_add">保存</button></if>
@@ -127,9 +127,14 @@
             <li>区域：<select name="area" class="form-control" required><option value="">请选择区域</option><option>辽宁</option><option>吉林</option><option>黑龙江</option><option>其他</option></select></li>
             <li>申请人：<select name="apply_user" class="form-control" required><option value="">请选择校长</option><foreach name="rector" item="vo"><option value="{$vo.name}#({$vo.id})">{$vo.school}</option></foreach></select></li>
             <li>新课程名称：<input type="text" name="course_info" class="form-control" required></li>
-            <li>班型：<input type="text" name="class_type" class="form-control" required></li>
+            
+            <li>课程类型：<input type="text" name="class_type" class="form-control" required></li>
             <li>活动开始时间：<input name="activity_begin" class="form-control" type="date" required></li>
             <li>活动结束时间：<input name="activity_end" class="form-control" type="date" required></li>
+            <li>课程年级：<select name="grade[]" class="form-control" multiple="multiple" required>
+                           {:fill_option_ex($gradeList)}
+                       </select>
+            </li>
             <li>开设科目（多选）：<select id="subjects" name="subject[]" class="form-control" multiple="multiple" required="required"><option>语文</option><option>英语</option><option>数学</option><option>物理</option><option>化学</option><option>生物</option><option>政治</option><option>历史</option><option>地理</option></select></li>
             <li>收费及优惠说明：<textarea name="charge_descp" class="form-control"  rows="4" cols="80" placeholder="收费及优惠说明" required="required"></textarea></li>
             <li>营销手段：<select name="marketing[]" class="form-control" required multiple="multiple"><option>朋友圈</option><option>传单</option><option>海报</option><option>展架</option><option>条幅</option><option>吊旗</option><option>其他</option></select></li>
@@ -334,7 +339,8 @@ function loadData(offset) {
                 'area':'区域',
                 'apply_user2':'申请人',
                 'course_info':'新课程名称',
-                'class_type':'班型',
+                'graded':'课程年级',
+                'class_type':'课程类型',
                 'activity_begin':'活动开始时间',
                 'activity_end':'活动结束时间',
                 'subject':'开设科目',
