@@ -128,12 +128,12 @@ class ApplyCourseController extends HomeController {
          		  $w['area'] = array('in',['辽宁']);
          		  $w['state'] = 10;
          		 } else if(session('auth_id') == '651'  ){
-         		     //姜博文
+         		     //王大鹏
          		     unset($w['school']);
          		     $w['area'] = array('in',['吉林']);
          		     $w['state'] = 10;
          		 } else if(session('auth_id') == '439'  ){
-         		     //姜博文
+         		     //何亮
          		     unset($w['school']);
          		     $w['area'] = array('in',['黑龙江']);
          		     $w['state'] = 10;
