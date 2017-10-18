@@ -24,7 +24,7 @@ class HomeController extends Controller {
         $fooInfo = M("FooInfo");
         $schoolList = $fooInfo->where('pid='.C('SCHOOL_ROOT_ID').' AND is_del=0')
 //         										->order('sort asc,id asc')->select();
-        										->order('name desc')->select();
+        										->order('`sort` asc,name desc')->select();
 		//针对年级按照给你的顺序进行排列
         $gradeList = $fooInfo->where('pid='.C('SCHOOL_GRADE_ROOT_ID').' AND is_del=0')
         										->order('cast(sort as signed) DESC,id asc')->select();
