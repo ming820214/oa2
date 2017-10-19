@@ -490,28 +490,32 @@ class ReturnController extends HomeController {
             foreach ($_POST['id'] as $key => $value) {
                 $w['id']=$value;
                 $d['state']=8;
+                {
+                    $record_xq = M('hw003.return','money_')->where($w)->find();
+                    if($record_xq){
+                        //如果是王思雷，则只能审核高报项目
+                        if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14)){
+                            //							$user[0]= 'ZXhld001'; //邹德涛
+                            $user[0]= 'XGryxc22'; //邹婧
+                            //M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid
+                        }elseif(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13)){
+                            $d['state']=3;
+                            $user[0]= 'JZsyjn03'; //李名帅
+                        }else{
+                            // 							$user[0]= 'Azl'; //王思雷
+                            $user[0]= 'QThwzb002'; //刘媛媛
+                            
+                        }
+                    }
+                }
+                
+                
 				$d['xqsh_time'] =  date("Y-m-d H:i:s"); 
                 $rr=M('hw003.return','money_')->where($w)->save($d);
                 //审核记录
                 R('Return/record',array($value,'校区审核'));
 				
-				{
-					$record_xq = M('hw003.return','money_')->where($w)->find();
-					if($record_xq){
-						//如果是王思雷，则只能审核高报项目
-					    if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14)){
-//							$user[0]= 'ZXhld001'; //邹德涛
-							$user[0]= 'XGryxc22'; //邹婧
-			        		//M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid							
-						}elseif(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13)){
-							$user[0]= 'AAA'; //李文龙
-						}else{
-// 							$user[0]= 'Azl'; //王思雷
-							$user[0]= 'QThwzb002'; //刘媛媛
-							
-						}
-					}
-				}
+				
             }
             if($rr){
             	
@@ -943,7 +947,7 @@ class ReturnController extends HomeController {
             /* $w['state']=3; */
             
             //李文龙查看长颈鹿项目、童话项目退费
-            if(session('auth_id') == 69){
+            if(session('auth_id') == 2100){
             	$w['class1'] = array('in',[12,13]); //长颈鹿项目、童话
             }else{
                 $w['class1'] = array('not in',[12,13]); //非长颈鹿项目、童话
