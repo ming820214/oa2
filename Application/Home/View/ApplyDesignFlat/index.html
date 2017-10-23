@@ -1,0 +1,455 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.input-group{margin: 10px 0;}
+#apply_form li{ width: 200px;float: left;margin: 5px;list-style: none;font-weight: bold;}
+.table-responsive{max-height: 500px;overflow: auto;}
+#apply_list{min-width: 3000px;}
+.pagination {margin: 0;} 
+.td_dept_name{width: 120px;}
+.td_info{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.td_other{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.notes{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 300px;}
+.money_time,.td_update_time,.td_create_time{width: 155px;}
+
+/* Let's get this party started */
+::-webkit-scrollbar {
+    width: 15px;
+    height: 20px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(35,198,200,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(35,198,200,0.4); 
+}
+
+</style>
+
+<div class="page-header clearfix">
+    <div class="col-sm-3">
+        <h1>新课程申请</h1>
+    </div>
+    
+    <div class="col-sm-12">
+        <a class="btn btn-sm btn-success pull-right" onclick="toggle_adv_search();"><i id="toggle_adv_search_icon" class="fa fa-chevron-down bigger-125"></i></a>
+    </div>
+</div>
+
+<!-- 搜索部分 -->
+<form class="panel panel-default hidden" id="adv_search" method="post" action="{:U('export')}">
+    <div class="panel-heading">
+        <input type="hidden" name="stage" value="<switch name="ACTION_NAME"><case value="index">1</case><case value="apply">2</case><case value="cost">3</case><case value="examine">4</case><case value="manage">5</case></switch>">
+        <div class="row">
+            <h4 class="col-xs-6">高级搜索</h4>
+            <div class="col-xs-6 text-right">
+                <a class="btn btn-info" onclick="loadData(0)">筛选</a>
+                <if condition="(ACTION_NAME eq 'manage')"><button type="submit" class="btn btn-info">导出</button></if>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="form-inline">
+            
+            <div class="input-group">
+                <a class="input-group-addon">活动开始日期</a>
+                <input name="date1" type="date" class="form-control">
+                <a class="input-group-addon">-</a>
+                <input name="date2" type="date" class="form-control">
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">新课程名称</a>
+                <input type="text" name="course_info" class="form-control" placeholder="新课程名称"/>
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">审核状态</a>
+                <select name="state" class="form-control"><option value="">全部</option>{:fill_option_ex(get_config('APPLYCOURSE_STATE'))}</select>
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">流程状态</a>
+                <select name="back" class="form-control"><option value="">全部</option><option value="0">正常</option><option value="1">退回</option></select>
+            </div>
+            
+            <if condition="(ACTION_NAME eq 'examine') OR (ACTION_NAME eq 'manage')">
+                
+                <div class="input-group">
+                    <a class="input-group-addon">申请校区</a>
+                    <select name="school" class="form-control"><option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+                </div>
+                
+                <div class="input-group">
+                    <a class="input-group-addon">区域</a>
+                    <select name="area" class="form-control"><option value="">请选择区域</option><option>辽宁</option><option>吉林</option><option>黑龙江</option><option>其他</option></select>
+                </div>
+                <div class="input-group col-35">
+	                <a class="input-group-addon">申请人</a>
+	                <select name="apply_user" class="form-control"><option value="">请选择校长</option><foreach name="rector" item="vo"><option value="{$vo.name}#({$vo.id})">{$vo.school}</option></foreach></select>
+	            </div>
+            </if>
+            
+            <div class="input-group col-15">
+                <a class="input-group-addon">序号</a>
+                <input name="id" class="form-control">
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- 录入修改部分 -->
+<form id="apply_form"  enctype="multipart/form-data" method="post"  class="panel panel-default" <if condition="ACTION_NAME neq 'index'">style="display:none;"</if> action="{:U('write')}">
+    <div class="panel-heading">
+        <div class="pull-right">
+            <if condition="ACTION_NAME eq 'index'"><button type="submit" class="btn btn-danger" id="bt_add">保存</button></if>
+            <button type="submit" class="btn btn-danger" style="display:none;" id="bt_save_change">修改</button>&nbsp;
+            <button type="reset" class="btn btn-danger" onclick="$('#apply_list .success').removeClass('success');$('input[type=hidden]').val('');resetFileComponent();">清空</button>
+        </div>
+        <h3>申请/修改</h3>
+    </div>
+    <div class="panel-body">
+        <ul><input type="hidden" name="id">
+            <li>提报月度：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
+            <li>计划类型：<select name="apply_type" class="form-control" required><option>月度</option><option>临时</option></select></li>
+            <li>提交单位：<select name="apply_school" class="form-control" required><option value="">请选择单位</option>
+            
+            	<optgroup label="校区">
+            	<foreach name="school" item="sc">
+            		<option value="{$key}">{$sc}</option>
+            	</foreach>
+            	</optgroup>
+            	
+            	<optgroup label="部门">
+            	<foreach name="dept" item="dt">
+            	<option value="{$key}">{$dt}</option>
+            	</foreach>
+            	</optgroup>
+            
+            </select></li>
+            <li>提报人：<input name="apply_user" class="form-control" required/></li>
+            <li>联系电话：<input type="text" name="tel" class="form-control" required></li>
+            <li>使用日期<input type="date" name="expect_date" class="form-control" required="required"></li>
+            
+            <!-- 平面设计类 -->
+            <li class="flat">设计类型：
+            <select name="apply_type" class="form-control" required>
+            <option>名片</option>
+            <option>工牌</option>
+            <option>单页</option>
+            <option>折页</option>
+            <option>宣传册</option>
+            <option>展架</option>
+            <option>展板</option>
+            <option>海报</option>
+            <option>邀请函</option>
+            <option>抵值券（体验卡）</option>
+            <option>门票</option>
+            <option>地贴</option>
+            <option>户外广告牌</option>
+            <option>其它</option>
+            </select>
+            </li>
+            
+            <li class="flat">尺寸：
+            <select name="flat_size" class="form-control" required>
+            <option>A4</option>
+            <option>A4二折</option>
+            <option>A4三折</option>
+            <option>海报60cm*90cm</option>
+            <option>展架80cm*180cm</option>
+            <option>其它</option>
+            </select>
+            </li>
+            
+            <li class="flat">版式：<select name="flat_format" class="form-control" required><option>横版</option><option>竖版</option></select></li>
+            <li class="flat">数量：<input type="number" name="flat_count" class="form-control" min="1" step="1" required></li>
+            <li class="flat">制作单位：<select name="flat_create_unit" class="form-control" required><option>校区制作</option><option>集团制作</option></select></li>
+            <li style="width:410px;">部门接收邮箱：<input type="text" name="email" class="form-control" required></li>
+            <li style="width:1050px;">文字内容：<textarea name="content_descp" class="form-control" required rows="8" cols="100" placeholder="平面类：活动标题、活动时间、活动内容；空间类：空间显示信息"></textarea></li>
+            
+            <li style="width:1050px;">参考图片（原图）:
+	            <div class="form-group ref">
+	            	<div class="row">
+		            	 <div class="col-md-8">
+			           	 	<input type="file" name="references[]" class="form-control" placeholder="最好提供图片，如鞍山校区春招展架，详见附件等">
+			           	 </div>
+			           	 <div class="col-md-4">
+			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
+			           	 </div>
+		            </div>
+		            <input type="button" class="v_addF col-md-4 col-md-offset-8" value="增加"/>
+	            </div>
+	       </li>
+	       
+	       
+	       <li style="width:1050px;">备注：<input name="descp" class="form-control"/></li>
+        </ul>
+    </div>
+</form>
+
+<!-- 审核相关按钮 -->
+<div class="panel panel-default">
+    <div class="panel-body">
+        <if condition="ACTION_NAME eq 'index'"><button class="btn btn-info" onclick="check(1);">计划提交</button></if>
+
+        <if condition="(ACTION_NAME eq 'examine')OR(ACTION_NAME eq 'manage')">
+            <button class="btn btn-info" onclick="check(1);">通过</button>
+        	<if condition="$_SESSION.auth_id neq '509'">    
+            	<button class="btn btn-info" onclick="check(0);">退回</button>
+            </if>
+        </if>
+        
+        <if condition="(ACTION_NAME neq 'finance') AND ($_SESSION.auth_id neq '509')">
+        	<button class="btn btn-info" id="bt_change">修改</button>
+            <button class="btn btn-danger" onclick="check(-1)">删除</button>
+        </if>
+    </div>
+</div>
+
+<!-- 页面数据列表 -->
+
+<div class="btn btn-info">申请流程：发起人=》校长（部门主管）审核=>区域总监（部门经理）审核=>大区总监（部门总监）审核=》事业部总裁（中心总裁）审核=》集团分管副总裁审核=》品牌发展中心总裁审批</div>
+
+<div class="table-responsive">
+    <table id="apply_list" class="table table-bordered table-hover table-condensed">
+    </table>
+</div>
+
+<!-- 底部数据统计以及页码 -->
+<div class="panel-body">
+    <ul id="pagination" class="pagination pull-right" data-offset="0" data-count="30" data-total="300">
+    </ul>
+</div>
+
+
+<!-- 附件添加浏览 -->
+<div class="modal fade" id="picture">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>附件管理</h3>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <form  method="post" enctype="multipart/form-data" action="{:U('add_picture')}">
+                            <input type="file" name="pic" required/>
+                            <button class="btn btn-primary pull-right">添加保存</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="panel panel-primary">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+	// 页面会用到的类型id
+	STATE={:json_encode(get_config('APPLYCOURSE_STATE'))};//审核状态
+	SCHOOL={:json_encode($school)};
+    
+	function resetFileComponent(){
+		
+		//Ycom.clearForm('#apply_form','[name=school],[name=tel],[name=apply_user],[name=count],[name=expect_date],[name=apply_uses],[name=product_form],[name=type],[name=size],[name=is_plan],[name=descp],[name=position[]],[name=references[]]');
+		//debugger;
+        
+        if($('.ref .v_delF').parent().parent().length >1){
+        	var num = $('.ref .v_delF').parent().parent().length;
+    		$.each($('.ref .v_delF').parent().parent(),function(i,obj){
+    			if(i+1 < num){
+    				obj.remove();	
+    			}
+    		});
+    	}
+	}
+	$(document).ready(function(){
+	    loadData(0);//页面数据加载
+	});
+
+    // 页码绑定事件
+    $('#pagination').on('click', '.page', function(){
+        var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
+        loadData(page_offset);
+    });
+    $('.v_addF').click(function(){
+    	//debugger;
+    	$(this).prev().clone().insertBefore($(this));
+    });
+    $('.form-group').delegate('.v_delF','click',function(){
+    	
+    	if($(this).parent().parent().parent().children().length >2){
+    		$(this).parent().parent().remove();	
+    	}else{
+    		ui_error('注意：这是最后一个了，不能再删除！');
+    	}
+    	
+    });
+    
+    
+    
+    /* //添加/修改申请
+    $("#apply_form").submit(function(event){
+        event.preventDefault();
+        
+        Ycom.loading.show();
+        var data = $("#apply_form").serializeArray();
+        $.post("{:U('write')}",data,function(msg){
+            loadData(0);
+            ui_info(msg);
+        });
+        //清空表单（忽略部分项目）
+        Ycom.clearForm('#apply_form','[name=school],[name=tel],[name=apply_user],[name=count],[name=expect_date],[name=apply_uses],[name=product_form],[name=type],[name=size],[name=is_plan],[name=descp],[name=position[]],[name=references[]]');
+        resetFileComponent();
+        $("#bt_add").show();
+        $("#bt_save_change").hide();
+    }) */
+    // 数据列表点击事件
+    $("#apply_list").on('click','tbody tr',function(){
+        $("#apply_list tr").removeClass('success');
+        $(this).addClass('success');
+    })
+    //全选/取消
+    $("#apply_list").on('click','#checkbox',function(){
+        $("#apply_list tbody input[type=checkbox]").prop('checked',($(this).prop('checked')==true)?true:false);
+    })
+    //修改功能,只修改其中一个
+    $("#bt_change").click(function(){
+        var id = $("#apply_list tbody input:checked").val();
+        var data = $("#apply_list tbody input:checked").data('info');
+        if(id==undefined){
+            ui_error('请选择要修改的项目！');
+        }else{
+            $("#apply_form").show();
+            Ycom.fillForm('#apply_form',data);
+            $('#bt_save_change').show();
+            $('#bt_add').hide();
+            //$('input[name=unit_price]').change();
+        }
+    })
+    //审核数据(1通过、0退回、-1删除)
+    function check(type){
+        if($("#apply_list tbody input:checked").val()==undefined){
+            ui_error('请选择要操作的项目！');
+            return;
+        }
+        Ycom.loading.show();
+        var data = $("#apply_list tbody input:checked").serializeJson();
+        var why = '';
+        if(type==0){
+            why = prompt('退回原因(必填)：','');
+            if(why==''||why==null){
+                Ycom.loading.hide();
+                return;
+            }
+        }
+        if(data.id!=undefined)
+        $.post('{:U("check")}',{type:type,data:data,why:why},function(msg){
+            if(msg=='ok')ui_info('操作成功');
+            loadData(0);
+        })
+    }
+    //td内容变化时，更新保存数据
+    $("#apply_list").on('blur','.td_money,.td_notes,.td_buy_transport',function(){
+        var name=$(this).prop('class').replace('td_','');
+        var val=$(this).text();
+        var data = JSON.parse('{"'+name+'":"'+val+'"}');
+            data.id=$(this).parents('tr').find('.td_id').text();
+        // if(val!=''&&val!='0')
+        $.post("{:U('write')}",data,function(msg){
+            if(msg!='操作失败')
+            ui_info(msg);
+        })
+    })
+
+//加载数据列表
+function loadData(offset) {
+    Ycom.loading.show();
+    var search = $('#adv_search').serializeJson();
+    var count = $('#pagination').data('count');
+    var money = 0 ;//项目合计金额
+    $.ajax({
+        url: '{:U("ApplyDesign/ajax_list")}',
+        type: 'GET',
+        dataType: 'JSON',
+        data: {search: search, offset: offset, count: count},
+    })
+    .done(function(result) {
+        for(var x in result.data){
+            //将数据完整保存在checkbox上，方便修改功能使用
+            result.data[x]._checkbox = '<input type="checkbox" name="id" value="'+result.data[x].id+'" data-info=\''+JSON.stringify(result.data[x])+'\'>';
+            if(result.data[x].edit == '0')result.data[x]._checkbox ='';
+            //result.data[x].stage = (result.data[x].state<60)?'计划申请':(result.data[x].state<90)?'资金申请':'报销申请';
+                //被退回的数据显示退回的原因
+            if(result.data[x].back==1){
+                result.data[x].state = '<a title="' + result.data[x].why + '"  data-toggle="tooltip" data-placement="top" data-original-title="' + result.data[x].why + '">'+STATE[result.data[x].state]+'</a>';
+                result.data[x].back = '退回';
+            }else{
+                result.data[x].state = STATE[result.data[x].state];
+                result.data[x].back = '正常';
+            }
+            
+            result.data[x].school = SCHOOL[result.data[x].school];
+        }
+        if (result.state == 'ok') {
+            Ycom.table('#apply_list', {
+                '_checkbox':'<input type="checkbox" id="checkbox">',
+                'id':'序号',
+                'back':'流程状态',
+                'state':'审核状态',
+                'school':'申请校区',
+                'apply_user2':'申请人',
+                'apply_uses':'申请用途',
+                'product_form':'制作形式',
+                'type':'类型',
+                'size':'大小尺寸',
+                'is_urgents':'是否紧急',
+                'is_plans':'是否需企划部提供创意文案',
+                'descp':'内容概述',
+                'position':'安放位置',
+                'references':'参考案例',
+                'expect_date':'期望审批日期',
+                'why':'退回原因',
+                'update_time':'最后审核时间',
+                'create_time':'提交时间',
+            }, result.data);
+            
+            Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
+            
+            $('[data-toggle="tooltip"]').tooltip();
+        }else{
+            ui_info(result.info);
+        }
+    })
+    .fail(function() {
+        ui_error('网络错误，请稍后再试')
+    })
+    .always(function(result) {
+        if (typeof(always) != "undefined") {
+            always(result);
+        }
+        Ycom.loading.hide();
+    });
+}
+
+</script>
+</block>
+

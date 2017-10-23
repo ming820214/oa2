@@ -242,7 +242,7 @@ class ApplyController extends HomeController {
 		if($w['stage']==4){
 			unset($w['add_user']);
 			if(get_school_name()!='集团')$w['state']=['in','10,100'];
-			if(get_school_name()=='集团'){
+			//if(get_school_name()=='集团'){
 				//部门主管
 				if(session('position_id')==8){
 					$w['state']=['in','20,110'];
@@ -254,7 +254,7 @@ class ApplyController extends HomeController {
 				}else{
 					$w['state']=888;
 				}
-			}
+		//	}
 			// //集团财务
 			// if(session('user_name')=='齐静'){
 			// 	unset($w['state'],$w['dept1'],$w['dept2']);
