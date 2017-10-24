@@ -145,7 +145,7 @@
             
             <!-- 平面设计类 -->
             <li class="flat">设计类型：
-            <select name="apply_type" class="form-control" required>
+            <select name="design_type" class="form-control" required>
             <option>名片</option>
             <option>工牌</option>
             <option>单页</option>
@@ -387,7 +387,7 @@ function loadData(offset) {
     var count = $('#pagination').data('count');
     var money = 0 ;//项目合计金额
     $.ajax({
-        url: '{:U("ApplyDesign/ajax_list")}',
+        url: '{:U("ApplyDesignFlat/ajax_list")}',
         type: 'GET',
         dataType: 'JSON',
         data: {search: search, offset: offset, count: count},
@@ -415,21 +415,24 @@ function loadData(offset) {
                 'id':'序号',
                 'back':'流程状态',
                 'state':'审核状态',
-                'school':'申请校区',
-                'apply_user2':'申请人',
-                'apply_uses':'申请用途',
-                'product_form':'制作形式',
-                'type':'类型',
-                'size':'大小尺寸',
-                'is_urgents':'是否紧急',
-                'is_plans':'是否需企划部提供创意文案',
-                'descp':'内容概述',
-                'position':'安放位置',
+                'apply_month':'提报月度',
+                'apply_type':'计划类型',
+                'school_name':'提报单位',
+                'apply_user':'提报人',
+                'tel':'联系电话',
+                'create_time':'提报日期',
+                'expect_date':'使用日期',
+                'email':'部门接收邮箱',
+                'design_type':'设计类型',
+                'flat_size':'尺寸',
+                'flat_format':'版式',
+                'flat_count':'数量',
+                'flat_create_unit':'制作单位',
+                'content_descp':'文字内容',
                 'references':'参考案例',
-                'expect_date':'期望审批日期',
+                'descp':'备注',
                 'why':'退回原因',
-                'update_time':'最后审核时间',
-                'create_time':'提交时间',
+                'update_time':'最后审核时间'
             }, result.data);
             
             Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
