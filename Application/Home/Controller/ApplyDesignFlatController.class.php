@@ -1,23 +1,29 @@
 <?php
 namespace Home\Controller;
 
-class ApplyDesignController extends HomeController {
+class ApplyDesignFlatController extends HomeController {
 
 	//把校区列表、科目类别输出到前段模版
 	public function _initialize(){
         parent::_initialize();
 		foreach (C('SCHOOL') as $v) {
-			$school[$v['id']]=$v['name'];
-		}
+		    if($v['name'] != '集团'){
+		        $school['s'. $v['id']]=$v['name'];
+		    }
+		} 
 		
-		$lst = M('user')->join('oa_foo_info on oa_user.school = oa_foo_info.id')->where(array('oa_user.position_id'=>10,'oa_user.is_del'=>0))->order('school')->getField('oa_user.id,oa_user.name,concat_ws("->",oa_foo_info.name,oa_user.name) AS school');
-		
-		/* foreach ($lst as &$val){
-		  $val['name'] = $val['school'] . ' ' .$val['name'];
-		} */
-		$this->assign('rector',$lst);
+	    $dept_lst = M('dept')->where('is_del = 0 and pid !=28 and id != 28')->getField('id,name');
+	    
+	    foreach ($dept_lst as $key=>$val){
+	        $dept['b' . $key] = $val;
+	    }
+		    
+			
 		
 		$this->assign('school',$school);//校区
+		$this->assign('dept',$dept);//校区
+		
+		$this->assign('month',date("Y-m"));
 		
 	}
 /**
@@ -66,12 +72,11 @@ class ApplyDesignController extends HomeController {
 		array_empty_delt($_POST);
 		$mod=M('applyDesign');
 		$mod->create();
-		$mod->type = implode(",",$mod->type);
 		
 		$config = array(
 		  'maxSize'    =>    10485760,
 		  'rootPath'   =>    './Uploads/',
-		  'savePath'   =>    'Design/' . session('school_id') . '/',
+		  'savePath'   =>    'DesignFlat/' . session('school_id') . '/',
 		  'exts'       =>    array('jpg', 'gif', 'png', 'jpeg')
 		);
 		
@@ -80,15 +85,6 @@ class ApplyDesignController extends HomeController {
 		//修改
 		if(I('post.id')){
 		    $data = $mod->where(['id'=>I('post.id')])->field('record',true)->select();
-		    if($data && $data[0]['position']){
-		        $files = explode(';',$data[0]['position']);
-		        foreach ($files as $fl){
-    		         if (file_exists($fl)) {
-    		           unlink($fl);
-    		         }
-		        }
-		    }
-		    
 		    if($data && $data[0]['references']){
 		     $files = explode(';',$data[0]['references']);
 		     foreach ($files as $fl){
@@ -105,18 +101,14 @@ class ApplyDesignController extends HomeController {
 		     $this->error('保存失败：' . $upload->getError());
 		    }else{// 上传成功 获取上传文件信息
 		     //新增
-		     $pos = '';
 		     $ref = '';
 		     foreach($info as $k=>$v){
-		      if($v['key'] == 'position'){
-		       $pos .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
-		      }else if($v['key'] == 'references'){
-		       $ref .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
-		      }
+    		     if($v['key'] == 'references'){
+    		       $ref .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
+    		      }
 		     }
 		     	
-		     $mod->position = $pos;
-		     $mod->references = $ref;
+		     $mod->reference_pic = $ref;
 		     	
 		     if($mod->save()){
 		      //echo $info['savepath'].$info['savename'];
@@ -137,18 +129,15 @@ class ApplyDesignController extends HomeController {
 		 $this->error('保存失败：' . $upload->getError());
 		}else{// 上传成功 获取上传文件信息
 		 //新增
-		 $pos = '';
+		 
 		 $ref = '';
 		 foreach($info as $k=>$v){
-		   if($v['key'] == 'position'){
-		      $pos .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
-		   }else if($v['key'] == 'references'){
+		   if($v['key'] == 'references'){
 		      $ref .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
 		   }
 		 }
 		 
-		 $mod->position = $pos;
-		 $mod->references = $ref;
+		 $mod->reference_pic = $ref;
 		 
 		 if($mod->add()){
 		   //echo $info['savepath'].$info['savename'];
@@ -162,7 +151,7 @@ class ApplyDesignController extends HomeController {
 */
 	public function check(){
 		if(IS_AJAX&&I('post.data')){
-			if(D('ApplyCourse')->check(I('post.type'),I('post.data')['id'],I('post.why')))$this->ajaxReturn('ok');
+			if(D('ApplyCourseFlat')->check(I('post.type'),I('post.data')['id'],I('post.why')))$this->ajaxReturn('ok');
 			$this->ajaxReturn('审核出错');
 		}
 	}
@@ -177,10 +166,10 @@ class ApplyDesignController extends HomeController {
     		$w=I('get.search');
     		array_empty_delt($w);
     		if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 23:59:59']];
-    		$w['is_del']=0;
+    		$w['is_del']= array('neq',1);
     		
     		if($w['course_info']){
-    		 $w['course_info'] = array('like','%'. $w['course_info'] . '%');
+    		 $w['content_descp'] = array('like','%'. $w['course_info'] . '%');
     		}
     		
     		/* if(strpos(strstr($_SERVER['HTTP_REFERER'],'&a='),'manage') === FALSE){
@@ -208,11 +197,15 @@ class ApplyDesignController extends HomeController {
     		
     		
     		
-    		$data=M('applyDesign')->where($w)->order('state desc,school asc,id desc')->field('id, state, school, apply_user, substring_index(apply_user,"#",1) as apply_user2, apply_uses, product_form, type, size, tel, count, is_urgent, is_plan, case is_urgent when 0 then "否" when 1 then "是" end as is_urgents, case is_plan when 0 then "否" when 1 then "是" end as is_plans, descp, position, `references`, expect_date, why, create_time, update_time, is_del, add_user, add_user_name, back')->limit(I('get.offset'),I('get.count'))->select();
+    		$data=M('applyDesign')->where($w)->order('state desc,apply_school asc,id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, space_pic, install_pos_pic, space_show_pic, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp')->limit(I('get.offset'),I('get.count'))->select();
     		
     		if(get_school_name()!='集团'){
     		  foreach ($data as &$vo){
-    		    $vo['type'] = explode(",",$vo['type']);
+    		    if(strpos($vo['school'],'s') !== false){
+    		        $vo['school_name'] = M('foo_info')->where('id=' . substr($vo['school'],1))->getFiled('name');
+    		    }else if(strpos($vo['school'],'b') !== false){
+    		        $vo['school_name'] = M('dept')->where('id=' . substr($vo['school'],1))->getFiled('name');
+    		    }
     		    
     		     if($vo['state']>0){
     		      $vo['edit'] = 0;
@@ -222,7 +215,20 @@ class ApplyDesignController extends HomeController {
     		  }
     		}else{
          	  foreach ($data as &$vo){
-         	     $vo['type'] = explode(",",$vo['type']);
+         	      if(strpos($vo['school'],'s') !== false){
+         	          $vo['school_name'] = M('foo_info')->where('id=' . substr($vo['school'],1))->getFiled('name');
+         	      }else if(strpos($vo['school'],'b') !== false){
+         	          $vo['school_name'] = M('dept')->where('id=' . substr($vo['school'],1))->getFiled('name');
+         	      }
+         	      
+         	      if($vo['reference_pic']){
+         	          $hrefs = explode(";",$vo['reference_pic']);
+         	          $ref = '';
+         	          foreach($hrefs as $arr){
+         	              $ref .= '<a href="' . $arr . '" target="_blank">' . $arr . '</a><br/>';
+         	          }
+         	          $vo['references'] = $ref;
+         	      }
          		 $vo['edit'] = 1;
          	   }
     		}

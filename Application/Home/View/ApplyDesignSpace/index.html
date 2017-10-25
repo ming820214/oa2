@@ -122,86 +122,70 @@
     </div>
     <div class="panel-body">
         <ul><input type="hidden" name="id">
-            
-            <li>提交部门（校区）：<select name="school" class="form-control" required><option value="">请选择学校</option>{:fill_option_ex(C('SCHOOL'))}</select></li>
-            <li>提交人：<select name="apply_user" class="form-control" required><option value="">请选择校长</option><foreach name="rector" item="vo"><option value="{$vo.name}#({$vo.id})">{$vo.school}</option></foreach></select></li>
-            <li>要求完成日期<input type="date" name="expect_date" class="form-control" required="required"></li>
+            <li>提报月度：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
+            <li>计划类型：<select name="apply_type" class="form-control" required><option>月度</option><option>临时</option></select></li>
+            <li>设计类型：<select name="design_type" class="form-control" required><option value="">请选择设计类型</option><option value="1">空间类</option><option value="2">平面类</option></select></li>
+            <li>提交单位：<select name="apply_school" class="form-control" required><option value="">请选择单位</option>{:fill_option_ex(C('SCHOOL'))}</select></li>
+            <li>提报人：<select name="apply_user" class="form-control" required><option value="">请选择校长</option><foreach name="rector" item="vo"><option value="{$vo.name}#({$vo.id})">{$vo.school}</option></foreach></select></li>
             <li>联系电话：<input type="text" name="tel" class="form-control" required></li>
-            <li>数量：<input type="number" name="count" class="form-control" min="1" step="1" required></li>
-            <li>是否紧急：
-	            <select name="is_urgent" class="form-control" ><option value="0">否</option><option value="1">是</option></select>
-            </li>
-            <li>制作形式：<input name="product_form" class="form-control" type="text" required placeholder="是集团统一印刷or校区自制"></li>
-			
-			<li>类型（多选）：
-			<div class="form-group">
-				&nbsp;&nbsp;
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="展架">展架
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="单页">单页
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="折页">折页
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="条幅">条幅
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="门牌">门牌
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="标识牌">标识牌
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="壁纸">壁纸
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="名片">名片
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="工牌">工牌
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="宣传册">宣传册
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="牌匾">牌匾
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="灯箱">灯箱
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="QQ空间（微信朋友圈）转发图片">QQ空间（微信朋友圈）转发图片
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="微信公众号封面图">微信公众号封面图
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="微信公众号正文图">微信公众号正文图
-				</label>
-				<label class="checkbox-inline">
-				  <input type="checkbox" name="type[]" value="其他">其他
-				</label>
-			</div>
-			
-			<!-- <select id="subjects" name="type[]" class="form-control" multiple="multiple" required="required"><option>展架</option><option>单页</option><option>折页</option><option>条幅</option><option>门牌</option><option>标识牌</option><option>政治</option><option>历史</option><option>地理</option></select> -->
-			</li>
-			
-            <li>申请用途：<textarea name="apply_uses" class="form-control"  rows="8" cols="100" placeholder="（写明用在何处，为了起到什么作用）" required="required"></textarea></li>
+            <li>使用日期<input type="date" name="expect_date" class="form-control" required="required"></li>
+            <li>部门接收邮箱：<input type="text" name="email" class="form-control" required></li>
             
-            <li style="width:500px;">大小尺寸：<textarea name="size" class="form-control"  rows="8" cols="100" placeholder="（尺寸填写标准：长*宽*高，务必带上数量单位<br/> （或如：A4、二折页、三折页、四折页、名片、工牌、微信公众号封面图、微信公众号正文图等））" required="required"></textarea></li>
-            
-            <li style="width:500px;">内容概述：<textarea name="descp" class="form-control" required rows="8" cols="100" placeholder="内容主要包括文案、优惠信息、课程信息、开课时间、开课科目等，内容过多可带附件"></textarea></li>
-            <li>是否需企划部提供创意文案：
-            	<select name="is_plan" class="form-control" ><option value="0">否</option><option value="1">是</option></select>
+            <!-- 平面设计类 -->
+            <li class="flat">设计类型：
+            <select name="apply_type" class="form-control" required>
+            <option>名片</option>
+            <option>工牌</option>
+            <option>单页</option>
+            <option>折页</option>
+            <option>宣传册</option>
+            <option>展架</option>
+            <option>展板</option>
+            <option>海报</option>
+            <option>邀请函</option>
+            <option>抵值券（体验卡）</option>
+            <option>门票</option>
+            <option>地贴</option>
+            <option>户外广告牌</option>
+            <option>其它</option>
+            </select>
             </li>
-            <li style="width:500px;">安放位置:
-	            <div class="form-group pos">
+            
+            <li class="flat">尺寸：
+            <select name="flat_size" class="form-control" required>
+            <option>A4</option>
+            <option>A4二折</option>
+            <option>A4三折</option>
+            <option>海报60cm*90cm</option>
+            <option>展架80cm*180cm</option>
+            <option>其它</option>
+            </select>
+            </li>
+            
+            <li class="flat">版式：<select name="flat_format" class="form-control" required><option>横版</option><option>竖版</option></select></li>
+            <li class="flat">数量：<input type="number" name="flat_count" class="form-control" min="1" step="1" required></li>
+            <li class="flat">制作单位：<select name="flat_create_unit" class="form-control" required><option>校区制作</option><option>集团制作</option></select></li>
+            
+            <!-- 空间设计类 -->
+            <li class="space">设计类型：
+            <select name="apply_type" class="form-control" required>
+            <option>门头</option>
+            <option>门牌</option>
+            <option>单孔透</option>
+            <option>玻璃贴</option>
+            <option>防撞贴</option>
+            <option>壁纸</option>
+            <option>楼体贴</option>
+            <option>灯箱</option>
+            <option>其它</option>
+            </select>
+            </li>
+            
+            <li  class="space" style="width:800px;">空间实景图片（正面位置清晰照1-2张），侧面位置清晰照1-2张:
+	            <div class="form-group pos1">
 		            <div class="row">
 		            	 <div class="col-md-8">
-			           	 	<input type="file" name="position[]" class="form-control" placeholder="能够拍照上传的，务必带上图片">
+			           	 	<input type="file" name="space_pic[]" class="form-control" required placeholder="">
 			           	 </div>
 			           	 <div class="col-md-4">
 			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
@@ -210,7 +194,37 @@
 		            <input type="button" class="v_addF col-md-4 col-md-offset-8" value="增加"/>
 	            </div>
             </li>
-            <li style="width:500px;">参考案例:
+            
+            <li class="space" style="width:800px;">安放位置平面图及尺寸标注（上传标注尺寸的平面图或标注尺寸的平面图照片）:
+	            <div class="form-group pos">
+		            <div class="row">
+		            	 <div class="col-md-8">
+			           	 	<input type="file" name="install_pos_pic[]" class="form-control" required placeholder="能够拍照上传的，务必带上图片">
+			           	 </div>
+			           	 <div class="col-md-4">
+			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
+			           	 </div>
+		            </div>
+		            <input type="button" class="v_addF col-md-4 col-md-offset-8" value="增加"/>
+	            </div>
+            </li>
+            
+            
+            <li  class="space" style="width:800px;">空间显示信息图片（上传需要展示的图片原图）:
+	            <div class="form-group ref1">
+	            	<div class="row">
+		            	 <div class="col-md-8">
+			           	 	<input type="file" name="space_show_pic[]" class="form-control" required placeholder="最好提供图片，如鞍山校区春招展架，详见附件等">
+			           	 </div>
+			           	 <div class="col-md-4">
+			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
+			           	 </div>
+		            </div>
+		            <input type="button" class="v_addF col-md-4 col-md-offset-8" value="增加"/>
+	            </div>
+	       </li>
+	       
+            <li style="width:800px;">参考图片（原图）:
 	            <div class="form-group ref">
 	            	<div class="row">
 		            	 <div class="col-md-8">
@@ -223,6 +237,9 @@
 		            <input type="button" class="v_addF col-md-4 col-md-offset-8" value="增加"/>
 	            </div>
 	       </li>
+	       
+	       <li style="width:800px;">文字内容：<textarea name="content_descp" class="form-control" required rows="8" cols="100" placeholder="平面类：活动标题、活动时间、活动内容；空间类：空间显示信息"></textarea></li>
+	       <li style="width:500px;">备注：<textarea name="descp" class="form-control" rows="8" cols="100"></textarea></li>
         </ul>
     </div>
 </form>
@@ -298,6 +315,24 @@
 		
 		//Ycom.clearForm('#apply_form','[name=school],[name=tel],[name=apply_user],[name=count],[name=expect_date],[name=apply_uses],[name=product_form],[name=type],[name=size],[name=is_plan],[name=descp],[name=position[]],[name=references[]]');
 		//debugger;
+        if($('.pos1 .v_delF').parent().parent().length >1){
+        	var num = $('.pos1 .v_delF').parent().parent().length;
+    		$.each($('.pos1 .v_delF').parent().parent(),function(i,obj){
+    			if(i+1 < num){
+    				obj.remove();	
+    			}
+    		});
+    	}
+        
+        if($('.ref1 .v_delF').parent().parent().length >1){
+        	var num = $('.ref1 .v_delF').parent().parent().length;
+    		$.each($('.ref1 .v_delF').parent().parent(),function(i,obj){
+    			if(i+1 < num){
+    				obj.remove();	
+    			}
+    		});
+    	}
+        
         if($('.pos .v_delF').parent().parent().length >1){
         	var num = $('.pos .v_delF').parent().parent().length;
     		$.each($('.pos .v_delF').parent().parent(),function(i,obj){
@@ -318,6 +353,19 @@
 	}
 	$(document).ready(function(){
 	    loadData(0);//页面数据加载
+	    $('.space').css('display','none');
+		$('.flat').css('display','none');
+		
+	    $('select[name="design_type"]').change(function(){
+	    	if($(this).val() == 1){
+	    		$('.space').css('display','block');
+	    		$('.flat').css('display','none');		
+	    	}else if($(this).val() == 2){
+	    		$('.space').css('display','none');
+	    		$('.flat').css('display','block');		
+	    	} 
+	    	
+	    });
 	});
 
     // 页码绑定事件

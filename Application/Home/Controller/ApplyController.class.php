@@ -251,9 +251,9 @@ class ApplyController extends HomeController {
 				}elseif(session('position_id')==7){
 					$w['state']=['in','30,120'];
 					$w['dept2']=session('dept_id');
-				}else{
+				}/* else{
 					$w['state']=888;
-				}
+				} */
 		//	}
 			// //集团财务
 			// if(session('user_name')=='齐静'){
