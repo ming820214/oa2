@@ -466,7 +466,7 @@ class YewuController extends HomeController {
         header("Content-disposition: attachment; filename=业务数据导入模版文件.csv");
         header("Cache-control: private");
         header("Pragma: private");
-        print($output);
+        print(iconv('UTF-8','GBK',$output));
 
     }
 
