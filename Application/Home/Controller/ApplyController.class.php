@@ -260,11 +260,17 @@ class ApplyController extends HomeController {
 			// 	unset($w['state'],$w['dept1'],$w['dept2']);
 			// 	$w['_string']='(state=60) OR (state=140) OR (state=30 AND dept2=32) OR (state=120 AND dept2=32)';
 			// }
+			//多种经营事业部
+			if(session('user_name')=='吕雪茹'){
+			    unset($w['state'],$w['dept1'],$w['dept2']);
+		    	$w['_string']='(state=40 AND dept2=67) OR (state=140 AND dept2=67) OR (state=150 AND dept2=67)';
+		    }
+				
 			//集团大财务
 			if((session('user_name')=='齐静' || session('user_name')=='张晓明') && $w['stage']!=3){
 				unset($w['state'],$w['dept1'],$w['dept2']);
 				//$w['_string']='(state=30 AND dept2=32) OR (state=40 AND type=10) OR (state=60) OR (state=70) OR (state=120 AND dept2=32) OR (state=140) OR (state=150)';
-				$w['_string']='(state=30 AND dept2=32) OR (state=40 AND type=10) OR (state=60) OR (state=120 AND dept2=32) OR (state=140) OR (state=150)';
+				$w['_string']='(state=30 AND dept2=32) OR (state=40 AND type=10 AND dept2 !=67) OR (state=60) OR (state=120 AND dept2=32) OR (state=140 AND dept2 !=67) OR (state=150 AND dept2!=67)';
 			}
 			
 			if((session('user_name')=='王丽丽' || session('user_name')=='张晓明') && $w['stage']!=3){
