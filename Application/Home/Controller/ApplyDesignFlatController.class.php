@@ -291,6 +291,10 @@ class ApplyDesignFlatController extends HomeController {
     		            }else{
     		                $vo['edit'] = 0;
     		            }
+    		        }else{
+    		            if($vo['state']<=0){
+    		                $vo['edit'] = 0;
+    		            }
     		        }
     		    }
     		  }
