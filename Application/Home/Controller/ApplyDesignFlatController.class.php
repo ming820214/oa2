@@ -175,6 +175,8 @@ class ApplyDesignFlatController extends HomeController {
     		 $w['content_descp'] = array('like','%'. $w['course_info'] . '%');
     		}
     		
+    		$flag = 0;
+    		
     		if(strpos(strstr($_SERVER['HTTP_REFERER'],'&a='),'manage') === FALSE){
     		 
          		 if(get_school_name()!='集团'){
@@ -213,8 +215,10 @@ class ApplyDesignFlatController extends HomeController {
              		     unset($w['area']);
              		     $w['state'] = 70;
              		 }else{
+             		     unset($w['state']);
              		     $w['add_user'] = session('auth_id');
              		     $w['state'] = array('elt',70);
+             		     $flag = 1;
              		 }
          		 }else{
          		     $w['apply_school'] = 'b' . session('dept_id');
@@ -243,7 +247,7 @@ class ApplyDesignFlatController extends HomeController {
     		        $vo['references'] = $ref;
     		    }
     		    
-    		     if($vo['state']>0){
+    		     /* if($vo['state']>0){
     		         if($w['stage']==1){
     		             $vo['edit'] = 0;
     		         }else{
@@ -251,7 +255,36 @@ class ApplyDesignFlatController extends HomeController {
     		         }
     		     }else{
     		      $vo['edit'] = 1;
-    		     }
+    		     } */
+    		    
+    		    /* if($flag){//不拥有审核权限
+    		        $vo['edit'] = 0;
+    		        if($w['stage']==1){
+    		            if($vo['state']<=0){
+    		                $vo['edit'] = 1;
+    		            }
+    		        }
+    		    }else{
+    		        $vo['edit'] = 1;
+    		    } */
+    		    
+    		    if($flag){//不拥有审核权限
+    		        $vo['edit'] = 0;
+    		        if($w['stage']==1){
+    		            if($vo['state']<=0){
+    		                $vo['edit'] = 1;
+    		            }
+    		        }
+    		    }else{
+    		        $vo['edit'] = 1;
+    		        if($w['stage']==1){
+    		            if($vo['state']<=0){
+    		                $vo['edit'] = 1;
+    		            }else{
+    		                $vo['edit'] = 0;
+    		            }
+    		        }
+    		    }
     		  }
     		}else{
          	  foreach ($data as &$vo){
