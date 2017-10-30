@@ -40,7 +40,7 @@
 
 <div class="page-header clearfix">
     <div class="col-sm-3">
-        <h1>新课程申请</h1>
+        <h1>新平面类设计申请</h1>
     </div>
     
     <div class="col-sm-12">
@@ -122,6 +122,7 @@
     </div>
     <div class="panel-body">
         <ul><input type="hidden" name="id">
+        	<input type="hidden" name="product_type" value="1"/>
             <li>提报月度：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
             <li>计划类型：<select name="apply_type" class="form-control" required><option>月度</option><option>临时</option></select></li>
             <li>提交单位：<select name="apply_school" class="form-control" required><option value="">请选择单位</option>
@@ -139,7 +140,7 @@
             	</optgroup>
             
             </select></li>
-            <li>提报人：<input name="apply_user" class="form-control" required/></li>
+            <li>提报人：<input type="text" name="apply_user" class="form-control" required/></li>
             <li>联系电话：<input type="text" name="tel" class="form-control" required></li>
             <li>使用日期<input type="date" name="expect_date" class="form-control" required="required"></li>
             
@@ -177,8 +178,9 @@
             <li class="flat">版式：<select name="flat_format" class="form-control" required><option>横版</option><option>竖版</option></select></li>
             <li class="flat">数量：<input type="number" name="flat_count" class="form-control" min="1" step="1" required></li>
             <li class="flat">制作单位：<select name="flat_create_unit" class="form-control" required><option>校区制作</option><option>集团制作</option></select></li>
+            <li>区域：<select name="area" class="form-control" required><option>辽宁</option><option>吉林</option><option>黑龙江</option></select></li>
             <li style="width:410px;">部门接收邮箱：<input type="text" name="email" class="form-control" required></li>
-            <li style="width:1050px;">文字内容：<textarea name="content_descp" class="form-control" required rows="8" cols="100" placeholder="平面类：活动标题、活动时间、活动内容；空间类：空间显示信息"></textarea></li>
+            <li style="width:1050px;">文字内容：<textarea name="content_descp" class="form-control" required rows="8" cols="100" placeholder="平面类：活动标题、活动时间、活动内容；"></textarea></li>
             
             <li style="width:1050px;">参考图片（原图）:
 	            <div class="form-group ref">
@@ -195,7 +197,7 @@
 	       </li>
 	       
 	       
-	       <li style="width:1050px;">备注：<input name="descp" class="form-control"/></li>
+	       <li style="width:1050px;">备注：<input type="text" name="descp" class="form-control"/></li>
         </ul>
     </div>
 </form>
@@ -264,7 +266,7 @@
 <script type="text/javascript">
 
 	// 页面会用到的类型id
-	STATE={:json_encode(get_config('APPLYCOURSE_STATE'))};//审核状态
+	STATE={:json_encode(get_config('APPLYDESIGN_STATE'))};//审核状态
 	SCHOOL={:json_encode($school)};
     
 	function resetFileComponent(){

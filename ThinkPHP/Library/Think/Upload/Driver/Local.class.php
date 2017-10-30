@@ -72,12 +72,14 @@ class Local{
      */
     public function save($file, $replace=true) {
         $filename = $this->rootPath . $file['savepath'] . $file['savename'];
-
+        $filename = iconv("UTF-8","GBK", $filename); //解决中文乱码问题
         /* 不覆盖同名文件 */ 
         if (!$replace && is_file($filename)) {
             $this->error = '存在同名文件' . $file['savename'];
             return false;
         }
+        
+        
 
         /* 移动文件 */
         if (!move_uploaded_file($file['tmp_name'], $filename)) {

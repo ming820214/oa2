@@ -21,7 +21,7 @@ class ApplyDesignFlatController extends HomeController {
 			
 		
 		$this->assign('school',$school);//校区
-		$this->assign('dept',$dept);//校区
+		//$this->assign('dept',$dept);//校区
 		
 		$this->assign('month',date("Y-m"));
 		
@@ -77,7 +77,9 @@ class ApplyDesignFlatController extends HomeController {
 		  'maxSize'    =>    10485760,
 		  'rootPath'   =>    './Uploads/',
 		  'savePath'   =>    'DesignFlat/' . session('school_id') . '/',
-		  'exts'       =>    array('jpg', 'gif', 'png', 'jpeg')
+		  'subName'       =>  array('date', 'Y-m-d H_i'),
+		  'exts'       =>     array('jpg', 'gif', 'png', 'jpeg'),
+		  'saveName'   =>    ''
 		);
 		
 		$upload = new \Think\Upload($config);// 实例化上传类
@@ -85,12 +87,13 @@ class ApplyDesignFlatController extends HomeController {
 		//修改
 		if(I('post.id')){
 		    $data = $mod->where(['id'=>I('post.id')])->field('record',true)->select();
-		    if($data && $data[0]['references']){
-		     $files = explode(';',$data[0]['references']);
+		    if($data && $data[0]['reference_pic']){
+		     $files = explode(';',$data[0]['reference_pic']);
 		     foreach ($files as $fl){
-		      if (file_exists($fl)) {
-		       unlink($fl);
-		      }
+		         $tmp_fl = iconv('UTF-8','GBK',$fl);
+		         if (file_exists($tmp_fl)) {
+		             unlink($tmp_fl);
+		          }
 		     }
 		    }
 		    
@@ -144,14 +147,14 @@ class ApplyDesignFlatController extends HomeController {
 		   $this->success('保存成功');
 		 }
 		}
-		$this->error('操作失败');
+		//$this->error('操作失败');
 	}
 /*
 *审核操作
 */
 	public function check(){
 		if(IS_AJAX&&I('post.data')){
-			if(D('ApplyCourseFlat')->check(I('post.type'),I('post.data')['id'],I('post.why')))$this->ajaxReturn('ok');
+			if(D('ApplyDesign')->check(I('post.type'),I('post.data')['id'],I('post.why')))$this->ajaxReturn('ok');
 			$this->ajaxReturn('审核出错');
 		}
 	}
@@ -172,53 +175,90 @@ class ApplyDesignFlatController extends HomeController {
     		 $w['content_descp'] = array('like','%'. $w['course_info'] . '%');
     		}
     		
-    		/* if(strpos(strstr($_SERVER['HTTP_REFERER'],'&a='),'manage') === FALSE){
+    		if(strpos(strstr($_SERVER['HTTP_REFERER'],'&a='),'manage') === FALSE){
     		 
          		 if(get_school_name()!='集团'){
-         		   $w['school'] = session('school_id');
+         		     $w['apply_school'] = 's' . session('school_id');
+         		     
+         		     if(session('position_id') == '10'){
+         		         //校长
+         		         $w['state'] = 10;
+         		     }else if(session('auth_id') == '1293'){
+             		  //姜博文
+             		  unset($w['apply_school']);
+             		  $w['area'] = '辽宁';
+             		  $w['state'] = 20;
+             		 }elseif(session('auth_id') == '439'){
+             		     //何亮
+             		     unset($w['apply_school']);
+             		     $w['area'] = '黑龙江';
+             		     $w['state'] = 20;
+             		 }elseif(session('auth_id') == '651'){
+             		     //王大鹏
+             		     unset($w['apply_school']);
+             		     $w['area'] = '吉林';
+             		     $w['state'] = 20;
+             		 }elseif(get_school_name()=='集团' && (session('auth_id') == '89')){
+             		  //王胜鑫
+             		  unset($w['apply_school']);
+             		  unset($w['area']);
+             		  $w['state'] = array('in','40,50');
+             		 }elseif(get_school_name()=='集团' && (session('auth_id') == '90')){
+             		     //赵锡睿
+             		     unset($w['apply_school']);
+             		     unset($w['area']);
+             		     $w['state'] = 60;
+             		 }elseif(session('auth_id') == '2101'){
+             		     unset($w['apply_school']);
+             		     unset($w['area']);
+             		     $w['state'] = 70;
+             		 }else{
+             		     $w['add_user'] = session('auth_id');
+             		     $w['state'] = array('elt',70);
+             		 }
+         		 }else{
+         		     $w['apply_school'] = 'b' . session('dept_id');
+         		     
          		 }
-         		 
-         		 if(get_school_name()=='集团' && (session('auth_id') == '1293'  || session('auth_id') == '1')){
-         		  //姜博文
-         		  unset($w['school']);
-         		  $w['area'] = array('in',['辽宁']);
-         		  $w['state'] = 10;
-         		 } elseif(get_school_name()=='集团' && (session('auth_id') == '89')){
-         		  //王胜鑫
-         		  unset($w['school']);
-         		  unset($w['area']);
-         		  //$w['area'] = array('in',['辽宁','吉林','黑龙江','其他']);
-         		  $w['state'] = 20;
-         		 }elseif(get_school_name()=='集团' && session('auth_id') == '509'){
-         		  $w['state'] = 30;
-         		 }
-    		 
-    		} */
+    		}
     		
+    		$w['product_type'] = 1;
     		
-    		
-    		$data=M('applyDesign')->where($w)->order('state desc,apply_school asc,id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, space_pic, install_pos_pic, space_show_pic, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp')->limit(I('get.offset'),I('get.count'))->select();
+    		$data=M('applyDesign')->where($w)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area')->limit(I('get.offset'),I('get.count'))->select();
     		
     		if(get_school_name()!='集团'){
     		  foreach ($data as &$vo){
-    		    if(strpos($vo['school'],'s') !== false){
-    		        $vo['school_name'] = M('foo_info')->where('id=' . substr($vo['school'],1))->getFiled('name');
-    		    }else if(strpos($vo['school'],'b') !== false){
-    		        $vo['school_name'] = M('dept')->where('id=' . substr($vo['school'],1))->getFiled('name');
+    		    if(strpos($vo['apply_school'],'s') !== false){
+    		        $vo['school_name'] = M('foo_info')->where('id=' . substr($vo['apply_school'],1))->getField('name');
+    		    }else if(strpos($vo['apply_school'],'b') !== false){
+    		        $vo['school_name'] = M('dept')->where('id=' . substr($vo['apply_school'],1))->getField('name');
+    		    }
+    		    
+    		    if($vo['reference_pic']){
+    		        $hrefs = explode(";",$vo['reference_pic']);
+    		        $ref = '';
+    		        foreach($hrefs as $arr){
+    		            $ref .= '<a href="' . $arr . '" target="_blank">' . $arr . '</a><br/>';
+    		        }
+    		        $vo['references'] = $ref;
     		    }
     		    
     		     if($vo['state']>0){
-    		      $vo['edit'] = 0;
+    		         if($w['stage']==1){
+    		             $vo['edit'] = 0;
+    		         }else{
+    		             $vo['edit'] = 1;
+    		         }
     		     }else{
     		      $vo['edit'] = 1;
     		     }
     		  }
     		}else{
          	  foreach ($data as &$vo){
-         	      if(strpos($vo['school'],'s') !== false){
-         	          $vo['school_name'] = M('foo_info')->where('id=' . substr($vo['school'],1))->getFiled('name');
-         	      }else if(strpos($vo['school'],'b') !== false){
-         	          $vo['school_name'] = M('dept')->where('id=' . substr($vo['school'],1))->getFiled('name');
+         	      if(strpos($vo['apply_school'],'s') !== false){
+         	          $vo['school_name'] = M('foo_info')->where('id=' . substr($vo['apply_school'],1))->getField('name');
+         	      }else if(strpos($vo['apply_school'],'b') !== false){
+         	          $vo['school_name'] = M('dept')->where('id=' . substr($vo['apply_school'],1))->getField('name');
          	      }
          	      
          	      if($vo['reference_pic']){

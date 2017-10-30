@@ -40,7 +40,7 @@
 
 <div class="page-header clearfix">
     <div class="col-sm-3">
-        <h1>新课程申请</h1>
+        <h1>新空间类设计申请</h1>
     </div>
     
     <div class="col-sm-12">
@@ -122,53 +122,30 @@
     </div>
     <div class="panel-body">
         <ul><input type="hidden" name="id">
+        <input type="hidden" name="product_type" value="2"/>
             <li>提报月度：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
             <li>计划类型：<select name="apply_type" class="form-control" required><option>月度</option><option>临时</option></select></li>
-            <li>设计类型：<select name="design_type" class="form-control" required><option value="">请选择设计类型</option><option value="1">空间类</option><option value="2">平面类</option></select></li>
-            <li>提交单位：<select name="apply_school" class="form-control" required><option value="">请选择单位</option>{:fill_option_ex(C('SCHOOL'))}</select></li>
-            <li>提报人：<select name="apply_user" class="form-control" required><option value="">请选择校长</option><foreach name="rector" item="vo"><option value="{$vo.name}#({$vo.id})">{$vo.school}</option></foreach></select></li>
+            <li>提交单位：<select name="apply_school" class="form-control" required>
+			<optgroup label="校区">
+            	<foreach name="school" item="sc">
+            		<option value="{$key}">{$sc}</option>
+            	</foreach>
+            	</optgroup>
+            	
+            	<optgroup label="部门">
+            	<foreach name="dept" item="dt">
+            	<option value="{$key}">{$dt}</option>
+            	</foreach>
+            	</optgroup>
+			</select></li>
+            <li>提报人：<input type="text" name="apply_user" class="form-control" required/></li>
             <li>联系电话：<input type="text" name="tel" class="form-control" required></li>
             <li>使用日期<input type="date" name="expect_date" class="form-control" required="required"></li>
             <li>部门接收邮箱：<input type="text" name="email" class="form-control" required></li>
             
-            <!-- 平面设计类 -->
-            <li class="flat">设计类型：
-            <select name="apply_type" class="form-control" required>
-            <option>名片</option>
-            <option>工牌</option>
-            <option>单页</option>
-            <option>折页</option>
-            <option>宣传册</option>
-            <option>展架</option>
-            <option>展板</option>
-            <option>海报</option>
-            <option>邀请函</option>
-            <option>抵值券（体验卡）</option>
-            <option>门票</option>
-            <option>地贴</option>
-            <option>户外广告牌</option>
-            <option>其它</option>
-            </select>
-            </li>
-            
-            <li class="flat">尺寸：
-            <select name="flat_size" class="form-control" required>
-            <option>A4</option>
-            <option>A4二折</option>
-            <option>A4三折</option>
-            <option>海报60cm*90cm</option>
-            <option>展架80cm*180cm</option>
-            <option>其它</option>
-            </select>
-            </li>
-            
-            <li class="flat">版式：<select name="flat_format" class="form-control" required><option>横版</option><option>竖版</option></select></li>
-            <li class="flat">数量：<input type="number" name="flat_count" class="form-control" min="1" step="1" required></li>
-            <li class="flat">制作单位：<select name="flat_create_unit" class="form-control" required><option>校区制作</option><option>集团制作</option></select></li>
-            
             <!-- 空间设计类 -->
             <li class="space">设计类型：
-            <select name="apply_type" class="form-control" required>
+            <select name="design_type" class="form-control" required>
             <option>门头</option>
             <option>门牌</option>
             <option>单孔透</option>
@@ -180,12 +157,16 @@
             <option>其它</option>
             </select>
             </li>
+            <li>区域：<select name="area" class="form-control" required><option>辽宁</option><option>吉林</option><option>黑龙江</option></select></li>
+            <li style="width:800px;clear:left;">文字内容：<textarea name="content_descp" class="form-control" required rows="8" cols="100" placeholder="空间类：空间显示信息"></textarea></li>
             
-            <li  class="space" style="width:800px;">空间实景图片（正面位置清晰照1-2张），侧面位置清晰照1-2张:
+            <li style="width:500px;clear:left;">备注：<input type="text" name="descp" class="form-control"/></li>
+            
+            <li  class="space" style="width:800px;clear:left;">空间实景图片（正面位置清晰照1-2张），侧面位置清晰照1-2张:
 	            <div class="form-group pos1">
 		            <div class="row">
 		            	 <div class="col-md-8">
-			           	 	<input type="file" name="space_pic[]" class="form-control" required placeholder="">
+			           	 	<input type="file" name="space_pic[]" class="form-control" required>
 			           	 </div>
 			           	 <div class="col-md-4">
 			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
@@ -199,7 +180,7 @@
 	            <div class="form-group pos">
 		            <div class="row">
 		            	 <div class="col-md-8">
-			           	 	<input type="file" name="install_pos_pic[]" class="form-control" required placeholder="能够拍照上传的，务必带上图片">
+			           	 	<input type="file" name="install_pos_pic[]" class="form-control" required>
 			           	 </div>
 			           	 <div class="col-md-4">
 			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
@@ -214,7 +195,7 @@
 	            <div class="form-group ref1">
 	            	<div class="row">
 		            	 <div class="col-md-8">
-			           	 	<input type="file" name="space_show_pic[]" class="form-control" required placeholder="最好提供图片，如鞍山校区春招展架，详见附件等">
+			           	 	<input type="file" name="space_show_pic[]" class="form-control" required>
 			           	 </div>
 			           	 <div class="col-md-4">
 			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
@@ -228,7 +209,7 @@
 	            <div class="form-group ref">
 	            	<div class="row">
 		            	 <div class="col-md-8">
-			           	 	<input type="file" name="references[]" class="form-control" placeholder="最好提供图片，如鞍山校区春招展架，详见附件等">
+			           	 	<input type="file" name="references[]" class="form-control"/>
 			           	 </div>
 			           	 <div class="col-md-4">
 			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
@@ -238,8 +219,6 @@
 	            </div>
 	       </li>
 	       
-	       <li style="width:800px;">文字内容：<textarea name="content_descp" class="form-control" required rows="8" cols="100" placeholder="平面类：活动标题、活动时间、活动内容；空间类：空间显示信息"></textarea></li>
-	       <li style="width:500px;">备注：<textarea name="descp" class="form-control" rows="8" cols="100"></textarea></li>
         </ul>
     </div>
 </form>
@@ -308,7 +287,7 @@
 <script type="text/javascript">
 
 	// 页面会用到的类型id
-	STATE={:json_encode(get_config('APPLYCOURSE_STATE'))};//审核状态
+	STATE={:json_encode(get_config('APPLYDESIGN_STATE'))};//审核状态
 	SCHOOL={:json_encode($school)};
     
 	function resetFileComponent(){
@@ -353,19 +332,6 @@
 	}
 	$(document).ready(function(){
 	    loadData(0);//页面数据加载
-	    $('.space').css('display','none');
-		$('.flat').css('display','none');
-		
-	    $('select[name="design_type"]').change(function(){
-	    	if($(this).val() == 1){
-	    		$('.space').css('display','block');
-	    		$('.flat').css('display','none');		
-	    	}else if($(this).val() == 2){
-	    		$('.space').css('display','none');
-	    		$('.flat').css('display','block');		
-	    	} 
-	    	
-	    });
 	});
 
     // 页码绑定事件
@@ -470,7 +436,7 @@ function loadData(offset) {
     var count = $('#pagination').data('count');
     var money = 0 ;//项目合计金额
     $.ajax({
-        url: '{:U("ApplyDesign/ajax_list")}',
+        url: '{:U("ApplyDesignSpace/ajax_list")}',
         type: 'GET',
         dataType: 'JSON',
         data: {search: search, offset: offset, count: count},
@@ -498,21 +464,24 @@ function loadData(offset) {
                 'id':'序号',
                 'back':'流程状态',
                 'state':'审核状态',
-                'school':'申请校区',
-                'apply_user2':'申请人',
-                'apply_uses':'申请用途',
-                'product_form':'制作形式',
-                'type':'类型',
-                'size':'大小尺寸',
-                'is_urgents':'是否紧急',
-                'is_plans':'是否需企划部提供创意文案',
-                'descp':'内容概述',
-                'position':'安放位置',
+                'apply_month':'提报月度',
+                'apply_type':'计划类型',
+                'school_name':'提报单位',
+                'apply_user':'提报人',
+                'tel':'联系电话',
+                'create_time':'提报日期',
+                'expect_date':'使用日期',
+                'email':'部门接收邮箱',
+                'design_type':'设计类型',
+                'content_descp':'文字内容',
+                'space_pics':'空间实景图片',
+                'install_pos_pics':'安放位置图片',
+                'space_show_pics':'空间显示信息图片',
                 'references':'参考案例',
-                'expect_date':'期望审批日期',
+                'descp':'备注',
                 'why':'退回原因',
-                'update_time':'最后审核时间',
-                'create_time':'提交时间',
+                'update_time':'最后审核时间'
+                
             }, result.data);
             
             Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式

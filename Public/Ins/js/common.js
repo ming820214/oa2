@@ -847,6 +847,7 @@ Ycom = {
             $(form).find('input[type=hidden][name='+x+'],\
                           input[type=text][name='+x+'],\
                           input[type=date][name='+x+'],\
+                          input[type=month][name='+x+'],\
                           input[type=number][name='+x+'],\
                           input[type=checkbox][name="'+x+'[]"],\
                           textarea[name='+x+'],\
