@@ -331,6 +331,10 @@ class ApplyDesignSpaceController extends HomeController {
     	        $w['content_descp'] = array('like','%'. $w['course_info'] . '%');
     	    }
     	    
+    	    $stage = $w['stage'];
+    	    
+    	    unset($w['stage']);
+    	    
     	    $flag = 0;
     	    
     	    if(strpos(strstr($_SERVER['HTTP_REFERER'],'&a='),'manage') === FALSE){
@@ -384,7 +388,16 @@ class ApplyDesignSpaceController extends HomeController {
     	    
     	    $w['product_type'] = 2;
     		
-    		$data=M('applyDesign')->where($w)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, space_pic, install_pos_pic, space_show_pic, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area')->limit(I('get.offset'),I('get.count'))->select();
+    	    if($flag){
+    	        $map = $w;
+    	    }else{
+    	        $map['_logic']='or';
+    	        $map['_complex'] = $w;
+    	        $map['apply_school&add_user&product_type&state&is_del'] = array($w['apply_school'],session('auth_id'),'2',array('elt',70),array('neq',1),'_multi'=>true);
+    	    }
+    	    
+    	    
+    	    $data=M('applyDesign')->where($map)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, space_pic, install_pos_pic, space_show_pic, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area')->limit(I('get.offset'),I('get.count'))->select();
     		
     		if(get_school_name()!='集团'){
     		  foreach ($data as &$vo){
@@ -436,14 +449,14 @@ class ApplyDesignSpaceController extends HomeController {
     		      
     		      if($flag){//不拥有审核权限
     		          $vo['edit'] = 0;
-    		          if($w['stage']==1){
+    		          if($stage==1){
     		              if($vo['state']<=0){
     		                  $vo['edit'] = 1;
     		              }
     		          }
     		      }else{
     		          $vo['edit'] = 1;
-    		          if($w['stage']==1){
+    		          if($stage==1){
     		              if($vo['state']<=0){
     		                  $vo['edit'] = 1;
     		              }else{
