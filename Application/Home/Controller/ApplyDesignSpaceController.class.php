@@ -371,6 +371,7 @@ class ApplyDesignSpaceController extends HomeController {
     	                unset($w['area']);
     	                $w['state'] = 70;
     	            }else{
+    	                unset($w['state']);
     	                $w['add_user'] = session('auth_id');
     	                $w['state'] = array('elt',70);
     	                $flag = 1;
@@ -442,6 +443,13 @@ class ApplyDesignSpaceController extends HomeController {
     		          }
     		      }else{
     		          $vo['edit'] = 1;
+    		          if($w['stage']==1){
+    		              if($vo['state']<=0){
+    		                  $vo['edit'] = 1;
+    		              }else{
+    		                  $vo['edit'] = 0;
+    		              }
+    		          }
     		      }
     		      
     		     /* if($vo['state']>0){
