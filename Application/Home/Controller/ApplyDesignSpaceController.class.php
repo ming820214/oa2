@@ -395,6 +395,8 @@ class ApplyDesignSpaceController extends HomeController {
     	            $map['_logic']='or';
     	            $map['_complex'] = $w;
     	            $map['apply_school&add_user&product_type&state&is_del'] = array($w['apply_school'],session('auth_id'),'2',array('elt',70),array('neq',1),'_multi'=>true);
+    	        }else{
+    	            $map = $w;
     	        }
     	    }
     	    
