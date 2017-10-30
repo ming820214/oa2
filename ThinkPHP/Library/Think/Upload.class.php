@@ -209,6 +209,7 @@ class Upload {
                 $info[$key] = $file;
             } else {
                 $this->error = $this->uploader->getError();
+                break;
             }
         }
         if(isset($finfo)){

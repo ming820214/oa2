@@ -1,25 +1,29 @@
 <?php
 namespace Home\Controller;
 
-class ApplyDesignFlatController extends HomeController {
+class ApplyDesignSpaceController extends HomeController {
 
 	//把校区列表、科目类别输出到前段模版
 	public function _initialize(){
         parent::_initialize();
-		foreach (C('SCHOOL') as $v) {
-			$school[$v['id']]=$v['name'];
-		}
-		
-		$lst = M('user')->join('oa_foo_info on oa_user.school = oa_foo_info.id')->where(array('oa_user.position_id'=>10,'oa_user.is_del'=>0))->order('school')->getField('oa_user.id,oa_user.name,concat_ws("->",oa_foo_info.name,oa_user.name) AS school');
-		
-		/* foreach ($lst as &$val){
-		  $val['name'] = $val['school'] . ' ' .$val['name'];
-		} */
-		$this->assign('rector',$lst);
-		
-		$this->assign('school',$school);//校区
-		
-		$this->assign('month',date("Y-m"));
+        foreach (C('SCHOOL') as $v) {
+            if($v['name'] != '集团'){
+                $school['s'. $v['id']]=$v['name'];
+            }
+        }
+        
+        $dept_lst = M('dept')->where('is_del = 0 and pid !=28 and id != 28')->getField('id,name');
+        
+        foreach ($dept_lst as $key=>$val){
+            $dept['b' . $key] = $val;
+        }
+        
+        
+        
+        $this->assign('school',$school);//校区
+        //$this->assign('dept',$dept);//校区
+        
+        $this->assign('month',date("Y-m"));
 		
 	}
 /**
@@ -68,13 +72,14 @@ class ApplyDesignFlatController extends HomeController {
 		array_empty_delt($_POST);
 		$mod=M('applyDesign');
 		$mod->create();
-		$mod->type = implode(",",$mod->type);
 		
 		$config = array(
-		  'maxSize'    =>    10485760,
-		  'rootPath'   =>    './Uploads/',
-		  'savePath'   =>    'Design/' . session('school_id') . '/',
-		  'exts'       =>    array('jpg', 'gif', 'png', 'jpeg')
+		    'maxSize'    =>    10485760,
+		    'rootPath'   =>    './Uploads/',
+		    'savePath'   =>    'DesignFlat/' . session('school_id') . '/',
+		    'subName'       =>  array('date', 'Y-m-d H_i'),
+		    'exts'       =>     array('jpg', 'gif', 'png', 'jpeg'),
+		    'saveName'   =>    ''
 		);
 		
 		$upload = new \Think\Upload($config);// 实例化上传类
@@ -82,24 +87,46 @@ class ApplyDesignFlatController extends HomeController {
 		//修改
 		if(I('post.id')){
 		    $data = $mod->where(['id'=>I('post.id')])->field('record',true)->select();
-		    if($data && $data[0]['position']){
-		        $files = explode(';',$data[0]['position']);
+		    if($data && $data[0]['reference_pic']){
+		        $files = explode(';',$data[0]['reference_pic']);
 		        foreach ($files as $fl){
-    		         if (file_exists($fl)) {
+		            $tmp_fl = iconv('UTF-8','GBK',$fl);
+		            if (file_exists($tmp_fl)) {
     		           unlink($fl);
     		         }
 		        }
 		    }
 		    
-		    if($data && $data[0]['references']){
-		     $files = explode(';',$data[0]['references']);
+		    if($data && $data[0]['space_pic']){
+		     $files = explode(';',$data[0]['space_pic']);
 		     foreach ($files as $fl){
-		      if (file_exists($fl)) {
-		       unlink($fl);
-		      }
+    		      $tmp_fl = iconv('UTF-8','GBK',$fl);
+    		      if (file_exists($tmp_fl)) {
+    		       unlink($fl);
+    		      }
 		     }
 		    }
 		    
+		    if($data && $data[0]['install_pos_pic']){
+		        $files = explode(';',$data[0]['install_pos_pic']);
+		        foreach ($files as $fl){
+		            $tmp_fl = iconv('UTF-8','GBK',$fl);
+		            if (file_exists($tmp_fl)) {
+		                unlink($fl);
+		            }
+		        }
+		    }
+		    
+		    
+		    if($data && $data[0]['space_show_pic']){
+		        $files = explode(';',$data[0]['space_show_pic']);
+		        foreach ($files as $fl){
+		            $tmp_fl = iconv('UTF-8','GBK',$fl);
+		            if (file_exists($tmp_fl)) {
+		                unlink($fl);
+		            }
+		        }
+		    }
 		    
 		    // 上传文件
 		    $info   =   $upload->upload();
@@ -107,18 +134,27 @@ class ApplyDesignFlatController extends HomeController {
 		     $this->error('保存失败：' . $upload->getError());
 		    }else{// 上传成功 获取上传文件信息
 		     //新增
-		     $pos = '';
+		     $space = '';
 		     $ref = '';
+		     $pos = '';
+		     $show = '';
 		     foreach($info as $k=>$v){
-		      if($v['key'] == 'position'){
-		       $pos .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
+		      if($v['key'] == 'space_pic'){
+		       $space .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
 		      }else if($v['key'] == 'references'){
 		       $ref .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
+		      }else if($v['key'] == 'install_pos_pic'){
+		          $pos .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
+		      }else if($v['key'] == 'space_show_pic'){
+		          $show .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
 		      }
 		     }
 		     	
-		     $mod->position = $pos;
-		     $mod->references = $ref;
+		     $mod->space_pic = $space;
+		     $mod->reference_pic = $ref;
+		     
+		     $mod->install_pos_pic = $pos;
+		     $mod->space_show_pic = $show;
 		     	
 		     if($mod->save()){
 		      //echo $info['savepath'].$info['savename'];
@@ -139,18 +175,27 @@ class ApplyDesignFlatController extends HomeController {
 		 $this->error('保存失败：' . $upload->getError());
 		}else{// 上传成功 获取上传文件信息
 		 //新增
-		 $pos = '';
-		 $ref = '';
+	    $space = '';
+	    $ref = '';
+	    $pos = '';
+	    $show = '';
 		 foreach($info as $k=>$v){
-		   if($v['key'] == 'position'){
-		      $pos .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
-		   }else if($v['key'] == 'references'){
-		      $ref .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
-		   }
+		     if($v['key'] == 'space_pic'){
+		         $space .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
+		     }else if($v['key'] == 'references'){
+		         $ref .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
+		     }else if($v['key'] == 'install_pos_pic'){
+		         $pos .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
+		     }else if($v['key'] == 'space_show_pic'){
+		         $show .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
+		     }
 		 }
 		 
-		 $mod->position = $pos;
-		 $mod->references = $ref;
+		 $mod->space_pic = $space;
+		 $mod->reference_pic = $ref;
+		 
+		 $mod->install_pos_pic = $pos;
+		 $mod->space_show_pic = $show;
 		 
 		 if($mod->add()){
 		   //echo $info['savepath'].$info['savename'];
@@ -159,16 +204,117 @@ class ApplyDesignFlatController extends HomeController {
 		}
 		$this->error('操作失败');
 	}
+	
+	
+	public function getExcelPic(){
+	    require_cache(VENDOR_PATH.'PHPExcel/PHPExcel.class.php');
+	    define('EXCEL_EXTENSION_2003', "xls");
+	    define('EXCEL_EXTENSION_2007', "xlsx");
+	    
+	    
+	    $fileName2003 = "./Uploads/2003.xls";
+	    $fileName2007 = "./Uploads/2007.xlsx";
+	    
+	    $fileName = $fileName2003;
+	    //$fileName = $fileName2007;
+	    
+	    if(self::getExtendFileName($fileName) == EXCEL_EXTENSION_2003)
+	    {
+	        $reader = \PHPExcel_IOFactory::createReader('Excel5');
+	    }
+	    else if(self::getExtendFileName($fileName) == EXCEL_EXTENSION_2007)
+	    {
+	        $reader = new \PHPExcel_Reader_Excel2007();
+	    }
+	    
+	    $PHPExcel = $reader->load($fileName);
+	    $worksheet = $PHPExcel->getActiveSheet();
+	    $imageInfo = self::extractImageFromWorksheet($worksheet,"./Uploads/importImg/");
+	    
+	    print_r($imageInfo);  
+	}
+	
+	function getExtendFileName($file_name) {
+	    
+	    $extend = pathinfo($file_name);
+	    $extend = strtolower($extend["extension"]);
+	    return $extend;
+	}
+	
+	function extractImageFromWorksheet($worksheet,$basePath){
+	    require_cache(VENDOR_PATH.'PHPExcel/PHPExcel.class.php');
+	    $result = array();
+	    
+	    $imageFileName = "";
+	    
+	    foreach ($worksheet->getDrawingCollection() as $drawing) {
+	        $xy=$drawing->getCoordinates();
+	        $path = $basePath;
+	        // for xlsx
+	        if ($drawing instanceof \PHPExcel_Worksheet_Drawing) {
+	            
+	            $filename = $drawing->getPath();
+	            
+	            $imageFileName = $drawing->getIndexedFilename();
+	            
+	            $path = $path . $drawing->getIndexedFilename();
+	            
+	            copy($filename, $path);
+	            
+	            $result[$xy] = $path;
+	            
+	            // for xls
+	        } else if ($drawing instanceof \PHPExcel_Worksheet_MemoryDrawing) {
+	            
+	            $image = $drawing->getImageResource();
+	            
+	            $renderingFunction = $drawing->getRenderingFunction();
+	            
+	            switch ($renderingFunction) {
+	                
+	                case \PHPExcel_Worksheet_MemoryDrawing::RENDERING_JPEG:
+	                    
+	                    $imageFileName = $drawing->getIndexedFilename();
+	                    $path = $path . $drawing->getIndexedFilename();
+	                    imagejpeg($image, $path);
+	                    break;
+	                    
+	                case \PHPExcel_Worksheet_MemoryDrawing::RENDERING_GIF:
+	                    $imageFileName = $drawing->getIndexedFilename();
+	                    $path = $path . $drawing->getIndexedFilename();
+	                    imagegif($image, $path);
+	                    break;
+	                    
+	                case \PHPExcel_Worksheet_MemoryDrawing::RENDERING_PNG:
+	                    $imageFileName = $drawing->getIndexedFilename();
+	                    $path = $path . $drawing->getIndexedFilename();
+	                    imagegif($image, $path);
+	                    break;
+	                    
+	                case \PHPExcel_Worksheet_MemoryDrawing::RENDERING_DEFAULT:
+	                    $imageFileName = $drawing->getIndexedFilename();
+	                    $path = $path . $drawing->getIndexedFilename();
+	                    imagegif($image, $path);
+	                    break;
+	            }
+	            $result[$xy] = $imageFileName;
+	        }
+	    }
+	    
+	    return $result;
+	}  
+	
 /*
 *审核操作
 */
 	public function check(){
 		if(IS_AJAX&&I('post.data')){
-			if(D('ApplyCourse')->check(I('post.type'),I('post.data')['id'],I('post.why')))$this->ajaxReturn('ok');
+			if(D('ApplyDesign')->check(I('post.type'),I('post.data')['id'],I('post.why')))$this->ajaxReturn('ok');
 			$this->ajaxReturn('审核出错');
 		}
 	}
-
+	
+	
 /*
 *页面数据列表
 */
@@ -176,55 +322,185 @@ class ApplyDesignFlatController extends HomeController {
           
           
     	if(IS_AJAX){
-    		$w=I('get.search');
-    		array_empty_delt($w);
-    		if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 23:59:59']];
-    		$w['is_del']=0;
+    	    $w=I('get.search');
+    	    array_empty_delt($w);
+    	    if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 23:59:59']];
+    	    $w['is_del']= array('neq',1);
+    	    
+    	    if($w['course_info']){
+    	        $w['content_descp'] = array('like','%'. $w['course_info'] . '%');
+    	    }
+    	    
+    	    $flag = 0;
+    	    
+    	    if(strpos(strstr($_SERVER['HTTP_REFERER'],'&a='),'manage') === FALSE){
+    	        
+    	        if(get_school_name()!='集团'){
+    	            $w['apply_school'] = 's' . session('school_id');
+    	            
+    	            if(session('position_id') == '10'){
+    	                //校长
+    	                $w['state'] = 10;
+    	            }else if(session('auth_id') == '1293'){
+    	                //姜博文
+    	                unset($w['apply_school']);
+    	                $w['area'] = '辽宁';
+    	                $w['state'] = 20;
+    	            }elseif(session('auth_id') == '439'){
+    	                //何亮
+    	                unset($w['apply_school']);
+    	                $w['area'] = '黑龙江';
+    	                $w['state'] = 20;
+    	            }elseif(session('auth_id') == '651'){
+    	                //王大鹏
+    	                unset($w['apply_school']);
+    	                $w['area'] = '吉林';
+    	                $w['state'] = 20;
+    	            }elseif(get_school_name()=='集团' && (session('auth_id') == '89')){
+    	                //王胜鑫
+    	                unset($w['apply_school']);
+    	                unset($w['area']);
+    	                $w['state'] = array('in','40,50');
+    	            }elseif(get_school_name()=='集团' && (session('auth_id') == '90')){
+    	                //赵锡睿
+    	                unset($w['apply_school']);
+    	                unset($w['area']);
+    	                $w['state'] = 60;
+    	            }elseif(session('auth_id') == '2101'){
+    	                unset($w['apply_school']);
+    	                unset($w['area']);
+    	                $w['state'] = 70;
+    	            }else{
+    	                $w['add_user'] = session('auth_id');
+    	                $w['state'] = array('elt',70);
+    	                $flag = 1;
+    	            }
+    	        }else{
+    	            $w['apply_school'] = 'b' . session('dept_id');
+    	            
+    	        }
+    	    }
+    	    
+    	    $w['product_type'] = 2;
     		
-    		if($w['course_info']){
-    		 $w['course_info'] = array('like','%'. $w['course_info'] . '%');
-    		}
-    		
-    		/* if(strpos(strstr($_SERVER['HTTP_REFERER'],'&a='),'manage') === FALSE){
-    		 
-         		 if(get_school_name()!='集团'){
-         		   $w['school'] = session('school_id');
-         		 }
-         		 
-         		 if(get_school_name()=='集团' && (session('auth_id') == '1293'  || session('auth_id') == '1')){
-         		  //姜博文
-         		  unset($w['school']);
-         		  $w['area'] = array('in',['辽宁']);
-         		  $w['state'] = 10;
-         		 } elseif(get_school_name()=='集团' && (session('auth_id') == '89')){
-         		  //王胜鑫
-         		  unset($w['school']);
-         		  unset($w['area']);
-         		  //$w['area'] = array('in',['辽宁','吉林','黑龙江','其他']);
-         		  $w['state'] = 20;
-         		 }elseif(get_school_name()=='集团' && session('auth_id') == '509'){
-         		  $w['state'] = 30;
-         		 }
-    		 
-    		} */
-    		
-    		
-    		
-    		$data=M('applyDesign')->where($w)->order('state desc,school asc,id desc')->field('id, state, school, apply_user, substring_index(apply_user,"#",1) as apply_user2, apply_uses, product_form, type, size, tel, count, is_urgent, is_plan, case is_urgent when 0 then "否" when 1 then "是" end as is_urgents, case is_plan when 0 then "否" when 1 then "是" end as is_plans, descp, position, `references`, expect_date, why, create_time, update_time, is_del, add_user, add_user_name, back')->limit(I('get.offset'),I('get.count'))->select();
+    		$data=M('applyDesign')->where($w)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, space_pic, install_pos_pic, space_show_pic, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area')->limit(I('get.offset'),I('get.count'))->select();
     		
     		if(get_school_name()!='集团'){
     		  foreach ($data as &$vo){
-    		    $vo['type'] = explode(",",$vo['type']);
+    		      if(strpos($vo['apply_school'],'s') !== false){
+    		          $vo['school_name'] = M('foo_info')->where('id=' . substr($vo['apply_school'],1))->getField('name');
+    		      }else if(strpos($vo['apply_school'],'b') !== false){
+    		          $vo['school_name'] = M('dept')->where('id=' . substr($vo['apply_school'],1))->getField('name');
+    		      }
+    		      
+    		      if($vo['reference_pic']){
+    		          $hrefs = explode(";",$vo['reference_pic']);
+    		          $ref = '';
+    		          foreach($hrefs as $arr){
+    		              $ref .= '<a href="' . $arr . '" target="_blank">' . $arr . '</a><br/>';
+    		          }
+    		          $vo['references'] = $ref;
+    		      }
+    		      
+    		      
+    		      if($vo['space_pic']){
+    		          $hrefs = explode(";",$vo['space_pic']);
+    		          $ref = '';
+    		          foreach($hrefs as $arr){
+    		              $ref .= '<a href="' . $arr . '" target="_blank">' . $arr . '</a><br/>';
+    		          }
+    		          $vo['space_pics'] = $ref;
+    		      }
+    		      
+    		      
+    		      if($vo['install_pos_pic']){
+    		          $hrefs = explode(";",$vo['install_pos_pic']);
+    		          $ref = '';
+    		          foreach($hrefs as $arr){
+    		              $ref .= '<a href="' . $arr . '" target="_blank">' . $arr . '</a><br/>';
+    		          }
+    		          $vo['install_pos_pics'] = $ref;
+    		      }
+    		      
+    		      
+    		      if($vo['space_show_pic']){
+    		          $hrefs = explode(";",$vo['space_show_pic']);
+    		          $ref = '';
+    		          foreach($hrefs as $arr){
+    		              $ref .= '<a href="' . $arr . '" target="_blank">' . $arr . '</a><br/>';
+    		          }
+    		          $vo['space_show_pics'] = $ref;
+    		      }
     		    
-    		     if($vo['state']>0){
-    		      $vo['edit'] = 0;
+    		      
+    		      if($flag){//不拥有审核权限
+    		          $vo['edit'] = 0;
+    		          if($w['stage']==1){
+    		              if($vo['state']<=0){
+    		                  $vo['edit'] = 1;
+    		              }
+    		          }
+    		      }else{
+    		          $vo['edit'] = 1;
+    		      }
+    		      
+    		     /* if($vo['state']>0){
+    		         if($w['stage']==1){
+    		             $vo['edit'] = 0;
+    		         }else{
+    		             $vo['edit'] = 1;
+    		         }
     		     }else{
     		      $vo['edit'] = 1;
-    		     }
+    		     } */
     		  }
     		}else{
          	  foreach ($data as &$vo){
-         	     $vo['type'] = explode(",",$vo['type']);
+         	      if(strpos($vo['apply_school'],'s') !== false){
+         	          $vo['school_name'] = M('foo_info')->where('id=' . substr($vo['apply_school'],1))->getField('name');
+         	      }else if(strpos($vo['apply_school'],'b') !== false){
+         	          $vo['school_name'] = M('dept')->where('id=' . substr($vo['apply_school'],1))->getField('name');
+         	      }
+         	      
+         	      if($vo['reference_pic']){
+         	          $hrefs = explode(";",$vo['reference_pic']);
+         	          $ref = '';
+         	          foreach($hrefs as $arr){
+         	              $ref .= '<a href="' . $arr . '" target="_blank">' . $arr . '</a><br/>';
+         	          }
+         	          $vo['references'] = $ref;
+         	      }
+         	      
+         	      
+         	      if($vo['space_pic']){
+         	          $hrefs = explode(";",$vo['space_pic']);
+         	          $ref = '';
+         	          foreach($hrefs as $arr){
+         	              $ref .= '<a href="' . $arr . '" target="_blank">' . $arr . '</a><br/>';
+         	          }
+         	          $vo['space_pics'] = $ref;
+         	      }
+         	      
+         	      
+         	      if($vo['install_pos_pic']){
+         	          $hrefs = explode(";",$vo['install_pos_pic']);
+         	          $ref = '';
+         	          foreach($hrefs as $arr){
+         	              $ref .= '<a href="' . $arr . '" target="_blank">' . $arr . '</a><br/>';
+         	          }
+         	          $vo['install_pos_pics'] = $ref;
+         	      }
+         	      
+         	      
+         	      if($vo['space_show_pic']){
+         	          $hrefs = explode(";",$vo['space_show_pic']);
+         	          $ref = '';
+         	          foreach($hrefs as $arr){
+         	              $ref .= '<a href="' . $arr . '" target="_blank">' . $arr . '</a><br/>';
+         	          }
+         	          $vo['space_show_pics'] = $ref;
+         	      }
+         	      
          		 $vo['edit'] = 1;
          	   }
     		}
