@@ -231,9 +231,11 @@ class ApplyDesignFlatController extends HomeController {
     		if($flag){
     		    $map = $w;
     		}else{
-    		    $map['_logic']='or';
-    		    $map['_complex'] = $w;
-    		    $map['apply_school&add_user&product_type&state&is_del'] = array($w['apply_school'],session('auth_id'),'2',array('elt',70),array('neq',1),'_multi'=>true);
+    		    if($stage == 1){
+    		        $map['_logic']='or';
+    		        $map['_complex'] = $w;
+    		        $map['apply_school&add_user&product_type&state&is_del'] = array($w['apply_school'],session('auth_id'),'2',array('elt',70),array('neq',1),'_multi'=>true);
+    		    }
     		}
     		
     		$data=M('applyDesign')->where($map)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area')->limit(I('get.offset'),I('get.count'))->select();
