@@ -21,7 +21,7 @@ class ApplyDesignFlatController extends HomeController {
 			
 		
 		$this->assign('school',$school);//校区
-		//$this->assign('dept',$dept);//校区
+		$this->assign('dept',$dept);//校区
 		
 		$this->assign('month',date("Y-m"));
 		
