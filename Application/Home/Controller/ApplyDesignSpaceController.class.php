@@ -12,7 +12,7 @@ class ApplyDesignSpaceController extends HomeController {
             }
         }
         
-        $dept_lst = M('dept')->where('is_del = 0 and pid !=28 and id != 28')->getField('id,name');
+        $dept_lst = M('dept')->where('is_del = 0 and pid !=28 and id != 28 and id=64')->getField('id,name');
         
         foreach ($dept_lst as $key=>$val){
             $dept['b' . $key] = $val;
@@ -21,7 +21,7 @@ class ApplyDesignSpaceController extends HomeController {
         
         
         $this->assign('school',$school);//校区
-        //$this->assign('dept',$dept);//校区
+        $this->assign('dept',$dept);//校区
         
         $this->assign('month',date("Y-m"));
 		
@@ -382,7 +382,17 @@ class ApplyDesignSpaceController extends HomeController {
     	            }
     	        }else{
     	            $w['apply_school'] = 'b' . session('dept_id');
-    	            
+    	            if(get_school_name()=='集团' && (session('auth_id') == '89')){
+    	                //王胜鑫
+    	                unset($w['apply_school']);
+    	                unset($w['area']);
+    	                $w['state'] = array('in','40,50');
+    	            }else{
+    	                unset($w['state']);
+    	                $w['add_user'] = session('auth_id');
+    	                $w['state'] = array('elt',70);
+    	                $flag = 1;
+    	            }
     	        }
     	    }
     	    
@@ -530,7 +540,29 @@ class ApplyDesignSpaceController extends HomeController {
          	          $vo['space_show_pics'] = $ref;
          	      }
          	      
-         		 $vo['edit'] = 1;
+         	      
+         	      if($flag){//不拥有审核权限
+         	          $vo['edit'] = 0;
+         	          if($stage==1){
+         	              if($vo['state']<=0){
+         	                  $vo['edit'] = 1;
+         	              }
+         	          }
+         	      }else{
+         	          $vo['edit'] = 1;
+         	          if($stage==1){
+         	              if($vo['state']<=0){
+         	                  $vo['edit'] = 1;
+         	              }else{
+         	                  $vo['edit'] = 0;
+         	              }
+         	          }else{
+         	              if($vo['state']<=0){
+         	                  $vo['edit'] = 0;
+         	              }
+         	          }
+         	      }
+         		 
          	   }
     		}
     		
