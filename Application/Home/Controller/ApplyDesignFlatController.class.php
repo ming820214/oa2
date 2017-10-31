@@ -97,56 +97,73 @@ class ApplyDesignFlatController extends HomeController {
 		     }
 		    }
 		    
-		    
-		    // 上传文件
-		    $info   =   $upload->upload();
-		    if(!$info) {// 上传错误提示错误信息
-		     $this->error('保存失败：' . $upload->getError());
-		    }else{// 上传成功 获取上传文件信息
-		     //新增
-		     $ref = '';
-		     foreach($info as $k=>$v){
-    		     if($v['key'] == 'references'){
-    		       $ref .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
-    		      }
-		     }
-		     	
-		     $mod->reference_pic = $ref;
-		     	
-		     if($mod->save()){
-		      //echo $info['savepath'].$info['savename'];
-		      $this->success('保存成功');
-		     }
+		    if($_FILES['references']['name'][0]){
+		        // 上传文件
+		        $info   =   $upload->upload();
+		        if(!$info) {// 上传错误提示错误信息
+		            $this->error('保存失败：' . $upload->getError());
+		        }else{// 上传成功 获取上传文件信息
+		            //新增
+		            $ref = '';
+		            foreach($info as $k=>$v){
+		                if($v['key'] == 'references'){
+		                    $ref .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
+		                }
+		            }
+		            
+		            $mod->reference_pic = $ref;
+		            
+		            if($mod->save()){
+		                //echo $info['savepath'].$info['savename'];
+		                $this->success('更新成功');
+		                exit;
+		            }
+		        }
+		    }else{
+		        $mod->reference_pic = '';
+		        if($mod->save()){
+		            //echo $info['savepath'].$info['savename'];
+		            $this->success('更新成功');
+		            exit;
+		        }
 		    }
-		    
-			$this->success('更新成功');
 		}
 
 		//$mod->school=session('school_id');
 		$mod->add_user=session('auth_id');
 		$mod->add_user_name=session('user_name');
 		
-		// 上传文件
-		$info   =   $upload->upload();
-		if(!$info) {// 上传错误提示错误信息
-		 $this->error('保存失败：' . $upload->getError());
-		}else{// 上传成功 获取上传文件信息
-		 //新增
-		 
-		 $ref = '';
-		 foreach($info as $k=>$v){
-		   if($v['key'] == 'references'){
-		      $ref .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
-		   }
-		 }
-		 
-		 $mod->reference_pic = $ref;
-		 
-		 if($mod->add()){
-		   //echo $info['savepath'].$info['savename'];
-		   $this->success('保存成功');
-		 }
+		if($_FILES['references']['name'][0]){
+		    // 上传文件
+		    $info   =   $upload->upload();
+		    if(!$info) {// 上传错误提示错误信息
+		        $this->error('保存失败：' . $upload->getError());
+		    }else{// 上传成功 获取上传文件信息
+		        //新增
+		        
+		        $ref = '';
+		        foreach($info as $k=>$v){
+		            if($v['key'] == 'references'){
+		                $ref .= './Uploads/' . $v['savepath'].$v['savename'] . ';';
+		            }
+		        }
+		        
+		        $mod->reference_pic = $ref;
+		        
+		        if($mod->add()){
+		            //echo $info['savepath'].$info['savename'];
+		            $this->success('保存成功');
+		            exit;
+		        }
+		    }
+		}else{
+		    if($mod->add()){
+		        //echo $info['savepath'].$info['savename'];
+		        $this->success('保存成功');
+		        exit;
+		    }
 		}
+		
 		//$this->error('操作失败');
 	}
 /*

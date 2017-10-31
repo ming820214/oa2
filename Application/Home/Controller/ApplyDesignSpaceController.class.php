@@ -158,11 +158,11 @@ class ApplyDesignSpaceController extends HomeController {
 		     	
 		     if($mod->save()){
 		      //echo $info['savepath'].$info['savename'];
-		      $this->success('保存成功');
+		         $this->success('更新成功');exit;
 		     }
 		    }
 		    
-			$this->success('更新成功');
+			
 		}
 
 		//$mod->school=session('school_id');
@@ -199,7 +199,7 @@ class ApplyDesignSpaceController extends HomeController {
 		 
 		 if($mod->add()){
 		   //echo $info['savepath'].$info['savename'];
-		   $this->success('保存成功');
+		   $this->success('保存成功');exit;
 		 }
 		}
 		$this->error('操作失败');
