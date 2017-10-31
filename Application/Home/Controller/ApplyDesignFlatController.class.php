@@ -192,6 +192,10 @@ class ApplyDesignFlatController extends HomeController {
     		 $w['content_descp'] = array('like','%'. $w['course_info'] . '%');
     		}
     		
+    		$stage = $w['stage'];
+    		
+    		unset($w['stage']);
+    		
     		$flag = 0;
     		
     		if(strpos(strstr($_SERVER['HTTP_REFERER'],'&a='),'manage') === FALSE){
@@ -310,14 +314,14 @@ class ApplyDesignFlatController extends HomeController {
     		    
     		    if($flag){//不拥有审核权限
     		        $vo['edit'] = 0;
-    		        if($w['stage']==1){
+    		        if($stage==1){
     		            if($vo['state']<=0){
     		                $vo['edit'] = 1;
     		            }
     		        }
     		    }else{
     		        $vo['edit'] = 1;
-    		        if($w['stage']==1){
+    		        if($stage==1){
     		            if($vo['state']<=0){
     		                $vo['edit'] = 1;
     		            }else{
