@@ -206,22 +206,22 @@ class ApplyDesignFlatController extends HomeController {
          		     if(session('position_id') == '10'){
          		         //校长
          		         $w['state'] = 10;
-         		     }else if(session('auth_id') == '1293'){
+         		     }else if(session('auth_id') == '1293' || session('auth_id') == '1'){
              		  //姜博文
              		  unset($w['apply_school']);
              		  $w['area'] = '辽宁';
              		  $w['state'] = 20;
-             		 }elseif(session('auth_id') == '439'){
+         		     }elseif(session('auth_id') == '439' || session('auth_id') == '1'){
              		     //何亮
              		     unset($w['apply_school']);
              		     $w['area'] = '黑龙江';
              		     $w['state'] = 20;
-             		 }elseif(session('auth_id') == '651'){
+         		     }elseif(session('auth_id') == '651' || session('auth_id') == '1'){
              		     //王大鹏
              		     unset($w['apply_school']);
              		     $w['area'] = '吉林';
              		     $w['state'] = 20;
-             		 }elseif(get_school_name()=='集团' && (session('auth_id') == '89')){
+             		 }elseif(get_school_name()=='集团' && (session('auth_id') == '89' || session('auth_id') == '1091')){
              		  //王胜鑫
              		  unset($w['apply_school']);
              		  unset($w['area']);
@@ -243,7 +243,7 @@ class ApplyDesignFlatController extends HomeController {
              		 }
          		 }else{
          		     $w['apply_school'] = 'b' . session('dept_id');
-         		     if(get_school_name()=='集团' && (session('auth_id') == '89')){
+         		     if(get_school_name()=='集团' && (session('auth_id') == '89' || session('auth_id') == '1091')){
          		         //王胜鑫
          		         unset($w['apply_school']);
          		         unset($w['area']);

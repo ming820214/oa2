@@ -96,19 +96,19 @@ class ApplyDesignModel extends CommonModel{
             if($v['state'] == '20' && $v['area'] == '辽宁'){
                //姜博文
                array_push($user, "XZsmqh28");
-               //array_push($user, "WW");
+               array_push($user, "WW");
             }else if($v['state'] == '20' && $v['area'] == '黑龙江'){
                 //何亮
                 array_push($user, "XZsy01");
-                //array_push($user, "WW");
+                array_push($user, "WW");
             }else if($v['state'] == '20' && $v['area'] == '吉林'){
                 //王大鹏
                 array_push($user, "XZfx01");
-                //array_push($user, "WW");
+                array_push($user, "WW");
             }else if($v['state'] == '40' || $v['state'] == '50'){
                 //王胜鑫
                 array_push($user, "YY001");
-                array_push($user, "WW");
+                array_push($user, "ZXhld001");
             }else if($v['state'] == '60'){
                 //赵锡睿
               array_push($user, "YX001");
