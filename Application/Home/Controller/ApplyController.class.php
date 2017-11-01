@@ -263,7 +263,7 @@ class ApplyController extends HomeController {
 			//多种经营事业部
 			if(session('user_name')=='吕雪茹'){
 			    unset($w['state'],$w['dept1'],$w['dept2']);
-		    	$w['_string']='(state=40 AND dept2=67) OR (state=140 AND dept2=67) OR (state=150 AND dept2=67)';
+		    	$w['_string']='(state=40 AND dept2=67) OR (state=140 AND dept2=67) OR (state=150 AND dept2=67) OR (state=130 AND dept2=67)';
 		    }
 				
 			//集团大财务
@@ -297,7 +297,7 @@ class ApplyController extends HomeController {
 			// 集团大总裁
 			if(session('user_name')=='李文龙' || session('user_name')=='张晓明'){
 				unset($w['state'],$w['dept1'],$w['dept2']);
-				$w['_string']='(state=40 AND type=20) OR (state=130)';
+				$w['_string']='(state=40 AND type=20 AND dept2 !=67) OR (state=130 AND dept2!=67)';
 			}
 		}
 		if($w['stage']==5){
