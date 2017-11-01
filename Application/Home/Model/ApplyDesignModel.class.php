@@ -41,7 +41,7 @@ class ApplyDesignModel extends CommonModel{
                     $v['state']= 40;
                 }
                 
-                if($v['state'] ==20){
+                if($v['state'] ==20 || $v['state'] ==40){
                     $v['state']=$v['state']+20;
                 }else if($v['state'] ==50  && $v['apply_type'] == '月度'){
                     $v['state']=$v['state']+20;
