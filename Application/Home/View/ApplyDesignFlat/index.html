@@ -40,7 +40,12 @@
 
 <div class="page-header clearfix">
     <div class="col-sm-3">
-        <h1>平面类设计申请</h1>
+    	<if condition="ACTION_NAME == 'index'">
+    		<h1>平面类设计申请</h1>
+    		<elseif condition="ACTION_NAME == 'examine'"/>
+    		<h1>平面类设计审核</h1>
+    		<else/><h1>平面类设计数据管理</h1>
+    	</if>
     </div>
     
     <div class="col-sm-12">
