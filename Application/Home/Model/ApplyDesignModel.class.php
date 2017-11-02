@@ -143,7 +143,7 @@ class ApplyDesignModel extends CommonModel{
         
         $wx= getWechatObj();
         $wx->sendNewsMsg(
-            [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=applydesignflat/examine')),'')],
+            [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=apply_design_flat/examine')),'')],
             ['touser'=>$user],
             C('WECHAT_APP')['XZMS']
         );

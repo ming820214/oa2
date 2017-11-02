@@ -231,7 +231,7 @@ class ApplyDesignFlatController extends HomeController {
              		 }else{
              		     unset($w['state']);
              		     $w['add_user'] = session('auth_id');
-             		     $w['state'] = array('elt',70);
+             		     $w['state'] = array('elt',80);
              		     $flag = 1;
              		 }
          		 }else{
@@ -266,7 +266,7 @@ class ApplyDesignFlatController extends HomeController {
          		     }else{
          		         unset($w['state']);
          		         $w['add_user'] = session('auth_id');
-         		         $w['state'] = array('elt',70);
+         		         $w['state'] = array('elt',80);
          		         $flag = 1;
          		     }
          		     
@@ -282,7 +282,7 @@ class ApplyDesignFlatController extends HomeController {
     		    if($stage == 1){
     		        $map['_logic']='or';
     		        $map['_complex'] = $w;
-    		        $map['apply_school&add_user&product_type&state&is_del'] = array($school,session('auth_id'),'1',array('elt',70),array('neq',1),'_multi'=>true);
+    		        $map['apply_school&add_user&product_type&state&is_del'] = array($school,session('auth_id'),'1',array('elt',80),array('neq',1),'_multi'=>true);
     		    }else{
     		        $map = $w;
     		    }
