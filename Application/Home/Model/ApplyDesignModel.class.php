@@ -90,7 +90,9 @@ class ApplyDesignModel extends CommonModel{
     *]
     */
     public function check_notice($type,$list){
+        $flag_type = 0;
         foreach ($list as $v) {
+            $flag_type  = $v['product_type'];
             $w['name'] = $v['apply_user'];
 				
             if($w){
@@ -142,11 +144,21 @@ class ApplyDesignModel extends CommonModel{
         }
         
         $wx= getWechatObj();
-        $wx->sendNewsMsg(
-            [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=apply_design_flat/examine')),'')],
-            ['touser'=>$user],
-            C('WECHAT_APP')['XZMS']
-        );
+        
+        if($flag_type == 1){
+            $wx->sendNewsMsg(
+                [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=apply_design_flat/examine')),'')],
+                ['touser'=>$user],
+                C('WECHAT_APP')['XZMS']
+                );
+        }elseif($flag_type == 2){
+            $wx->sendNewsMsg(
+                [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=apply_design_space/examine')),'')],
+                ['touser'=>$user],
+                C('WECHAT_APP')['XZMS']
+                );
+        }
+        
     }
 
     /**
