@@ -37,11 +37,15 @@ class ApplyDesignModel extends CommonModel{
         foreach ($list as &$v) {
                 $v['back'] =null; 
                 //针对审批助理部门的特殊处理
-                if($v['apply_school'] == 'b64' && $v['state'] == 0){
+                /* if($v['apply_school'] == 'b64' && $v['state'] == 0){
                     $v['state']= 40;
-                }
+                } */
                 
-                if($v['state'] ==20 || $v['state'] ==40){
+                if($v['state'] ==20){
+                    $v['state']=$v['state']+20;
+                }else if($v['state'] ==40  && $v['apply_type'] == '月度'){
+                    $v['state']=$v['state']+30;
+                }else if($v['state'] ==40  && $v['apply_type'] == '临时'){
                     $v['state']=$v['state']+20;
                 }else if($v['state'] ==50  && $v['apply_type'] == '月度'){
                     $v['state']=$v['state']+20;
