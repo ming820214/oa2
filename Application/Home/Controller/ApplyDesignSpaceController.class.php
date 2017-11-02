@@ -8,22 +8,28 @@ class ApplyDesignSpaceController extends HomeController {
         parent::_initialize();
         foreach (C('SCHOOL') as $v) {
             if($v['name'] != '集团'){
-                $school['s'. $v['id']]=$v['name'];
+                if($v['id'] == session('school_id')){
+                    $school['s'. $v['id']]=$v['name'];
+                }
+                $school_all['s'. $v['id']]=$v['name'];
             }
-        }
+        } 
         
-        $dept_lst = M('dept')->where('is_del = 0 and pid !=28 and id != 28 and id=64')->getField('id,name');
+        /* $dept_lst = M('dept')->where('is_del = 0 and pid !=28 and id != 28 and id=64')->getField('id,name');
         
         foreach ($dept_lst as $key=>$val){
             $dept['b' . $key] = $val;
-        }
+        } */
         
         
         
         $this->assign('school',$school);//校区
+        
+        $this->assign('school_all',$school_all);//校区
+        
         $this->assign('dept',$dept);//校区
         
-        $this->assign('month',date("Y-m"));
+        $this->assign('month',date("Y-") . (date(m) +1) );
 		
 	}
 /**
@@ -327,8 +333,8 @@ class ApplyDesignSpaceController extends HomeController {
     	    if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 23:59:59']];
     	    $w['is_del']= array('neq',1);
     	    
-    	    if($w['course_info']){
-    	        $w['content_descp'] = array('like','%'. $w['course_info'] . '%');
+    	    if($w['apply_user']){
+    	        $w['apply_user'] = array('like','%'. $w['apply_user'] . '%');
     	    }
     	    
     	    $stage = $w['stage'];
@@ -337,11 +343,13 @@ class ApplyDesignSpaceController extends HomeController {
     	    
     	    $flag = 0;
     	    
+    	    $school = '';
+    	    
     	    if(strpos(strstr($_SERVER['HTTP_REFERER'],'&a='),'manage') === FALSE){
     	        
     	        if(get_school_name()!='集团'){
     	            $w['apply_school'] = 's' . session('school_id');
-    	            
+    	            $school = 's' . session('school_id');
     	            if(session('position_id') == '10'){
     	                //校长
     	                $w['state'] = 10;
@@ -382,6 +390,7 @@ class ApplyDesignSpaceController extends HomeController {
     	            }
     	        }else{
     	            $w['apply_school'] = 'b' . session('dept_id');
+    	            $school = 'b' . session('dept_id');
     	            if(get_school_name()=='集团' && (session('auth_id') == '89' || session('auth_id') == '1091')){
     	                //王胜鑫
     	                unset($w['apply_school']);
@@ -394,6 +403,8 @@ class ApplyDesignSpaceController extends HomeController {
     	                $flag = 1;
     	            }
     	        }
+    	    }else if($stage == 5 && $w['school']){
+    	        $w['apply_school'] = $w['school'];
     	    }
     	    
     	    $w['product_type'] = 2;
@@ -404,14 +415,14 @@ class ApplyDesignSpaceController extends HomeController {
     	        if($stage == 1){
     	            $map['_logic']='or';
     	            $map['_complex'] = $w;
-    	            $map['apply_school&add_user&product_type&state&is_del'] = array($w['apply_school'],session('auth_id'),'2',array('elt',70),array('neq',1),'_multi'=>true);
+    	            $map['apply_school&add_user&product_type&state&is_del'] = array($school,session('auth_id'),'2',array('elt',70),array('neq',1),'_multi'=>true);
     	        }else{
     	            $map = $w;
     	        }
     	    }
     	    
     	    
-    	    $data=M('applyDesign')->where($map)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, space_pic, install_pos_pic, space_show_pic, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area')->limit(I('get.offset'),I('get.count'))->select();
+    	    $data=M('applyDesign')->where($map)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, space_pic, install_pos_pic, space_show_pic, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area,design_type_other')->limit(I('get.offset'),I('get.count'))->select();
     		
     		if(get_school_name()!='集团'){
     		  foreach ($data as &$vo){

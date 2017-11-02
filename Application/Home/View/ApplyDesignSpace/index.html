@@ -40,7 +40,7 @@
 
 <div class="page-header clearfix">
     <div class="col-sm-3">
-        <h1>新空间类设计申请</h1>
+        <h1>空间类设计申请</h1>
     </div>
     
     <div class="col-sm-12">
@@ -48,7 +48,6 @@
     </div>
 </div>
 
-<!-- 搜索部分 -->
 <form class="panel panel-default hidden" id="adv_search" method="post" action="{:U('export')}">
     <div class="panel-heading">
         <input type="hidden" name="stage" value="<switch name="ACTION_NAME"><case value="index">1</case><case value="apply">2</case><case value="cost">3</case><case value="examine">4</case><case value="manage">5</case></switch>">
@@ -64,20 +63,20 @@
         <div class="form-inline">
             
             <div class="input-group">
-                <a class="input-group-addon">活动开始日期</a>
+                <a class="input-group-addon">提报日期</a>
                 <input name="date1" type="date" class="form-control">
                 <a class="input-group-addon">-</a>
                 <input name="date2" type="date" class="form-control">
             </div>
             
             <div class="input-group">
-                <a class="input-group-addon">新课程名称</a>
-                <input type="text" name="course_info" class="form-control" placeholder="新课程名称"/>
+                <a class="input-group-addon">提报月度</a>
+                <input type="month" name="apply_month" class="form-control" required />
             </div>
             
             <div class="input-group">
                 <a class="input-group-addon">审核状态</a>
-                <select name="state" class="form-control"><option value="">全部</option>{:fill_option_ex(get_config('APPLYCOURSE_STATE'))}</select>
+                <select name="state" class="form-control"><option value="">全部</option>{:fill_option_ex(get_config('APPLYDESIGN_STATE'))}</select>
             </div>
             
             <div class="input-group">
@@ -85,20 +84,40 @@
                 <select name="back" class="form-control"><option value="">全部</option><option value="0">正常</option><option value="1">退回</option></select>
             </div>
             
-            <if condition="(ACTION_NAME eq 'examine') OR (ACTION_NAME eq 'manage')">
+            <div class="input-group">
+                <a class="input-group-addon">计划类型</a>
+                <select name="apply_type" class="form-control" required><option value="">全部</option><option>月度</option><option>临时</option></select>
+            </div>
+            
+            
+            <if condition="(ACTION_NAME eq 'manage')">
                 
                 <div class="input-group">
                     <a class="input-group-addon">申请校区</a>
-                    <select name="school" class="form-control"><option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+                    <select name="school" class="form-control">
+                    	<option value="">全部</option>
+            
+		            	<optgroup label="校区">
+		            	<foreach name="school_all" item="sc">
+		            		<option value="{$key}">{$sc}</option>
+		            	</foreach>
+		            	</optgroup>
+		            	
+		            	<!-- <optgroup label="部门">
+		            	<foreach name="dept" item="dt">
+		            	<option value="{$key}">{$dt}</option>
+		            	</foreach>
+		            	</optgroup> -->
+                    </select>
                 </div>
                 
                 <div class="input-group">
                     <a class="input-group-addon">区域</a>
-                    <select name="area" class="form-control"><option value="">请选择区域</option><option>辽宁</option><option>吉林</option><option>黑龙江</option><option>其他</option></select>
+                    <select name="area" class="form-control"><option value="">请选择区域</option><option>辽宁</option><option>吉林</option><option>黑龙江</option></select>
                 </div>
                 <div class="input-group col-35">
-	                <a class="input-group-addon">申请人</a>
-	                <select name="apply_user" class="form-control"><option value="">请选择校长</option><foreach name="rector" item="vo"><option value="{$vo.name}#({$vo.id})">{$vo.school}</option></foreach></select>
+	                <a class="input-group-addon">提报人</a>
+	                <input type="text" name="apply_user" class="form-control"/>
 	            </div>
             </if>
             
@@ -123,29 +142,29 @@
     <div class="panel-body">
         <ul><input type="hidden" name="id">
         <input type="hidden" name="product_type" value="2"/>
-            <li>提报月度：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
-            <li>计划类型：<select name="apply_type" class="form-control" required><option>月度</option><option>临时</option></select></li>
-            <li>提交单位：<select name="apply_school" class="form-control" required>
+            <li>提报月度<font color="red">*</font>：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
+            <li>计划类型<font color="red">*</font>：<select name="apply_type" class="form-control" required><option>月度</option><option>临时</option></select></li>
+            <li>提交单位<font color="red">*</font>：<select name="apply_school" class="form-control" required>
 			<optgroup label="校区">
             	<foreach name="school" item="sc">
             		<option value="{$key}">{$sc}</option>
             	</foreach>
             	</optgroup>
             	
-            	<optgroup label="部门">
+            	<!-- <optgroup label="部门">
             	<foreach name="dept" item="dt">
             	<option value="{$key}">{$dt}</option>
             	</foreach>
-            	</optgroup>
+            	</optgroup> -->
 			</select></li>
-            <li>提报人：<input type="text" name="apply_user" class="form-control" required/></li>
-            <li>联系电话：<input type="text" name="tel" class="form-control" required></li>
-            <li>使用日期<input type="date" name="expect_date" class="form-control" required="required"></li>
-            <li>部门接收邮箱：<input type="text" name="email" class="form-control" required></li>
+            <li>提报人<font color="red">*</font>：<input type="text" name="apply_user" class="form-control" maxlength="10"  required/></li>
+            <li>联系电话<font color="red">*</font>：<input type="text" name="tel" class="form-control" maxlength="11"  required></li>
+            <li>使用日期<font color="red">*</font>:<input type="date" name="expect_date" class="form-control" required="required"></li>
+            <li>部门接收邮箱<font color="red">*</font>：<input type="text" name="email" class="form-control" maxlength="80"  required></li>
             
             <!-- 空间设计类 -->
-            <li class="space">设计类型：
-            <select name="design_type" class="form-control" required>
+            <li class="space">设计类型<font color="red">*</font>：
+            <select  id="design_other" name="design_type" class="form-control" required>
             <option>门头</option>
             <option>门牌</option>
             <option>单孔透</option>
@@ -157,12 +176,17 @@
             <option>其它</option>
             </select>
             </li>
-            <li>区域：<select name="area" class="form-control" required><option>辽宁</option><option>吉林</option><option>黑龙江</option></select></li>
-            <li style="width:800px;clear:left;">文字内容：<textarea name="content_descp" class="form-control" required rows="8" cols="100" placeholder="空间类：空间显示信息"></textarea></li>
             
-            <li style="width:500px;clear:left;">备注：<input type="text" name="descp" class="form-control"/></li>
+            <li id="li_other" style="display:none;">设计类型其他<font color="red">*</font>：
+            	 <input type="text" name="design_type_other" class="form-control" placeholder="设计类型其他的详情" maxlength="80"/>
+            </li>
             
-            <li  class="space" style="width:800px;clear:left;">空间实景图片（正面位置清晰照1-2张），侧面位置清晰照1-2张<font color="red">(注意：每张图片限制在10M之内)</font>:
+            <li>区域<font color="red">*</font>：<select name="area" class="form-control" required><option>辽宁</option><option>吉林</option><option>黑龙江</option></select></li>
+            <li style="width:800px;clear:left;">文字内容<font color="red">*</font>：<textarea name="content_descp" maxlength="800"  class="form-control" required rows="8" cols="100" placeholder="空间类：空间显示信息"></textarea></li>
+            
+            <li style="width:500px;clear:left;">备注：<input type="text" name="descp" class="form-control" maxlength="200" /></li>
+            
+            <li  class="space" style="width:800px;clear:left;">空间实景图片（正面位置清晰照1-2张），侧面位置清晰照1-2张<font color="red">(注意：每张图片限制在10M之内,如不能上传附件，则发送至品牌中心指定邮箱： hwbrand@126.com)</font><font color="red">*</font>:
 	            <div class="form-group pos1">
 		            <div class="row">
 		            	 <div class="col-md-8">
@@ -176,7 +200,7 @@
 	            </div>
             </li>
             
-            <li class="space" style="width:800px;">安放位置平面图及尺寸标注（上传标注尺寸的平面图或标注尺寸的平面图照片）<font color="red">(注意：每张图片限制在10M之内)</font>:
+            <li class="space" style="width:800px;">安放位置平面图及尺寸标注（上传标注尺寸的平面图或标注尺寸的平面图照片）<font color="red">(注意：每张图片限制在10M之内,如不能上传附件，则发送至品牌中心指定邮箱： hwbrand@126.com)</font><font color="red">*</font>:
 	            <div class="form-group pos">
 		            <div class="row">
 		            	 <div class="col-md-8">
@@ -191,7 +215,7 @@
             </li>
             
             
-            <li  class="space" style="width:800px;">空间显示信息图片（上传需要展示的图片原图）<font color="red">(注意：每张图片限制在10M之内)</font>:
+            <li  class="space" style="width:800px;">空间显示信息图片（上传需要展示的图片原图）<font color="red">(注意：每张图片限制在10M之内,如不能上传附件，则发送至品牌中心指定邮箱： hwbrand@126.com)</font><font color="red">*</font>:
 	            <div class="form-group ref1">
 	            	<div class="row">
 		            	 <div class="col-md-8">
@@ -205,7 +229,7 @@
 	            </div>
 	       </li>
 	       
-            <li style="width:800px;">参考图片（原图）<font color="red">(注意：每张图片限制在10M之内)</font>:
+            <li style="width:800px;">参考图片（原图）<font color="red">(注意：每张图片限制在10M之内,如不能上传附件，则发送至品牌中心指定邮箱： hwbrand@126.com)</font>:
 	            <div class="form-group ref">
 	            	<div class="row">
 		            	 <div class="col-md-8">
@@ -288,7 +312,7 @@
 
 	// 页面会用到的类型id
 	STATE={:json_encode(get_config('APPLYDESIGN_STATE'))};//审核状态
-	SCHOOL={:json_encode($school)};
+	
     
 	function resetFileComponent(){
 		
@@ -333,7 +357,19 @@
 	$(document).ready(function(){
 	    loadData(0);//页面数据加载
 	});
-
+	
+	$('#design_other').change(function(){
+		if($(this).val() == '其它'){
+			$('#li_other').css('display','block');
+			$('input[name="design_type_other"]').prop('required','required')
+		}else{
+			$('#li_other').css('display','none');
+			$('input[name="design_type_other"]').val('');
+			$('input[name="design_type_other"]').prop('required',false);
+			 
+		}
+	});
+	
     // 页码绑定事件
     $('#pagination').on('click', '.page', function(){
         var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
@@ -389,6 +425,7 @@
         }else{
             $("#apply_form").show();
             Ycom.fillForm('#apply_form',data);
+            $('#design_other').trigger('change');
             $('#bt_save_change').show();
             $('#bt_add').hide();
             //$('input[name=unit_price]').change();
@@ -456,7 +493,6 @@ function loadData(offset) {
                 result.data[x].back = '正常';
             }
             
-            result.data[x].school = SCHOOL[result.data[x].school];
         }
         if (result.state == 'ok') {
             Ycom.table('#apply_list', {
@@ -473,6 +509,7 @@ function loadData(offset) {
                 'expect_date':'使用日期',
                 'email':'部门接收邮箱',
                 'design_type':'设计类型',
+                'design_type_other':'设计类型其它',
                 'content_descp':'文字内容',
                 'space_pics':'空间实景图片',
                 'install_pos_pics':'安放位置图片',
