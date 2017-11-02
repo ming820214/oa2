@@ -120,7 +120,7 @@ class ApplyCourseModel extends CommonModel{
         
         $wx= getWechatObj();
         $wx->sendNewsMsg(
-            [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=applycourse/examine')),'')],
+            [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=apply_course/examine')),'')],
             ['touser'=>$user],
             C('WECHAT_APP')['XZMS']
         );
