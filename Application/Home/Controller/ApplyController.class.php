@@ -270,7 +270,7 @@ class ApplyController extends HomeController {
 			if((session('user_name')=='齐静' || session('user_name')=='张晓明') && $w['stage']!=3){
 				unset($w['state'],$w['dept1'],$w['dept2']);
 				//$w['_string']='(state=30 AND dept2=32) OR (state=40 AND type=10) OR (state=60) OR (state=70) OR (state=120 AND dept2=32) OR (state=140) OR (state=150)';
-				$w['_string']='(state=30 AND dept2=32) OR (state=40 AND type=10 AND dept2 !=67) OR (state=60) OR (state=120 AND dept2=32) OR (state=140 AND dept2 !=67) OR (state=150 AND dept2!=67)';
+				$w['_string']='(state=30 AND dept2=32) OR (state=40 AND type=10 AND dept2 !=67 AND dept2 !=71) OR (state=60) OR (state=120 AND dept2=32) OR (state=140 AND dept2 !=67) OR (state=150 AND dept2!=67)';
 			}
 			
 			if((session('user_name')=='王丽丽' || session('user_name')=='张晓明') && $w['stage']!=3){
@@ -297,7 +297,7 @@ class ApplyController extends HomeController {
 			// 集团大总裁
 			if(session('user_name')=='李文龙' || session('user_name')=='张晓明'){
 				unset($w['state'],$w['dept1'],$w['dept2']);
-				$w['_string']='(state=40 AND type=20 AND dept2 !=67) OR (state=130 AND dept2!=67)';
+				$w['_string']='(state=40 AND dept2=71) OR (state=40 AND type=20 AND dept2 !=67) OR (state=130 AND dept2!=67)';
 			}
 		}
 		if($w['stage']==5){
