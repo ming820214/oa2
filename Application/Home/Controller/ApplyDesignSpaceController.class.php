@@ -679,7 +679,7 @@ class ApplyDesignSpaceController extends HomeController {
 	            $hrefs = explode(";",$vo['reference_pic']);
 	            $ref = '';
 	            foreach($hrefs as $arr){
-	                $ref .= '<a href="' . C('WWW').'oa2'.substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	                $ref .= '<a href="' . C('WWW').'/oa2'.substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
 	            }
 	            $vo['reference_pic'] = $ref;
 	        }
@@ -688,7 +688,7 @@ class ApplyDesignSpaceController extends HomeController {
 	            $hrefs = explode(";",$vo['space_pic']);
 	            $ref = '';
 	            foreach($hrefs as $arr){
-	                $ref .= '<a href="' . C('WWW').'oa2'.substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	                $ref .= '<a href="' . C('WWW').'/oa2'.substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
 	            }
 	            $vo['space_pic'] = $ref;
 	        }
@@ -698,7 +698,7 @@ class ApplyDesignSpaceController extends HomeController {
 	            $hrefs = explode(";",$vo['install_pos_pic']);
 	            $ref = '';
 	            foreach($hrefs as $arr){
-	                $ref .= '<a href="' . C('WWW').'oa2'.substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	                $ref .= '<a href="' . C('WWW').'/oa2'.substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
 	            }
 	            $vo['install_pos_pic'] = $ref;
 	        }
@@ -708,7 +708,7 @@ class ApplyDesignSpaceController extends HomeController {
 	            $hrefs = explode(";",$vo['space_show_pic']);
 	            $ref = '';
 	            foreach($hrefs as $arr){
-	                $ref .= '<a href="' . C('WWW').'oa2'.substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	                $ref .= '<a href="' . C('WWW').'/oa2'.substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
 	            }
 	            $vo['space_show_pic'] = $ref;
 	        }
