@@ -690,7 +690,7 @@ class ApplyDesignSpaceController extends HomeController {
 	            foreach($hrefs as $arr){
 	                $ref .= '<a href="' . substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
 	            }
-	            $vo['space_pics'] = $ref;
+	            $vo['space_pic'] = $ref;
 	        }
 	        
 	        
@@ -700,7 +700,7 @@ class ApplyDesignSpaceController extends HomeController {
 	            foreach($hrefs as $arr){
 	                $ref .= '<a href="' . substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
 	            }
-	            $vo['install_pos_pics'] = $ref;
+	            $vo['install_pos_pic'] = $ref;
 	        }
 	        
 	        
@@ -710,7 +710,7 @@ class ApplyDesignSpaceController extends HomeController {
 	            foreach($hrefs as $arr){
 	                $ref .= '<a href="' . substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
 	            }
-	            $vo['space_show_pics'] = $ref;
+	            $vo['space_show_pic'] = $ref;
 	        }
 	        
 	        $output .= "<tr>";
