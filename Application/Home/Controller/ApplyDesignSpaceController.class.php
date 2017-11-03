@@ -619,80 +619,134 @@ class ApplyDesignSpaceController extends HomeController {
 	//数据导出功能
 	public function export(){
 
-		if(session('school_id')!=0)die;
-		$w=I('post.');
-		array_empty_delt($w);
-		unset($w['stage']);
-		$w['is_del']=0;
-		$dat=M('applyCourse')->where($w)->field("id, state, school, area,apply_user, substring_index(apply_user,'#',1) as apply_user2, course_info, class_type, activity_begin, activity_end, subject, charge_descp, marketing, course_point, expect_date, other, why, create_time, update_time, is_del, add_user, add_user_name,  CASE back WHEN 1 THEN '退回' else '正常' END as back")->select();
-
-        $output = "<HTML>";
-        $output .= "<HEAD>";
-        $output .= "<META http-equiv=Content-Type content=\"text/html; charset=utf-8\">";
-        $output .= "</HEAD>";
-        $output .= "<BODY>";
-        $output .= "<TABLE BORDER=1>";
-        $output .= "<tr>
+	    if(session('school_id')!=0)die;
+	    if(session('auth_id') !== '1'){
+	        die;
+	    }
+	    $w=I('post.');
+	    array_empty_delt($w);
+	    unset($w['stage']);
+	    $w['is_del']=0;
+	    
+	    if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 23:59:59']];
+	    
+	    if($w['apply_user']){
+	        $w['apply_user'] = array('like','%'. $w['apply_user'] . '%');
+	    }
+	    
+	    $w['product_type'] = 1;
+	    
+	    $dat=M('applyDesign')->where($w)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area,design_type_other,flat_size_other')->select();;
+	    
+	    $output = "<HTML>";
+	    $output .= "<HEAD>";
+	    $output .= "<META http-equiv=Content-Type content=\"text/html; charset=utf-8\">";
+	    $output .= "</HEAD>";
+	    $output .= "<BODY>";
+	    $output .= "<TABLE BORDER=1>";
+	    $output .= "<tr>
         				<td>序号</td>
         				<td>流程状态</td>
         				<td>审核状态</td>
-        				<td>申请校区</td>
-        				<td>区域</td>
-        				<td>申请人</td>
-        				<td>新课程名称</td>
-        				<td>班型</td>
-        				<td>活动开始时间</td>
-        				<td>活动结束时间</td>
-        				<td>开设科目</td>
-        				<td>收费及优惠说明</td>
-        				<td>营销手段</td>
-        				<td>课程亮点</td>
-        				<td>期望审批日期</td>
-        				<td>其他说明</td>
+        				<td>提报月度</td>
+        				<td>计划类型</td>
+        				<td>提报人</td>
+        				<td>联系电话</td>
+        				<td>提报日期</td>
+        				<td>截稿日期</td>
+        				<td>部门接收邮箱</td>
+        				<td>设计类型</td>
+        				<td>设计类型其它</td>
+                        <td>文字内容</td>
+        				<td>空间实景图片</td>
+        				<td>安放位置图片</td>
+        				<td>空间显示信息图片</td>
+                        <td>参考案例</td>
+                        <td>区域</td>
+                        <td>备注</td>
                         <td>退回原因</td>
         				<td>最后审核时间</td>
-        				<td>数据创建时间</td>
         				<td>创建人</td>
         				</tr>";
-        $apply_state=get_config('APPLYCOURSE_STATE');
-        
-        foreach ($dat as &$vo) {
-            
-            $vo['state']=$apply_state[$vo['state']];
-            $vo['school']=$this->school[$vo['school']];
-
-            $output .= "<tr>";
-            $output .= "<td>".$vo['id']."</td>";
-            $output .= "<td>".$vo['back']."</td>";
-            $output .= "<td>".$vo['state']."</td>";
-            $output .= "<td>".$vo['school']."</td>";
-            $output .= "<td>".$vo['area']."</td>";
-            $output .= "<td>".$vo['apply_user2']."</td>";
-            $output .= "<td>".$vo['course_info']."</td>";
-            $output .= "<td>".$vo['class_type']."</td>";
-            $output .= "<td>".$vo['activity_begin']."</td>";
-            $output .= "<td>".$vo['activity_end']."</td>";
-            $output .= "<td>".$vo['subject']."</td>";
-            $output .= "<td>".$vo['charge_descp']."</td>";
-            $output .= "<td>".$vo['marketing']."</td>";
-            $output .= "<td>".$vo['course_point']."</td>";
-            $output .= "<td>".$vo['expect_date']."</td>";
-            $output .= "<td>".$vo['why']."</td>";
-            $output .= "<td>".$vo['other']."</td>";
-            $output .= "<td>".$vo['update_time']."</td>";
-            $output .= "<td>".$vo['create_time']."</td>";
-            $output .= "<td>".$vo['add_user_name']."</td>";
-            $output .= "</tr>";
-        }
-        $output .= "</TABLE>";
-        $output .= "</BODY>";
-        $output .= "</HTML>";
-        $filename='新课程申请明细导出表'.date('Y-m-d');
-        header("Content-type:application/msexcel");
-        header("Content-disposition: attachment; filename=$filename.xls");
-        header("Cache-control: private");
-        header("Pragma: private");
-        print($output);
+	    $apply_state=get_config('APPLYDESIGN_STATE');
+	    
+	    foreach ($dat as &$vo) {
+	        
+	        $vo['state']=$apply_state[$vo['state']];
+	        $vo['apply_school']=$this->school_all[$vo['apply_school']];
+	        
+	        if($vo['reference_pic']){
+	            $hrefs = explode(";",$vo['reference_pic']);
+	            $ref = '';
+	            foreach($hrefs as $arr){
+	                $ref .= '<a href="' . C('WWW').substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	            }
+	            $vo['reference_pic'] = $ref;
+	        }
+	        
+	        if($vo['space_pic']){
+	            $hrefs = explode(";",$vo['space_pic']);
+	            $ref = '';
+	            foreach($hrefs as $arr){
+	                $ref .= '<a href="' . substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	            }
+	            $vo['space_pics'] = $ref;
+	        }
+	        
+	        
+	        if($vo['install_pos_pic']){
+	            $hrefs = explode(";",$vo['install_pos_pic']);
+	            $ref = '';
+	            foreach($hrefs as $arr){
+	                $ref .= '<a href="' . substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	            }
+	            $vo['install_pos_pics'] = $ref;
+	        }
+	        
+	        
+	        if($vo['space_show_pic']){
+	            $hrefs = explode(";",$vo['space_show_pic']);
+	            $ref = '';
+	            foreach($hrefs as $arr){
+	                $ref .= '<a href="' . substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	            }
+	            $vo['space_show_pics'] = $ref;
+	        }
+	        
+	        $output .= "<tr>";
+	        $output .= "<td>".$vo['id']."</td>";
+	        $output .= "<td>".$vo['back']."</td>";
+	        $output .= "<td>".$vo['state']."</td>";
+	        $output .= "<td>".$vo['apply_month']."</td>";
+	        $output .= "<td>".$vo['apply_type']."</td>";
+	        $output .= "<td>".$vo['apply_user']."</td>";
+	        $output .= "<td>".$vo['tel']."</td>";
+	        $output .= "<td>".$vo['create_time']."</td>";
+	        $output .= "<td>".$vo['expect_date']."</td>";
+	        $output .= "<td>".$vo['email']."</td>";
+	        $output .= "<td>".$vo['design_type']."</td>";
+	        $output .= "<td>".$vo['design_type_other']."</td>";
+	        $output .= "<td>".$vo['content_descp']."</td>";
+	        $output .= "<td>".$vo['space_pic']."</td>";
+	        $output .= "<td>".$vo['install_pos_pic']."</td>";
+	        $output .= "<td>".$vo['space_show_pic']."</td>";
+	        $output .= "<td>".$vo['reference_pic']."</td>";
+	        $output .= "<td>".$vo['area']."</td>";
+	        $output .= "<td>".$vo['descp']."</td>";
+	        $output .= "<td>".$vo['why']."</td>";
+	        $output .= "<td>".$vo['update_time']."</td>";
+	        $output .= "<td>".$vo['add_user_name']."</td>";
+	        $output .= "</tr>";
+	    }
+	    $output .= "</TABLE>";
+	    $output .= "</BODY>";
+	    $output .= "</HTML>";
+	    $filename='空间类设计申请明细导出表'.date('Y-m-d');
+	    header("Content-type:application/msexcel");
+	    header("Content-disposition: attachment; filename=$filename.xls");
+	    header("Cache-control: private");
+	    header("Pragma: private");
+	    print($output);
     }
 
     //附件上传
