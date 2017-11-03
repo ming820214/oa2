@@ -488,7 +488,7 @@ class ApplyDesignFlatController extends HomeController {
                 $hrefs = explode(";",$vo['reference_pic']);
                 $ref = '';
                 foreach($hrefs as $arr){
-                    $ref .= '<a href="' . C('WWW').substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+                    $ref .= '<a href="' . C('WWW').'oa2'.substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
                 }
                 $vo['reference_pic'] = $ref;
             }
