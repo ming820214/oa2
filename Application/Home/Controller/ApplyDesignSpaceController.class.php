@@ -636,7 +636,7 @@ class ApplyDesignSpaceController extends HomeController {
 	    
 	    $w['product_type'] = 2;
 	    
-	    $dat=M('applyDesign')->where($w)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, space_pic, install_pos_pic, space_show_pic, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area,design_type_other')->select();;
+	    $dat=M('applyDesign')->where($w)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, space_pic, install_pos_pic, space_show_pic, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, CASE back WHEN 1 THEN '退回' else '正常' END as back, descp,area,design_type_other')->select();;
 	    
 	    $output = "<HTML>";
 	    $output .= "<HEAD>";
