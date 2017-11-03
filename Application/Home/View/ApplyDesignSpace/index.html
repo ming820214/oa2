@@ -164,7 +164,7 @@
 			</select></li>
             <li>提报人<font color="red">*</font>：<input type="text" name="apply_user" class="form-control" maxlength="10"  required/></li>
             <li>联系电话<font color="red">*</font>：<input type="text" name="tel" class="form-control" maxlength="11"  required></li>
-            <li>使用日期<font color="red">*</font>:<input type="date" name="expect_date" class="form-control" required="required"></li>
+            <li>截稿日期<font color="red">*</font>:<input type="date" name="expect_date" class="form-control" required="required"></li>
             <li>部门接收邮箱<font color="red">*</font>：<input type="text" name="email" class="form-control" maxlength="80"  required></li>
             
             <!-- 空间设计类 -->
@@ -189,7 +189,6 @@
             <li>区域<font color="red">*</font>：<select name="area" class="form-control" required><option>辽宁</option><option>吉林</option><option>黑龙江</option></select></li>
             <li style="width:800px;clear:left;">文字内容<font color="red">*</font>：<textarea name="content_descp" maxlength="800"  class="form-control" required rows="8" cols="100" placeholder="空间类：空间显示信息"></textarea></li>
             
-            <li style="width:500px;clear:left;">备注：<input type="text" name="descp" class="form-control" maxlength="200" /></li>
             
             <li  class="space" style="width:800px;clear:left;">空间实景图片（正面位置清晰照1-2张），侧面位置清晰照1-2张<font color="red">(注意：每张图片限制在10M之内,如不能上传附件，则发送至品牌中心指定邮箱： hwbrand@126.com)</font><font color="red">*</font>:
 	            <div class="form-group pos1">
@@ -197,11 +196,11 @@
 		            	 <div class="col-md-8">
 			           	 	<input type="file" name="space_pic[]" class="form-control" required>
 			           	 </div>
-			           	 <div class="col-md-4">
-			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
+			           	 <div class="col-md-2">
+			           	 	<input type="button" class="v_delF col-md-1 form-control" value="删除"/>
 			           	 </div>
 		            </div>
-		            <input type="button" class="v_addF col-md-4 col-md-offset-8" value="增加"/>
+		            <input type="button" class="v_addF col-md-1" style="width:108px;margin-left:554px;margin-top:5px;" value="增加"/>
 	            </div>
             </li>
             
@@ -211,11 +210,11 @@
 		            	 <div class="col-md-8">
 			           	 	<input type="file" name="install_pos_pic[]" class="form-control" required>
 			           	 </div>
-			           	 <div class="col-md-4">
-			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
+			           	 <div class="col-md-2">
+			           	 	<input type="button" class="v_delF col-md-1 form-control" value="删除"/>
 			           	 </div>
 		            </div>
-		            <input type="button" class="v_addF col-md-4 col-md-offset-8" value="增加"/>
+		            <input type="button" class="v_addF col-md-1" style="width:108px;margin-left:554px;margin-top:5px;" value="增加"/>
 	            </div>
             </li>
             
@@ -226,11 +225,11 @@
 		            	 <div class="col-md-8">
 			           	 	<input type="file" name="space_show_pic[]" class="form-control" required>
 			           	 </div>
-			           	 <div class="col-md-4">
-			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
+			           	 <div class="col-md-2">
+			           	 	<input type="button" class="v_delF col-md-1 form-control" value="删除"/>
 			           	 </div>
 		            </div>
-		            <input type="button" class="v_addF col-md-4 col-md-offset-8" value="增加"/>
+		            <input type="button" class="v_addF col-md-1" style="width:108px;margin-left:554px;margin-top:5px;" value="增加"/>
 	            </div>
 	       </li>
 	       
@@ -240,14 +239,15 @@
 		            	 <div class="col-md-8">
 			           	 	<input type="file" name="references[]" class="form-control"/>
 			           	 </div>
-			           	 <div class="col-md-4">
-			           	 	<input type="button" class="v_delF col-md-4 form-control" value="删除"/>
+			           	 <div class="col-md-2">
+			           	 	<input type="button" class="v_delF col-md-1 form-control" value="删除"/>
 			           	 </div>
 		            </div>
-		            <input type="button" class="v_addF col-md-4 col-md-offset-8" value="增加"/>
+		            <input type="button" class="v_addF col-md-1" style="width:108px;margin-left:554px;margin-top:5px;" value="增加"/>
 	            </div>
 	       </li>
 	       
+	        <li style="width:500px;clear:left;">备注：<input type="text" name="descp" class="form-control" maxlength="200" /></li>
         </ul>
     </div>
 </form>
