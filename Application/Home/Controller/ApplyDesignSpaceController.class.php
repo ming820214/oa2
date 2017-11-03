@@ -634,9 +634,9 @@ class ApplyDesignSpaceController extends HomeController {
 	        $w['apply_user'] = array('like','%'. $w['apply_user'] . '%');
 	    }
 	    
-	    $w['product_type'] = 1;
+	    $w['product_type'] = 2;
 	    
-	    $dat=M('applyDesign')->where($w)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area,design_type_other,flat_size_other')->select();;
+	    $dat=M('applyDesign')->where($w)->order('id desc')->field('id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, space_pic, install_pos_pic, space_show_pic, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, back, descp,area,design_type_other')->select();;
 	    
 	    $output = "<HTML>";
 	    $output .= "<HEAD>";
@@ -688,7 +688,7 @@ class ApplyDesignSpaceController extends HomeController {
 	            $hrefs = explode(";",$vo['space_pic']);
 	            $ref = '';
 	            foreach($hrefs as $arr){
-	                $ref .= '<a href="' . substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	                $ref .= '<a href="' . C('WWW').substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
 	            }
 	            $vo['space_pic'] = $ref;
 	        }
@@ -698,7 +698,7 @@ class ApplyDesignSpaceController extends HomeController {
 	            $hrefs = explode(";",$vo['install_pos_pic']);
 	            $ref = '';
 	            foreach($hrefs as $arr){
-	                $ref .= '<a href="' . substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	                $ref .= '<a href="' . C('WWW').substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
 	            }
 	            $vo['install_pos_pic'] = $ref;
 	        }
@@ -708,7 +708,7 @@ class ApplyDesignSpaceController extends HomeController {
 	            $hrefs = explode(";",$vo['space_show_pic']);
 	            $ref = '';
 	            foreach($hrefs as $arr){
-	                $ref .= '<a href="' . substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
+	                $ref .= '<a href="' . C('WWW').substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
 	            }
 	            $vo['space_show_pic'] = $ref;
 	        }
