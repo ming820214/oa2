@@ -499,6 +499,9 @@ class ApplyDesignSpaceController extends HomeController {
     		                  $vo['edit'] = 0;
     		              }
     		          }
+    		          if($vo['state'] >= 80){
+    		              $vo['edit'] = 0;
+    		          }
     		      }
     		      
     		     /* if($vo['state']>0){
@@ -578,6 +581,9 @@ class ApplyDesignSpaceController extends HomeController {
          	              if($vo['state']<=0){
          	                  $vo['edit'] = 0;
          	              }
+         	          }
+         	          if($vo['state'] >= 80){
+         	              $vo['edit'] = 0;
          	          }
          	      }
          		 
