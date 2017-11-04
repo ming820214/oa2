@@ -349,6 +349,9 @@ class ApplyDesignFlatController extends HomeController {
     		            }
     		        }
     		    }
+    		    if($vo['state'] >= 80){
+    		        $vo['edit'] = 0;
+    		    }
     		  }
     		}else{
          	  foreach ($data as &$vo){
@@ -387,6 +390,9 @@ class ApplyDesignFlatController extends HomeController {
          	                  $vo['edit'] = 0;
          	              }
          	          }
+         	      }
+         	      if($vo['state'] >= 80){
+         	          $vo['edit'] = 0;
          	      }
          	   }
     		}
