@@ -353,7 +353,7 @@ class ApplyDesignSpaceController extends HomeController {
     	            if(session('position_id') == '10'){
     	                //校长
     	                $w['state'] = 10;
-    	            }else if(session('auth_id') == '439' || session('auth_id') == '1'){
+    	            }else if(session('auth_id') == '439'){
     	                //何亮
     	                unset($w['apply_school']);
     	                $w['area'] = '黑龙江';
@@ -388,7 +388,7 @@ class ApplyDesignSpaceController extends HomeController {
     	                unset($w['apply_school']);
     	                $w['area'] = '黑龙江';
     	                $w['state'] = 20;
-    	            }elseif(get_school_name()=='集团' && (session('auth_id') == '89' || session('auth_id') == '1091')){
+    	            }elseif(get_school_name()=='集团' && (session('auth_id') == '89')){
     	                //王胜鑫
     	                unset($w['apply_school']);
     	                unset($w['area']);
