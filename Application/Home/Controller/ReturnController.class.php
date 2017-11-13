@@ -46,7 +46,6 @@ class ReturnController extends HomeController {
 						    }else if($record_gt['region'] == '吉林'){
 						        //王大鹏
 						        $user[]= 'XZfx01'; 
-						        $user[]= 'WW';
 						        
 						    }else if($record_gt['region'] == '黑龙江'){
 						        //何亮
