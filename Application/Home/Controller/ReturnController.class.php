@@ -17,7 +17,7 @@ class ReturnController extends HomeController {
             if($_POST['x'])$m->state=1;
             
             if($_POST['action_node'] && $_POST['why3'] && $_POST['action_node'] == 'zbgt'){
-                $m->state = 9;
+                $m->state = 3;
             }
             if($m->save()){
                 if((session('auth_id') != 90) && (session('auth_id') != 89) && (session('auth_id') != 69) && (session('auth_id') != 1283) && (session('auth_id') != 1293) && (session('auth_id') != 651) && (session('auth_id') != 439) )
@@ -27,7 +27,7 @@ class ReturnController extends HomeController {
 				   	{
 					   	 
 						$record_gt = M('hw003.return','money_')->where(['id'=>$_POST['id']])->find();
-						if($record_gt && $record_gt['state'] == 9 && $record_gt['why3'] && ( ($record_gt['class1'] == 7) || ($record_gt['class1'] == 8) || ($record_gt['class1'] == 9) || ($record_gt['class1'] == 10) || ($record_gt['class1'] == 14))){
+						if($record_gt && $record_gt['state'] == 8 && $record_gt['why3'] && ( ($record_gt['class1'] == 7) || ($record_gt['class1'] == 8) || ($record_gt['class1'] == 9) || ($record_gt['class1'] == 10) || ($record_gt['class1'] == 14))){
 						    
 							
 						    $user[]= 'XZdl01'; //张玉珠
@@ -39,8 +39,8 @@ class ReturnController extends HomeController {
 							}else{
 								$user[]= ['XZdl01']; //张玉珠
 							}  */
-						}else if($record_gt && $record_gt['state'] == 9 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 14))){
-						    if($record_gt['region'] == '辽宁'){
+						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 12) && ($record_gt['class1'] != 13) && ($record_gt['class1'] != 14))){
+						    /* if($record_gt['region'] == '辽宁'){
 						        //姜博文
 						        $user[]= 'XZsmqh28'; 
 						    }else if($record_gt['region'] == '吉林'){
@@ -50,8 +50,8 @@ class ReturnController extends HomeController {
 						    }else if($record_gt['region'] == '黑龙江'){
 						        //何亮
 						        $user[]= 'XZsy01'; 
-						    }
-						      
+						    } */
+						    $user[]= 'YY001'; //王胜鑫
 						}
 					}
 			        
@@ -488,11 +488,42 @@ class ReturnController extends HomeController {
         if($_POST['aax']){
             foreach ($_POST['id'] as $key => $value) {
                 $w['id']=$value;
-                $d['state']=8;
+                $d['state']=9;
                 {
                     $record_xq = M('hw003.return','money_')->where($w)->find();
                     if($record_xq){
-                        //如果是王思雷，则只能审核高报项目
+                        
+                        if(( ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14))){
+                            if($record_xq['region'] == '辽东'){
+                                //张鹏
+                                $user[]= 'XZsmqh29';
+                            }else if($record_xq['region'] == '辽西'){
+                                //张玉珠
+                                $user[]= 'XZdl01';
+                                
+                            }else if($record_xq['region'] == '辽宁'){
+                                //姜博文
+                                $user[]= 'XZsmqh28';
+                                
+                            }else if($record_xq['region'] == '吉林'){
+                                //王大鹏
+                                $user[]= 'XZfx01';
+                                
+                            }else if($record_xq['region'] == '黑龙江'){
+                                //何亮
+                                $user[]= 'XZsy01';
+                            }
+                            
+                        }elseif(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13)){
+                            $d['state']=3;
+                            $user[]= 'JZsyjn03'; //李名帅
+                        }else{
+                            $d['state']=8;
+                            $user[]= 'QThwzb002'; //刘媛媛
+                            
+                        }
+                        
+                        /* //如果是王思雷，则只能审核高报项目
                         if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14)){
                             //							$user[0]= 'ZXhld001'; //邹德涛
                             $user[0]= 'XGryxc22'; //邹婧
@@ -504,7 +535,7 @@ class ReturnController extends HomeController {
                             // 							$user[0]= 'Azl'; //王思雷
                             $user[0]= 'QThwzb002'; //刘媛媛
                             
-                        }
+                        } */
                     }
                 }
                 
@@ -514,59 +545,50 @@ class ReturnController extends HomeController {
                 //审核记录
                 R('Return/record',array($value,'校区审核'));
 				
-				
+                if($rr){
+                    
+                    {
+                        
+                        $user=array_unique($user);
+                        
+                        //微信通知
+                        if(empty($user)){
+                            return;
+                        }
+                        
+                        //存储一下被通知过的人,方便后期查看
+                        $ff=(array)F('weixin_tfgl_zb');
+                        $f2=array_merge($ff,$user);
+                        F('weixin_tfgl_zb',$f2);
+                        
+                        $info='点击可直接进入审核……';
+                        
+                        $wx= getWechatObj();
+                        
+                        if(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13)){
+                            $wx->sendNewsMsg(
+                                [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check3')),'')],
+                                ['touser'=>$user],
+                                C('WECHAT_APP')['TZTX']
+                                );
+                            
+                        }else{
+                            $wx->sendNewsMsg(
+                                [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/region_check3')),'')],
+                                ['touser'=>$user],
+                                C('WECHAT_APP')['TZTX']
+                                );
+                        }
+                        
+                    }
+                    
+                    
+                    $this->success('审核完成！');
+                }else{
+                    $this->success('选择要审核的条目！');
+                }
             }
-            if($rr){
-            	
-				{
-					
-					$user=array_unique($user);
-			
-			 		//微信通知
-			        if(empty($user)){
-			        	return;
-			        }
-			        	
-			        //存储一下被通知过的人,方便后期查看
-			        $ff=(array)F('weixin_tfgl_zb');
-			        $f2=array_merge($ff,$user);
-			        F('weixin_tfgl_zb',$f2);
-					
-					$info='点击可直接进入审核……';
-					
-			        $wx= getWechatObj();
-			        
-			        if(($record_xq['class1'] == 12)){
-			        	$wx->sendNewsMsg(
-			        			[$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check3')),'')],
-			        			['touser'=>$user],
-			        			C('WECHAT_APP')['TZTX']
-			        			);
-			        	
-			        }else{
-			        	$wx->sendNewsMsg(
-			        			[$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/gt')),'')],
-			        			['touser'=>$user],
-			        			C('WECHAT_APP')['TZTX']
-			        			);
-			        }
-			        
-			        /*$wx->sendTextMsg("特殊优惠有新的动态，请查看",
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['TZTX']);*/
-						
-			         /*$wx->sendNewsMsg(
-			            [$wx->buildNewsItem("有特殊优惠待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=CoursesApply/examine')),'')],
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['XZMS']
-			        );*/
-				}	
-				
-				
-                $this->success('审核完成！');
-            }else{
-                $this->success('选择要审核的条目！');
-            }
+            
         }elseif($_POST['bt']){
             foreach ($_POST['id'] as $key => $value) {
                 $w['id']=$value;
@@ -758,258 +780,6 @@ class ReturnController extends HomeController {
         }
     }
 
-//部门审核
-    public function check3(){
-    	
-		$this->assign('gradeList', C('SCHOOL_GRADE'));
-		$grade_lst = C('SCHOOL_GRADE');
-		$gradelst = array_column($grade_lst,'name','id');
-		$this->gradelst = $gradelst;
-		
-        if($_POST['aax']){
-            foreach ($_POST['id'] as $key => $value) {
-                $w['id']=$value;
-                $d['state']=4;
-                $d['time2']=date('Y-m-d H:i:s');
-                $rr=M('hw003.return','money_')->where($w)->save($d);
-                //审核记录
-                R('Return/record',array($value,'部门审核'));
-            }
-            if($rr){
-            	{
-			       	$user[0]= 'YX005';//王丽丽 ；'A02';//wechat_userid 齐静	
-			        	
-			        //存储一下被通知过的人,方便后期查看
-			        $ff=(array)F('weixin_tfgl_bm');
-			        $f2=array_merge($ff,$user);
-			        F('weixin_tfgl_bm',$f2);
-					
-					$info='点击可直接进入审核……';
-					
-			        $wx= getWechatObj();
-			        $wx->sendNewsMsg(
-			            [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check4')),'')],
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['TZTX']
-			        );
-			        /*$wx->sendTextMsg("特殊优惠有新的动态，请查看",
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['TZTX']);*/
-						
-			         /*$wx->sendNewsMsg(
-			            [$wx->buildNewsItem("有特殊优惠待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=CoursesApply/examine')),'')],
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['XZMS']
-			        );*/
-					
-				}
-                $this->success('审核完成！');
-            }else{
-                $this->success('选择要审核的条目！');
-            }
-        }elseif($_POST['bt']){
-            foreach ($_POST['id'] as $key => $value) {
-                $w['id']=$value;
-                $d['state']=0;
-                $rr=M('hw003.return','money_')->where($w)->save($d);
-                R('Return/record',array($value,'数据退回'));
-				
-				{
-// 					$xueguan = M('hw003.return','money_')->where($w)->getField('bb');
-					$data_t = M('hw003.return','money_')->where($w)->getField('bb,school');
-					$xueguan = array_keys($data_t)[0];
-					$school = array_values($data_t)[0];
-					
-					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
-					
-					if($xg){
-						$user[]= $xg;	
-					}
-			        	
-					
-				}
-            }
-            if($rr){
-            	{
-					
-					$user=array_unique($user);
-			
-			 		//微信通知
-			        if(empty($user)){
-			        	return;
-			        }
-			        	
-			        //存储一下被通知过的人,方便后期查看
-			        $ff=(array)F('weixin_tfgl_bm_th');
-			        $f2=array_merge($ff,$user);
-			        F('weixin_tfgl_bm_th',$f2);
-					
-					$info='点击可直接进入审核……';
-					
-			        $wx= getWechatObj();
-			        $wx->sendNewsMsg(
-			            [$wx->buildNewsItem("您有退费申请被退回，请及时查看！",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/add')),'')],
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['TZTX']
-			        );
-			        /*$wx->sendTextMsg("特殊优惠有新的动态，请查看",
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['TZTX']);*/
-						
-			         /*$wx->sendNewsMsg(
-			            [$wx->buildNewsItem("有特殊优惠待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=CoursesApply/examine')),'')],
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['XZMS']
-			        );*/
-					
-				}
-                $this->success('数据已退回！');
-            }else{
-                $this->error('选择要退回的数据！');
-            }
-        }elseif ($_POST['dl']) {
-            foreach ($_POST['id'] as $key => $value) {
-                $w['id']=$value;
-                $w['state']=array('in','0,-1');
-                $rr=M('hw003.return','money_')->where($w)->delete();
-                R('Return/record',array($value,'删除'));
-				
-				{
-// 					$xueguan = M('hw003.return','money_')->where(['id'=>$value])->getField('bb');
-
-					$data_t = M('hw003.return','money_')->where(['id'=>$value])->getField('bb,school');
-					$xueguan = array_keys($data_t)[0];
-					$school = array_values($data_t)[0];
-					
-					$xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
-					
-					if($xg){
-						$user[]= $xg;	
-					}
-			        	
-					$del_id[] = $value;
-				}
-            }
-            if($rr)
-				{
-					
-					$user=array_unique($user);
-			
-			 		//微信通知
-			        if(empty($user)){
-			        	return;
-			        }
-			        	
-			        //存储一下被通知过的人,方便后期查看
-			        $ff=(array)F('weixin_tfgl_bm_sc');
-			        $f2=array_merge($ff,$user);
-			        F('weixin_tfgl_bm_sc',$f2);
-					
-					$info='点击可直接进入审核……';
-					
-					$del_id_str = implode("__", $del_id);
-			        $wx= getWechatObj();
-			        $wx->sendNewsMsg(
-			            [$wx->buildNewsItem("您有退费申请被删除". $del_id_str ,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/add')),'')],
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['TZTX']
-			        );
-			        /*$wx->sendTextMsg("特殊优惠有新的动态，请查看",
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['TZTX']);*/
-						
-			         /*$wx->sendNewsMsg(
-			            [$wx->buildNewsItem("有特殊优惠待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=CoursesApply/examine')),'')],
-			            ['touser'=>$user],
-			            C('WECHAT_APP')['XZMS']
-			        );*/
-					$this->success('删除成功！');
-				}
-        }else{
-        	
-			$foo = M("FooInfo");
-			$class2 = $foo->where(['pid'=>17,'is_del'=>array('neq',1)])->field('id,name,`group`')->order('`group`,sort')->select();
-			$this->class2=$class2;
-			
-			/* 此处审核交由张玉珠处理，默认情况下，都是由王胜鑫处理的。（之前是交由赵锡睿处理的）*/
-			  if(session('auth_id') == 1283){
-				//如果是王思雷，则只能审核高报项目
-//				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','港澳台'),'OR');
-				$w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(7,8,9,10,14)";
-				$w['state']=9;
-			}else{
-//				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','港澳台'),'AND');
-				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,14) OR (`class1` is null))";
-				$w['state']=3;
-			} 
-			
-            /* $w['state']=3; */
-            
-            //李文龙查看长颈鹿项目、童话项目退费
-            if(session('auth_id') == 2100){
-            	$w['class1'] = array('in',[12,13]); //长颈鹿项目、童话
-            }else{
-                $w['class1'] = array('not in',[12,13]); //非长颈鹿项目、童话
-            	$w['why3']=array('neq','');
-            }
-            
-            
-            $w['date']=session('date');
-            $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
-			
-			foreach($list as &$vor){
-				foreach($class2 as $cl2){
-					if($vor['class2'] == $cl2['id']){
-						$vor['class2'] = $cl2['name'];
-						break;
-					}
-				}
-				
-				$class1 = get_config('COURSE_GROUP');
-				foreach($class1 as $key=>$value){
-					if((string)$vor['class1'] === (string)$key){
-						$vor['class1'] = $value;
-						break;
-					}
-				}
-			}
-			unset($vor);
-			unset($cl2);
-			unset($key);
-			unset($value);
-			
-            $this->list=$list;
-
-            $w['state']=array('in','4,5');
-            $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
-			
-			foreach($list as &$vor){
-				foreach($class2 as $cl2){
-					if($vor['class2'] == $cl2['id']){
-						$vor['class2'] = $cl2['name'];
-						break;
-					}
-				}
-				
-				$class1 = get_config('COURSE_GROUP');
-				foreach($class1 as $key=>$value){
-					if((string)$vor['class1'] === (string)$key){
-						$vor['class1'] = $value;
-						break;
-					}
-				}
-			}
-			unset($vor);
-			unset($cl2);
-			unset($key);
-			unset($value);
-			
-            $this->list2=$list;
-
-            $this -> display('check');
-
-        }
-    }
 
     
     //区域审核
@@ -1023,15 +793,32 @@ class ReturnController extends HomeController {
         if($_POST['aax']){
             foreach ($_POST['id'] as $key => $value) {
                 $w['id']=$value;
-                $d['state']=3;
+                $d['state']=8;
+                
+                {
+                    $record_xq = M('hw003.return','money_')->where($w)->find();
+                    
+                    if($record_xq){
+                        //如果是王思雷，则只能审核高报项目
+                        if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14)){
+                            //							$user[0]= 'ZXhld001'; //邹德涛
+                            $user[]= 'XGryxc22'; //邹婧
+                            //M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid
+                        }else if(($record_xq['class1'] != 12) && ($record_xq['class1'] != 13)){
+                            // 							$user[0]= 'Azl'; //王思雷
+                            $user[]= 'QThwzb002'; //刘媛媛
+                            
+                        }
+                    }
+                }
+                
                 $d['region_time']=date('Y-m-d H:i:s');
                 $rr=M('hw003.return','money_')->where($w)->save($d);
                 //审核记录
                 R('Return/record',array($value,'区域审核'));
             }
-            if($rr){
-                {
-                    $user[]= 'YY001';//王胜鑫 ；'A02';//wechat_userid 齐静
+                if($rr){
+                    //$user[]= 'YY001';//王胜鑫 ；
                     
                     //存储一下被通知过的人,方便后期查看
                     $ff=(array)F('weixin_tfgl_region');
@@ -1042,12 +829,11 @@ class ReturnController extends HomeController {
                     
                     $wx= getWechatObj();
                     $wx->sendNewsMsg(
-                        [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check3')),'')],
+                        [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/gt')),'')],
                         ['touser'=>$user],
                         C('WECHAT_APP')['TZTX']
                         );
                     
-                }
                 $this->success('审核完成！');
             }else{
                 $this->success('选择要审核的条目！');
@@ -1156,8 +942,12 @@ class ReturnController extends HomeController {
             $class2 = $foo->where(['pid'=>17,'is_del'=>array('neq',1)])->field('id,name,`group`')->order('`group`,sort')->select();
             $this->class2=$class2;
             
-            /* 此处审核辽宁的交由姜博文、吉林的交由王大鹏、黑龙江的交由何亮处理*/
-            if(session('auth_id') == 1293){
+            /* 此处审核辽宁东的交由张鹏，辽西交由张玉珠、吉林的交由王大鹏、黑龙江的交由何亮处理*/
+            if(session('auth_id') == 673){
+                $w['region'] = "辽东";
+            }else if(session('auth_id') == 1283){
+                $w['region'] = "辽西";
+            }else if(session('auth_id') == 1293){
                 $w['region'] = "辽宁";
             }else if(session('auth_id') == 651){
                 $w['region'] = "吉林";
@@ -1169,7 +959,7 @@ class ReturnController extends HomeController {
             
             $w['state']=9;
             $w['class1'] = array('not in',[12,13,14]); //非长颈鹿项目、童话
-            $w['why3']=array('neq','');
+            //$w['why3']=array('neq','');
             
             
             
@@ -1199,7 +989,7 @@ class ReturnController extends HomeController {
             
             $this->list=$list;
             
-            $w['state']=array('in','4,5');
+            $w['state']=array('in','0,1,2');
             $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
             
             foreach($list as &$vor){
@@ -1398,6 +1188,261 @@ class ReturnController extends HomeController {
         }
     }
 
+    
+    //部门审核
+    public function check3(){
+        
+        $this->assign('gradeList', C('SCHOOL_GRADE'));
+        $grade_lst = C('SCHOOL_GRADE');
+        $gradelst = array_column($grade_lst,'name','id');
+        $this->gradelst = $gradelst;
+        
+        if($_POST['aax']){
+            foreach ($_POST['id'] as $key => $value) {
+                $w['id']=$value;
+                $d['state']=4;
+                $d['time2']=date('Y-m-d H:i:s');
+                $rr=M('hw003.return','money_')->where($w)->save($d);
+                //审核记录
+                R('Return/record',array($value,'部门审核'));
+            }
+            if($rr){
+                {
+                    $user[0]= 'YX005';//王丽丽 ；'A02';//wechat_userid 齐静
+                    
+                    //存储一下被通知过的人,方便后期查看
+                    $ff=(array)F('weixin_tfgl_bm');
+                    $f2=array_merge($ff,$user);
+                    F('weixin_tfgl_bm',$f2);
+                    
+                    $info='点击可直接进入审核……';
+                    
+                    $wx= getWechatObj();
+                    $wx->sendNewsMsg(
+                        [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check4')),'')],
+                        ['touser'=>$user],
+                        C('WECHAT_APP')['TZTX']
+                        );
+                    /*$wx->sendTextMsg("特殊优惠有新的动态，请查看",
+                     ['touser'=>$user],
+                     C('WECHAT_APP')['TZTX']);*/
+                    
+                    /*$wx->sendNewsMsg(
+                     [$wx->buildNewsItem("有特殊优惠待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=CoursesApply/examine')),'')],
+                     ['touser'=>$user],
+                     C('WECHAT_APP')['XZMS']
+                     );*/
+                    
+                }
+                $this->success('审核完成！');
+            }else{
+                $this->success('选择要审核的条目！');
+            }
+        }elseif($_POST['bt']){
+            foreach ($_POST['id'] as $key => $value) {
+                $w['id']=$value;
+                $d['state']=0;
+                $rr=M('hw003.return','money_')->where($w)->save($d);
+                R('Return/record',array($value,'数据退回'));
+                
+                {
+                    // 					$xueguan = M('hw003.return','money_')->where($w)->getField('bb');
+                    $data_t = M('hw003.return','money_')->where($w)->getField('bb,school');
+                    $xueguan = array_keys($data_t)[0];
+                    $school = array_values($data_t)[0];
+                    
+                    $xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
+                    
+                    if($xg){
+                        $user[]= $xg;
+                    }
+                    
+                    
+                }
+            }
+            if($rr){
+                {
+                    
+                    $user=array_unique($user);
+                    
+                    //微信通知
+                    if(empty($user)){
+                        return;
+                    }
+                    
+                    //存储一下被通知过的人,方便后期查看
+                    $ff=(array)F('weixin_tfgl_bm_th');
+                    $f2=array_merge($ff,$user);
+                    F('weixin_tfgl_bm_th',$f2);
+                    
+                    $info='点击可直接进入审核……';
+                    
+                    $wx= getWechatObj();
+                    $wx->sendNewsMsg(
+                        [$wx->buildNewsItem("您有退费申请被退回，请及时查看！",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/add')),'')],
+                        ['touser'=>$user],
+                        C('WECHAT_APP')['TZTX']
+                        );
+                    /*$wx->sendTextMsg("特殊优惠有新的动态，请查看",
+                     ['touser'=>$user],
+                     C('WECHAT_APP')['TZTX']);*/
+                    
+                    /*$wx->sendNewsMsg(
+                     [$wx->buildNewsItem("有特殊优惠待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=CoursesApply/examine')),'')],
+                     ['touser'=>$user],
+                     C('WECHAT_APP')['XZMS']
+                     );*/
+                    
+                }
+                $this->success('数据已退回！');
+            }else{
+                $this->error('选择要退回的数据！');
+            }
+        }elseif ($_POST['dl']) {
+            foreach ($_POST['id'] as $key => $value) {
+                $w['id']=$value;
+                $w['state']=array('in','0,-1');
+                $rr=M('hw003.return','money_')->where($w)->delete();
+                R('Return/record',array($value,'删除'));
+                
+                {
+                    // 					$xueguan = M('hw003.return','money_')->where(['id'=>$value])->getField('bb');
+                    
+                    $data_t = M('hw003.return','money_')->where(['id'=>$value])->getField('bb,school');
+                    $xueguan = array_keys($data_t)[0];
+                    $school = array_values($data_t)[0];
+                    
+                    $xg = M('user')->where(['is_del'=>0,'school'=>get_school_id($school),'position_id'=>18,'name'=>$xueguan])->getField('wechat_userid');//wechat_userid
+                    
+                    if($xg){
+                        $user[]= $xg;
+                    }
+                    
+                    $del_id[] = $value;
+                }
+            }
+            if($rr)
+            {
+                
+                $user=array_unique($user);
+                
+                //微信通知
+                if(empty($user)){
+                    return;
+                }
+                
+                //存储一下被通知过的人,方便后期查看
+                $ff=(array)F('weixin_tfgl_bm_sc');
+                $f2=array_merge($ff,$user);
+                F('weixin_tfgl_bm_sc',$f2);
+                
+                $info='点击可直接进入审核……';
+                
+                $del_id_str = implode("__", $del_id);
+                $wx= getWechatObj();
+                $wx->sendNewsMsg(
+                    [$wx->buildNewsItem("您有退费申请被删除". $del_id_str ,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/add')),'')],
+                    ['touser'=>$user],
+                    C('WECHAT_APP')['TZTX']
+                    );
+                /*$wx->sendTextMsg("特殊优惠有新的动态，请查看",
+                 ['touser'=>$user],
+                 C('WECHAT_APP')['TZTX']);*/
+                
+                /*$wx->sendNewsMsg(
+                 [$wx->buildNewsItem("有特殊优惠待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=CoursesApply/examine')),'')],
+                 ['touser'=>$user],
+                 C('WECHAT_APP')['XZMS']
+                 );*/
+                $this->success('删除成功！');
+            }
+        }else{
+            
+            $foo = M("FooInfo");
+            $class2 = $foo->where(['pid'=>17,'is_del'=>array('neq',1)])->field('id,name,`group`')->order('`group`,sort')->select();
+            $this->class2=$class2;
+            
+            /* 此处审核交由张玉珠处理，默认情况下，都是由王胜鑫处理的。（之前是交由赵锡睿处理的）*/
+            if(session('auth_id') == 1283){
+                //如果是王思雷，则只能审核高报项目
+                //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','港澳台'),'OR');
+                $w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(7,8,9,10,14)";
+                $w['state']=3;
+            }else{
+                //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','港澳台'),'AND');
+                $w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,14) OR (`class1` is null))";
+                $w['state']=3;
+            }
+            
+            /* $w['state']=3; */
+            
+            //李名帅查看长颈鹿项目、童话项目退费
+            if(session('auth_id') == 2100){
+                $w['class1'] = array('in',[12,13]); //长颈鹿项目、童话
+            }else{
+                $w['class1'] = array('not in',[12,13]); //非长颈鹿项目、童话
+                $w['why3']=array('neq','');
+            }
+            
+            
+            $w['date']=session('date');
+            $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
+            
+            foreach($list as &$vor){
+                foreach($class2 as $cl2){
+                    if($vor['class2'] == $cl2['id']){
+                        $vor['class2'] = $cl2['name'];
+                        break;
+                    }
+                }
+                
+                $class1 = get_config('COURSE_GROUP');
+                foreach($class1 as $key=>$value){
+                    if((string)$vor['class1'] === (string)$key){
+                        $vor['class1'] = $value;
+                        break;
+                    }
+                }
+            }
+            unset($vor);
+            unset($cl2);
+            unset($key);
+            unset($value);
+            
+            $this->list=$list;
+            
+            $w['state']=array('in','4,5');
+            $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
+            
+            foreach($list as &$vor){
+                foreach($class2 as $cl2){
+                    if($vor['class2'] == $cl2['id']){
+                        $vor['class2'] = $cl2['name'];
+                        break;
+                    }
+                }
+                
+                $class1 = get_config('COURSE_GROUP');
+                foreach($class1 as $key=>$value){
+                    if((string)$vor['class1'] === (string)$key){
+                        $vor['class1'] = $value;
+                        break;
+                    }
+                }
+            }
+            unset($vor);
+            unset($cl2);
+            unset($key);
+            unset($value);
+            
+            $this->list2=$list;
+            
+            $this -> display('check');
+            
+        }
+    }
+    
+    
 //集团审批
     public function check4(){
     	
