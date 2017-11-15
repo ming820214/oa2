@@ -109,17 +109,17 @@
 		            	</foreach>
 		            	</optgroup>
 		            	
-		            	<!-- <optgroup label="部门">
-		            	<foreach name="dept" item="dt">
+		            	<optgroup label="部门">
+		            	<foreach name="dept_all" item="dt">
 		            	<option value="{$key}">{$dt}</option>
 		            	</foreach>
-		            	</optgroup> -->
+		            	</optgroup>
                     </select>
                 </div>
                 
                 <div class="input-group">
                     <a class="input-group-addon">区域</a>
-                    <select name="area" class="form-control"><option value="">请选择区域</option><option>辽宁</option><option>吉林</option><option>黑龙江</option></select>
+                    <select name="area" class="form-control"><option value="">请选择区域</option><option>辽宁</option><option>辽东</option><option>辽西</option><option>吉林</option><option>黑龙江</option></select>
                 </div>
                 <div class="input-group col-35">
 	                <a class="input-group-addon">提报人</a>
@@ -158,11 +158,11 @@
             	</foreach>
             	</optgroup>
             	
-            	<!-- <optgroup label="部门">
+            	<optgroup label="部门">
             	<foreach name="dept" item="dt">
             	<option value="{$key}">{$dt}</option>
             	</foreach>
-            	</optgroup> -->
+            	</optgroup>
             
             </select></li>
             <li>提报人<font color="red">*</font>：<input type="text" name="apply_user" class="form-control" maxlength="10" required/></li>
@@ -207,7 +207,7 @@
             <li class="flat">版式<font color="red">*</font>：<select name="flat_format" class="form-control" required><option>横版</option><option>竖版</option></select></li>
             <li class="flat">数量<font color="red">*</font>：<input type="number" name="flat_count" class="form-control" min="1" step="1" required></li>
             <li class="flat">制作单位<font color="red">*</font>：<select name="flat_create_unit" class="form-control" required><option>校区制作</option><option>集团制作</option></select></li>
-            <li>区域<font color="red">*</font>：<select name="area" class="form-control" required><option>辽宁</option><option>吉林</option><option>黑龙江</option></select></li>
+            <li>区域<font color="red">*</font>：<select name="area" class="form-control" required><option>辽东</option><option>辽西</option><option>吉林</option><option>黑龙江</option></select></li>
             <li style="width:410px;">部门接收邮箱<font color="red">*</font>：<input type="text" name="email" class="form-control"  maxlength="80" required></li>
             <li style="width:800px;">文字内容<font color="red">*</font>：<textarea name="content_descp" class="form-control" required rows="8" cols="100" maxlength="800" placeholder="平面类：活动标题、活动时间、活动内容；"></textarea></li>
             

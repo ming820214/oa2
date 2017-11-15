@@ -108,17 +108,17 @@
 		            	</foreach>
 		            	</optgroup>
 		            	
-		            	<!-- <optgroup label="部门">
-		            	<foreach name="dept" item="dt">
+		            	<optgroup label="部门">
+		            	<foreach name="dept_all" item="dt">
 		            	<option value="{$key}">{$dt}</option>
 		            	</foreach>
-		            	</optgroup> -->
+		            	</optgroup>
                     </select>
                 </div>
                 
                 <div class="input-group">
                     <a class="input-group-addon">区域</a>
-                    <select name="area" class="form-control"><option value="">请选择区域</option><option>辽宁</option><option>吉林</option><option>黑龙江</option></select>
+                    <select name="area" class="form-control"><option value="">请选择区域</option><option>辽宁</option><option>辽东</option><option>辽西</option><option>吉林</option><option>黑龙江</option></select>
                 </div>
                 <div class="input-group col-35">
 	                <a class="input-group-addon">提报人</a>
@@ -156,11 +156,11 @@
             	</foreach>
             	</optgroup>
             	
-            	<!-- <optgroup label="部门">
+            	<optgroup label="部门">
             	<foreach name="dept" item="dt">
             	<option value="{$key}">{$dt}</option>
             	</foreach>
-            	</optgroup> -->
+            	</optgroup>
 			</select></li>
             <li>提报人<font color="red">*</font>：<input type="text" name="apply_user" class="form-control" maxlength="10"  required/></li>
             <li>联系电话<font color="red">*</font>：<input type="text" name="tel" class="form-control" maxlength="11"  required></li>
@@ -186,7 +186,7 @@
             	 <input type="text" name="design_type_other" class="form-control" placeholder="设计类型其他的详情" maxlength="80"/>
             </li>
             
-            <li>区域<font color="red">*</font>：<select name="area" class="form-control" required><option>辽宁</option><option>吉林</option><option>黑龙江</option></select></li>
+            <li>区域<font color="red">*</font>：<select name="area" class="form-control" required><option>辽东</option><option>辽西</option><option>吉林</option><option>黑龙江</option></select></li>
             <li style="width:800px;clear:left;">文字内容<font color="red">*</font>：<textarea name="content_descp" maxlength="800"  class="form-control" required rows="8" cols="100" placeholder="空间类：空间显示信息"></textarea></li>
             
             
