@@ -36,10 +36,10 @@ class ApplyDesignModel extends CommonModel{
     public function check_access(&$list){
         foreach ($list as &$v) {
                 $v['back'] =null; 
-                //针对审批助理部门的特殊处理
-                /* if($v['apply_school'] == 'b64' && $v['state'] == 0){
+                //针对审批助理、师训部、行政办各部门的特殊处理
+                if(($v['apply_school'] == 'b64' || $v['apply_school'] == 'b45' || $v['apply_school'] == 'b37' || $v['apply_school'] == 'b71') && $v['state'] == 0){
                     $v['state']= 40;
-                } */
+                }
                 if($v['state'] <80){
                     if($v['state'] ==20){
                         $v['state']=$v['state']+20;
@@ -102,6 +102,12 @@ class ApplyDesignModel extends CommonModel{
             if($v['state'] == '20' && $v['area'] == '辽宁'){
                //姜博文
                array_push($user, "XZsmqh28");
+            }else if($v['state'] == '20' && $v['area'] == '辽东'){
+                //张鹏
+                array_push($user, "XZsmqh29");
+            }else if($v['state'] == '20' && $v['area'] == '辽西'){
+                //张玉珠
+                array_push($user, "XZdl01");
             }else if($v['state'] == '20' && $v['area'] == '黑龙江'){
                 //何亮
                 array_push($user, "XZsy01");
@@ -110,7 +116,14 @@ class ApplyDesignModel extends CommonModel{
                 array_push($user, "XZfx01");
             }else if($v['state'] == '40' || $v['state'] == '50'){
                 //王胜鑫
-                array_push($user, "YY001");
+                if($v['apply_school'] = 'b45'){
+                    array_push($user, "HR001");
+                }else if($v['apply_school'] = 'b71'){
+                    array_push($user, "XZsmqh28");
+                }else{
+                    array_push($user, "YY001");
+                }
+                
             }else if($v['state'] == '60'){
                 //赵锡睿
               array_push($user, "YX001");

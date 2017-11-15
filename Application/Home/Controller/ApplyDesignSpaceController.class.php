@@ -6,28 +6,34 @@ class ApplyDesignSpaceController extends HomeController {
 	//把校区列表、科目类别输出到前段模版
 	public function _initialize(){
         parent::_initialize();
-        foreach (C('SCHOOL') as $v) {
-            if($v['name'] != '集团'){
-                if($v['id'] == session('school_id')){
-                    $school['s'. $v['id']]=$v['name'];
+        
+        if(session('school_id') == 0){
+            $dept_lst = M('dept')->where('is_del = 0 and pid !=28 and id != 28 and (id=64 or id=45 or id=37 or id=71)')->getField('id,name');
+            
+            foreach ($dept_lst as $key=>$val){
+                
+                if($key == session('dept_id')){
+                    $dept['b'. $key]=$val;
                 }
-                $school_all['s'. $v['id']]=$v['name'];
+                $dept_all['b' . $key] = $val;
             }
-        } 
-        
-        /* $dept_lst = M('dept')->where('is_del = 0 and pid !=28 and id != 28 and id=64')->getField('id,name');
-        
-        foreach ($dept_lst as $key=>$val){
-            $dept['b' . $key] = $val;
-        } */
-        
-        
+        }else{
+            foreach (C('SCHOOL') as $v) {
+                if($v['name'] != '集团'){
+                    if($v['id'] == session('school_id')){
+                        $school['s'. $v['id']]=$v['name'];
+                    }
+                    $school_all['s'. $v['id']]=$v['name'];
+                }
+            }
+        }
         
         $this->assign('school',$school);//校区
         
         $this->assign('school_all',$school_all);//校区
         
-        $this->assign('dept',$dept);//校区
+        $this->assign('dept',$dept);//单位
+        $this->assign('dept_all',$dept_all);//所有单位
         
         $this->assign('month',date("Y-") . (date(m) +1) );
 		
@@ -351,8 +357,14 @@ class ApplyDesignSpaceController extends HomeController {
     	            $w['apply_school'] = 's' . session('school_id');
     	            $school = 's' . session('school_id');
     	            if(session('position_id') == '10'){
-    	                //校长
-    	                $w['state'] = 10;
+    	                if(session('auth_id') == '673'){
+    	                    //张鹏
+    	                    unset($w['apply_school']);
+    	                    $w['_string']="((area='辽东' and state=20) or (state=10 and apply_school='s173'))";
+    	                }else{
+    	                    //校长
+    	                    $w['state'] = 10;
+    	                }
     	            }else if(session('auth_id') == '439'){
     	                //何亮
     	                unset($w['apply_school']);
@@ -383,15 +395,33 @@ class ApplyDesignSpaceController extends HomeController {
     	                unset($w['apply_school']);
     	                $w['area'] = '辽宁';
     	                $w['state'] = 20;
+    	            }elseif(session('auth_id') == '1283'){
+    	                //姜博文
+    	                unset($w['apply_school']);
+    	                $w['area'] = '辽西';
+    	                $w['state'] = 20;
     	            }elseif(session('auth_id') == '1'){
     	                //何亮
     	                unset($w['apply_school']);
     	                $w['area'] = '黑龙江';
     	                $w['state'] = 20;
+    	            }elseif(get_school_name()=='集团' && (session('auth_id') == '2158')){
+    	                //姜博文 战略发展中心
+    	                unset($w['apply_school']);
+    	                unset($w['area']);
+    	                $w['apply_school'] = array('eq','b71');
+    	                $w['state'] = array('in','40,50');
     	            }elseif(get_school_name()=='集团' && (session('auth_id') == '89')){
     	                //王胜鑫
     	                unset($w['apply_school']);
     	                unset($w['area']);
+    	                $w['apply_school'] = array('neq','b45');
+    	                $w['state'] = array('in','40,50');
+    	            }elseif(get_school_name()=='集团' && (session('auth_id') == '70')){
+    	                //侯海洋
+    	                unset($w['apply_school']);
+    	                unset($w['area']);
+    	                $w['apply_school'] = array('eq','b45');
     	                $w['state'] = array('in','40,50');
     	            }elseif(get_school_name()=='集团' && (session('auth_id') == '90')){
     	                //赵锡睿
