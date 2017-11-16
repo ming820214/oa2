@@ -1374,7 +1374,12 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
       }
       if(confirm('学员转正并缴费，并保存学员信息到收费学员档案中……')){ 
         $.get("{:U('jiaojie_zz')}&id="+ $('#id_t').val(),function(sid){
-          if(sid)location.href=('{:U('student/index')}&stuid='+sid);
+          if(sid){
+        	  location.href=('{:U('student/index')}&stuid='+sid);
+          }else{
+        	  ui_error('学员名字有重复，请修改学员姓名，譬如：在名字后面添加数字加以区别！');
+          }
+        	  
         })
       }
       return false;
