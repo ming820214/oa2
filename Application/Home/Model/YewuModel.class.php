@@ -56,17 +56,24 @@ class YewuModel extends ViewModel{
     public function save_to($id){
         $info=M('yewu_students')->find($id);
         if(empty($info['name']))die;
-        //设置信息为已缴费
-        $dat['state']=20;
-        $dat['save_time']=date('Y-m-d H:i:s');
-        M('yewu_students')->where(['id'=>$id])->save($dat);
+        
         //转存到档案
         $mod=M('hw001.student',null);
         $_string="(oa_stuid = $id)";
         if($info['name'])$_string.=" OR (name ='".$info['name']."')";
         if($info['tel'])$_string.=" OR (tel = $info[tel1])";
         $if=$mod->where(['school'=>get_school_name($info['school'])])->where(['_string'=>$_string])->find();
-        if(empty($if['oa_stuid']))$mod->where($if)->save(['oa_stuid'=>$id]);
+        if(empty($if['oa_stuid'])){
+            
+            //设置信息为已转正缴费
+            $dat['state']=20;
+            $dat['save_time']=date('Y-m-d H:i:s');
+            M('yewu_students')->where(['id'=>$id])->save($dat);
+            
+            $mod->where($if)->save(['oa_stuid'=>$id]);
+        }else{
+            return null;
+        }
         if($if)return $if['id'];//如果已转存过则直接返回id
 
         $info['std_id'] = get_std_id($info['school']);
