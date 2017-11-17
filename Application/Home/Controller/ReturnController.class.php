@@ -1879,10 +1879,10 @@ class ReturnController extends HomeController {
                         $state='退回修改';
                         break;
                     case '1':
-                        $state='财务确认';
+                        $state='财务核算';
                         break;
                     case '2':
-                        $state='校区审核';
+                        $state='校区审批';
                         break;
                     case '8':
                         $state='总部沟通';
@@ -1891,10 +1891,10 @@ class ReturnController extends HomeController {
                         $state='区域审核';
                         break;
                     case '3':
-                        $state='部门审核';
+                        $state='中心审核';
                         break;
                     case '4':
-                        $state='财务审批';
+                        $state='财务批款';
                         break;
                     case '5':
                         $state='退款确认';
