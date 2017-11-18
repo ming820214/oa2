@@ -94,7 +94,15 @@ class ReturnController extends HomeController {
         }elseif($_POST){
             $m=M('hw003.money_return',null);
             $m->create();
-            if($_POST['why'])$m->why1=implode('；',$_POST['why']);
+            /* if($_POST['why']){
+                //$m->why1=implode('；',$_POST['why']);
+                $m->why1=$_POST['why'];
+            } */
+            
+            if(!$_POST['why1']){
+                $this->error('退费原因不能为空！');
+            }
+                
             $m->school=get_school_name();
             $m->date=session('date');
             $m->time1=date('Y-m-d H:i:s');
