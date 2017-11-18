@@ -66,15 +66,15 @@
 			<li>首次缴费日期：<input type="text" class="form-control" name="first_time" required="required" onclick="WdatePicker()" /></li>
 			
 			<li>应退金额：<input type="number" class="form-control" name="je" required="required" step="0.01"/></li>
-			<li style="width:444px;clear:left;">剩余计算<span class="red_star">(**必填项**)</span>：<textarea name="sy" class="form-control" cols="50" rows="4" required="required" ></textarea></li>
+			<li style="width:410px;clear:left;">剩余计算<span class="red_star">(**必填项**)</span>：<textarea name="sy" class="form-control" cols="50" rows="4" required="required" ></textarea></li>
 			
-			<li style="width:444px;">具体原因<span class="red_star">(**必填项**)</span>：<textarea name="why2" class="form-control" cols="80" rows="4" required="required" ></textarea></li>
+			<li style="width:410px;">具体原因<span class="red_star">(**必填项**)</span>：<textarea name="why2" class="form-control" cols="80" rows="4" required="required" ></textarea></li>
 			
 			
 			<if condition="$module == 'xqsh' ">
-			<li style="width:444px;">校长沟通<span class="red_star">(**必填项**)</span>：<textarea name="xqgt" class="form-control" cols="80" rows="4" required="required" ></textarea></li>
+			<li style="width:410px;">校长沟通<span class="red_star">(**必填项**)</span>：<textarea name="xqgt" class="form-control" cols="80" rows="4" required="required" ></textarea></li>
 			<elseif condition="$module != 'xqsh' "/>
-			<li style="width:444px;">校长沟通<span class="red_star">(**必填项**)</span>：<textarea name="xqgt" class="form-control" cols="80" rows="4" readonly="readonly"></textarea></li>
+			<li style="width:410px;">校长沟通<span class="red_star">(**必填项**)</span>：<textarea name="xqgt" class="form-control" cols="80" rows="4" readonly="readonly"></textarea></li>
 			</if>
 			<!-- 针对empty的else -->
 			<else/>
