@@ -7,7 +7,7 @@
 	.red_star {
 		color: red;
 	} 
-	
+	.panel-body li { width: 200px;float: left;margin: 5px;list-style: none;font-weight: bold;} 
 </style> 
 <form method="post" id="form_aa" action="{:U('add')}">
 	<if condition="$module == 'gt' ">
@@ -25,7 +25,67 @@
 			</div>
 		</div>
 		<div class="panel-body">
-		<table align="center" style="width: 100%;">
+		
+		<ul>
+			<li>学员姓名：<input type="text" class="form-control" name="student" required="required" readonly="readonly"/></li>
+			<li>年级：<select name="grade" class="form-control">
+						{:fill_option_ex($gradeList)}
+					</select>
+			</li>
+			<li>联系电话:<input type="text" class="form-control" name="tel" required="required" readonly="readonly"/></li>
+			<li>教学主任:<input type="text" class="form-control" name="aa" required="required" readonly="readonly"/></li>
+			<li>学管理师：<input type="text" class="form-control" name="bb" required="required" readonly="readonly"/></li>
+			<empty name="why3">
+			<li>课程类型：<select class="form-control class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select></li>
+			<li>课程具体类型：<select name="class2" class="form-control sub_type" required="required"></select></li>
+			<li>退出费用缴费日期：<input type="text" class="form-control" name="timed" required="required" onclick="WdatePicker()" /></li>
+			<li>缴费总额:<input type="number" class="form-control" name="ze" step="0.1" min="0.1"  required="required"/></li>
+			<li>缴费课时：<input type="text" class="form-control" name="count" required="required"/></li>
+			<li>已上课时:<input type="text" class="form-control"  name="countd" required="required"></li>
+			<li>科目/教师:<input type="text" class="form-control" name="km" required="required"></li>
+			
+			<li>业绩类型<span class="red_star">(**必填项**)</span>：
+				<select id="yj_type" class="form-control" name="yj_type" style="max-width: 137px;min-width: 65px;width:100%;" required="required">
+						<option value="新签">新签</option>
+						<option value="续签">续签</option>
+						<option value="转介绍">转介绍</option>
+						<option value="激活">激活</option>
+					</select>
+			</li>
+			
+			<li>校区区域：<select name="region" class="form-control" required="required"><option value="">请选择校区</option><option value="辽东">辽东</option><option value="辽西">辽西</option><option value="吉林">吉林</option><option value="黑龙江">黑龙江</option></select></li>
+			
+			<li>扣费类型：
+					<select id="kf_type" class="form-control" name="kf_type" style="max-width: 137px;min-width: 65px;width:100%;" required="required">
+						<option value="">--请选择--</option>
+						<option value="新签">新签</option>
+						<option value="续签">续签</option>
+						<!-- <option value="转介绍">转介绍</option> -->
+					</select>
+			</li>
+			<li>首次缴费日期：<input type="text" class="form-control" name="first_time" required="required" onclick="WdatePicker()" /></li>
+			
+			<li>应退金额：<input type="number" class="form-control" name="je" required="required" step="0.01"/></li>
+			<li style="width:444px;clear:left;">剩余计算<span class="red_star">(**必填项**)</span>：<textarea name="sy" class="form-control" cols="50" rows="4" required="required" ></textarea></li>
+			
+			<li style="width:444px;">具体原因<span class="red_star">(**必填项**)</span>：<textarea name="why2" class="form-control" cols="80" rows="4" required="required" ></textarea></li>
+			
+			
+			<if condition="$module == 'xqsh' ">
+			<li style="width:444px;">校长沟通<span class="red_star">(**必填项**)</span>：<textarea name="xqgt" class="form-control" cols="80" rows="4" required="required" ></textarea></li>
+			<elseif condition="$module != 'xqsh' "/>
+			<li style="width:444px;">校长沟通<span class="red_star">(**必填项**)</span>：<textarea name="xqgt" class="form-control" cols="80" rows="4" readonly="readonly"></textarea></li>
+			</if>
+			<!-- 针对empty的else -->
+			<else/>
+			<li>总部沟通：<input type="text" class="form-control" name="why3" required="required" style="width:100%;"><input type="hidden" name="action_node" value="zbgt"/></li>
+			
+			<li style="clear:left;">备注：<input type="text" class="form-control" name="other" style="min-width: 137px;max-width: 440px;width: 100%;"  maxlength="15"></li>
+			
+			</empty>
+		</ul>
+		
+		<!-- <table align="center" style="width: 100%;">
 			<tr>
 				<td>学员姓名：</td>
 				<td><input type="text" name="student" required="true" readonly="readonly"/></td>
@@ -33,12 +93,6 @@
 				<td>
 					<select name="grade">
 						{:fill_option_ex($gradeList)}
-						<!--<option>高一</option>
-						<option>高二</option>
-						<option>高三</option>
-			            <option>初一</option>
-			            <option>初二</option>
-			            <option>初三</option>-->
 					</select>
 				</td>
 				<td>联系电话:</td>
@@ -51,7 +105,7 @@
 			<empty name="why3">
 			<tr>
 				<td>课程类型：</td>
-				<td><!-- <input type="text" name="class" /> --><select class="class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select>&nbsp;&nbsp;<select name="class2" class="sub_type" required="required"></select></td>
+				<td><input type="text" name="class" /><select class="class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select>&nbsp;&nbsp;<select name="class2" class="sub_type" required="required"></select></td>
 				<td>退出费用缴费日期：</td>
 				<td><input type="text" name="timed" required="true" onclick="WdatePicker()" /></td>
 				<td>缴费总额:</td>
@@ -70,8 +124,8 @@
 				</td>
 				<td>应退金额：</td>
 				<td><input type="number" name="je" required="true" step="0.01"/></td>
-				<!--<td>备注：</td>
-				<td><input type="text" name="other"></td>-->
+				<td>备注：</td>
+				<td><input type="text" name="other"></td>
 				<td>业绩类型：</td>
 				<td>
 					<select id="yj_type" name="yj_type" style="max-width: 137px;min-width: 65px;width:100%;" required="required">
@@ -93,17 +147,17 @@
 						<option value="">--请选择--</option>
 						<option value="新签">新签</option>
 						<option value="续签">续签</option>
-						<!-- <option value="转介绍">转介绍</option> -->
+						<option value="转介绍">转介绍</option>
 					</select>
 				</td>
-				<!-- <td>
+				<td>
 					<select id="kf_type" name="kf_type" style="max-width: 137px;min-width: 65px;width:100%;" disabled="disabled">
 						<option value="">--请选择--</option>
 						<option value="新签">新签</option>
 						<option value="续签">续签</option>
 						<option value="转介绍">转介绍</option>
 					</select>
-				</td> -->
+				</td>
 				
 				<td>首次缴费日期</td>
 				<td><input type="text" name="first_time" required="true" onclick="WdatePicker()" /></td>
@@ -136,7 +190,7 @@
 					<td colspan="4"><input type="text" name="why3" required="true" style="width:100%;"><input type="hidden" name="action_node" value="zbgt"/> </td>
 				</tr>
 			</empty>
-		</table>
+		</table> -->
 		</div>
 	</div>
 </form>
