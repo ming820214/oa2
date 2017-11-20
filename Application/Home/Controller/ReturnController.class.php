@@ -1841,7 +1841,7 @@ class ReturnController extends HomeController {
         if($_POST['date'])$w['date']=$_POST['date'];
         if($_POST['state']){
             $w['state']=I('post.state');
-            if(I('post.state')=='all')$w['state']=['BETWEEN','-1,6'];
+            if(I('post.state')=='all')$w['state']=['BETWEEN','-1,9'];
         }else{
             $w['state']=6;
         }
@@ -1899,7 +1899,7 @@ class ReturnController extends HomeController {
                         $state='区域审核';
                         break;
                     case '3':
-                        $state='中心审核';
+                        $state='中心批';
                         break;
                     case '4':
                         $state='财务批款';
