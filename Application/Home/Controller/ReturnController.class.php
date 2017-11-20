@@ -1899,7 +1899,7 @@ class ReturnController extends HomeController {
                         $state='区域审核';
                         break;
                     case '3':
-                        $state='中心批';
+                        $state='中心审批';
                         break;
                     case '4':
                         $state='财务批款';
