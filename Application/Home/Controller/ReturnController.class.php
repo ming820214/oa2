@@ -39,7 +39,7 @@ class ReturnController extends HomeController {
 							}else{
 								$user[]= ['XZdl01']; //张玉珠
 							}  */
-						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 12) && ($record_gt['class1'] != 13) && ($record_gt['class1'] != 14))){
+						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 12) && ($record_gt['class1'] != 13) && ($record_gt['class1'] != 14) && ($record_gt['class1'] != 15))){
 						    /* if($record_gt['region'] == '辽宁'){
 						        //姜博文
 						        $user[]= 'XZsmqh28'; 
@@ -522,7 +522,7 @@ class ReturnController extends HomeController {
                                 $user[]= 'XZsy01';
                             }
                             
-                        }elseif(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13)){
+                        }elseif(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13) || ($record_xq['class1'] == 15)){
                             $d['state']=3;
                             $user[]= 'JZsyjn03'; //李名帅
                         }else{
@@ -573,7 +573,7 @@ class ReturnController extends HomeController {
                         
                         $wx= getWechatObj();
                         
-                        if(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13)){
+                        if(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13) || ($record_xq['class1'] == 15)){
                             $wx->sendNewsMsg(
                                 [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check3')),'')],
                                 ['touser'=>$user],
@@ -812,7 +812,7 @@ class ReturnController extends HomeController {
                             //							$user[0]= 'ZXhld001'; //邹德涛
                             $user[]= 'XGryxc22'; //邹婧
                             //M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid
-                        }else if(($record_xq['class1'] != 12) && ($record_xq['class1'] != 13)){
+                        }else if(($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 15)){
                             // 							$user[0]= 'Azl'; //王思雷
                             $user[]= 'QThwzb002'; //刘媛媛
                             
@@ -966,7 +966,7 @@ class ReturnController extends HomeController {
             $w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10) OR (`class1` is null))";
             
             $w['state']=9;
-            $w['class1'] = array('not in',[12,13,14]); //非长颈鹿项目、童话
+            $w['class1'] = array('not in',[12,13,14,15]); //非长颈鹿项目、童话
             //$w['why3']=array('neq','');
             
             
@@ -1133,7 +1133,7 @@ class ReturnController extends HomeController {
 			}else{
 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','%港澳台%'),'AND');
 				
-				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,12,13,14) OR (`class1` is null))";
+				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,12,13,14,15) OR (`class1` is null))";
 			}
 			
             $w['state']=8;
@@ -1386,9 +1386,9 @@ class ReturnController extends HomeController {
             
             //李名帅查看长颈鹿项目、童话项目退费
             if(session('auth_id') == 2100){
-                $w['class1'] = array('in',[12,13]); //长颈鹿项目、童话
+                $w['class1'] = array('in',[12,13,15]); //长颈鹿项目、童话
             }else{
-                $w['class1'] = array('not in',[12,13]); //非长颈鹿项目、童话
+                $w['class1'] = array('not in',[12,13,15]); //非长颈鹿项目、童话
                 $w['why3']=array('neq','');
             }
             
