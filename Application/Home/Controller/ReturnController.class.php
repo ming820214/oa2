@@ -40,17 +40,6 @@ class ReturnController extends HomeController {
 								$user[]= ['XZdl01']; //张玉珠
 							}  */
 						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 12) && ($record_gt['class1'] != 13) && ($record_gt['class1'] != 14) && ($record_gt['class1'] != 15))){
-						    /* if($record_gt['region'] == '辽宁'){
-						        //姜博文
-						        $user[]= 'XZsmqh28'; 
-						    }else if($record_gt['region'] == '吉林'){
-						        //王大鹏
-						        $user[]= 'XZfx01'; 
-						        
-						    }else if($record_gt['region'] == '黑龙江'){
-						        //何亮
-						        $user[]= 'XZsy01'; 
-						    } */
 						    $user[]= 'YY001'; //王胜鑫
 						}
 					}
@@ -501,7 +490,7 @@ class ReturnController extends HomeController {
                     $record_xq = M('hw003.return','money_')->where($w)->find();
                     if($record_xq){
                         
-                        if(( ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14))){
+                        if(( ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14) && ($record_xq['class1'] != 15))){
                             if($record_xq['region'] == '辽东'){
                                 //张鹏
                                 $user[]= 'XZsmqh29';
