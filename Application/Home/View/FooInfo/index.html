@@ -78,6 +78,17 @@
 					</div>
 				</div>
 				</if>
+				<if condition="$eq_pid eq 15">
+					<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="sort">校区所在区域：</label>
+					<div class="col-sm-8">
+						<select class="form-control" name="region">
+						{:fill_option_ex(get_config('SCHOOL_REGION'))}
+						</select>
+					</div>
+				</div>
+				</if>
+				
 				<div class="form-group col-xs-12">
 					<label class="col-sm-4 control-label" for="remark" >备注：</label>
 					<div class="col-sm-8" >

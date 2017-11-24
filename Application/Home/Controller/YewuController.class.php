@@ -67,6 +67,114 @@ class YewuController extends HomeController {
 		}
 		
 	}
+    
+    /*
+     * 客服人员页面初始化
+     */
+    public function service($condition=null){
+//         $condition['_string']="region is not null && region != ''";
+        $condition['source'] = array('eq',2);
+        $condition['addx']=session('auth_id');
+        
+        $temp_arr_lst = D('Yewu')->get_list($condition,10);//信息数据
+        $temp_stuid_lst = array_column($temp_arr_lst,'id');
+        $w['stuid'] = array('in',$temp_stuid_lst);
+        if(!empty($temp_stuid_lst)){
+            $track_tme_lst = M('yewu_track')->where($w)->order('track_time desc')->select();
+        }else{
+            $track_tme_lst = NULL;
+        }
+        
+        
+        if(!empty($track_tme_lst)){
+            foreach($temp_arr_lst as &$item){
+                foreach($track_tme_lst as $key=>$value){
+                    if($value['stuid'] == $item['id']){
+                        $item['track_time'] = date('Y-m-d',strtotime($value['track_time']));
+                        break;
+                    }
+                }
+            }
+            unset($item);
+        }
+        
+        
+        /*在列表页面添加最后跟进时间显示字段
+         * $this->list=D('Yewu')->get_list($condition,10);//信息数据
+         * */
+        $this->list= $temp_arr_lst;
+        $this->user='';
+        $this->maxCount=D('Yewu')->listCount($condition);
+        
+        $area = M('area_school')->where("level = 1 and status = 1")->select();
+        $school = M('area_school')->where("level = 2 and status = 1")->select();
+        $this->assign("area",$area);
+        $this->assign("school",$school);
+        
+        $ws['pid'] = 15;
+        $ws['is_del'] = 0;
+        
+        $sch_lst = M('foo_info')->where($ws)->getField('id,name,region');
+        $this->sch_lst = $sch_lst;
+        
+        $this->assign('gradeList', C('SCHOOL_GRADE'));
+        $grade_lst = C('SCHOOL_GRADE');
+        $gradelst = array_column($grade_lst,'name','id');
+        $this->gradelst = $gradelst;
+        $this->display('service');
+    }
+    
+    
+    //增加修改
+    public function add_service_students($type=null){
+        $mod=M('yewu_students');
+        $mod->create();
+        if(I('post.id')){
+            if($mod->save())$type?:$this->ajaxReturn('ok');
+        }else{
+            $mod->school=88888;
+            $mod->addx=session('auth_id');
+            $mod->addx_name=session('user_name');
+            $mod->track_user=session('auth_id');
+            $mod->state=0;
+            $area = $mod->region;
+            $condition['tel1|tel2']=['in',I('post.tel2')?[I('post.tel1'),I('post.tel2')]:[I('post.tel1')]];
+            $repeat=$mod->where($condition)->find();
+            if($repeat)$this->ajaxReturn('录入有重复……'.$repeat['name'].','.get_school_name($repeat['school']));
+            if($mod->add()){
+                //$user[] = [];
+                if($area == '10'){
+                    //张鹏
+                    $user[] = 'XZsmqh29';
+                    $user[] = "WW";
+                }elseif($area == '20'){
+                    //张玉珠
+                    $user[] = 'XZdl01';
+                    $user[] = "WW";
+                }elseif($area == '30'){
+                    //王大鹏
+                    $user[] = 'XZfx01';
+                }elseif($area == '40'){
+                    //何亮
+                    $user[] = 'XZsy01';
+                }
+                
+                $info='点击可直接进入分配……';
+                
+                //微信通知
+                if(count($user)>0){
+                    $wx= getWechatObj();
+                    $wx->sendNewsMsg(
+                        [$wx->buildNewsItem("有新的市场资源分配到你这里！",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Yewu/service_set')),'')],
+                        ['touser'=>$user],
+                        C('WECHAT_APP')['XZMS']
+                        );
+                }
+                
+                $type?:$this->ajaxReturn('ok');
+            }
+        }
+    }
 	
     //获取单条或多条信息
     public function pager($id=0){
@@ -148,6 +256,104 @@ class YewuController extends HomeController {
 		  ]);
     
     }
+    
+    
+    //获取单条或多条信息
+    public function pagerService($id=0){
+        $mod=M('yewu_students');
+        if($id){
+            $data[0]=$mod->find($id);//获取到数据
+            $count=1;
+        }
+        
+        if(IS_AJAX && I('get.pageCount')){
+            $page=I('get.pageNumber');//请求第几条开始
+            $page_count=I('get.pageCount');//一页多少条记录
+            
+            $condition=I('post.');//获取json查询条件转换成php数组
+            //$condition['school']=$condition['school']?:session('school_id');
+            if($condition['keyword'])$condition['name|tel1|tel2'] = array('like', "%" . $condition['keyword'] . "%");
+            
+            if($condition['schoolx']){
+                $condition['schoolx'] = array('like','%'.$condition['schoolx'].'%');
+            }else{
+                $condition['schoolx'] = '';
+            }
+            
+            if($condition['class_old']){
+                $condition['class_old'] = array('like','%'.$condition['class_old'].'%');
+            }
+            
+            //           $condition['state']=((I('get.act')=='set')?['in','0,10,20']:['in','10,20']); //不知道为什么添加这条语句调整，由于这条语句调整导致无法进行状态筛选，从而屏蔽这条语句
+            
+            if($condition['tel1|tel2']){
+                $condition['tel1|tel2'] =  array('like', "%" . $condition['tel1|tel2'] . "%");
+            }
+            
+            if($condition['city_id'] === '0'){
+                $condition['city_id'] = '';
+            }
+            
+            if($condition['school'] === '0'){
+                $condition['school'] = '';
+            }
+            
+            if($condition['time1'] && $condition['time2']){
+                $condition['create_time'] = array('between',array($condition['time1'] . " 00:00:00",$condition['time2'] . " 23:59:59"));
+                unset($condition['time1']);
+                unset($condition['time2']);
+            }elseif($condition['time1']){
+                $condition['create_time'] = array('EGT',$condition['time1'] . " 00:00:00");
+                unset($condition['time1']);
+            }elseif($condition['time2']){
+                $condition['create_time'] = array('ELT',$condition['time2'] . " 23:59:59");
+                unset($condition['time2']);
+            }
+            
+            if(session('user_name') == '张鹏'){
+                //张鹏
+                $condition['region']=10;//'辽东';
+            }elseif(session('user_name') == '张玉珠'){
+                //张玉珠
+                $condition['region']=20;//'辽西';
+            }elseif(session('user_name') == '王大鹏'){
+                //王大鹏
+                $condition['region']=30;//'吉林';
+            }elseif(session('user_name') == '何亮'){
+                //何亮
+                $condition['region']=40;//'黑龙江';
+            }else{
+                $condition['addx']=session('auth_id');
+            }
+            
+            $condition['source'] = 2;
+            
+            array_empty_delt($condition);
+            $count=$mod->where($condition)->count();//满足条件的记录总数
+            $data=$mod->where($condition)->limit($page,$page_count)->order('assign_time ASC,school desc')->select();//获取到数据
+        }
+        
+        foreach ($data as &$v) {//跟踪人
+            $v['track_user']=M('user')->where(['id'=>$v['track_user']])->getField('name');
+            $record=M('YewuTrack')->where(['stuid'=>$v['id']])->order('track_next desc,timestamp desc')->find();
+            
+            $v['schooln'] = M('foo_info')->where(['id'=>$v['school']])->getField('name');
+            if($record){
+                $v['track_time']=substr($record['track_time'],0,10);
+                $v['track_next']=substr($record['track_next'],0,10);
+            }
+        }
+        
+        // 发送给页面的数据
+        $this->ajaxReturn([
+            
+            'state'=>'ok',//查询结果
+            'maxCount'=>$count,//查询到数据库有多少条满足条件记录
+            'data'=>$data
+            
+        ]);
+        
+    }
 
     //增加修改
     public function add_students($type=null){
@@ -158,12 +364,16 @@ class YewuController extends HomeController {
             }else{
                 $mod->school=session('school_id');
                 $mod->addx=session('auth_id');
+                $mod->addx_name=session('user_name');
     	    	$mod->track_user=session('auth_id');
                 $mod->state=10;
+                $area = $mod->region;
                 $condition['tel1|tel2']=['in',I('post.tel2')?[I('post.tel1'),I('post.tel2')]:[I('post.tel1')]];
                 $repeat=$mod->where($condition)->find();
                 if($repeat)$this->ajaxReturn('录入有重复……'.$repeat['name'].','.get_school_name($repeat['school']));
-    	    	if($mod->add())$type?:$this->ajaxReturn('ok');
+    	    	if($mod->add()){
+    	    	    $type?:$this->ajaxReturn('ok');
+    	    	}
             }
     }
 
@@ -174,6 +384,30 @@ class YewuController extends HomeController {
 			$currentTime = date('Y-m-d H:i:s');
             if(M('yewu_students')->where($w)->setField(['track_user'=>I('post.user'),'state'=>10,'assign_time'=>$currentTime]))
                 $this->ajaxReturn('ok');
+        }
+    }
+    
+    //区域指派市场资源到校区校长
+    public function assign_school(){
+        if(I('post.user') && I('post.stuid') && I('post.schoolId')){
+            $w['id']=['in',I('post.stuid')];
+            $currentTime = date('Y-m-d H:i:s');
+            if(M('yewu_students')->where($w)->setField(['track_user'=>I('post.user'),'state'=>10,'school'=>I('post.schoolId'),'assign_time'=>$currentTime])){
+                $info='点击可直接进入分配……';
+                $user[] = M('user')->where(['id'=>I('post.user')])->getField('wechat_userid');
+                $user[] = 'WW';
+                //微信通知
+                if(count($user)>0){
+                    $wx= getWechatObj();
+                    $wx->sendNewsMsg(
+                        [$wx->buildNewsItem("有新的市场资源分配到你这里！",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Yewu/set')),'')],
+                        ['touser'=>$user],
+                        C('WECHAT_APP')['XZMS']
+                        );
+                }
+                $this->ajaxReturn('ok');
+            }
+                
         }
     }
 
@@ -283,7 +517,55 @@ class YewuController extends HomeController {
         $this->display('index');
     }
     
-    
+    public function service_set(){
+        
+        if(session('user_name') == '张鹏' || session('user_name') == '张晓明'){
+            //张鹏
+            $condition['region']=10;//'辽东';
+        }elseif(session('user_name') == '张玉珠'){
+            //张玉珠
+            $condition['region']=20;//'辽西';
+        }elseif(session('user_name') == '王大鹏'){
+            //王大鹏
+            $condition['region']=30;//'吉林';
+        }elseif(session('user_name') == '何亮'){
+            //何亮
+            $condition['region']=40;//'黑龙江';
+        }else{
+            $this->error('您没有该权限，请联系系统管理员');
+        }
+        
+        $condition['source']=2;
+        $this->list=D('Yewu')->get_list($condition,10);//信息数据
+        $maxcount = M('yewu_students')->where($condition)->count();
+        
+        
+        $ws['region'] = $condition['region'];
+        $ws['pid'] = 15;
+        $ws['is_del'] = 0;
+        
+        $sch_lst = M('foo_info')->where($ws)->getField('id,name,region');
+        
+        $sch_id = array_keys($sch_lst);
+        
+        $this->sch_lst = $sch_lst;
+        $w['position_id']=10;//校长
+        $w['is_del']=0;
+        $w['school']= array('in',$sch_id);
+        $this->user=M('user')->where($w)->field('id,name,school')->select();//任务指派人员列表
+        $this->maxCount=$maxcount;
+        
+        $area = M('area_school')->where("level = 1 and status = 1")->select();
+        $school = M('area_school')->where("level = 2 and status = 1")->select();
+        $this->assign("area",$area);
+        $this->assign("school",$school);
+        
+        $this->assign('gradeList', C('SCHOOL_GRADE'));
+        $grade_lst = C('SCHOOL_GRADE');
+        $gradelst = array_column($grade_lst,'name','id');
+        $this->gradelst = $gradelst;
+        $this->display('service');
+    }
     
     public function recycleCustomers(){
       
