@@ -24,15 +24,12 @@
   }
 </style>
   
-  <if condition="ACTION_NAME eq 'huifang'">
-    {:W('PageHeader/search_ajax',array('name'=>'回访跟进','search'=>'S'))}
-  </if>
-  <if condition="ACTION_NAME eq 'index'">
-    {:W('PageHeader/search_ajax',array('name'=>'信息录入','search'=>'S'))}
+  <if condition="ACTION_NAME eq 'service'">
+    {:W('PageHeader/search_ajax',array('name'=>'资源信息录入','search'=>'S'))}
   </if>
   
-  <if condition="ACTION_NAME eq 'set'">
-    {:W('PageHeader/search_ajax',array('name'=>'信息分配','search'=>'S'))}
+  <if condition="ACTION_NAME eq 'service_set'">
+    {:W('PageHeader/search_ajax',array('name'=>'资源校区分配','search'=>'S'))}
   </if>
   
   <!-- 跟进记录列表 -->
@@ -46,157 +43,155 @@
       <div class="modal-body">
         <div class="row">
           	 <!-- 新增录入修改 -->
-							<form id="form_data" method="post" class="form-horizontal">
-							<input type="hidden" name="id" id="id_t" value=""/>
-							<table class="table table-bordered">
-							    <tr>
-							        <th>家长姓名</th>
-							        <td>
-							            <input class="form-control required" type="text" name="parents" id="parents_t" maxlength="5"/>
-							        </td>
-							        <th>
-							            <nobr>家长类型</nobr>
-							        </th>
-							        <td>
-							            <select name="parent_type" id="parentType_t" class="form-control">
-							                <option value="母亲">母亲</option>
-							                <option value="父亲">父亲</option>
-							                <option value="爷爷">爷爷</option>
-							                <option value="奶奶">奶奶</option>
-							                <option value="外公">外公</option>
-							                <option value="外婆">外婆</option>
-							                <option value="哥哥">哥哥</option>
-							                <option value="姐姐">姐姐</option>
-							                <option value="亲戚">亲戚</option>
-							                <option value="朋友">朋友</option>
-							            </select>
-							        </td>
-							        <th>信息途径</th>
-							        <td>
-							            <select name="get_way" id="getWay_t" class="form-control">
-							                <option value="">全部</option>{:fill_option(get_config('TRACK_WAY'))}</select>
-							        </td>
-							        <th>意向强度</th>
-							        <td>
-							            <select id="qiang_t" name="yixiang_qiang" class="form-control">
-							                <option value="">全部</option>{:fill_option(get_config('TRACK_YIXIANG'))}</select>
-							        </td>
-							    </tr>
-							    <tr>
-							        <th>联系电话<a style="color:red;">*</a>
-							        </th>
-							        <td>
-							            <input class="form-control required" type="text" name="tel1" id="tel1_t" required="true" maxlength="11">
-							        </td>
-							        <th>家庭电话</th>
-							        <td>
-							            <input type="text" name="tel2" id="tel2_t" class="form-control required" maxlength="11">
-							        </td>
-							        <th>家庭住址</th>
-							        <td>
-							            <input type="text" name="address" id="address_t" class="form-control required">
-							        </td>
-							        <th>意向</th>
-							        <td>
-							            <textarea class="form-control required" name="yixiang" id="yixiang_t"></textarea>
-							        </td>
-							    </tr>
-							    <tr>
-							        <th>孩子姓名</th>
-							        <td>
-							            <input type="text" name="name" id="name_t" class="form-control required" maxlength="5">
-							        </td>
-							        <th>性别</th>
-							        <td>
-							            <select name="sex" id="sex_t" class="form-control">
-							                <option value="1">男</option>
-							                <option value="0">女</option>
-							            </select>
-							        </td>
-							        <th>年级</th>
-							        <td>
-							            <select id="grade_t" name="grade" class="form-control">
-							            			{:fill_option_ex($gradeList)}
-							                   <!-- <option value="七年级">七年级</option>
-							                    <option value="八年级">八年级</option>
-							                    <option value="九年级">九年级</option>
-							                <optgroup label="初中">
-							                    <option value="初一">初一</option>
-							                    <option value="初二">初二</option>
-							                    <option value="初三">初三</option>
-							                </optgroup>
-							                <optgroup label="高中">
-							                    <option value="高一">高一</option>
-							                    <option value="高二">高二</option>
-							                    <option value="高三">高三</option>
-							                </optgroup>-->
-							            </select>
-							        </td>
-							        <th>文理</th>
-							        <td>
-							            <select name="wl" id="wl_t" class="form-control">
-							                <option value="文">文</option>
-							                <option value="理">理</option>
-							                <option value="">未知</option>
-							            </select>
-							        </td>
-							    </tr>
-							    <tr>
-							        <th>
-							            <nobr>现就读学校</nobr>
-							        </th>
-							        <td>
-							            <select id="school_one1" name="city_id" onchange="school_change('1')" class="form-control">
-														<option value="0" selected>请选择地区
-														<foreach name="area" item="vo">
-															<option value="{$vo.id}">{$vo.name}
-														</foreach>
-							            </select>
-										<select id="school_two1" name="schoolx" class="form-control">
-											<option value="0" class="school_option01" selected>请选择学校
-											<foreach name="school" item="vo">
-												<option class="school_option{$vo.pid}1" value="{$vo.name}">{$vo.name}
-											</foreach>
-							            </select>
-										<span id="school_two_span1"></span>
-							        </td>
-							        
-							        <th>班级</th>
-							        <td>
-							            <input class="form-control" name="class_old" id="class_old">
-							        </td>
-							        <th>学员类别</th>
-							        <td>
-							            <select name="type_gj" class="form-control">
-							            	<option value="">请选择</option>
-							            	<option value="11">艺术生</option>
-							            	<option value="12">体育生</option>
-							            	<option value="13">全日制</option>
-							            	<option value="14">特训营</option>
-							            	<option value="15">高报</option>
-							            	<option value="16">绝密</option>
-							            	<option value="17">预科班</option>
-							            	<option value="18">其他</option>
-							            </select>
-							        </td>
-							        <th>备注</th>
-							        <td>
-							            <input class="form-control" name="other" id="other">
-							        </td>
-							        
-							    </tr>
-							    <tr>
-							    	<td align="center" colspan="8">
-							    		  <input type="submit" id="add" class="btn btn-sm btn-primary" name="add" value="新增学员" />
-						            <input type="submit" id="edit_t" class="btn btn-sm btn-primary" name="edit" value="修改" />
-						            <input type="reset" id="reset_b" class="btn btn-sm btn-primary" name="reset_b" value="重置" />
-						            <!--<input type="reset" id="reset_b_h" name="reset_b_h" style="display: none;" />-->
-						            <input type="button" id="payed" class="btn btn-sm btn-primary" name="payed" value="学员转正" />
-						            <input type="button" id="jiaojie_b" class="btn btn-sm btn-primary" name="jiaojie_b" value="学生交接" />
-							    	</td>
-							    </tr>
-							</table>
-							</form>
+			<form id="form_data" method="post" class="form-horizontal">
+			<input type="hidden" name="id" id="id_t" value=""/>
+			<input type="hidden" name="source" value="2"/>
+			<table class="table table-bordered">
+			    <tr>
+			        <th>家长姓名</th>
+			        <td>
+			            <input class="form-control required" type="text" name="parents" id="parents_t" maxlength="5"/>
+			        </td>
+			        <th>
+			            <nobr>家长类型</nobr>
+			        </th>
+			        <td>
+			            <select name="parent_type" id="parentType_t" class="form-control">
+			                <option value="母亲">母亲</option>
+			                <option value="父亲">父亲</option>
+			                <option value="爷爷">爷爷</option>
+			                <option value="奶奶">奶奶</option>
+			                <option value="外公">外公</option>
+			                <option value="外婆">外婆</option>
+			                <option value="哥哥">哥哥</option>
+			                <option value="姐姐">姐姐</option>
+			                <option value="亲戚">亲戚</option>
+			                <option value="朋友">朋友</option>
+			            </select>
+			        </td>
+			        <th>信息途径</th>
+			        <td>
+			            <select name="get_way" id="getWay_t" class="form-control">
+			                <option value="">全部</option>{:fill_option(get_config('TRACK_WAY'))}</select>
+			        </td>
+			        <th>意向强度</th>
+			        <td>
+			            <select id="qiang_t" name="yixiang_qiang" class="form-control">
+			                <option value="">全部</option>{:fill_option(get_config('TRACK_YIXIANG'))}</select>
+			        </td>
+			    </tr>
+			    <tr>
+			        <th>联系电话<span style="color:red;">*</span>
+			        </th>
+			        <td>
+			            <input class="form-control required" type="text" name="tel1" id="tel1_t" required="true" maxlength="11">
+			        </td>
+			        <th>家庭电话</th>
+			        <td>
+			            <input type="text" name="tel2" id="tel2_t" class="form-control required" maxlength="11">
+			        </td>
+			        <th>家庭住址</th>
+			        <td>
+			            <input type="text" name="address" id="address_t" class="form-control required">
+			        </td>
+			        <th>意向</th>
+			        <td>
+			            <textarea class="form-control required" name="yixiang" id="yixiang_t"></textarea>
+			        </td>
+			    </tr>
+			    <tr>
+			        <th>孩子姓名</th>
+			        <td>
+			            <input type="text" name="name" id="name_t" class="form-control required" maxlength="5">
+			        </td>
+			        <th>性别</th>
+			        <td>
+			            <select name="sex" id="sex_t" class="form-control">
+			                <option value="1">男</option>
+			                <option value="0">女</option>
+			            </select>
+			        </td>
+			        <th>年级</th>
+			        <td>
+			            <select id="grade_t" name="grade" class="form-control">
+			            			{:fill_option_ex($gradeList)}
+			            </select>
+			        </td>
+			        <th>文理</th>
+			        <td>
+			            <select name="wl" id="wl_t" class="form-control">
+			                <option value="文">文</option>
+			                <option value="理">理</option>
+			                <option value="">未知</option>
+			            </select>
+			        </td>
+			    </tr>
+			    <tr>
+			        <th>
+			            <nobr>现就读学校</nobr>
+			        </th>
+			        <td>
+			            <select id="school_one1" name="city_id" onchange="school_change('1')" class="form-control">
+										<option value="0" selected>请选择地区
+										<foreach name="area" item="vo">
+											<option value="{$vo.id}">{$vo.name}
+										</foreach>
+			            </select>
+						<select id="school_two1" name="schoolx" class="form-control">
+							<option value="0" class="school_option01" selected>请选择学校
+							<foreach name="school" item="vo">
+								<option class="school_option{$vo.pid}1" value="{$vo.name}">{$vo.name}
+							</foreach>
+			            </select>
+						<span id="school_two_span1"></span>
+			        </td>
+			        
+			        <th>班级</th>
+			        <td>
+			            <input class="form-control" name="class_old" id="class_old">
+			        </td>
+			        <th>学员类别</th>
+			        <td>
+			            <select name="type_gj" class="form-control">
+			            	<option value="">请选择</option>
+			            	<option value="11">艺术生</option>
+			            	<option value="12">体育生</option>
+			            	<option value="13">全日制</option>
+			            	<option value="14">特训营</option>
+			            	<option value="15">高报</option>
+			            	<option value="16">绝密</option>
+			            	<option value="17">预科班</option>
+			            	<option value="18">其他</option>
+			            </select>
+			        </td>
+			        
+			        <th>备注</th>
+			        <td>
+			            <input class="form-control" name="other" id="other">
+			        </td>
+			        
+			    </tr>
+			    <tr>
+			    <th>区域划分<span style="color:red;">*</span></th>
+			    <td>
+			    	<select class="form-control" name="region" required="required">
+			    		<option value="">请选择区域划分</option>
+						{:fill_option_ex(get_config('SCHOOL_REGION'))}
+					</select>
+			    </td>
+			    </tr>
+			    <tr>
+			    	<td align="center" colspan="8">
+			    		  <input type="submit" id="add" class="btn btn-sm btn-primary" name="add" value="新增学员" />
+		            <input type="submit" id="edit_t" class="btn btn-sm btn-primary" name="edit" value="修改" />
+		            <input type="reset" id="reset_b" class="btn btn-sm btn-primary" name="reset_b" value="重置" />
+		            <!--<input type="reset" id="reset_b_h" name="reset_b_h" style="display: none;" />-->
+		            <input type="button" id="payed" class="btn btn-sm btn-primary" name="payed" value="学员转正" />
+		            <input type="button" id="jiaojie_b" class="btn btn-sm btn-primary" name="jiaojie_b" value="学生交接" />
+			    	</td>
+			    </tr>
+			</table>
+			</form>
 
         </div>
       </div>
@@ -244,19 +239,6 @@
           <select id="grade" name="grade" class="form-control">
             <option value="">全部</option>
             {:fill_option_ex($gradeList)}
-             <!-- <option value="七年级">七年级</option>
-              <option value="八年级">八年级</option>
-              <option value="九年级">九年级</option>
-            <optgroup label="初中">
-              <option value="初一">初一</option>
-              <option value="初二">初二</option>
-              <option value="初三">初三</option>
-            </optgroup>
-            <optgroup label="高中">
-              <option value="高一">高一</option>
-              <option value="高二">高二</option>
-              <option value="高三">高三</option>
-            </optgroup>-->
           </select>
         </div>
 				
@@ -304,10 +286,21 @@
 			<span id="school_two_span2"></span>
         </div>
         
-       
+       <div class="input-group export">
+              <label for="schooln" class="input-group-addon">指派的校区</label>
+              <select id="schooln" name="school"  class="form-control">
+              	<option value="">全部</option>
+              	<option value="88888">未分配的资源</option>
+              	<volist name="sch_lst" id="sch">
+              		<option value="{$sch.id}">{$sch.name}</option>
+              	</volist>
+              </select>
+        </div>
       </div>
       <div class="pull-right">
+       <if condition="ACTION_NAME eq 'service'">
       	<input type="button" id="add_show" class="btn btn-sm btn-primary" name="add" value="新增" /> &nbsp;&nbsp;
+      	</if>
       <input type="button" class="btn btn-sm btn-primary" name="search" value="筛选" id="search" />
       </div>
     </div>
@@ -315,16 +308,11 @@
 </form>
 
 <div class="row sub_left_menu" style="padding-left:15px;padding-right:15px;">
-  <if condition="ACTION_NAME eq 'set'">
+  <if condition="ACTION_NAME eq 'service_set'">
     <div class="operate panel panel-default">
         <div class="panel-body">
           <div class="pull-left">
             <input type="button" name="zhipai" id="zhipai_b" class="btn btn-sm btn-primary" value="指派"/>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="button" name="recycle_cus" id="recycle_cus" class="btn btn-sm btn-primary" value="客户资源回收"/>
-          </div>
-          <div class="pull-right">
-            <a class="btn btn-sm btn-danger" data-toggle="modal" data-target="#import">数据批量导入</a>
           </div>
         </div>
     </div>
@@ -335,6 +323,7 @@
           <th><input type="checkbox" name="all" id="check_all"/></th>         
           <th>状态</th>
           <th>来源</th>
+          <th>指派校区</th>
           <th>家长姓名</th>
           <th>家长类型</th>
           <th>意向强度</th>
@@ -355,6 +344,7 @@
               <td><input type="checkbox" name="zhipai_c" id="check{$data.id}" value="{$data.id}" /></td>
               <td>{:get_config('TRACK_STATE')[$data['state']]}</td>
               <td>{:get_config('SOURCE_STATE')[$data['source']]}</td>
+              <td>{:get_school_name($data['school'])}</td>
               <td>{$data.parents}</td>
               <td>{$data['parent_type']!='other'?$data['parent_type']:'未知'}</td>
               <td>{:get_config('TRACK_YIXIANG')[$data['yixiang_qiang']]}</td>
@@ -389,7 +379,7 @@
                 <case value="103">一年级</case>
                 </switch>
               </td>
-              <td>{$data.track_user}</td>
+              <td>{$data.trackuser}</td>
               <td>{$data.assign_time}</td>
               <td>{$data.track_time}</td>
               <td>{$data.track_next}</td>
@@ -397,7 +387,7 @@
               	<button class="btn btn-xs btn-info" onclick="$.showBaseInfo({$data.id})">编辑</button>
                 <button class="btn btn-xs btn-primary" onclick="genzhong({$data.id})">查看记录</button>
                 <button class="btn btn-xs btn-success" onclick="weihu({$data.id})">添加记录</button>
-                <button class="btn btn-xs btn-default" onclick="$.del_record({$data.id})">删除记录</button>
+                <!-- <button class="btn btn-xs btn-default" onclick="$.del_record({$data.id})">删除记录</button> -->
               </td>
             </tr>
           </volist>
@@ -420,7 +410,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">市场调查业务跟进指派</h4>
+        <h4 class="modal-title">市场资源指派到校区</h4>
       </div>
       <div class="modal-body">
         <div class="panel panel-default">
@@ -428,9 +418,14 @@
             <div class="col-md-9">
               <div class="input-group col-md-8">
                 <label for="workered" class="input-group-addon">以下学员指派给：</label>
-                <select name="user" id="workered" class="form-control"><option value=""></option>
+                <select name="school" id="service_sch_id" class="form-control"><option value="">请选择校区</option>
+                	<volist name="sch_lst" id="sch">
+                		<option value="{$sch.id}">{$sch.name}</option>
+                	</volist>
+                </select>
+                <select name="user" id="service_master" class="form-control"><option value="">请选择校长</option>
                   <volist name="user" id="worker">
-                    <option value="{$worker.id}">{$worker.name}</option>                  
+                    <option value="{$worker.id}" opt="{$worker.school}">{$worker.name}</option>                  
                   </volist>
                 </select>
               </div>
@@ -781,21 +776,12 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
 		
 			var pageNumber = (page-1)*pageCount //从第几行开始查询
 			var data_searchForm = $('#d_form_search').serializeArray();
-			
-			<if condition="ACTION_NAME eq 'huifang'">
-        data_searchForm.push({name:'track_user',value:{:get_user_id()}});
-        data_searchForm.push({name:'state',value:10});
-      </if>
-      <if condition="ACTION_NAME eq 'index'">
-        data_searchForm.push({name:'track_user',value:{:get_user_id()}});
-      </if>
-      
       
 			$.ajax({
 				type:'POST',
 				async:false,
 				cache:false,
-				url:"{:U('pager')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page+"&act="+'<?php echo ACTION_NAME ?>',
+				url:"{:U('pagerService')}&pageNumber=" + pageNumber + "&pageCount=" + pageCount + "&page=" + page+"&act="+'<?php echo ACTION_NAME ?>',
 				dataType:'json',
 				data:data_searchForm,
 				success:function(msg,status){
@@ -808,10 +794,10 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
 							$('#llst').empty();
 							
 							//data,tbody_id,button_method_arr,button_name_arr,field_arr,check_name
-							var button_method_arr = ['$.showBaseInfo','genzhong','weihu','$.del_record'];
-							var button_name_arr = ['编辑','查看记录','添加记录','删除记录'];
-							var button_cls_arr = ['btn btn-xs btn-info','btn btn-xs btn-primary','btn btn-xs btn-success','btn btn-xs btn-default'];
-              var field_arr = ['state','source','parents','parent_type','yixiang_qiang','tel1','name','type_gj','grade','track_user','assign_time','track_time','track_next'];
+							var button_method_arr = ['$.showBaseInfo','genzhong','weihu'];
+							var button_name_arr = ['编辑','查看记录','添加记录'];
+							var button_cls_arr = ['btn btn-xs btn-info','btn btn-xs btn-primary','btn btn-xs btn-success'];
+              				var field_arr = ['state','source','schooln','parents','parent_type','yixiang_qiang','tel1','name','type_gj','grade','track_user','assign_time','track_time','track_next'];
 							var select_lst_arr = ['yixiang_qiang','grade','type_gj'];
 							var check_name = 'zhipai_c';
 							drawTrTd(msg.data,'llst',button_method_arr,button_name_arr,button_cls_arr,field_arr,check_name,select_lst_arr);
@@ -823,38 +809,19 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
 				}
 			});
 			
-			/*this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
-			this.max_page = maxPage;
-			if(maxPage > 0){
-				$('#pager_input').val('Page ' + this.current_page + ' of ' + maxPage);
-			}else{
-				$('#pager_input').val('没有符合条件的记录');	
-			}
-			
-			// set disable class on appropriate links
-				$('div .pagination').find('a').removeClass('disabled');
-
-				if (this.current_page == this.max_page) {
-					$('div .pagination').find('.next, .last').addClass('disabled');
-				}
-	
-				if (this.current_page == 1) {
-					$('div .pagination').find('.previous, .first').addClass('disabled');
-				}*/
-				
 				
 				if(maxPage <= 0){
-							this.page_string = '没有符合条件的记录';
-							maxPage = 1;
-						}else if(this.page_string == '没有符合条件的记录'){
-							this.page_string = 'Page {current_page} of {max_page}';
-						}
-						
-						this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
-						this.max_page = maxPage;
-						
-						
-						$('.pagination').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
+					this.page_string = '没有符合条件的记录';
+					maxPage = 1;
+				}else if(this.page_string == '没有符合条件的记录'){
+					this.page_string = 'Page {current_page} of {max_page}';
+				}
+				
+				this.current_page = (currentPage>=maxPage ? maxPage : currentPage);
+				this.max_page = maxPage;
+				
+				
+				$('.pagination').jqPagination('option',{'current_page':currentPage,'trigger': false}); //设置分页插件的当前页码
 				
 		}
 		
@@ -864,59 +831,6 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
 	function searchAll(arr){
 			var currentPage = $('.pagination').jqPagination('option','current_page');
 			$('.pagination').jqPagination('option',{'current_page':currentPage,'trigger': true}); //设置分页插件的当前页码
-     /* <if condition="ACTION_NAME eq 'huifang'">
-        arr.push({name:'track_user',value:{:get_user_id()}});
-        arr.push({name:'state',value:10});
-      </if>
-      <if condition="ACTION_NAME eq 'index'">
-        arr.push({name:'track_user',value:{:get_user_id()}});
-      </if>
-      
-			$.ajax({
-				type:'POST',
-				async:false,
-				cache:false,
-				url:"{:U('pager')}&pageNumber=0&pageCount=" + pageCount + '&act={:ACTION_NAME}',
-				dataType:'json',
-				data:arr,
-				success:function(msg,status){
-					if(status=="success"){
-						if(msg.maxCount != undefined && msg.data.length > 0 ){
-							$('#llst').empty();
-							$.each(msg.data,function(i,value){
-								$('#llst').append('<tr id="' + value.id + '">');
-								temp = '<button class="btn btn-xs btn-info" onclick="$.showBaseInfo(' + value.id +')">编辑</button>&nbsp;|&nbsp;';;
-                temp += '<button class="btn btn-xs btn-primary" onclick="genzhong(' + value.id +')">跟进记录</button>&nbsp;|&nbsp;';
-                temp += '<button class="btn btn-xs btn-success" onclick="weihu(' + value.id +')">添加记录</button>';
-
-                $('<td>' + temp  + '</td>').prependTo('#' + value.id);
-                $('<td>' + (value.track_user== undefined ? '': value.track_user)  + '</td>').prependTo('#' + value.id);
-                $('<td>' + (value.name== undefined ? '': value.name)  + '</td>').prependTo('#' + value.id);
-                $('<td>' + (value.tel1== undefined ? '': value.tel1)  + '</td>').prependTo('#' + value.id);
-                $('<td>' + ((value.yixiang_qiang== undefined) || (value.yixiang_qiang==0) ? '': yixiang_qiang[value.yixiang_qiang])  + '</td>').prependTo('#' + value.id);
-                $('<td>' + (value.parent_type==undefined ? '': value.parent_type)  + '</td>').prependTo('#' + value.id);
-                $('<td>' + (value.parents== undefined ? '': value.parents)  + '</td>').prependTo('#' + value.id);
-                $('<td>' + (value.state == undefined ? '': state[value.state]) + '</td>').prependTo('#' + value.id);
-                $('<td><input type="checkbox" name="zhipai_c" id="check' + value.id + '" /></td>').prependTo('#' + value.id);
-							});
-							//设置分页插件数据
-							maxPage = ((msg.maxCount % pageCount) == 0) ?  msg.maxCount/pageCount: parseInt(msg.maxCount/pageCount)+1;
-							$('#pager_input').val('Page 1 of ' + maxPage);
-						}else{
-							$('#llst').empty();
-							$('#pager_input').val('没有符合条件的记录');
-							$('div .pagination').find('a').addClass('disabled');
-	
-						}
-					}
-					
-					// set disable class on appropriate links
-						if (maxPage == 1) {
-							$('div .pagination').find('a').addClass('disabled');
-						}
-				
-				}
-			});*/
 	}
 	
 	//新增按钮，新增记录操作;修改按钮操作;
@@ -928,15 +842,15 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
 					type:'POST',
 					async:false,
 					cache:false,
-					url:"{:U('add_students')}",
+					url:"{:U('add_service_students')}",
 					dataType:'json',
 					data:data,
 					success:function(msg,status){ 
 						if(status == "success" && msg == 'ok'){
               
-              ui_info("操作成功!"); 
-              $('#reset_b').trigger('click'); 
-							searchAll([]);//每次添加之后都会刷新列表；
+			              ui_info("操作成功!"); 
+			              $('#reset_b').trigger('click'); 
+						  searchAll([]);//每次添加之后都会刷新列表；
 							
 						}else {
 							ui_error(msg);
@@ -947,13 +861,13 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
 							
 							
 	$('#add_show').click(function(){
-		 $('#reset_b').trigger('click'); 
-		 $('#jiaojie_b').hide();
-	   $('#add').show();
-	   $('#edit_t').hide();
-		 $('#reset_b').show();
-		 $('#payed').hide();
-		 $('#studentInfo_dialog').modal('show');
+		$('#reset_b').trigger('click'); 
+		$('#jiaojie_b').hide();
+	    $('#add').show();
+	   	$('#edit_t').hide();
+		$('#reset_b').show();
+		$('#payed').hide();
+		$('#studentInfo_dialog').modal('show');
 		 
 		$(".school_option0").attr("selected","selected");
 		$("#school_two").css("display","none");
@@ -977,14 +891,14 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
 		          	data:{"id": sid},
 		          	dataType:"json", 
 		          	success: function(msg){
-			          	$('#reset_b').trigger('click'); 
-		          	 //	$('#add').attr("disabled",true);
-		          	 $('#jiaojie_b').hide();
-					    	 $('#add').hide();
-					    	 $('#edit_t').show();
-								 $('#reset_b').hide();
-								 $('#payed').show();
-		              setform(msg);
+			          	 $('#reset_b').trigger('click'); 
+		          	  // $('#add').attr("disabled",true);
+		          	 	 $('#jiaojie_b').hide();
+				    	 $('#add').hide();
+				    	 $('#edit_t').show();
+						 $('#reset_b').hide();
+						 $('#payed').show();
+	              		 setform(msg);
 		              $('#studentInfo_dialog').modal('show');
 									//$('#edit_t,#reset_b,#payed').attr('disabled',false);
 		          	},
@@ -1091,14 +1005,15 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
     $("#form_data").find("input[name='other']").val(msg.data[0]['other']);
     $("#form_data").find("input[name='class_old']").val(msg.data[0]['class_old']);
     $('#form_data').find("select[name='type_gj']").val(msg.data[0]['type_gj']);
+    $('#form_data').find("select[name='region']").val(msg.data[0]['region']);
     $('#jiaojie_stuid').val(msg.data[0]['id']);
-//  alert(msg.data[0]['state']);
+
     if(msg.data[0]['state'] == 20){
     	 $('#jiaojie_b').show();
     	 $('#add').hide();
     	 $('#edit_t').hide();
-			 $('#reset_b').hide();
-			 $('#payed').hide();
+		 $('#reset_b').hide();
+		 $('#payed').hide();
     }
   
   }
@@ -1176,11 +1091,34 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
     //指派的客户ID集合字符串
     $('#students_h').val(id_str);
     
+    $('#service_sch_id').val('');
+    $('#service_master').val('');
+    $('#service_master option').hide();
     $("#zhipai").modal('show');
     
   });
-	
+
+  $('#service_master option').hide();
+  /**
+  	校区与校长 select联动
+  */
+  $('#service_sch_id').change(function(){
+	  //$($('#service_master option')[1]).attr('opt')
+	  var schId = $(this).val();
+	  $('#service_master option').show();
+	  $('#service_master option').each(function(n,obj){
+		  
+		  if($(this).attr('opt') != schId){
+			  $(this).hide();
+		  }
+	  });
+	  $(this).val()
+  });
   
+  
+  /**
+	资源回收页面显示  
+  */
   $('#recycle_cus').bind('click',function(){
 	   	    
 	    $("#recycle").modal('show');
@@ -1190,22 +1128,28 @@ type_gj = {:json_encode(get_config('TRACK_TYPE'))};
   //弹出的指派层页面中的指派按钮，完成真正的指派工作。
   $('#zhipai_e').click(function(){ 
   	var customerId = $('#students_h').val().split("@");
-  	var workerId = $('#workered').val();
+  	var workerId = $('#service_master').val();
+  	var schoolId = $('#service_sch_id').val();
   	
-  	$.ajax({
-  		type:"post",
-  		url:"{:U('save_track')}",
-  		async:true,
-  		dataType:'json',
-  		data:{'stuid':customerId,'user':workerId},
-  		success:function(msg,status){
-  			if(status=='success'){
-  				ui_info("指派任务成功！");
-  				$('#search').click();
-  				$("#zhipai").modal('hide');
-  			}
-  		}
-  	});
+  	if(schoolId != "" && workerId != ""){
+  		$.ajax({
+  	  		type:"post",
+  	  		url:"{:U('assign_school')}",
+  	  		async:true,
+  	  		dataType:'json',
+  	  		data:{'stuid':customerId,'user':workerId,'schoolId':schoolId},
+  	  		success:function(msg,status){
+  	  			if(status=='success'){
+  	  				ui_info("指派任务成功！");
+  	  				$('#search').click();
+  	  				$("#zhipai").modal('hide');
+  	  			}
+  	  		}
+  	  	});
+  	}else{
+  		ui_error("请选择校区及校长");
+  		return;
+  	}
   	
   });
   

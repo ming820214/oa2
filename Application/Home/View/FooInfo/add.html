@@ -42,6 +42,16 @@
 						</select>
 					</div>
 				</div>
+				
+				<div class="form-group col-xs-12">
+					<label class="col-xs-3 control-label" for="sort">校区所在区域：</label>
+					<div class="col-xs-9">
+						<select class="form-control" name="region">
+						{:fill_option_ex(get_config('SCHOOL_REGION'))}
+						</select>
+					</div>
+				</div>
+				
 				<div class="form-group col-xs-12">
 					<label class="col-xs-3 control-label" for="url">附加信息：</label>
 					<div class="col-xs-9">
