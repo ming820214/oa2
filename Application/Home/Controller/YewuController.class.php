@@ -146,7 +146,6 @@ class YewuController extends HomeController {
                 if($area == '10'){
                     //张鹏
                     $user[] = 'XZsmqh29';
-                    $user[] = "WW";
                 }elseif($area == '20'){
                     //张玉珠
                     $user[] = 'XZdl01';
@@ -157,6 +156,9 @@ class YewuController extends HomeController {
                 }elseif($area == '40'){
                     //何亮
                     $user[] = 'XZsy01';
+                }elseif($area == '50'){
+                    //李明帅
+                    $user[] = 'JZsyjn03';
                 }
                 
                 $info='点击可直接进入分配……';
@@ -322,6 +324,9 @@ class YewuController extends HomeController {
             }elseif(session('user_name') == '何亮'){
                 //何亮
                 $condition['region']=40;//'黑龙江';
+            }elseif(session('user_name') == '李明帅'){
+                //李明帅
+                $condition['region']=50;//'黑龙江';
             }else{
                 $condition['addx']=session('auth_id');
             }
@@ -395,7 +400,7 @@ class YewuController extends HomeController {
             if(M('yewu_students')->where($w)->setField(['track_user'=>I('post.user'),'state'=>10,'school'=>I('post.schoolId'),'assign_time'=>$currentTime])){
                 $info='点击可直接进入分配……';
                 $user[] = M('user')->where(['id'=>I('post.user')])->getField('wechat_userid');
-                $user[] = 'WW';
+                
                 //微信通知
                 if(count($user)>0){
                     $wx= getWechatObj();
@@ -531,6 +536,9 @@ class YewuController extends HomeController {
         }elseif(session('user_name') == '何亮'){
             //何亮
             $condition['region']=40;//'黑龙江';
+        }elseif(session('user_name') == '李明帅'){
+            //李明帅
+            $condition['region']=50;//'黑龙江';
         }else{
             $this->error('您没有该权限，请联系系统管理员');
         }
