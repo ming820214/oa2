@@ -227,7 +227,9 @@ class ApplyDesignFlatController extends HomeController {
          		             //校长
          		             $w['state'] = 10;
          		         }
-         		     }else if(session('auth_id') == '439'){
+         		     }
+         		     
+         		     if(session('auth_id') == '439'){
              		     //何亮
              		     unset($w['apply_school']);
              		     $w['area'] = '黑龙江';
