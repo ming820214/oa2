@@ -47,17 +47,20 @@
     		<else/><h1>督导部整改数据管理</h1>
     	</if>
     </div>
-    <if condition="($_SESSION['auth_id'] eq '1059')">
+    <if condition="($_SESSION['auth_id'] eq '1059') or ($_SESSION['auth_id'] eq '1')">
     <div class="col-sm-12">
         <a class="btn btn-sm btn-success pull-right" onclick="toggle_adv_search();"><i id="toggle_adv_search_icon" class="fa fa-chevron-down bigger-125"></i></a>
     </div>
     </if>
 </div>
- <if condition="($_SESSION['auth_id'] eq '1059')">
-<!-- 搜索部分 -->
+
 <form class="panel panel-default hidden" id="adv_search" method="post" action="{:U('export')}">
+<input type="hidden" name="stage" value="<switch name="ACTION_NAME"><case value="index">1</case><case value="apply">2</case><case value="cost">3</case><case value="examine">4</case><case value="manage">5</case></switch>">
+ <if condition="($_SESSION['auth_id'] eq '1059') or ($_SESSION['auth_id'] eq '1')">
+<!-- 搜索部分 -->
+
     <div class="panel-heading">
-        <input type="hidden" name="stage" value="<switch name="ACTION_NAME"><case value="index">1</case><case value="apply">2</case><case value="cost">3</case><case value="examine">4</case><case value="manage">5</case></switch>">
+        
         <div class="row">
             <h4 class="col-xs-6">高级搜索</h4>
             <div class="col-xs-6 text-right">
@@ -112,8 +115,9 @@
             
         </div>
     </div>
+    </if>
 </form>
-</if>
+
 <!-- 录入修改部分 -->
 <form id="apply_form"  enctype="multipart/form-data" method="post"  class="panel panel-default" <if condition="ACTION_NAME neq 'index'">style="display:none;"</if> action="{:U('write')}">
     <div class="panel-heading">
@@ -214,7 +218,7 @@
             	<button class="btn btn-info" onclick="check(0);">退回</button>
             </if>
         </if>
-        <if condition="$_SESSION.position_id neq '10' OR $_SESSION.auth_id eq '673'">    
+        <if condition="$_SESSION.position_id neq '1' OR $_SESSION.position_id neq '10' OR $_SESSION.auth_id eq '673'">    
        		<button class="btn btn-info" id="bt_change">修改</button>
        	</if>
     </div>
@@ -432,7 +436,7 @@
 
 //加载数据列表
 function loadData(offset) {
-    Ycom.loading.show();debugger;
+    Ycom.loading.show();
     var search = $('#adv_search').serializeJson();
     var count = $('#pagination').data('count');
     var money = 0 ;//项目合计金额
