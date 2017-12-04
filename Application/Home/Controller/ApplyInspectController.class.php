@@ -344,6 +344,7 @@ class ApplyInspectController extends HomeController {
          		 }
     		}else if($stage == 5 && $w['school']){
     		    $w['apply_school'] = $w['school'];
+    		    $flag = 1;
     		}
     		
     		if($flag){
