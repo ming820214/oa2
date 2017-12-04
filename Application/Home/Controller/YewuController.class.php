@@ -132,10 +132,18 @@ class YewuController extends HomeController {
         if(I('post.id')){
             if($mod->save())$type?:$this->ajaxReturn('ok');
         }else{
-            $mod->school=88888;
+            
             $mod->addx=session('auth_id');
             $mod->addx_name=session('user_name');
-            $mod->track_user=session('auth_id');
+            if($mod->region == '60'){
+                //针对鸿文优途的客户资源直接指定到具体校区与具体人员，这里把鸿文优途直接作为校区使用
+                $mod->track_user=2186; //指定跟踪人为孟轩
+                $mod->school=354; //指定校区为鸿文优途
+            }else{
+                $mod->school=88888;
+                $mod->track_user=session('auth_id');
+            }
+            
             $mod->state=0;
             $area = $mod->region;
             $condition['tel1|tel2']=['in',I('post.tel2')?[I('post.tel1'),I('post.tel2')]:[I('post.tel1')]];
@@ -159,6 +167,9 @@ class YewuController extends HomeController {
                 }elseif($area == '50'){
                     //李明帅
                     $user[] = 'JZsyjn03';
+                }elseif($area == '60'){
+                    //孟轩 鸿文优途
+                    $user[] = 'mengxuan';
                 }
                 
                 $info='点击可直接进入分配……';
@@ -327,6 +338,9 @@ class YewuController extends HomeController {
             }elseif(session('user_name') == '李明帅'){
                 //李明帅
                 $condition['region']=50;//'黑龙江';
+            }elseif(session('user_name') == '孟轩'){
+                //孟轩
+                $condition['region']=60;//'鸿文优途';
             }else{
                 $condition['addx']=session('auth_id');
             }
@@ -524,7 +538,7 @@ class YewuController extends HomeController {
     
     public function service_set(){
         
-        if(session('user_name') == '张鹏' || session('user_name') == '张晓明'){
+        if(session('user_name') == '张鹏'){
             //张鹏
             $condition['region']=10;//'辽东';
         }elseif(session('user_name') == '张玉珠'){
@@ -539,6 +553,9 @@ class YewuController extends HomeController {
         }elseif(session('user_name') == '李明帅'){
             //李明帅
             $condition['region']=50;//'黑龙江';
+        }elseif(session('user_name') == '孟轩' || session('user_name') == '张晓明'){
+            //孟轩
+            $condition['region']=60;//'鸿文优途';
         }else{
             $this->error('您没有该权限，请联系系统管理员');
         }
@@ -559,7 +576,10 @@ class YewuController extends HomeController {
         $this->sch_lst = $sch_lst;
         $w['position_id']=10;//校长
         $w['is_del']=0;
-        $w['school']= array('in',$sch_id);
+        if($sch_id){
+            $w['school']= array('in',$sch_id);
+        }
+        
         $this->user=M('user')->where($w)->field('id,name,school')->select();//任务指派人员列表
         $this->maxCount=$maxcount;
         
