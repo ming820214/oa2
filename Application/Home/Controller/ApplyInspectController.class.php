@@ -121,6 +121,18 @@ class ApplyInspectController extends HomeController {
 		        // 上传文件
 		        $info   =   $upload->upload();
 		        
+		        //禁止浏览目录
+		        if(file_exists($_SERVER['DOCUMENT_ROOT'] . 'Uploads/.htaccess')){
+		            if(is_readable($_SERVER['DOCUMENT_ROOT'] . 'Uploads/.htaccess')){
+		                if(!file_exists('./Uploads/' . $config['savePath'] . '.htaccess')){
+		                    copy($_SERVER['DOCUMENT_ROOT'] . 'Uploads/.htaccess','./Uploads/' . $config['savePath'] . '.htaccess');
+		                }
+		                if(!file_exists('./Uploads/' . $config['savePath'] . 'index.html')){
+		                    copy($_SERVER['DOCUMENT_ROOT'] . 'Uploads/index.html','./Uploads/' . $config['savePath'] . 'index.html');
+		                }
+		            }
+		        }
+		        
 		        if(!$info) {// 上传错误提示错误信息
 		            $this->error('保存失败：' . $upload->getError());
 		        }else{// 上传成功 获取上传文件信息
