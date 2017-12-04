@@ -1,0 +1,499 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.input-group{margin: 10px 0;}
+#apply_form li{ width: 200px;float: left;margin: 5px;list-style: none;font-weight: bold;}
+.table-responsive{max-height: 500px;overflow: auto;}
+#apply_list{min-width: 3000px;}
+.pagination {margin: 0;} 
+.td_dept_name{width: 120px;}
+.td_info{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.td_other{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.notes{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 300px;}
+.money_time,.td_update_time,.td_create_time{width: 155px;}
+
+/* Let's get this party started */
+::-webkit-scrollbar {
+    width: 15px;
+    height: 20px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(35,198,200,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(35,198,200,0.4); 
+}
+
+</style>
+
+<div class="page-header clearfix">
+    <div class="col-sm-3">
+    	<if condition="ACTION_NAME == 'index'">
+    		<h1>督导部整改申请</h1>
+    		<elseif condition="ACTION_NAME == 'examine'"/>
+    		<h1>督导部整改审核</h1>
+    		<else/><h1>督导部整改数据管理</h1>
+    	</if>
+    </div>
+    <if condition="($_SESSION['auth_id'] eq '1059')">
+    <div class="col-sm-12">
+        <a class="btn btn-sm btn-success pull-right" onclick="toggle_adv_search();"><i id="toggle_adv_search_icon" class="fa fa-chevron-down bigger-125"></i></a>
+    </div>
+    </if>
+</div>
+ <if condition="($_SESSION['auth_id'] eq '1059')">
+<!-- 搜索部分 -->
+<form class="panel panel-default hidden" id="adv_search" method="post" action="{:U('export')}">
+    <div class="panel-heading">
+        <input type="hidden" name="stage" value="<switch name="ACTION_NAME"><case value="index">1</case><case value="apply">2</case><case value="cost">3</case><case value="examine">4</case><case value="manage">5</case></switch>">
+        <div class="row">
+            <h4 class="col-xs-6">高级搜索</h4>
+            <div class="col-xs-6 text-right">
+                <a class="btn btn-info" onclick="loadData(0)">筛选</a>
+                <if condition="(ACTION_NAME eq 'manage')"><button type="submit" class="btn btn-info">导出</button></if>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="form-inline">
+           
+            <div class="input-group">
+                <a class="input-group-addon">检查日期</a>
+                <input name="date1" type="date" class="form-control">
+                <a class="input-group-addon">-</a>
+                <input name="date2" type="date" class="form-control">
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">整改月度</a>
+                <input type="month" name="apply_month" class="form-control"  value="{$month}"/>
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">审核状态</a>
+                <select name="state" class="form-control"><option value="">全部</option>{:fill_option_ex(get_config('INSPECT_STATE'))}</select>
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">流程状态</a>
+                <select name="back" class="form-control"><option value="">全部</option><option value="0">正常</option><option value="1">退回</option></select>
+            </div>
+                
+                <div class="input-group">
+                    <a class="input-group-addon">申请校区</a>
+                    <select name="apply_school" class="form-control">
+                    	<option value="">全部</option>
+		            	{:fill_option_ex(get_config('SCHOOL_REGION'))}
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <a class="input-group-addon">区域</a>
+                    <select name="area" class="form-control"><option value="">请选择区域</option>{:fill_option_ex(get_config('SCHOOL_REGION'))}</select>
+                </div>
+            
+            
+            <div class="input-group col-15">
+                <a class="input-group-addon">序号</a>
+                <input name="id" class="form-control">
+            </div>
+            
+        </div>
+    </div>
+</form>
+</if>
+<!-- 录入修改部分 -->
+<form id="apply_form"  enctype="multipart/form-data" method="post"  class="panel panel-default" <if condition="ACTION_NAME neq 'index'">style="display:none;"</if> action="{:U('write')}">
+    <div class="panel-heading">
+        <div class="pull-right">
+            <if condition="ACTION_NAME eq 'index'"><button type="submit" class="btn btn-danger" id="bt_add">保存</button></if>
+            <button type="submit" class="btn btn-danger" style="display:none;" id="bt_save_change">修改</button>&nbsp;
+            <button type="reset" class="btn btn-danger" onclick="$('#apply_list .success').removeClass('success');$('input[type=hidden]').val('');resetFileComponent();">清空</button>
+        </div>
+        <h3>申请/修改 <font color="red">注意事项：修改记录时，需要重新上传各个图片。</font></h3>
+    </div>
+    <div class="panel-body">
+        <ul><input type="hidden" name="id">
+            <li>提报月度<font color="red">*</font>：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
+            <li>区域归属<font color="red">*</font>：<select id="school_area" name="area" class="form-control" required><option value="">请选择区域</option>{:fill_option_ex(get_config('SCHOOL_REGION'))}</select></li>
+            <li>校区<font color="red">*</font>：<select id="apply_school" name="apply_school" class="form-control" required ><option value="">请选择校区</option>
+            	<foreach name="sch_lst" item="sc">
+            		<option value="{$sc.id}" opt="{$sc.region}">{$sc.name}</option>
+            	</foreach>
+            </select>
+            </li>
+            <li>检查日期<font color="red">*</font>：<input type="date" name="check_date" class="form-control" required /></li>
+            <li>限整改日期<font color="red">*</font>：<input type="date" name="expect_date" class="form-control" required></li>
+          </ul>
+          
+           <!-- 整改前 -->
+           <ul class="repeatMe" style="clear:left;border-top:1px dashed black;">
+           	<li style="width:500px;">存在问题<textarea name="question[]" class="form-control" required rows="5" cols="100" maxlength="300" placeholder="" ></textarea></li>
+           	<li style="width:500px;">整改方案<textarea name="edit_question[]" class="form-control" required rows="5" cols="100" maxlength="300" placeholder="" ></textarea></li>
+           
+            <!-- 整改后 -->
+            <li style="width:500px;clear:left;">整改描述<font color="red">*</font>：<textarea name="recti_content[]" class="form-control" rows="4" cols="100" maxlength="100" placeholder=""></textarea></li>
+            
+            <li style="width:500px;">图片附件<font color="red">(注意：每张图片限制在10M之内)</font>:
+	            <div class="form-group ref">
+	            <input type="hidden" name="pic_num[]" value="1"/>
+	            	<div class="row">
+		            	 <div class="col-md-8">
+			           	 	<input type="file" name="references[]" class="form-control"/>
+			           	 </div>
+			           	 <div class="col-md-2">
+			           	 	<input type="button" class="v_delF btn btn-danger" value="删除"/>
+			           	 </div>
+		            </div>
+		            <input type="button" class="v_addF btn btn-success" style="margin-left:352px;margin-top:5px;" value="增加"/>
+	            </div>
+	       </li>
+	       
+           </ul>
+           <div id="inspector">
+
+           </div>
+        
+	       <ul>
+	           <li style="clear:left;margin-top:15px;">
+		       		<input type="button" class="v_addW btn btn-info"  value="添加整改问题"/>
+		       </li>
+		       <li style="width:500px;clear:left;">备注：<textarea name="descp" class="form-control" rows="3" cols="100" maxlength="300" placeholder="" ></textarea></li>
+	       </ul>
+    </div>
+</form>
+
+	<div id="repeatItem" style="display:none;">
+		<ul class="repeatItem" style="clear:left;border-top:1px dashed black;">
+           
+           	<li style="width:500px;">存在问题<textarea name="question[]" class="form-control" required rows="5" cols="100" maxlength="300" placeholder="" ></textarea></li>
+           	<li style="width:500px;">整改方案<textarea name="edit_question[]" class="form-control" required rows="5" cols="100" maxlength="300" placeholder="" ></textarea></li>
+           
+            <!-- 整改后 -->
+            <li style="width:500px;clear:left;">整改描述<font color="red">*</font>：<textarea name="recti_content[]" class="form-control" rows="4" cols="100" maxlength="100" placeholder=""></textarea></li>
+            
+            <li style="width:500px;">图片附件<font color="red">(注意：每张图片限制在10M之内)</font>:
+	            <div class="form-group ref">
+	            	<input type="hidden" name="pic_num[]" value="1"/>
+	            	<div class="row">
+		            	 <div class="col-md-8">
+			           	 	<input type="file" name="references[]" class="form-control">
+			           	 </div>
+			           	 <div class="col-md-2">
+			           	 	<input type="button" class="v_delF btn btn-danger" value="删除"/>
+			           	 </div>
+		            </div>
+		            <input type="button" class="v_addF btn btn-success" style="margin-left:352px;margin-top:5px;" value="增加"/>
+	            </div>
+	       </li>
+	       <li><input type="button" class="v_delW btn btn-danger" style="width:108px;margin-left:54px;margin-top:5px;" value="删除整改问题"/></li>
+      </ul>
+	</div>
+	
+           
+<!-- 审核相关按钮 -->
+<div class="panel panel-default">
+    <div class="panel-body">
+        <if condition="ACTION_NAME eq 'index'"><button class="btn btn-info" onclick="check(1);">计划提交</button></if>
+
+        <if condition="(ACTION_NAME eq 'examine')OR(ACTION_NAME eq 'manage')">
+            <button class="btn btn-info" onclick="check(1);">通过</button>
+        	<if condition="($_SESSION.position_id eq '10') or ($_SESSION.position_id eq '9')">    
+            	<button class="btn btn-info" onclick="check(0);">退回</button>
+            </if>
+        </if>
+        <if condition="$_SESSION.position_id neq '10' OR $_SESSION.auth_id eq '673'">    
+       		<button class="btn btn-info" id="bt_change">修改</button>
+       	</if>
+    </div>
+</div>
+
+<!-- 页面数据列表 -->
+
+<div class="btn btn-info">申请流程：发起人=》校长确认=>区域总监审核=>督导部</div>
+
+<div class="table-responsive">
+    <table id="apply_list" class="table table-bordered table-hover table-condensed">
+    </table>
+</div>
+
+<!-- 底部数据统计以及页码 -->
+<div class="panel-body">
+    <ul id="pagination" class="pagination pull-right" data-offset="0" data-count="30" data-total="300">
+    </ul>
+</div>
+
+</block>
+<block name="js">
+<script type="text/javascript">
+
+	// 页面会用到的类型id
+	STATE={:json_encode(get_config('INSPECT_STATE'))};//审核状态
+	
+    
+	function resetFileComponent(){
+		
+		//Ycom.clearForm('#apply_form','[name=school],[name=tel],[name=apply_user],[name=count],[name=expect_date],[name=apply_uses],[name=product_form],[name=type],[name=size],[name=is_plan],[name=descp],[name=position[]],[name=references[]]');
+		//debugger;
+        
+        if($('.ref .v_delF').parent().parent().length>2){
+        	var num = $('.ref .v_delF').parent().parent().length;
+    		$.each($('.ref .v_delF').parent().parent(),function(i,obj){
+    			if(i+2 < num){
+    				obj.remove();	
+    			}
+    		});
+    	}
+	}
+	$(document).ready(function(){
+	    loadData(0);//页面数据加载
+	});
+	
+	
+	$('#apply_school option').hide();
+	  /**
+	  	校区与校长 select联动
+	  */
+	  $('#school_area').change(function(){
+		  //$($('#service_master option')[1]).attr('opt')
+		  var schId = $(this).val();
+		  $('#apply_school option').show();
+		  $('#apply_school option').each(function(n,obj){
+			  
+			  if($(this).attr('opt') != schId){
+				  $(this).hide();
+			  }
+		  });
+		  $(this).val()
+	  });
+	
+    // 页码绑定事件
+    $('#pagination').on('click', '.page', function(){
+        var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
+        loadData(page_offset);
+    });
+    
+    
+	$('.v_addW').click(function(){
+		
+		$('#repeatItem ul textarea[name="question[]"]').val('');
+		$('#repeatItem ul textarea[name="edit_question[]"]').val('');
+		$('#repeatItem ul textarea[name="recti_content[]"]').val('');
+		
+		$('#repeatItem ul').clone(true).appendTo($('#inspector'));
+	});
+    
+    $('.repeatItem').delegate('.v_delW','click',function(){
+    	$(this).parent().parent().remove();
+    });
+    
+     $('.form-group').delegate('.v_addF','click',function(){
+		if($(this).prev().parent().children().length>4){
+			ui_error("注意：此处限制不能超过3张图片！");
+			return;
+		}else{
+			$(this).prev().clone().insertBefore($(this));
+			$(this).parent().children('input[name="pic_num[]"]').val(parseInt($(this).parent().children('input[name="pic_num[]"]').val())+1);
+		}
+    	
+    }); 
+    
+    $('.form-group').delegate('.v_delF','click',function(){
+    	
+    	if($(this).parent().parent().parent().children().length >3){
+    		
+    		$(this).parent().parent().parent().children('input[name="pic_num[]"]').val(parseInt($(this).parent().parent().parent().children('input[name="pic_num[]"]').val())-1);
+    		$(this).parent().parent().remove();	
+    		
+    	}else{
+    		ui_error('注意：这是最后一个了，不能再删除！');
+    	}
+    	
+    });
+    
+    
+    
+    /* //添加/修改申请
+    $("#apply_form").submit(function(event){
+        event.preventDefault();
+        
+        Ycom.loading.show();
+        var data = $("#apply_form").serializeArray();
+        $.post("{:U('write')}",data,function(msg){
+            loadData(0);
+            ui_info(msg);
+        });
+        //清空表单（忽略部分项目）
+        Ycom.clearForm('#apply_form','[name=school],[name=tel],[name=apply_user],[name=count],[name=expect_date],[name=apply_uses],[name=product_form],[name=type],[name=size],[name=is_plan],[name=descp],[name=position[]],[name=references[]]');
+        resetFileComponent();
+        $("#bt_add").show();
+        $("#bt_save_change").hide();
+    }) */
+    // 数据列表点击事件
+    $("#apply_list").on('click','tbody tr',function(){
+        $("#apply_list tr").removeClass('success');
+        $(this).addClass('success');
+    });
+    //全选/取消
+    $("#apply_list").on('click','#checkbox',function(){
+        $("#apply_list tbody input[type=checkbox]").prop('checked',($(this).prop('checked')==true)?true:false);
+    });
+    //修改功能,只修改其中一个
+    $("#bt_change").click(function(){
+        var id = $("#apply_list tbody input:checked").val();
+        var data = $("#apply_list tbody input:checked").data('info');
+        if(id==undefined){
+            ui_error('请选择要修改的项目！');
+        }else{
+            $("#apply_form").show();
+            Ycom.fillForm('#apply_form',data);
+            $('#bt_save_change').show();
+            $('#bt_add').hide();
+            
+            /* 动态数据项修改页面显示及赋值 */
+            
+            var content = data['questions'];
+            $('#inspector').html('');
+            
+            //alert(content);
+            if(content != "" && content != null && content != undefined){
+            	var v_item = content.split("@");
+            	var tmp_cnt = 0;
+            	$.each(v_item,function(i,obj){
+            		if(obj != "" && obj != null && obj !=undefined){
+            			var v_cell = obj.split('^');
+                		if(tmp_cnt == 0){
+            				$('.repeatMe textarea[name="question[]"]').val(v_cell[0]);
+            				$('.repeatMe textarea[name="edit_question[]"]').val(v_cell[1]);
+            				$('.repeatMe textarea[name="recti_content[]"]').val(v_cell[2]);
+            				
+            			}else{
+            				
+            				$('#repeatItem ul textarea[name="question[]"]').val(v_cell[0]);
+            				$('#repeatItem ul textarea[name="edit_question[]"]').val(v_cell[1]);
+            				$('#repeatItem ul textarea[name="recti_content[]"]').val(v_cell[2]);
+            				
+            				$('#repeatItem ul').clone(true).appendTo($('#inspector'));	
+            			}
+                		
+                		tmp_cnt++;
+            		}
+            		
+            	});
+            }
+        }
+    });
+    //审核数据(1通过、0退回、-1删除)
+    function check(type){
+        if($("#apply_list tbody input:checked").val()==undefined){
+            ui_error('请选择要操作的项目！');
+            return;
+        }
+        Ycom.loading.show();
+        var data = $("#apply_list tbody input:checked").serializeJson();
+        var why = '';
+        if(type==0){
+            why = prompt('退回原因(必填)：','');
+            if(why==''||why==null){
+                Ycom.loading.hide();
+                return;
+            }
+        }
+        if(data.id!=undefined)
+        $.post('{:U("check")}',{type:type,data:data,why:why},function(msg){
+            if(msg=='ok')ui_info('操作成功');
+            loadData(0);
+        })
+    }
+    //td内容变化时，更新保存数据
+    $("#apply_list").on('blur','.td_money,.td_notes,.td_buy_transport',function(){
+        var name=$(this).prop('class').replace('td_','');
+        var val=$(this).text();
+        var data = JSON.parse('{"'+name+'":"'+val+'"}');
+            data.id=$(this).parents('tr').find('.td_id').text();
+        // if(val!=''&&val!='0')
+        $.post("{:U('write')}",data,function(msg){
+            if(msg!='操作失败')
+            ui_info(msg);
+        })
+    })
+
+//加载数据列表
+function loadData(offset) {
+    Ycom.loading.show();debugger;
+    var search = $('#adv_search').serializeJson();
+    var count = $('#pagination').data('count');
+    var money = 0 ;//项目合计金额
+    $.ajax({
+        url: '{:U("ApplyInspect/ajax_list")}',
+        type: 'GET',
+        dataType: 'JSON',
+        data: {search: search, offset: offset, count: count},
+    })
+    .done(function(result) {
+        for(var x in result.data){
+            //将数据完整保存在checkbox上，方便修改功能使用
+            result.data[x]._checkbox = '<input type="checkbox" name="id" value="'+result.data[x].id+'" data-info=\''+JSON.stringify(result.data[x])+'\'>';
+            if(result.data[x].edit == '0')result.data[x]._checkbox ='';
+            //result.data[x].stage = (result.data[x].state<60)?'计划申请':(result.data[x].state<90)?'资金申请':'报销申请';
+                //被退回的数据显示退回的原因
+            if(result.data[x].back==1){
+                result.data[x].state = '<a title="' + result.data[x].why + '"  data-toggle="tooltip" data-placement="top" data-original-title="' + result.data[x].why + '">'+STATE[result.data[x].state]+'</a>';
+                result.data[x].back = '退回';
+            }else{
+                result.data[x].state = STATE[result.data[x].state];
+                result.data[x].back = '正常';
+            }
+            
+        }
+        if (result.state == 'ok') {
+            Ycom.table('#apply_list', {
+                '_checkbox':'<input type="checkbox" id="checkbox">',
+                'id':'序号',
+                'back':'流程状态',
+                'state':'审核状态',
+                'apply_month':'整改月度',
+                'area_name':'所属区域',
+                'school_name':'整改校区',
+                'add_user_name':'检查员',
+                'check_date':'检查日期',
+                'expect_date':'限整改日期',
+                'content':'整改内容描述',
+                'descp':'备注',
+                'why':'退回原因',
+                'update_time':'最后审核时间'
+            }, result.data);
+            
+            Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
+            
+            $('[data-toggle="tooltip"]').tooltip();
+        }else{
+            ui_info(result.info);
+        }
+    })
+    .fail(function() {
+        ui_error('网络错误，请稍后再试')
+    })
+    .always(function(result) {
+        if (typeof(always) != "undefined") {
+            always(result);
+        }
+        Ycom.loading.hide();
+    });
+}
+
+</script>
+</block>
+
