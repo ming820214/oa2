@@ -277,23 +277,25 @@ class ApplyInspectController extends HomeController {
          		             //张鹏
          		             unset($w['apply_school']);
          		             $w['_string']="((area='10' and state=20) or (state=10 and apply_school='173'))";
+         		         }elseif(session('auth_id') == '439'){
+         		             //何亮
+         		             unset($w['apply_school']);
+         		             //              		     $w['area'] = '40';
+         		             //              		     $w['state'] = 20;
+         		             $w['_string']="((area='40' and state=20) or (state=10 and apply_school='11'))";
+         		         }elseif(session('auth_id') == '651'){
+         		             //王大鹏
+         		             unset($w['apply_school']);
+         		             //              		     $w['area'] = '30';
+         		             //              		     $w['state'] = 20;
+         		             $w['_string']="((area='30' and state=20) or (state=10 and apply_school='8'))";
          		         }else{
          		             //校长
          		             $w['state'] = 10;
          		         }
          		     }
          		     
-         		     if(session('auth_id') == '439'){
-             		     //何亮
-             		     unset($w['apply_school']);
-             		     $w['area'] = '40';
-             		     $w['state'] = 20;
-         		     }elseif(session('auth_id') == '651'){
-             		     //王大鹏
-             		     unset($w['apply_school']);
-             		     $w['area'] = '30';
-             		     $w['state'] = 20;
-             		 }
+         		     
          		 }else{
          		     
          		     
