@@ -93,20 +93,19 @@
                 <a class="input-group-addon">流程状态</a>
                 <select name="back" class="form-control"><option value="">全部</option><option value="0">正常</option><option value="1">退回</option></select>
             </div>
-                
-                <div class="input-group">
-                    <a class="input-group-addon">申请校区</a>
-                    <select name="apply_school" class="form-control">
-                    	<option value="">全部</option>
-		            	{:fill_option_ex(get_config('SCHOOL_REGION'))}
-                    </select>
-                </div>
-                
-                <div class="input-group">
+            
+            <div class="input-group">
                     <a class="input-group-addon">区域</a>
                     <select name="area" class="form-control"><option value="">请选择区域</option>{:fill_option_ex(get_config('SCHOOL_REGION'))}</select>
-                </div>
-            
+            </div>
+                  
+            <div class="input-group">
+                 <a class="input-group-addon">申请校区</a>
+                 <select name="apply_school" class="form-control">
+                 	<option value="">全部</option>
+           			{:fill_option_ex(C('SCHOOL'))}
+                 </select>
+            </div>
             
             <div class="input-group col-15">
                 <a class="input-group-addon">序号</a>
