@@ -361,26 +361,25 @@ class ApplyDesignSpaceController extends HomeController {
     	                    //张鹏
     	                    unset($w['apply_school']);
     	                    $w['_string']="((area='辽东' and state=20) or (state=10 and apply_school='s173'))";
+    	                }else if(session('auth_id') == '439'){
+    	                    //何亮
+    	                    unset($w['apply_school']);
+    	                    $w['area'] = '黑龙江';
+    	                    $w['state'] = 20;
+    	                }elseif(session('auth_id') == '651'){
+    	                    //王大鹏
+    	                    unset($w['apply_school']);
+    	                    $w['area'] = '吉林';
+    	                    $w['state'] = 20;
+    	                }elseif(session('auth_id') == '2101'){
+    	                    unset($w['apply_school']);
+    	                    unset($w['area']);
+    	                    $w['state'] = 70;
     	                }else{
     	                    //校长
     	                    $w['state'] = 10;
     	                }
-    	            }
-    	            if(session('auth_id') == '439'){
-    	                //何亮
-    	                unset($w['apply_school']);
-    	                $w['area'] = '黑龙江';
-    	                $w['state'] = 20;
-    	            }elseif(session('auth_id') == '651'){
-    	                //王大鹏
-    	                unset($w['apply_school']);
-    	                $w['area'] = '吉林';
-    	                $w['state'] = 20;
-    	            }elseif(session('auth_id') == '2101'){
-    	                unset($w['apply_school']);
-    	                unset($w['area']);
-    	                $w['state'] = 70;
-    	            }else{
+    	            } else{
     	                unset($w['state']);
     	                $w['add_user'] = session('auth_id');
     	                $w['state'] = array('elt',80);
