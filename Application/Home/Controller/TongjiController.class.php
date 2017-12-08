@@ -6,7 +6,12 @@ class TongjiController extends HomeController {
 
         //循环校区
         if((session('school_id') !== "0") && (session('auth_id') !=673) && (session('auth_id') !=439) && (session('auth_id') !=651) && (session('auth_id') !=1283) && (session('auth_id') !=2100)){
-            $w['school']=array('eq',get_school_name(session('school_id')));
+            if(session('school_id') == 4 || session('school_id') == 12){
+                $w['school']=array('in',['阜新二部','阜新实验校区']);
+            }else{
+                $w['school']=array('eq',get_school_name(session('school_id')));
+            }
+            
         }else{
             $w['school']=array('neq','集团');
         }
