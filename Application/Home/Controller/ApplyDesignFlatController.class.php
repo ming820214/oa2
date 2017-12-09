@@ -35,7 +35,7 @@ class ApplyDesignFlatController extends HomeController {
 		$this->assign('dept',$dept);//单位
 		$this->assign('dept_all',$dept_all);//所有单位
 		
-		$this->assign('month',date("Y-") . (date(m) +1) );
+		$this->assign('month',date("Y-m",strtotime("+1 month",time())));
 		
 	}
 /**
