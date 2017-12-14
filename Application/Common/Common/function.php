@@ -195,6 +195,21 @@ function get_school_name($school_id=null){
 	return null;
 }
 
+function get_school_region($school_id){
+    if($school_id === null){
+        return null;
+    }
+    
+    foreach(C('SCHOOL') as $val) {
+        if($val['id'] == $school_id){
+            return $val['region'];
+            break;
+        }
+    }
+    
+    return null;
+}
+
 function get_school_id($school_name){
 	if($school_name === null){
 		$school_id = session("school_id");

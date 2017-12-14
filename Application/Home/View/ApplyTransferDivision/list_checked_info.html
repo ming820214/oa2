@@ -1,0 +1,436 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.input-group{margin: 10px 0;}
+#apply_form li{ width: 200px;float: left;margin: 5px;list-style: none;font-weight: bold;}
+.table-responsive{max-height: 500px;overflow: auto;}
+#apply_list{min-width: 3000px;}
+.pagination {margin: 0;} 
+.td_dept_name{width: 120px;}
+.td_info{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.td_other{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.notes{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 300px;}
+.money_time,.td_update_time,.td_create_time{width: 155px;}
+
+/* Let's get this party started */
+::-webkit-scrollbar {
+    width: 15px;
+    height: 20px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(35,198,200,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(35,198,200,0.4); 
+}
+
+</style>
+
+<div class="page-header clearfix">
+    <div class="col-sm-3">
+    	<if condition="ACTION_NAME == 'index'">
+    		<h1>员工自主调动申请</h1>
+    		<elseif condition="ACTION_NAME == 'examine'"/>
+    		<h1>员工自主调动审核</h1>
+    		<else/><h1>员工自主调动数据管理</h1>
+    	</if>
+    </div>
+    
+    <div class="col-sm-12">
+        <a class="btn btn-sm btn-success pull-right" onclick="toggle_adv_search();"><i id="toggle_adv_search_icon" class="fa fa-chevron-down bigger-125"></i></a>
+    </div>
+</div>
+
+<!-- 搜索部分 -->
+<form class="panel panel-default hidden" id="adv_search" method="post" action="{:U('export')}">
+    <div class="panel-heading">
+        <input type="hidden" name="stage" value="<switch name="ACTION_NAME"><case value="index">1</case><case value="apply">2</case><case value="cost">3</case><case value="examine">4</case><case value="manage">5</case></switch>">
+        <input type="hidden" name="transfer_type" value="2"/>
+        <div class="row">
+            <h4 class="col-xs-6">高级搜索</h4>
+            <div class="col-xs-6 text-right">
+                <a class="btn btn-info" onclick="loadData(0)">筛选</a>
+                <if condition="(ACTION_NAME eq 'manage')"><button type="submit" class="btn btn-info">导出</button></if>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="form-inline">
+            
+            <div class="input-group">
+                <a class="input-group-addon">申请日期</a>
+                <input name="date1" type="date" class="form-control">
+                <a class="input-group-addon">-</a>
+                <input name="date2" type="date" class="form-control">
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">申请月度</a>
+                <input type="month" name="apply_month" class="form-control"  value="{$month}"/>
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">审核状态</a>
+                <select name="state" class="form-control"><option value="">全部</option>{:fill_option_ex(get_config('APPLY_TRANSFER_STATE'))}</select>
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">流程状态</a>
+                <select name="terminal" class="form-control"><option value="">全部</option><option value="0">正常</option><option value="1">流程结束</option></select>
+            </div>
+            
+            <if condition="(ACTION_NAME eq 'manage')">
+                
+                <div class="input-group">
+                    <a class="input-group-addon">申请校区</a>
+                    <select name="apply_school" class="form-control">
+                    	<option value="">全部</option>
+            			{:fill_option_ex(C('SCHOOL'))}
+		            	
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <a class="input-group-addon">区域</a>
+                    <select name="area" class="form-control">
+                    	<option value="">请选择区域</option>{:fill_option_ex(get_config('SCHOOL_REGION'))}
+                    </select>
+                </div>
+                <div class="input-group">
+	                <a class="input-group-addon">申请人</a>
+	                <input type="text" name="name" class="form-control"/>
+	            </div>
+            </if>
+            
+            <div class="input-group col-15">
+                <a class="input-group-addon">序号</a>
+                <input name="id" class="form-control">
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- 录入修改部分 -->
+<form id="apply_form"  enctype="multipart/form-data" method="post"  class="panel panel-default" <if condition="ACTION_NAME neq 'index'">style="display:none;"</if> action="{:U('write')}">
+    <div class="panel-heading">
+        <div class="pull-right">
+            <if condition="ACTION_NAME eq 'index'"><button type="submit" class="btn btn-danger" id="bt_add">保存</button></if>
+            <button type="submit" class="btn btn-danger" style="display:none;" id="bt_save_change">修改</button>&nbsp;
+            <button type="reset" class="btn btn-danger" onclick="$('#apply_list .success').removeClass('success');$('input[type=hidden]').val('');">清空</button>
+        </div>
+        <h3>申请/修改 <font color="red">注意事项：修改记录时，需要重新上传附件。</font></h3>
+    </div>
+    <div class="panel-body">
+        <ul><input type="hidden" name="id">
+        	<input type="hidden" name="transfer_type" value="2"/>
+        	<if condition="ACTION_NAME eq 'index'">
+            <li>提报月度<font color="red">*</font>：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
+            <li>姓名<font color="red">*</font>：<input type="text" name="name" class="form-control" required /></li>
+            <li>性别<font color="red">*</font>：<select name="sex" class="form-control" required >
+            	<option value="">请选择性别</option>
+            	<option>男</option>
+            	<option>女</option>
+            </select></li>
+            <li>出生年月：<input type="month" name="birth" class="form-control" maxlength="10" /></li>
+            <li>政治面貌：<input type="text" name="political" class="form-control" maxlength="10"/></li>
+            <li>学历<font color="red">*</font>:
+            <select name="education" class="form-control" required >
+            	<option value="">请选择学历</option>
+            	<option>大专</option>
+            	<option>本科</option>
+            	<option>硕士</option>
+            	<option>博士</option>
+            	<option>其他</option>
+            </select>
+            </li>
+            
+            
+            <li>专业<font color="red">*</font>：<input type="text" name="profession" class="form-control" required/></li>
+            <li>最初入职时间<font color="red">*</font>：
+            	 <input type="month" name="initial_entry" class="form-control" required/>
+            </li>
+            <li>意向调动时间<font color="red">*</font>：<input type="month" name="intent_transfer" class="form-control" required/></li>
+            <li>现岗位<font color="red">*</font>： <input type="text" name="cur_position" class="form-control" required/></li>
+            <li>调出部门<font color="red">*</font>：<input type="text" name="transfer_out" class="form-control" required/></li>
+            <li>调入部门<font color="red">*</font>：<input type="text" name="transfer_in" class="form-control" required></li>
+            <li style="width:800px;">申请调动原因<font color="red">*</font>：<textarea name="transfer_reason" class="form-control" required rows="8" cols="100" maxlength="800" placeholder="请在此处填写申请调动的原因，此处最多可填写800字，如果内容过多，可以选择在下方添加word附件" style="resize:none;"></textarea></li>
+            
+            <li style="width:800px;">调动原因附件<font color="red">(注意：该附件限制大小在10M之内)</font>:
+			    <input type="file" name="reason_file" class="form-control"/>
+	        </li>
+	       </if>
+	       <if condition="$_SESSION['position_id'] eq '10'">
+	       	<div id="master" style="display:none;">
+		       <li style="clear:left;">员工所填内容是否属实：<select name="master_judge_flag" class="form-control"><option>属实</option><option>不属实</option></select></li>
+		       <li style="clear:left;width:800px;">部门经理（校长）意见：<textarea name="out_master_opinion"  rows="4" cols="100" class="form-control" maxlength="200" style="resize:none;" placeholder="对于调动申请有何意见及建议"></textarea></li>
+		    </div>   
+	       </if>
+	       
+	       <if condition="($_SESSION['auth_id'] eq '673' OR $_SESSION['auth_id'] eq '439' OR $_SESSION['auth_id'] eq '651' OR $_SESSION['auth_id'] eq '1283' OR $_SESSION['auth_id'] eq '2100')">
+	       	<div id="area" style="display:none;">
+	       	   <li style="clear:left;width:800px;">事业部总监意见：<textarea name="out_director_opinion"  rows="4" cols="100" class="form-control" maxlength="200" style="resize:none;" placeholder="对于调动申请有何意见及建议"></textarea></li>
+	       	</div>
+	       </if>
+	       
+	       <if condition="($_SESSION['auth_id'] eq '89') OR ($_SESSION['auth_id'] eq '2100') ">
+	       	 <div id="director" style="display:none;">
+		       <li style="clear:left;">是否同意调动<font color="red">*</font>：<select name="permit_flag" class="form-control" required><option value="">请选择是否同意</option><option>同意</option><option>不同意</option></select></li>
+		       <li style="clear:left;">同意调动时间<font color="red">*</font>：<input type="date" name="transfer_date" class="form-control" required/></li>
+		     </div>
+	       </if>
+	       <if condition="ACTION_NAME eq 'index'">
+	       <li style="width:800px;clear:left;">备注：<textarea name="descp"  rows="4" cols="100" class="form-control" maxlength="400" style="resize:none;"></textarea></li>
+	       </if>
+        </ul>
+    </div>
+</form>
+
+<!-- 审核相关按钮 -->
+
+
+<!-- 页面数据列表 -->
+
+<div class="btn btn-info">申请流程：发起人=》事业部总裁审批=》事业部总裁助理确认/劳动关系部确认</div>
+
+<div class="table-responsive">
+    <table id="apply_list" class="table table-bordered table-hover table-condensed">
+    </table>
+</div>
+
+<!-- 底部数据统计以及页码 -->
+<div class="panel-body">
+    <ul id="pagination" class="pagination pull-right" data-offset="0" data-count="30" data-total="300">
+    </ul>
+</div>
+
+</block>
+<block name="js">
+<script type="text/javascript">
+
+	// 页面会用到的类型id
+	STATE={:json_encode(get_config('APPLY_TRANSFER_DIVISION_STATE'))};//审核状态
+	
+	$(document).ready(function(){
+	    loadData(0);//页面数据加载
+	});
+	
+    // 页码绑定事件
+    $('#pagination').on('click', '.page', function(){
+        var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
+        loadData(page_offset);
+    });
+    
+    
+    // 数据列表点击事件
+    $("#apply_list").on('click','tbody tr',function(){
+        $("#apply_list tr").removeClass('success');
+        $(this).addClass('success');
+    })
+    //全选/取消
+    $("#apply_list").on('click','#checkbox',function(){
+        $("#apply_list tbody input[type=checkbox]").prop('checked',($(this).prop('checked')==true)?true:false);
+    })
+    //修改功能,只修改其中一个
+    $("#bt_change").click(function(){
+        var id = $("#apply_list tbody input:checked").val();
+        var data = $("#apply_list tbody input:checked").data('info');
+        
+        if(data['state'] == '10' && {$_SESSION['position_id']} == 10){
+        	$('#master').css('display','block');
+        	$('#area').css('display','none');
+        	$('#director').css('display','none');
+        }else if(data['state'] == '20' && ({$_SESSION['auth_id']} == 673 || {$_SESSION['auth_id']} == 439 || {$_SESSION['auth_id']} == 651 || {$_SESSION['auth_id']} == 1283 || {$_SESSION['auth_id']} == 2100)){
+        	$('#master').css('display','none');
+        	$('#area').css('display','block');
+        	$('#director').css('display','none');
+        }else if(data['state'] == '30' && ({$_SESSION['auth_id']} == 89 || {$_SESSION['auth_id']} == 2100)){
+        	$('#master').css('display','none');
+        	$('#area').css('display','none');
+        	$('#director').css('display','block');
+        }else{
+        	$('#master').css('display','none');
+        	$('#area').css('display','none');
+        	$('#director').css('display','none');
+        }
+        
+        
+        if(id==undefined){
+            ui_error('请选择要修改的项目！');
+        }else{
+        	
+            $("#apply_form").show();
+            Ycom.fillForm('#apply_form',data);
+            $('#director select[name="permit_flag"]').change();
+            $('#bt_save_change').show();
+            $('#bt_add').hide();
+            //$('input[name=unit_price]').change();
+        }
+    });
+    
+    $('#director select[name="permit_flag"]').change(function(){
+    	if($(this).val() == '不同意'){
+    		$('#director input[name="transfer_date"]').removeAttr("required");
+    		$('#director input[name="transfer_date"]').parent().css("display",'none');
+    	}else{
+    		$('#director input[name="transfer_date"]').attr("required",'required');
+    		$('#director input[name="transfer_date"]').parent().css("display",'block');
+    	}
+    });
+    
+    //审核数据(1通过、0退回、-1删除)
+    function check(type){
+        if($("#apply_list tbody input:checked").val()==undefined){
+            ui_error('请选择要操作的项目！');
+            return;
+        }
+        Ycom.loading.show();
+        var data = $("#apply_list tbody input:checked").serializeJson();
+        var why = '';
+        if(type==0){
+            why = prompt('退回原因(必填)：','');
+            if(why==''||why==null){
+                Ycom.loading.hide();
+                return;
+            }
+        }debugger;
+        record = $("#apply_list tbody input:checked").attr('data-info');
+        record = $.parseJSON(record);
+        
+        if(type == -1){
+        	if(record.state >0){
+        		ui_error("申请已经进入流程，不可以删除！");
+        		return;
+        	}	
+        }
+        
+        if(("{$_SESSION['position_id']}" == "10") && (record.state==10) ){
+        	if(!(record.master_judge_flag && record.out_master_opinion)){
+            	ui_error("请先修改该条记录中的‘员工所填内容是否属实’和‘部门经理（校长）意见’两项，之后再审核是否通过！");
+            	return;
+            }	
+        }else if(record.state == '20' && ({$_SESSION['auth_id']} == 673 || {$_SESSION['auth_id']} == 439 || {$_SESSION['auth_id']} == 651 || {$_SESSION['auth_id']} == 1283 || {$_SESSION['auth_id']} == 2100)){
+        	if(!record.out_director_opinion){
+            	ui_error("请先修改该条记录中的‘事业部总监意见’，之后再审核是否通过！");
+            	return;
+            }	
+        }else if(record.state == '30' && ({$_SESSION['auth_id']} == 89 || {$_SESSION['auth_id']} == 2100)){
+        	if(record.permit_flag != '不同意'){
+        		if(!(record.transfer_date)){
+                	ui_error("请先修改该条记录中的‘是否同意调动’和‘同意调动时间’两项，之后再审核是否通过！");
+                	return;
+                }
+        	}
+        	
+        	/* if(!(record.permit_flag && record.transfer_date)){
+            	ui_error("请先修改该条记录中的‘是否同意调动’和‘同意调动时间’两项，之后再审核是否通过！");
+            	return;
+            } */
+        }
+         
+        if(data.id!=undefined)
+        $.post('{:U("check")}',{type:type,data:data,why:why},function(msg){
+            if(msg=='ok')ui_info('操作成功');
+            loadData(0);
+        })
+    }
+    //td内容变化时，更新保存数据
+    $("#apply_list").on('blur','.td_money,.td_notes,.td_buy_transport',function(){
+        var name=$(this).prop('class').replace('td_','');
+        var val=$(this).text();
+        var data = JSON.parse('{"'+name+'":"'+val+'"}');
+            data.id=$(this).parents('tr').find('.td_id').text();
+        // if(val!=''&&val!='0')
+        $.post("{:U('write')}",data,function(msg){
+            if(msg!='操作失败')
+            ui_info(msg);
+        })
+    })
+
+//加载数据列表
+function loadData(offset) {
+    Ycom.loading.show();
+    var search = $('#adv_search').serializeJson();
+    var count = $('#pagination').data('count');
+    var money = 0 ;//项目合计金额
+    $.ajax({
+        url: '{:U("ApplyTransfer/ajax_checked_list")}',
+        type: 'GET',
+        dataType: 'JSON',
+        data: {search: search, offset: offset, count: count},
+    })
+    .done(function(result) {
+        for(var x in result.data){
+            //将数据完整保存在checkbox上，方便修改功能使用
+            /* result.data[x]._checkbox = '<input type="checkbox" name="id" value="'+result.data[x].id+'" data-info=\''+JSON.stringify(result.data[x])+'\'>';
+            if(result.data[x].edit == '0')result.data[x]._checkbox =''; */
+            
+                //被退回的数据显示退回的原因
+            if(result.data[x].terminal==1){
+                result.data[x].state = '<a title="' + result.data[x].why + '"  data-toggle="tooltip" data-placement="top" data-original-title="' + result.data[x].why + '">'+STATE[result.data[x].state]+'</a>';
+                result.data[x].terminal = '流程结束';
+            }else{
+                result.data[x].state = STATE[result.data[x].state];
+                result.data[x].terminal = '正常';
+            }
+            
+        }
+        if (result.state == 'ok') {
+            Ycom.table('#apply_list', {
+                'id':'序号',
+                'terminal':'流程状态',
+                'state':'审核状态',
+                'apply_month':'提报月度',
+                'transfer_result':'被调动人意见',
+                'name':'申请人',
+                'cur_position':'当前岗位',
+                'sex':'性别',
+                'education':'学历',
+                'profession':'专业',
+                'transfer_out':'调出部门',
+                'transfer_in':'调入部门',
+                'initial_entry':'最初入职时间',
+                'intent_transfer':'计划调动时间',
+                'transfer_reason':'调动原因',
+                'reason_file':'调动原因附件',
+                'permit_flag':'是否同意调动',
+                'transfer_date':'同意调动时间',
+                'communication':'沟通记录',
+                'descp':'备注',
+                'why':'退回原因',
+                'create_time':'申请日期',
+                'update_time':'最后审核时间'
+            }, result.data);
+            
+            Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
+            
+            $('[data-toggle="tooltip"]').tooltip();
+        }else{
+            ui_info(result.info);
+        }
+    })
+    .fail(function() {
+        ui_error('网络错误，请稍后再试')
+    })
+    .always(function(result) {
+        if (typeof(always) != "undefined") {
+            always(result);
+        }
+        Ycom.loading.hide();
+    });
+}
+
+</script>
+</block>
+
