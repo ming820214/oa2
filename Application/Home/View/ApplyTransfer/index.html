@@ -171,7 +171,7 @@
 			    <input type="file" name="reason_file" class="form-control"/>
 	        </li>
 	       </if>
-	       <if condition="$_SESSION['position_id'] eq '10'">
+	       <if condition="($_SESSION['position_id'] eq '10') AND (ACTION_NAME eq 'examine')">
 	       	<div id="master" style="display:none;">
 		       <li style="clear:left;">员工所填内容是否属实：<select name="master_judge_flag" class="form-control"><option>属实</option><option>不属实</option></select></li>
 		       <li style="clear:left;width:800px;">部门经理（校长）意见：<textarea name="out_master_opinion"  rows="4" cols="100" class="form-control" maxlength="200" style="resize:none;" placeholder="对于调动申请有何意见及建议"></textarea></li>
@@ -184,7 +184,7 @@
 	       	</div>
 	       </if>
 	       
-	       <if condition="($_SESSION['auth_id'] eq '89') OR ($_SESSION['auth_id'] eq '2100') ">
+	       <if condition="(($_SESSION['auth_id'] eq '89') OR ($_SESSION['auth_id'] eq '2100')) AND ACTION_NAME eq 'examine'">
 	       	 <div id="director" style="display:none;">
 		       <li style="clear:left;">是否同意调动<font color="red">*</font>：<select name="permit_flag" class="form-control" required><option value="">请选择是否同意</option><option>同意</option><option>不同意</option></select></li>
 		       <li style="clear:left;">同意调动时间<font color="red">*</font>：<input type="date" name="transfer_date" class="form-control" required/></li>
