@@ -282,7 +282,11 @@ class CourseModel extends CommonModel{
                 $ext_hour_last = max($role['bottom']+$role['value']-$usedHour, 0);
                 $ext_hour = $role['value'];//赠送剩余
             } */
-            if ($role['bottom'] <= $usedHour && $usedHour < $role['top']) {
+            if($usedHour < $role['bottom']){
+                $ext_hour_last = 0;
+                $ext_hour = 0;
+                break;
+            }else if ($role['bottom'] <= $usedHour && $usedHour < $role['top']) {
                 //$returnHour    = max($usedHour-$role['value'], $role['bottom']);
                 //消耗课时
                 $returnHour = $usedHour-$role['bottom']>=$role['value']?($usedHour-$role['value']):($usedHour-$ext_hour_last);
