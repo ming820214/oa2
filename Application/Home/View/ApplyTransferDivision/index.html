@@ -180,7 +180,7 @@
 		     </div>
 	       </if>
 	       
-	       <if condition="($_SESSION['auth_id'] eq '1707') OR ($_SESSION['auth_id'] eq '844')">
+	       <if condition="(($_SESSION['auth_id'] eq '1707') OR ($_SESSION['auth_id'] eq '844')) AND ACTION_NAME eq 'examine'">
 	       	<div id="labor_dept" style="display:none;">
 		       <li style="clear:left;">被调动人意见：<select name="transfer_result" class="form-control" required="required"><option value="">请选择是否接受调动</option><option>接受</option><option>不接受</option></select></li>
 		       <li style="clear:left;width:800px;">沟通记录：<textarea name="communication"  rows="4" cols="100" class="form-control" maxlength="200" style="resize:none;" placeholder="对于调动申请有何意见及建议"></textarea></li>

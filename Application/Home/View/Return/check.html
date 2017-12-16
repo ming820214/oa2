@@ -32,10 +32,10 @@
 						{:fill_option_ex($gradeList)}
 					</select>
 			</li>
-			<li>联系电话:<input type="text" class="form-control" name="tel" required="required" readonly="readonly"/></li>
+			<li>联系电话:<input type="text" class="form-control" name="tel" required="required"/></li>
 			<li>教学主任:<input type="text" class="form-control" name="aa" required="required" readonly="readonly"/></li>
 			<li>学管理师：<input type="text" class="form-control" name="bb" required="required" readonly="readonly"/></li>
-			<empty name="why3">
+			
 			<li>课程类型：<select class="form-control class_type" name="class1" required="required">{:fill_option_ex(get_config('COURSE_GROUP_VALIDATE'))}</select></li>
 			<li>课程具体类型：<select name="class2" class="form-control sub_type" required="required"></select></li>
 			<li>退出费用缴费日期：<input type="text" class="form-control" name="timed" required="required" onclick="WdatePicker()" /></li>
@@ -52,7 +52,26 @@
 						<option value="激活">激活</option>
 					</select>
 			</li>
-			
+			<li>退费原因<span class="red_star">(**必填项**)</span>：<select id="why1" class="form-control" name="why1" required="required">
+						<option value="">请选择原因</option>
+						<option>转学、留学、提前被大学录取</option>
+						<option>被校区劝退、开除</option>
+						<option>休学</option>
+						<option>患传染疾病或生病致不能正常上学</option>
+						
+						<option>纯自习室学员退费</option>
+						<option>特训营学员退费</option>
+						<option>部分退费，除赠送课时外保留课时≥10小时</option>
+						<option>接手60天未产生课时</option>
+						<option>转班</option>
+						
+						<option>特殊申请不核算情况</option>
+						<option>≥7人班课学员退费</option>
+						<option>3-6人小组课退费，1人核算0.5人</option>
+						<option>新签保护期内退费</option>
+						<option>其他核算原因</option>
+					</select>
+			</li>
 			<li>校区区域：<select name="region" class="form-control" required="required"><option value="">请选择校区</option><option value="辽东">辽东</option><option value="辽西">辽西</option><option value="吉林">吉林</option><option value="黑龙江">黑龙江</option></select></li>
 			
 			<li>扣费类型：
@@ -76,13 +95,12 @@
 			<elseif condition="$module != 'xqsh' "/>
 			<li style="width:410px;">校长沟通<span class="red_star">(**必填项**)</span>：<textarea name="xqgt" class="form-control" cols="80" rows="4" readonly="readonly"></textarea></li>
 			</if>
-			<!-- 针对empty的else -->
-			<else/>
+			<notempty name="why3">
 			<li>总部沟通：<input type="text" class="form-control" name="why3" required="required" style="width:100%;"><input type="hidden" name="action_node" value="zbgt"/></li>
-			
+			</notempty>
 			<li style="clear:left;">备注：<input type="text" class="form-control" name="other" style="min-width: 137px;max-width: 440px;width: 100%;"  maxlength="15"></li>
 			
-			</empty>
+			
 		</ul>
 		
 		<!-- <table align="center" style="width: 100%;">
@@ -584,7 +602,7 @@
 		         	$("#adv_aa").find("input[name='tel']").val(msg.tel);
 		         	$("#adv_aa").find("input[name='aa']").val(msg.aa);
 		         	$("#adv_aa").find("input[name='bb']").val(msg.bb);
-		         	/* $("#adv_aa").find("input[name='class']").val(msg.class); */
+		         	$("#adv_aa").find("select[name='why1']").val(msg.why1);
 		         	$("#adv_aa").find("select[name='class1']").val(msg.class1);
 		         	$('#adv_aa .class_type').change();
 		         	$("#adv_aa").find("select[name='class2']").val(msg.class2);

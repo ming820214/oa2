@@ -183,7 +183,9 @@ class ApplyDesignModel extends CommonModel{
             if($v['why']){
              $v['why']=get_user_name().'：'.$v['why'];
             }
-             
+            
+            $v['update_time'] = date('Y-m-d H:i:s');
+            
             $mod->where(['id'=>$v['id']])->save($v);
         }
     }
