@@ -263,10 +263,13 @@ class ApplyDesignFlatController extends HomeController {
          		         $w['area'] = '辽西';
          		         $w['state'] = 20;
          		     }elseif(session('auth_id') == '1'){
-         		         //何亮
-         		         unset($w['apply_school']);
+         		         //张晓明
+         		         /* unset($w['apply_school']);
          		         $w['area'] = '黑龙江';
-         		         $w['state'] = 20;
+         		         $w['state'] = 20; */
+         		         unset($w['apply_school']);
+         		         unset($w['area']);
+         		         $w['state'] = 70;
          		     }elseif(get_school_name()=='集团' && (session('auth_id') == '2158')){
          		         //姜博文 战略发展中心
          		         unset($w['apply_school']);
