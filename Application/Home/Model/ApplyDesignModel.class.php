@@ -35,11 +35,11 @@ class ApplyDesignModel extends CommonModel{
     */
     public function check_access(&$list){
         foreach ($list as &$v) {
-                $v['back'] =null; 
-                //针对审批助理、师训部、行政办各部门的特殊处理
-                if(($v['apply_school'] == 'b64' || $v['apply_school'] == 'b45' || $v['apply_school'] == 'b37' || $v['apply_school'] == 'b71') && $v['state'] == 0){
-                    $v['state']= 40;
-                }
+            $v['back'] =null; 
+            //针对审批助理、师训部、行政办各部门的特殊处理
+            if(($v['apply_school'] == 'b64' || $v['apply_school'] == 'b45' || $v['apply_school'] == 'b37' || $v['apply_school'] == 'b71') && $v['state'] == 0){
+                $v['state']= 40;
+            }else{
                 if($v['state'] <80){
                     if($v['state'] ==20){
                         $v['state']=$v['state']+20;
@@ -53,6 +53,7 @@ class ApplyDesignModel extends CommonModel{
                         $v['state']=$v['state']+10;
                     }
                 }
+            }
         }
     }
 
