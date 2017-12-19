@@ -130,6 +130,7 @@ class ApplyDesignModel extends CommonModel{
             }else if($v['state'] == '70'){
                 //佟彤
              array_push($user, "tongtong");
+             array_push($user, "WW");
             }
             unset($w);
         }
