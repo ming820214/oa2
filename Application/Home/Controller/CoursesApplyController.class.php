@@ -133,7 +133,7 @@ class CoursesApplyController extends HomeController {
                 $w['school'] = array('not in',$sch_ids);
                 
                 $w['type_state']=['in','20,60'];
-                unset($w['school']);
+                //unset($w['school']);
             }else if(session('auth_id')==2175){ //吕雪茹
                 $mod = M('foo_info');
                 $sch_ids = $mod->where(['region'=>50,'pid'=>15,id=>array('neq',13),'is_del' => 0])->getField('id',true);
