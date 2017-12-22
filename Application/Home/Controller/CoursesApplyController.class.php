@@ -120,9 +120,26 @@ class CoursesApplyController extends HomeController {
         }else if($w['act']=='examine') {
             if(session('position_id')==10){
                 $w['type_state']=['in','10,50'];
-            }else if(session('position_id')==7){
+            }else if(session('auth_id')==2100){//多种经营 李明帅
+                $mod = M('foo_info');
+                $sch_ids = $mod->where(['region'=>50,'pid'=>15,id=>array('neq',13),'is_del' => 0])->getField('id',true);
+                $w['school'] = array('in',$sch_ids);
+                
+                $w['type_state']=['in','15,55'];
+                
+            }else if(session('auth_id')==89){
+                $mod = M('foo_info');
+                $sch_ids = $mod->where(['region'=>50,'pid'=>15,id=>array('neq',13),'is_del' => 0])->getField('id',true);
+                $w['school'] = array('not in',$sch_ids);
+                
                 $w['type_state']=['in','20,60'];
                 unset($w['school']);
+            }else if(session('auth_id')==2175){ //吕雪茹
+                $mod = M('foo_info');
+                $sch_ids = $mod->where(['region'=>50,'pid'=>15,id=>array('neq',13),'is_del' => 0])->getField('id',true);
+                $w['school'] = array('in',$sch_ids);
+                $w['type_state']=['in','20,60'];
+                
             }else{
                 $w['type_state']=888888;
             }
@@ -143,7 +160,7 @@ class CoursesApplyController extends HomeController {
             $v['edit']=0;
             if($v['state']==100){
                 if($w['act']=='index' && in_array($v['type_state'],[0,5]))$v['edit']=1;
-                if($w['act']=='examine' && in_array($v['type_state'],[10,20,50,60]))$v['edit']=1;
+                if($w['act']=='examine' && in_array($v['type_state'],[10,15,20,50,55,60]))$v['edit']=1;
                 if($w['act']=='course_use' && $v['type_state']==30)$v['edit']=1;
             }elseif ($v['state']==200) {
                 if($w['act']=='course_return' && $v['type_state']==40)$v['edit']=1;
@@ -191,7 +208,13 @@ class CoursesApplyController extends HomeController {
     private function check_access(&$list){
         foreach ($list as &$v) {
             if($v['type_state']==70)continue;
-            $v['type_state']+=($v['type_state']==5||$v['type_state']==45)?5:10;
+            
+            if(get_school_region($v['school']) == 50 && ($v['type_state']==10 || $v['type_state']==15 || $v['type_state']==50 || $v['type_state']==55 || $v['type_state']==5 || $v['type_state']==45)){
+                $v['type_state']+=5;
+            }else{
+                $v['type_state']+=($v['type_state']==5||$v['type_state']==45)?5:10;
+            }
+            
         }
     }
 
@@ -333,9 +356,15 @@ class CoursesApplyController extends HomeController {
                     $w['position_id']=C('POSITION_ID')['SCHOOL_MASTER'];
                     $w['school']=session('school_id');
                 }
+                
+                if(get_school_region($v['school']) == 50 && ($v['type_state']==15||$v['type_state']==55)){
+                    $w['name']='李明帅';
+                }
                 //通知集团运营总裁
-                if($v['type_state']==20||$v['type_state']==60){
+                if(get_school_region($v['school']) != 50 && ($v['type_state']==20||$v['type_state']==60)){
                     $w['name']='王胜鑫';//'张晓明';
+                }else if(get_school_region($v['school']) == 50 && ($v['type_state']==20||$v['type_state']==60)){
+                    $w['name']='吕雪茹';
                 }
                 //通知学习管理师
                 if(in_array($v['type_state'],[30,40,5,45,70])){
