@@ -446,14 +446,62 @@ class ApplyInspectController extends HomeController {
     	if(IS_AJAX){
     		$w=I('get.search');
     		array_empty_delt($w);
-    		if($w['info']) $w['info'] = array('like','%' . $w['info'] . '%');
-    		if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 00:00:00']];
-    		$w['_string'] = "LOCATE('" . $_SESSION['user_name'] . "',record) != 0"; 
-    		$data=M('apply')->where($w)->order('state asc,money_time asc,school asc,subject asc,type asc,id desc')->field('record',true)->limit(I('get.offset'),I('get.count'))->select();
-    		$total=M('apply')->where($w)->count();
-    		$count=$this->get_count($w);
     		
-    		$this->ajaxReturn(['state'=>'ok','data'=>$data,'total'=>$total,'count'=>$count]);
+    		
+    		
+    		$w['_string'] = "LOCATE('" . $_SESSION['user_name'] . "',record) != 0"; 
+    		
+    		$w['is_del']= array('neq',1);
+    		
+    		$data=M('applyInspect')->where($w)->order('apply_month, expect_date, update_time')->field('record',true)->limit(I('get.offset'),I('get.count'))->select();
+    		
+    		foreach ($data as &$vo){
+    		    $vo['school_name'] = M('foo_info')->where('id=' . $vo['apply_school'])->getField('name');
+    		    $vo['area_name'] = get_config("SCHOOL_REGION")[$vo['area']];
+    		    
+    		    if($vo['questions']){
+    		        $content = explode("@",$vo['questions']);
+    		        $content = array_filter($content);
+    		        $content = array_values($content);
+    		        
+    		        foreach($content as $k=>$v){
+    		            $content_item = explode("^",$v);
+    		            foreach($content_item as $m=>$n){
+    		                
+    		                switch($m){
+    		                    case 0:$str .= " <b style=\"color:red; \">存在的问题：</b>" . $n;break;
+    		                    case 1:$str .=" <b style=\"color:red; \">整改方案：</b>" . $n;break;
+    		                    case 2:$str .=" <b style=\"color:red; \">整改描述：</b>" . $n;break;
+    		                    case 3:
+    		                        {
+    		                            $href_item = explode(";",$n);
+    		                            foreach($href_item as $b=>$p){
+    		                                $ref .= '<a href="' . $p . '" target="_blank">' . $p . '</a><br/>';
+    		                            }
+    		                            if($ref){
+    		                                $str .= " 整改图片如下：" . $ref ;
+    		                            }
+    		                            
+    		                            unset($ref);
+    		                        }
+    		                        break;
+    		                }
+    		                
+    		            }
+    		        }
+    		        
+    		        $vo['content'] = $str;
+    		    }
+    		    
+    		    unset($str);
+    		    
+    		    $vo['edit'] = 0;
+    		        
+    		}
+    		
+    		$total=M('applyInspect')->where($w)->count();
+    		
+    		$this->ajaxReturn(['state'=>'ok','data'=>$data,'total'=>$total]);
     	}else{
     		$this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
     	}
