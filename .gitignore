@@ -1,3 +1,8 @@
 Data/*
 Runtime/*
 Uploads/*
+Application/Home/View/ChpDictionary/index.html
+Application/Common/Conf/config.php
+Application/Common/Config/db.php
+Application/Home/Model/SchoolGradeViewModel.class.php
+index.php
