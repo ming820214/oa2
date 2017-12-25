@@ -76,7 +76,8 @@ class YewuController extends HomeController {
         $condition['source'] = array('eq',2);
         $condition['addx']=session('auth_id');
         
-        $temp_arr_lst = D('Yewu')->get_list($condition,10);//信息数据
+        //$temp_arr_lst = D('Yewu')->get_list($condition,10);//信息数据
+        $temp_arr_lst = M('Yewu_students')->where($condition)->field('id, school, name, parents, parent_type, sex, wl, get_way, tel1, tel2, grade, schoolx, address, other, yixiang, yixiang_qiang, addx, track_user, update_time, create_time, save_time, is_del, state, city_id, class_old, assign_time, type_gj, region, source, addx_name')->order('id desc')->limit(10)->select();
         $temp_stuid_lst = array_column($temp_arr_lst,'id');
         $w['stuid'] = array('in',$temp_stuid_lst);
         if(!empty($temp_stuid_lst)){
