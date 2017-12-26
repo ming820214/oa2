@@ -153,7 +153,7 @@ class CoursesController extends HomeController {
             ])->field(['id', 'name'])->select());
 
 //      $course=D('UnitpriceRoleView')->where(['school'=>get_school_id($student['school']),'is_del'=>0])->select(); //增加价格方案隐藏机制
-		$course=D('UnitpriceRoleView')->where(['school'=>get_school_id($student['school']),'is_del'=>0,'displays'=>'0'])->select();
+        $course=D('UnitpriceRoleView')->where(['school'=>get_school_id($student['school']),'is_del'=>0,'displays'=>'0','F4.display'=>1])->select();
         foreach ($course as &$v) {
             $v['name']=substr($v['name'],strpos($v['name'],' '));
         }
