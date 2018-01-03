@@ -1768,9 +1768,19 @@ class ReturnController extends HomeController {
         }
     }
 
-    public function all(){
+    public function all($checkpe=2){
         $w['state']=['neq',-2];
-        if(I('param.school'))$w['school']=I('param.school');
+        
+        if(get_school_name(session('school_id')) != '集团'){
+            $w['school']= get_school_name(session('school_id'));
+        }else{
+            if(I('param.school'))$w['school']=I('param.school');
+        }
+        
+        if($checkpe == 1){
+            $w['_string'] = "LOCATE('" . $_SESSION['user_name'] . "',record) != 0"; 
+        }
+//         if(I('param.school'))$w['school']=I('param.school');
         if(I('param.date'))$w['date']=I('param.date');
         if(I('param.state'))$w['state']=I('post.state');
         if(I('param.state')=='all')$w['state']=['neq',-2];
@@ -1825,8 +1835,16 @@ class ReturnController extends HomeController {
     }
 
     public function import(){
-
-        if($_POST['school'])$w['school']=$_POST['school'];
+        if(get_school_name(session('school_id')) != '集团'){
+            $w['school']= get_school_name(session('school_id'));
+        }else{
+            if($_POST['school'])$w['school']=$_POST['school'];
+        }
+        
+        if($_REQUEST['checkpe'] && $_REQUEST['checkpe'] == '1'){
+            $w['_string'] = "LOCATE('" . $_SESSION['user_name'] . "',record) != 0"; 
+        }
+//         if($_POST['school'])$w['school']=$_POST['school'];
         if($_POST['date'])$w['date']=$_POST['date'];
         if($_POST['state']){
             $w['state']=I('post.state');
