@@ -121,31 +121,53 @@ class ApplyCourseController extends HomeController {
          		 if(get_school_name()!='集团'){
          		   $w['school'] = session('school_id');
          		 }
-         		 
+
          		 if(get_school_name()=='集团' && session('auth_id') == '1293'  ){
          		  //姜博文
          		  unset($w['school']);
          		  $w['area'] = array('in',['辽宁']);
-         		  $w['state'] = 10;
-         		 } else if(session('auth_id') == '651'  ){
+         		  $w['state'] = array('in','10,60');
+         		 }elseif(get_school_name()=='集团' && session('auth_id') == '673'  ){
+         		     //张鹏
+         		     unset($w['school']);
+         		     $w['area'] = array('in',['辽东']);
+         		     $w['state'] = array('in','10,60');
+         		 }elseif(get_school_name()=='集团' && session('auth_id') == '1283'  ){
+         		     //张玉珠
+         		     unset($w['school']);
+         		     $w['area'] = array('in',['辽西']);
+         		     $w['state'] = array('in','10,60');
+         		 }elseif(get_school_name()=='集团' && session('auth_id') == '2100'  ){
+         		     //李明帅
+         		     unset($w['school']);
+         		     $w['area'] = array('in',['多种经营事业部']);
+         		     $w['state'] = array('in','10,60');
+         		 }else if(session('auth_id') == '651'  ){
          		     //王大鹏
          		     unset($w['school']);
          		     $w['area'] = array('in',['吉林']);
-         		     $w['state'] = 10;
+         		     $w['state'] = array('in','10,60');
          		 } else if(session('auth_id') == '439'  ){
          		     //何亮
          		     unset($w['school']);
          		     $w['area'] = array('in',['黑龙江']);
-         		     $w['state'] = 10;
+         		     $w['state'] = array('in','10,60');
+         		 }elseif(get_school_name()=='集团' && session('auth_id') == '2175'){
+         		     unset($w['school']);
+         		     $w['area'] = array('in',['多种经营事业部']);
+         		     $w['state'] = array('in','20,70');
          		 }elseif(get_school_name()=='集团' && (session('auth_id') == '89')){
          		  //王胜鑫
          		  unset($w['school']);
-         		  unset($w['area']);
-         		  //$w['area'] = array('in',['辽宁','吉林','黑龙江','其他']);
-         		  $w['state'] = 20;
+         		  $w['area'] = array('neq','多种经营事业部');
+         		  $w['state'] = array('in','20,70');
+         		 }elseif(get_school_name()=='集团' && session('auth_id') == '1091'){
+         		     $w['state'] = array('in','30,80');
          		 }elseif(get_school_name()=='集团' && session('auth_id') == '509'){
-         		  $w['state'] = 30;
-         		 }/* elseif(get_school_name()=='集团' && session('auth_id') == '1'){
+         		     $w['state'] = array('in','40,90');
+         		 }
+         		 
+         		 /* elseif(get_school_name()=='集团' && session('auth_id') == '1'){
          		 //张晓明
          		 unset($w['school']);
          		 unset($w['area']);

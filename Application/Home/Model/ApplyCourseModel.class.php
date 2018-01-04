@@ -9,7 +9,7 @@ class ApplyCourseModel extends CommonModel{
     *审核
     *@param array  审核的额数据列表(申请的id)
     *@return bool  状态
-    *-10=>审核失败,0=>待提交,5=>计划退回,10=>校长审核,20=>部门审核,30=>中心审核,40=>总裁审核,50=>计划通过,55=>申请退回,60=>资金申请,70=>资金审批,80=>审批通过,90=>报销申请,95=>退回报销,100=>校长确认,110=>部门确认,120=>中心确认,130=>总裁确认,140=>费用确认,150=>入账确认,160=>审核完成
+    *0=>待提交,10=>区域总监审核,20=>运营中心审批,30=>课程添加,40=>财务申请确认,50=>销售课程,60=>区域结束审核,70=>事业部总裁结束审核,80=>课程删除,90=>财务结束确认,100=>结束通过
     */
     public function check($type,$ids,$why=''){
 
@@ -35,8 +35,11 @@ class ApplyCourseModel extends CommonModel{
     */
     public function check_access(&$list){
         foreach ($list as &$v) {
-                $v['back'] =null;             
-                $v['state']=$v['state']+10;
+                $v['back'] =null;   
+                if($v['state']<100){
+                    $v['state']=$v['state']+10;
+                }
+                
         }
     }
 
@@ -45,7 +48,12 @@ class ApplyCourseModel extends CommonModel{
     */
     public function check_back(&$list,$why){
         foreach ($list as &$v) {
-            $v['state']=0;
+            if($v['state']>50){
+                $v['state']=50;
+            }else{
+                $v['state']=0;
+            }
+            
             $v['back'] = 1;
             $v['why']=$why;
         }
@@ -81,21 +89,35 @@ class ApplyCourseModel extends CommonModel{
               $user[]=M('user')->where(['is_del'=>0])->where($w)->getField('wechat_userid');//wechat_userid
             }
             
-            if($v['state'] == '10' && $v['area'] == '辽宁'){
+            if(($v['state'] == '10' || $v['state'] == '60') && $v['area'] == '辽宁'){
                //姜博文
                array_push($user, "XZsmqh28");
-            }else if($v['state'] == '10' && $v['area'] == '黑龙江'){
+            }else if(($v['state'] == '10' || $v['state'] == '60') && $v['area'] == '辽东'){
+                //张鹏
+                array_push($user, "XZsmqh29");
+            }else if(($v['state'] == '10' || $v['state'] == '60') && $v['area'] == '辽西'){
+                //张玉珠
+                array_push($user, "XZdl01");
+            }else if(($v['state'] == '10' || $v['state'] == '60') && $v['area'] == '黑龙江'){
                 //何亮
                 array_push($user, "XZsy01");
-            }else if($v['state'] == '10' && $v['area'] == '吉林'){
+            }else if(($v['state'] == '10' || $v['state'] == '60')  && $v['area'] == '吉林'){
                 //王大鹏
                 array_push($user, "XZfx01");
-            }else if($v['state'] == '20'){
-             //王胜鑫
-              array_push($user, "YY001");
-            }else if($v['state'] == '30'){
-             //齐静
-             array_push($user, "A02");
+            }else if(($v['state'] == '20' || $v['state'] == '70') ){
+                if($v['area'] != '多种经营事业部'){
+                    //王胜鑫
+                    array_push($user, "YY001");
+                }else{
+                    array_push($user, "lvxueru");
+                }
+
+            }else if(($v['state'] == '40' || $v['state'] == '90') ){
+                 //齐静
+                 array_push($user, "A02");
+            }else if(($v['state'] == '30' || $v['state'] == '80') ){
+                //邹德涛
+                array_push($user, "ZXhld001");
             }
             unset($w);
         }

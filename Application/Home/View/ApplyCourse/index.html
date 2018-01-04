@@ -124,7 +124,7 @@
         <ul><input type="hidden" name="id">
             
             <li>归属校区：<select name="school" class="form-control" required><option value="">请选择学校</option>{:fill_option_ex(C('SCHOOL'))}</select></li>
-            <li>区域：<select name="area" class="form-control" required><option value="">请选择区域</option><option>辽宁</option><option>吉林</option><option>黑龙江</option><option>其他</option></select></li>
+            <li>区域：<select name="area" class="form-control" required><option value="">请选择区域</option><option>辽东</option><option>辽西</option><option>吉林</option><option>黑龙江</option><option>多种经营事业部</option><option>鸿文优途</option></select></li>
             <li>申请人：<select name="apply_user" class="form-control" required><option value="">请选择校长</option><foreach name="rector" item="vo"><option value="{$vo.name}#({$vo.id})">{$vo.school}</option></foreach></select></li>
             <li>新课程名称：<input type="text" name="course_info" class="form-control" required></li>
             
