@@ -59,15 +59,18 @@
     </div>
     <div class="panel-body">
         <ul><input type="hidden" name="id">
-            <li>学员姓名<input type="text" name="name" class="form-control" required></li>
-            <li>学号<input type="text" name="std_id" class="form-control" required></li>
-            <li>课程方案<select name="unit_plan" class="form-control">{:fill_option_ex($course)}</select></li>
-            <li>单价<input name="unitprice" class="form-control" type="number" min="0" step="0.000001" required></li>
-            <li>订购课时<input name="hour" class="form-control" type="number" step="0.25" value="0" required></li>
-            <li>赠送课时<input name="ext_hour" class="form-control" type="number" value="0" required></li>
-            <li>折扣<input name="factor" class="form-control" max="1" min="0" step="0.001" type="number" value="1" required></li>
+        	<li>校区隶属<font color="red">*</font><select name="area" id="area" class="form-control" required="required"><option value="">请选择校区隶属</option>{:fill_option_ex(get_config('SCHOOL_REGION'))}</select></li>
+        	<li id="operate_area" style="display:none;">运营区域<font color="red">*</font><select name="operate_area" class="form-control" required="required"><option value="">请选择运营区域</option><option value="1">运营1区</option><option value="2">运营2区</option><option value="3">运营3区</option><option value="4">运营4区</option></select></li>
+        	
+            <li>学员姓名<font color="red">*</font><input type="text" name="name" class="form-control" required></li>
+            <li>学号<font color="red">*</font><input type="text" name="std_id" class="form-control" required></li>
+            <li>课程方案<font color="red">*</font><select name="unit_plan" class="form-control">{:fill_option_ex($course)}</select></li>
+            <li>单价<font color="red">*</font><input name="unitprice" class="form-control" type="number" min="0" step="0.000001" required></li>
+            <li>订购课时<font color="red">*</font><input name="hour" class="form-control" type="number" step="0.25" value="0" required></li>
+            <li>赠送课时<font color="red">*</font><input name="ext_hour" class="form-control" type="number" value="0" required></li>
+            <li>折扣<font color="red">*</font><input name="factor" class="form-control" max="1" min="0" step="0.001" type="number" value="1" required></li>
             <li>课程金额<input type="text" name="price" class="form-control" readonly></li>
-            <li>已消耗课时<input name="used_hour" class="form-control" type="number" step="0.25" value="0" required></li>
+            <li>已消耗课时<font color="red">*</font><input name="used_hour" class="form-control" type="number" step="0.25" value="0" required></li>
             <li>备注申请原因：<input type="text" name="other" class="form-control"></li>
         </ul>
     </div>
@@ -92,9 +95,9 @@
 
 <!-- 页面数据列表 -->
 <if condition="(ACTION_NAME eq 'index') OR (ACTION_NAME eq 'manage')">
-    <div class="btn btn-info">申请流程：校长审核=》集团审核=》审核通过=》启用订单</div>
+    <div class="btn btn-info">申请流程：校长审核=>总监审核=>集团审核=>财务确认=>审核通过=>启用订单</div>
 <else />
-    <div class="btn btn-info">申请流程：校长审核=》集团审核=》退课完成</div>
+    <div class="btn btn-info">申请流程：校长审核=>总监审核=>集团审核=>财务确认=>退课完成</div>
 </if>
 
 <div class="table-responsive">
@@ -119,7 +122,25 @@
     $(document).ready(function(){
         loadData(0);//页面数据加载
     });
-
+    
+    $('#area').change(function(){
+    	var sel_val = $(this).val();
+    	if(sel_val == 60){
+    		$('#operate_area').css('display','block');
+    		$('#operate_area select[name="operate_area"]').val('');
+    		$('#operate_area select[name="operate_area"]').attr('required','required');
+    	}else{
+    		$('#operate_area').css('display','none');
+    		$('#operate_area select[name="operate_area"]').val('');
+    		$('#operate_area select[name="operate_area"]').removeAttr('required');
+    	}
+    	
+		
+				
+    });
+    
+    $('#division').change();
+    
     // 页码绑定事件
     $('#pagination').on('click', '.page', function(){
         var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
@@ -237,6 +258,8 @@ function loadData(offset) {
                 'id':'序号',
                 'apply_type':'申请类型',
                 'state':'审核状态',
+                'area_name':'隶属区域',
+                'operate_area_name':'运营区域',
                 'school':'申请校区',
                 'name':'学员',
                 'std_id':'学号',

@@ -118,27 +118,84 @@ class CoursesApplyController extends HomeController {
             unset($w['state']);
             $w['type_state']=['in','30,40'];
         }else if($w['act']=='examine') {
-            if(session('position_id')==10){
+            
+            if(session('position_id')==10 && !in_array(session('auth_id'),[2100,673,1283,439,651,2119,2186,2095,2175])){
                 $w['type_state']=['in','10,50'];
             }else if(session('auth_id')==2100){//多种经营 李明帅
                 $mod = M('foo_info');
-                $sch_ids = $mod->where(['region'=>50,'pid'=>15,id=>array('neq',13),'is_del' => 0])->getField('id',true);
+                $sch_ids = $mod->where(['region'=>50,'pid'=>15,'is_del' => 0])->getField('id',true);
+                $w['school'] = array('in',$sch_ids);
+                
+                $w['type_state']=['in','10,15,55'];
+                $w['_string'] = " (operate_area is null or operate_area = '') "; 
+                
+            }else if(session('auth_id')==673){//辽东 张鹏
+                $mod = M('foo_info');
+                $sch_ids = $mod->where(['region'=>10,'pid'=>15,'is_del' => 0])->getField('id',true);
+                $w['school'] = array('in',$sch_ids);
+                
+                $w['type_state']=['in','10,15,55'];
+                $w['_string'] = " (operate_area is null or operate_area = '') "; 
+            }else if(session('auth_id')==1283){//辽西 张玉珠
+                $mod = M('foo_info');
+                $sch_ids = $mod->where(['region'=>20,'pid'=>15,'is_del' => 0])->getField('id',true);
                 $w['school'] = array('in',$sch_ids);
                 
                 $w['type_state']=['in','15,55'];
+                $w['_string'] = " (operate_area is null or operate_area = '') "; 
+            }else if(session('auth_id')==439){//黑龙江 何亮
+                $mod = M('foo_info');
+                $sch_ids = $mod->where(['region'=>40,'pid'=>15,'is_del' => 0])->getField('id',true);
+                $w['school'] = array('in',$sch_ids);
+                
+                $w['type_state']=['in','10,15,55'];
+                $w['_string'] = " (operate_area is null or operate_area = '') "; 
+            }else if(session('auth_id')==651){//吉林 王大鹏
+                $mod = M('foo_info');
+                $sch_ids = $mod->where(['region'=>30,'pid'=>15,'is_del' => 0])->getField('id',true);
+                $w['school'] = array('in',$sch_ids);
+                
+                $w['type_state']=['in','10,15,55'];
+                
+            }else if(session('auth_id')==2119){//运营1,4区是杜喃喃
+                unset($w['school']);
+                
+                $w['type_state']=['in','15,55'];
+                $w['area'] = 60;
+                $w['operate_area'] = array('in','1,4');
+                
+            }else if(session('auth_id')==2186){//运营2,3区是孟轩
+                unset($w['school']);
+                
+                $w['type_state']=['in','15,55'];
+                $w['area'] = 60;
+                $w['operate_area'] = array('in','2,3');
+                
+            }else if(session('auth_id')==2095){//优途 于忠盛 总裁审核
+                unset($w['school']);
+                
+                $w['type_state']=['in','20,60'];
+                $w['area'] = 60;
+                unset($w['operate_area']);
                 
             }else if(session('auth_id')==89){
                 $mod = M('foo_info');
-                $sch_ids = $mod->where(['region'=>50,'pid'=>15,id=>array('neq',13),'is_del' => 0])->getField('id',true);
-                $w['school'] = array('not in',$sch_ids);
+                $sch_ids = $mod->where(['region'=>array('not in', '50,60'),'pid'=>15,'is_del' => 0])->getField('id',true);
+                $w['school'] = array('in',$sch_ids);
                 
                 $w['type_state']=['in','20,60'];
-                //unset($w['school']);
+                $w['_string'] = " (operate_area is null or operate_area = '') "; 
             }else if(session('auth_id')==2175){ //吕雪茹
                 $mod = M('foo_info');
-                $sch_ids = $mod->where(['region'=>50,'pid'=>15,id=>array('neq',13),'is_del' => 0])->getField('id',true);
+                $sch_ids = $mod->where(['region'=>50,'pid'=>15,'is_del' => 0])->getField('id',true);
                 $w['school'] = array('in',$sch_ids);
                 $w['type_state']=['in','20,60'];
+                $w['_string'] = " (operate_area is null or operate_area = '') "; 
+            }else if(session('auth_id')==509){//优途 于忠盛 总裁审核
+                $w['type_state']=['in','25,65'];
+                unset($w['school']);
+                unset($w['area']);
+                unset($w['operate_area']);
                 
             }else{
                 $w['type_state']=888888;
@@ -158,9 +215,22 @@ class CoursesApplyController extends HomeController {
     private function get_edit(&$data,$w){
         foreach ($data as &$v) {
             $v['edit']=0;
+            
+            if($v['area']){
+                $v['area_name'] = get_config('SCHOOL_REGION')[$v['area']];
+            }else{
+                $v['area_name'] = '';
+            }
+            
+            if(!$v['operate_area']){
+                $v['operate_area_name'] = '';
+            }else{
+                $v['operate_area_name'] = '运营' . $v['operate_area'] . '区' ;
+            }
+            
             if($v['state']==100){
                 if($w['act']=='index' && in_array($v['type_state'],[0,5]))$v['edit']=1;
-                if($w['act']=='examine' && in_array($v['type_state'],[10,15,20,50,55,60]))$v['edit']=1;
+                if($w['act']=='examine' && in_array($v['type_state'],[10,15,20,25,50,55,60,65]))$v['edit']=1;
                 if($w['act']=='course_use' && $v['type_state']==30)$v['edit']=1;
             }elseif ($v['state']==200) {
                 if($w['act']=='course_return' && $v['type_state']==40)$v['edit']=1;
@@ -193,7 +263,9 @@ class CoursesApplyController extends HomeController {
 //          if($this->save_check($list,3))return TRUE;  //无法真正退回订单到学习管理师手上；edit by zhangxm at 2016-03-31 09:56
         }elseif ($type==1) {//审核数据
             $this->check_access($list);
-            $this->save_check($list,1,$reason);
+            if(!$this->save_check($list,1,$reason)){
+                return false;
+            }
         }
 		
 		$this->check_notice($list);//微信通知，edit by zhangxm at 2016-08-23 
@@ -209,10 +281,10 @@ class CoursesApplyController extends HomeController {
         foreach ($list as &$v) {
             if($v['type_state']==70)continue;
             
-            if(get_school_region($v['school']) == 50 && ($v['type_state']==10 || $v['type_state']==15 || $v['type_state']==50 || $v['type_state']==55 || $v['type_state']==5 || $v['type_state']==45)){
-                $v['type_state']+=5;
+            if($v['type_state']=== '0' || $v['type_state']==30 || $v['type_state']==40){
+                $v['type_state']+=10;
             }else{
-                $v['type_state']+=($v['type_state']==5||$v['type_state']==45)?5:10;
+                $v['type_state']+=5;
             }
             
         }
@@ -231,9 +303,16 @@ class CoursesApplyController extends HomeController {
 		 $info=session('user_name'). ',退回,' . date('Y-m-d H:i:s');
 		 
         foreach ($list as &$v) {
-            $v['type_state']=5;//退回修改
+            if($v['type_state']>40){
+                $v['type_state']=40;//申请退回修改
+                $v['state'] = 200;
+            }else{
+                $v['type_state']=5;//退回修改
+                $v['state'] = 100;
+            }
+//             $v['type_state']=5;//退回修改
             $v['reason']=$reason;
-			$v['state'] = 100;
+// 			$v['state'] = 100;
 			$v['return_price'] = 0;
 			
 			$inf=$info.','.$v['type_state'];
@@ -356,16 +435,38 @@ class CoursesApplyController extends HomeController {
                     $w['position_id']=C('POSITION_ID')['SCHOOL_MASTER'];
                     $w['school']=session('school_id');
                 }
+                if($v['type_state']==15||$v['type_state']==55){
+                    if($v['area'] == 50 ||  get_school_region($v['school']) == 50){
+                        $w['name']='李明帅';
+                    }else if($v['area'] == 40 || get_school_region($v['school']) == 40){
+                        $w['name']='何亮';
+                    }else if($v['area'] == 30 ||  get_school_region($v['school']) == 30){
+                        $w['name']='王大鹏';
+                    }else if($v['area'] == 20 ||  get_school_region($v['school']) == 20){
+                        $w['name']='张玉珠';
+                    }else if($v['area'] == 10 ||  get_school_region($v['school']) == 10){
+                        $w['name']='张鹏';
+                    }else if($v['area'] == 60){
+                        if(in_array($v['operate_area'],[1,4])){
+                            $w['name']='杜喃喃';
+                        }else if(in_array($v['operate_area'],[2,3])){
+                            $w['name']='孟轩';
+                        }
+                    }
+                }
                 
-                if(get_school_region($v['school']) == 50 && ($v['type_state']==15||$v['type_state']==55)){
-                    $w['name']='李明帅';
+                if($v['type_state']==20||$v['type_state']==60){
+                    //通知集团运营总裁
+                    if((get_school_region($v['school']) != 50 && get_school_region($v['school']) != 60) && ($v['area'] != 50 && $v['area'] != 60 )){
+                        $w['name']='王胜鑫';//'张晓明';
+                    }else if(get_school_region($v['school']) == 50 || $v['area'] == 50){
+                        $w['name']='吕雪茹';
+                    }else if(get_school_region($v['school']) == 60 || $v['area'] == 60){
+                        $w['name']='于忠盛';
+                    }
                 }
-                //通知集团运营总裁
-                if(get_school_region($v['school']) != 50 && ($v['type_state']==20||$v['type_state']==60)){
-                    $w['name']='王胜鑫';//'张晓明';
-                }else if(get_school_region($v['school']) == 50 && ($v['type_state']==20||$v['type_state']==60)){
-                    $w['name']='吕雪茹';
-                }
+                
+                
                 //通知学习管理师
                 if(in_array($v['type_state'],[30,40,5,45,70])){
                     $w['position_id']=C('POSITION_ID')['SCHOOL_MANAGER'];
