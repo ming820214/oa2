@@ -473,9 +473,9 @@ class ApplyDesignFlatController extends HomeController {
 	public function export(){
 
 		if(session('school_id')!=0)die;
-		if(session('auth_id') !== '1'){
+		/* if(session('auth_id') !== '1'){
 		    die;
-		}
+		} */
 		$w=I('post.');
 		array_empty_delt($w);
 		unset($w['stage']);
