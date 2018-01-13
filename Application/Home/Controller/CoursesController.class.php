@@ -416,7 +416,7 @@ class CoursesController extends HomeController {
 		
 		$foo_ids = $foo->where("pid=17 and `group` in (2,3) and is_del=0")->getField('id',true);
 		
-        $oldCourse = $Course->find((int)$data['id']);
+        $oldCourse = $Course->field(array('operate_area','area'),true)->find((int)$data['id']);
         
         $unitprice = M("UnitpriceRole");
         
