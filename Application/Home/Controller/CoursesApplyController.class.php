@@ -116,7 +116,7 @@ class CoursesApplyController extends HomeController {
             $w['type_state']=['lt','40'];
         }else if($w['act']=='course_use') {
             unset($w['state']);
-            $w['type_state']=['in','30,40'];
+            $w['type_state']=['in','25,30'];
         }else if($w['act']=='examine') {
             
             if(session('position_id')==10 && !in_array(session('auth_id'),[2100,673,1283,439,651,2119,2186,2095,2175])){
