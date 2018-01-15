@@ -231,7 +231,7 @@ class CoursesApplyController extends HomeController {
             if($v['state']==100){
                 if($w['act']=='index' && in_array($v['type_state'],[0,5]))$v['edit']=1;
                 if($w['act']=='examine' && in_array($v['type_state'],[10,15,20,25,50,55,60,65]))$v['edit']=1;
-                if($w['act']=='course_use' && $v['type_state']==30)$v['edit']=1;
+                if($w['act']=='course_use' && $v['type_state']>=25 && $v['type_state']<=30)$v['edit']=1;
             }elseif ($v['state']==200) {
                 if($w['act']=='course_return' && $v['type_state']==40)$v['edit']=1;
             }
