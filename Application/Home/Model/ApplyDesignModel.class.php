@@ -117,9 +117,9 @@ class ApplyDesignModel extends CommonModel{
                 array_push($user, "XZfx01");
             }else if($v['state'] == '40' || $v['state'] == '50'){
                 //王胜鑫
-                if($v['apply_school'] = 'b45'){
+                if($v['apply_school'] == 'b45'){
                     array_push($user, "HR001");
-                }else if($v['apply_school'] = 'b71'){
+                }else if($v['apply_school'] == 'b71'){
                     array_push($user, "XZsmqh28");
                 }else{
                     array_push($user, "YY001");
