@@ -8,7 +8,7 @@ class CoursesApplyController extends HomeController {
             $school[$v['id']]=$v['name'];
         }
         $this->school=$school;//校区
-        $this->course=M('UnitpriceRole')->where(['school'=>session('school_id'),'is_del'=>0])->getField('id,name');//课程列表
+        $this->course=M('UnitpriceRole')->where(['school'=>session('school_id'),'is_del'=>0,'displays'=>0])->getField('id,name');//课程列表
     }
 
 /**
