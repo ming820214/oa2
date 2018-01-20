@@ -6,7 +6,9 @@ class ApplyInspectController extends HomeController {
 	//把校区列表、科目类别输出到前段模版
 	public function _initialize(){
         parent::_initialize();
-        
+        $ws['is_del'] = 0;
+        $ws['region'] = array('in',array_keys(get_config('SCHOOL_REGION')));
+        $ws['pid'] = 15;
         $sch_lst = M('foo_info')->where($ws)->getField('id,name,region');
         $this->sch_lst = $sch_lst;
 		
