@@ -8,7 +8,7 @@ class ApplyDesignFlatController extends HomeController {
         parent::_initialize();
         
         if(session('school_id') == 0){
-            $dept_lst = M('dept')->where('is_del = 0 and pid !=28 and id != 28 and (id=64 or id=45 or id=37 or id=71)')->getField('id,name');
+            $dept_lst = M('dept')->where('is_del = 0 and pid !=28 and id != 28 and (id=64 or id=45 or id=37 or id=71 or id=69)')->getField('id,name');
             
             foreach ($dept_lst as $key=>$val){
                 
@@ -280,13 +280,19 @@ class ApplyDesignFlatController extends HomeController {
          		         //王胜鑫
          		         unset($w['apply_school']);
          		         unset($w['area']);
-         		         $w['apply_school'] = array('neq','b45');
+         		         $w['apply_school'] = array('not in',array('b45','b69','b71'));
          		         $w['state'] = array('in','40,50');
          		     }elseif(get_school_name()=='集团' && (session('auth_id') == '70')){
          		         //侯海洋
          		         unset($w['apply_school']);
          		         unset($w['area']);
          		         $w['apply_school'] = array('eq','b45');
+         		         $w['state'] = array('in','40,50');
+         		     }elseif(get_school_name()=='集团' && (session('auth_id') == '2095')){
+         		         //于忠盛
+         		         unset($w['apply_school']);
+         		         unset($w['area']);
+         		         $w['apply_school'] = array('eq','b69');
          		         $w['state'] = array('in','40,50');
          		     }elseif(get_school_name()=='集团' && (session('auth_id') == '90')){
          		         //赵锡睿

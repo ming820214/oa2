@@ -37,7 +37,7 @@ class ApplyDesignModel extends CommonModel{
         foreach ($list as &$v) {
             $v['back'] =null; 
             //针对审批助理、师训部、行政办各部门的特殊处理
-            if(($v['apply_school'] == 'b64' || $v['apply_school'] == 'b45' || $v['apply_school'] == 'b37' || $v['apply_school'] == 'b71') && $v['state'] == 0){
+            if(($v['apply_school'] == 'b64' || $v['apply_school'] == 'b45' || $v['apply_school'] == 'b69' || $v['apply_school'] == 'b37' || $v['apply_school'] == 'b71') && $v['state'] == 0){
                 $v['state']= 40;
             }else{
                 if($v['state'] <80){
@@ -121,6 +121,8 @@ class ApplyDesignModel extends CommonModel{
                     array_push($user, "HR001");
                 }else if($v['apply_school'] == 'b71'){
                     array_push($user, "XZsmqh28");
+                }else if($v['apply_school'] == 'b69'){
+                    array_push($user, "yuzhongsheng");
                 }else{
                     array_push($user, "YY001");
                 }
@@ -131,7 +133,7 @@ class ApplyDesignModel extends CommonModel{
             }else if($v['state'] == '70'){
                 //佟彤
              array_push($user, "tongtong");
-             array_push($user, "WW");
+             //array_push($user, "WW");
             }
             unset($w);
         }
