@@ -516,7 +516,8 @@ class ReturnController extends HomeController {
                             $user[]= 'JZsyjn03'; //李名帅
                         }else{
                             $d['state']=8;
-                            $user[]= 'QThwzb002'; //刘媛媛
+                            //$user[]= 'QThwzb002'; //刘媛媛
+                            $user[]= 'zhaojinling'; //赵金玲
                             
                         }
                         
@@ -803,7 +804,8 @@ class ReturnController extends HomeController {
                             //M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid
                         }else if(($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 15)){
                             // 							$user[0]= 'Azl'; //王思雷
-                            $user[]= 'QThwzb002'; //刘媛媛
+                            //$user[]= 'QThwzb002'; //刘媛媛
+                            $user[]= 'zhaojinling'; //赵金玲
                             
                         }
                     }
@@ -1113,7 +1115,7 @@ class ReturnController extends HomeController {
 			$this->class2=$class2;
 			
 // 			if(session('auth_id') == 93){
-			if(session('auth_id') == 1292){
+			if(session('auth_id') == 2335){
 				//此处交由刘媛媛处理，之前是王思雷处理的,
 				//如果是王思雷，则只能审核高报项目
 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','%港澳台%'),'OR');
