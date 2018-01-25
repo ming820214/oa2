@@ -800,14 +800,15 @@ class ReturnController extends HomeController {
                         //如果是王思雷，则只能审核高报项目
                         if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14)){
                             //							$user[0]= 'ZXhld001'; //邹德涛
-                            $user[]= 'XGryxc22'; //邹婧
+                            $user[]= 'ZYyy002'; //李冰
                             //M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid
-                        }else if(($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 15)){
+                        }/* else if(($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 15)){
                             // 							$user[0]= 'Azl'; //王思雷
                             //$user[]= 'QThwzb002'; //刘媛媛
-                            $user[]= 'zhaojinling'; //赵金玲
+                            //$user[]= 'zhaojinling'; //赵金玲
                             
-                        }
+                        } */
+                        $user[]= 'zhaojinling'; //赵金玲
                     }
                 }
                 
@@ -1115,13 +1116,13 @@ class ReturnController extends HomeController {
 			$this->class2=$class2;
 			
 // 			if(session('auth_id') == 93){
-			if(session('auth_id') == 2335){
+			if(session('auth_id') == 1){
 				//此处交由刘媛媛处理，之前是王思雷处理的,
 				//如果是王思雷，则只能审核高报项目
 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','%港澳台%'),'OR');
 				
 				$w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(7,8,9,10,14)";
-			}else{
+			}else if(session('auth_id') == 1473){
 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','%港澳台%'),'AND');
 				
 				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,12,13,14,15) OR (`class1` is null))";
