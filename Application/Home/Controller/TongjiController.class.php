@@ -22,7 +22,7 @@ class TongjiController extends HomeController {
           $w['school']=array('eq','营口盖州一高校区');
         } */
         
-        $school=M('hw001.school',null)->where($w)->select();
+        $school=M('hw001.school',null)->where($w)->field('record',true)->select();
         foreach ($school as  $value1) {
             //循环校区查询
             $aa['school']=$value1['school'];
