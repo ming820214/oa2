@@ -538,6 +538,11 @@ class WeihuController extends HomeController {
 		
 		
 		$school_id = session('school_id');
+		
+		if(!$school_id){
+		    var_dump("集团直属账户不应有该权限！");
+		    die;
+		}
 		$param['school'] = $school_id;
 		$stu_state = I('post.state_s');
 
