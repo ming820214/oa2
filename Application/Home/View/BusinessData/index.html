@@ -810,7 +810,7 @@ function loadData(offset) {
         dataType: 'JSON',
         data: {search: search, offset: offset, count: count},
     })
-    .done(function(result) {debugger;
+    .done(function(result) {
         for(var x in result.data){
             //将数据完整保存在checkbox上，方便修改功能使用
             result.data[x]._checkbox = '<input type="checkbox" name="id" value="'+result.data[x].id+'" data-info=\''+JSON.stringify(result.data[x])+'\'>';

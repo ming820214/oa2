@@ -6,7 +6,16 @@ class BusinessDataController extends HomeController {
 	//把校区列表、科目类别输出到前段模版
 	public function _initialize(){
         parent::_initialize();
-		
+		foreach (C('SCHOOL') as $v) {
+			$school[$v['id']]=$v['name'];
+		}
+		$this->assign('school',$school);//校区
+		$subject=M("FinanceType")->where('pid=268')->order("sort ASC")->select();
+		foreach ($subject as $v) {
+			$subjectId[$v['id']]=$v['name'];
+		}
+		$this->subject=$subject;
+		$this->subjectId=$subjectId;
 	}
 /**
 计划申请
@@ -20,7 +29,107 @@ class BusinessDataController extends HomeController {
 	public function statistic(){
         $this -> display('');
 	}
+/**
+报销申请
+*/
+	public function cost(){
+        $this -> display('index');
+	}
 
+/**
+审核申请
+*/
+	public function examine(){
+        $this -> display('index');
+	}
+
+/**
+数据管理
+*/
+	public function manage(){
+        $this -> display('index');
+	}
+	
+	/**
+	 * 各个岗位浏览自己审核过的数据
+	 */
+	public function checked_list(){
+		$this -> display('list_checked_info');
+	}
+
+	/**
+	 * 各个校区浏览自己校区的财务数据
+	 */
+	public function export_list(){
+	    $this -> display('export_list');
+	}
+	
+/**
+####################################增删改查
+*/
+/*
+*申请添加、修改
+*/
+	public function write(){
+		array_empty_delt($_POST);
+		$mod=M('businessData');
+		$mod->create();
+
+		//修改
+		if(I('post.id')){
+			$mod->save();
+			$this->ajaxReturn('更新成功');
+		}
+
+		$mod->creater=session('auth_id');
+		
+		//新增
+		if($mod->add())$this->ajaxReturn('添加成功');
+
+		$this->ajaxReturn('操作失败');
+	}
+/*
+*审核操作
+*/
+	public function check(){
+		if(IS_AJAX&&I('post.data')){
+		    
+		    if(I('post.type') == -1){
+		        $status = 2;
+		    }else{
+		        $status = 1;
+		    }
+		    if(M('businessData')->where(I('post.data')['id'])->save(array('state'=>$status))){
+		        $this->ajaxReturn('ok');
+		    }else{
+		        $this->ajaxReturn('提交出错，请与系统管理员联系！');
+		    }
+			
+		}
+	}
+
+/*
+*页面数据列表
+*/
+    public function ajax_list(){
+    	if(IS_AJAX){
+    		$w=I('get.search');
+    		array_empty_delt($w);
+    		if($w['month1']){
+    		    $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'"; 
+    		}
+    		$w['creater'] = session('auth_id');
+    		$w['state'] = array('neq',2);
+//     		$w['school'] = session('school_id');
+//     		$w['region'] = session('region_id');
+    		$data=M('businessData')->where($w)->order('state desc,create_time desc')->limit(I('get.offset'),I('get.count'))->select();
+    		$total=M('businessData')->where($w)->count();
+    		$this->get_edit($data,$w);//设置页面修改权限
+    		$this->ajaxReturn(['state'=>'ok','data'=>$data,'total'=>$total]);
+    	}else{
+    		$this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+    	}
+    }
 
     /*
      *页面数据列表
