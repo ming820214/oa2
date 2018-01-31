@@ -75,6 +75,7 @@ class PublicController extends Controller {
 				session('dept_id', $auth_info['dept_id']);
 				session('position_id', $auth_info['position_id']);
 				session('school_id', $auth_info['school']);
+				session('region_id',get_school_region($auth_info['school']));
 				session('date', date('Y-m'));
 				session('last_login_time', $auth_info['last_login_time']);
 				

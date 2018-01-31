@@ -1,0 +1,248 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.input-group{margin: 10px 0;}
+#apply_form li{ width: 200px;float: left;margin: 5px;list-style: none;font-weight: bold;}
+.table-responsive{max-height: 500px;overflow: auto;}
+#apply_list{min-width: 3000px;}
+.pagination {margin: 0;} 
+.td_dept_name{width: 120px;}
+.td_info{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.td_other{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.notes{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 300px;}
+.money_time,.td_update_time,.td_create_time{width: 155px;}
+
+/* Let's get this party started */
+::-webkit-scrollbar {
+    width: 15px;
+    height: 20px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(35,198,200,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(35,198,200,0.4); 
+}
+
+</style>
+
+<div class="page-header clearfix">
+    <div class="col-sm-3">
+        <h1>经营数据上报</h1>
+    </div>
+    
+    <div class="col-sm-12">
+        <a class="btn btn-sm btn-success pull-right" onclick="toggle_adv_search();"><i id="toggle_adv_search_icon" class="fa fa-chevron-down bigger-125"></i></a>
+    </div>
+</div>
+
+<!-- 搜索部分 -->
+<form class="panel panel-default hidden" id="adv_search" method="post" action="{:U('export')}">
+    <div class="panel-heading">
+        <input type="hidden" name="stage" value="<switch name="ACTION_NAME"><case value="index">1</case><case value="apply">2</case><case value="cost">3</case><case value="examine">4</case><case value="manage">5</case></switch>">
+        <div class="row">
+            <h4 class="col-xs-6">高级搜索</h4>
+            <div class="col-xs-6 text-right">
+                <a class="btn btn-info" onclick="loadData(0)">筛选</a>
+                <if condition="(ACTION_NAME eq 'manage') OR (ACTION_NAME eq 'cost')"><button type="submit" class="btn btn-info">导出</button></if>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="form-inline">
+            <div class="input-group col-30">
+                <a class="input-group-addon">月份</a>
+                <input name="month1" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="{:session('date')}" readonly>
+                <a class="input-group-addon">-</a>
+                <input name="month2" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="{:session('date')}" readonly>
+            </div>
+            
+            <if condition="ACTION_NAME eq 'manage'">
+                <div class="input-group">
+                    <a class="input-group-addon">区域</a>
+                    <select name="state" class="form-control"><option value="">全部</option>{:fill_option_ex(get_config('SCHOOL_REGION'))}</select>
+                </div>
+                <div class="input-group">
+                    <a class="input-group-addon">校区</a>
+                    <select name="school" class="form-control"><option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+                </div>
+            </if>
+            
+        </div>
+    </div>
+</form>
+
+<!-- 页面数据列表 -->
+<div class="table-responsive">
+    <table id="apply_list" class="table table-bordered table-hover table-condensed">
+    </table>
+</div>
+
+
+<div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+    // 页面会用到的类型id
+    STATE={"0":"待提交","1":"正常","2":"删除"};//审核状态
+    SCHOOL={:json_encode($school)};
+
+	$(document).ready(function(){
+	    loadData(0);//页面数据加载
+	});
+
+    // 页码绑定事件
+    $('#pagination').on('click', '.page', function(){
+        var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
+        loadData(page_offset);
+    });
+    //金额自动计算
+    $('input[name=unit_price],input[name=count]').change(function(){
+        var mm = $('input[name=unit_price]').val()*$('input[name=count]').val();
+        $('#mm').val(mm.toFixed(2));
+    })
+    //添加/修改申请
+    $("#apply_form").submit(function(event){
+        event.preventDefault();
+        Ycom.loading.show();
+        var data = $("#apply_form").serializeArray();
+        $.post("{:U('write')}",data,function(msg){
+            loadData(0);
+            ui_info(msg);
+        });
+        //清空表单（忽略部分项目）
+        //Ycom.clearForm('#apply_form','[name=type],[name=belong],[name=receive_school],[name=receive_card],[name=month]');
+        $('input[type="reset"]').click();
+        $("#bt_add").show();
+        $("#bt_save_change").hide();
+    })
+    // 数据列表点击事件
+    $("#apply_list").on('click','tbody tr',function(){
+        $("#apply_list tr").removeClass('success');
+        $(this).addClass('success');
+    })
+    //全选/取消
+    $("#apply_list").on('click','#checkbox',function(){
+        $("#apply_list tbody input[type=checkbox]").prop('checked',($(this).prop('checked')==true)?true:false);
+    })
+    //修改功能,只修改其中一个
+    $("#bt_change").click(function(){
+        var id = $("#apply_list tbody input:checked").val();
+        var data = $("#apply_list tbody input:checked").data('info');
+        if(id==undefined){
+            ui_error('请选择要修改的项目！');
+        }else{
+            $("#apply_form").show();
+            Ycom.fillForm('#apply_form',data);
+            $('#bt_save_change').show();
+            $('#bt_add').hide();
+            $('input[name=unit_price]').change();
+        }
+    })
+    //审核数据(1通过、0退回、-1删除)
+    function check(type){
+        if($("#apply_list tbody input:checked").val()==undefined){
+            ui_error('请选择要操作的项目！');
+            return;
+        }
+        Ycom.loading.show();
+        var data = $("#apply_list tbody input:checked").serializeJson();
+        var why = '';
+        
+        if(data.id!=undefined)
+        $.post('{:U("check")}',{type:type,data:data,why:why},function(msg){
+            if(msg=='ok'){
+            	ui_info('操作成功');
+            }
+            loadData(0);
+        })
+    }
+    
+
+//加载数据列表
+function loadData(offset) {
+    Ycom.loading.show();
+    var search = $('#adv_search').serializeJson();
+    var count = $('#pagination').data('count');
+    $.ajax({
+        url: '{:U("BusinessData/ajax_statistic")}',
+        type: 'GET',
+        dataType: 'JSON',
+        data: {search: search, offset: offset, count: count},
+    })
+    .done(function(result) {
+        for(var x in result.data){
+            //将数据完整保存在checkbox上，方便修改功能使用
+            result.data[x].month = result.data[x].month;
+            result.data[x].unit = result.data[x].unit;
+            result.data[x].id = parseInt(x)+1;
+            result.data[x].all_achieve = new Number(result.data[x].all_achieve).toFixed(2);
+            result.data[x].all_part_achieve = new Number(result.data[x].all_part_achieve).toFixed(2);
+            
+            result.data[x].new_month_achieve = new Number(result.data[x].new_month_achieve).toFixed(2);
+            result.data[x].new_month_person = new Number(result.data[x].new_month_person).toFixed(2);
+            result.data[x].new_month_average = new Number(result.data[x].new_month_average).toFixed(2);
+            
+            result.data[x].renew_month_achieve = new Number(result.data[x].renew_month_achieve).toFixed(2);
+            result.data[x].renew_month_person = new Number(result.data[x].renew_month_person).toFixed(2);
+            result.data[x].renew_month_average = new Number(result.data[x].renew_month_average).toFixed(2);
+            
+            result.data[x].consump_achieve = new Number(result.data[x].consump_achieve).toFixed(2);
+            result.data[x].consump_class = new Number(result.data[x].consump_class).toFixed(2);
+            
+            result.data[x].valid_person = result.data[x].valid_person;
+            result.data[x].class_person = result.data[x].class_person;
+            result.data[x].back_person = result.data[x].back_person;
+        }
+        if (result.state == 'ok') {
+            Ycom.table('#apply_list', {
+                'id':'序号',
+                'month':'月份',
+                'unit':'单位',
+                'all_achieve':'总业绩(含特训)',
+                'all_part_achieve':'总业绩(不含特训)',
+                'new_month_achieve':'新招业绩',
+                'new_month_person':'新招人数',
+                'new_month_average':'新招平均单底',
+                'renew_month_achieve':'续费业绩',
+                'renew_month_person':'续费人数',
+                'renew_month_average':'续费平均单底',
+                'consump_achieve':'消耗业绩',
+                'consump_class':'消耗课时',
+                'valid_person':'有效学员数',
+                'class_person':'上课学员数',
+                'back_person':'退费人数'
+            }, result.data);
+            Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
+            $('[data-toggle="tooltip"]').tooltip();
+        }else{
+            ui_info(result.info);
+        }
+    })
+    .fail(function() {
+        ui_error('网络错误，请稍后再试')
+    })
+    .always(function(result) {
+        if (typeof(always) != "undefined") {
+            always(result);
+        }
+        Ycom.loading.hide();
+    });
+}
+
+</script>
+</block>
+

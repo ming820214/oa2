@@ -1,0 +1,887 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.input-group{margin: 10px 0;}
+#apply_form li{ width: 200px;float: left;margin: 5px;list-style: none;font-weight: bold;}
+.table-responsive{max-height: 500px;overflow: auto;}
+#apply_list{min-width: 3000px;}
+.pagination {margin: 0;} 
+.td_dept_name{width: 120px;}
+.td_info{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.td_other{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.notes{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 300px;}
+.money_time,.td_update_time,.td_create_time{width: 155px;}
+
+/* Let's get this party started */
+::-webkit-scrollbar {
+    width: 15px;
+    height: 20px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(35,198,200,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(35,198,200,0.4); 
+}
+
+</style>
+
+<div class="page-header clearfix">
+    <div class="col-sm-3">
+        <h1>经营数据上报</h1>
+    </div>
+    
+    <div class="col-sm-12">
+        <a class="btn btn-sm btn-success pull-right" onclick="toggle_adv_search();"><i id="toggle_adv_search_icon" class="fa fa-chevron-down bigger-125"></i></a>
+    </div>
+</div>
+
+<!-- 搜索部分 -->
+<form class="panel panel-default hidden" id="adv_search" method="post" action="{:U('export')}">
+    <div class="panel-heading">
+        <input type="hidden" name="stage" value="<switch name="ACTION_NAME"><case value="index">1</case><case value="apply">2</case><case value="cost">3</case><case value="examine">4</case><case value="manage">5</case></switch>">
+        <div class="row">
+            <h4 class="col-xs-6">高级搜索</h4>
+            <div class="col-xs-6 text-right">
+                <a class="btn btn-info" onclick="loadData(0)">筛选</a>
+                <if condition="(ACTION_NAME eq 'manage') OR (ACTION_NAME eq 'cost')"><button type="submit" class="btn btn-info">导出</button></if>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="form-inline">
+            <div class="input-group col-30">
+                <a class="input-group-addon">月份</a>
+                <input name="month1" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="{:session('date')}" readonly>
+                <a class="input-group-addon">-</a>
+                <input name="month2" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="{:session('date')}" readonly>
+            </div>
+            
+            <if condition="ACTION_NAME eq 'manage'">
+                <div class="input-group">
+                    <a class="input-group-addon">区域</a>
+                    <select name="area" class="form-control"><option value="">全部</option>{:fill_option_ex(get_config('SCHOOL_REGION'))}</select>
+                </div>
+                <div class="input-group">
+                    <a class="input-group-addon">校区</a>
+                    <select name="school" class="form-control"><option value="">全部</option>{:fill_option_ex(C('SCHOOL'))}</select>
+                </div>
+            </if>
+            
+        </div>
+    </div>
+</form>
+
+<!-- 录入修改部分 -->
+<form id="apply_form" class="panel panel-default">
+    <div class="panel-heading">
+        <div class="pull-right">
+            <button type="submit" class="btn btn-danger" id="bt_add">保存</button>
+            <button type="submit" class="btn btn-danger" style="display:none;" id="bt_save_change">修改</button>&nbsp;
+            <input type="reset" class="btn btn-danger" onclick="$('#apply_list .success').removeClass('success');$('input[type=hidden]').val('');"/>
+        </div>
+        <h3>申请/修改</h3>
+    </div>
+    <div class="panel-body">
+        <input type="hidden" name="id">
+        	<div class="panel panel-default">
+			  <div class="panel-heading">基础数据</div>
+			  <div class="panel-body">
+			   		<ul>
+			   			<li>区域<font color="red">*</font><select id="type_form_add" name="area" class="form-control" required="required">{:fill_option_ex(get_config('SCHOOL_REGION'))}</select></li>
+			        	<li>校区<font color="red">*</font><select name="school" class="form-control" required="required">{:fill_option_ex(C('SCHOOL'))}</select></li>
+			            <li>月份<font color="red">*</font><input type="text" name="month" class="form-control" value="{:session('date')}" onclick="WdatePicker({dateFmt:'yyyy-MM'})" readonly="readonly" required="required"></li>
+			            
+			            <li style="clear:left;">总业绩(含特训)<font color="red">*</font><input type="number" name="all_achieve" class="form-control" min="0" step="0.01"  required></li>
+			            <li>总业绩(不含特训)<font color="red">*</font><input type="number" name="all_part_achieve" class="form-control" min="0" step="0.01"  required></li>
+			            <li>消耗业绩<font color="red">*</font><input name="consump_achieve" class="form-control" type="number" min="0" step="0.01" required></li>
+			   		</ul>
+			  </div>
+			</div>
+        	
+            <div class="panel panel-default">
+			  <div class="panel-heading">新招数据</div>
+			  <div class="panel-body">
+			    <ul>
+			    	<li>新招总业绩<font color="red">*</font><input type="number" name="new_achieve" class="form-control" min="0" step="0.01"  required="required"></li>
+		            
+		            <li style="clear:left;">月1V1/多收费总人数<input type="number" min="0" step="1"  name="new_month_person" class="form-control" readonly="readonly"></li>
+		            <li>月1V1/多收费总业绩<input type="number" min="0" step="0.01"  name="new_month_achieve" class="form-control" readonly="readonly"></li>
+		            <li>月1V1/多收费平均单底<input type="number" min="0" step="0.01"  name="new_month_average" class="form-control" readonly="readonly"></li>
+		            
+		            <li style="clear:left;">高一人数<input type="number" min="0" step="1"  name="new_one_person" class="form-control"></li>
+		            <li>高一业绩<input type="number" min="0" step="0.01"  name="new_one_achieve" class="form-control"></li>
+		            <li>高一平均单底<input type="number" min="0" step="0.01"  name="new_one_average" class="form-control" readonly="readonly"></li>
+		            
+		            <li style="clear:left;">高二人数<input type="number" min="0" step="1"  name="new_two_person" class="form-control"></li>
+		            <li>高二业绩<input type="number" min="0" step="0.01"  name="new_two_achieve" class="form-control"></li>
+		            <li>高二平均单底<input type="number" min="0" step="0.01"  name="new_two_average" class="form-control" readonly="readonly"></li>
+		            
+		            <li style="clear:left;">高三人数<input type="number" min="0" step="1"  name="new_three_person" class="form-control"></li>
+		            <li>高三业绩<input type="number" min="0" step="0.01"  name="new_three_achieve" class="form-control"></li>
+		            <li>高三平均单底<input type="number" min="0" step="0.01"  name="new_three_average" class="form-control" readonly="readonly"></li>
+		            
+		            <li style="clear:left;">其他人数<input type="number" min="0" step="1"  name="new_other_person" class="form-control"></li>
+		            <li>其他业绩<input type="number" min="0" step="0.01"  name="new_other_achieve" class="form-control"></li>
+		            <li>其他平均单底<input type="number" min="0" step="0.01"  name="new_other_average" class="form-control" readonly="readonly"></li>
+		            <li style="clear:left;"><hr width="800px" style="height:1px;border:none;border-top:1px solid #0066CC;"/></li>
+		            <li style="clear:left;">营训类收费人数<input type="number" min="0" step="1"  name="new_camp_person" class="form-control"></li>
+		            <li>营训类收费业绩<input type="number" min="0" step="0.01"  name="new_camp_achieve" class="form-control"></li>
+		           
+		            <li style="clear:left;">月1V1/多退费人数<input type="number" min="0" step="1"  name="new_month_back_person" class="form-control"></li>
+		            <li>月1V1/多退费业绩<input type="number" min="0" step="0.01"  name="new_month_back_achieve" class="form-control"></li>
+		            
+		            <li style="clear:left;">营训类退费人数<input type="number" min="0" step="1"  name="new_camp_back_person" class="form-control"></li>
+		            <li>营训类退费业绩<input type="number" min="0" step="0.01"  name="new_camp_back_achieve" class="form-control"></li>
+			    </ul>
+			  </div>
+			</div>
+            
+            <div class="panel panel-default">
+			  <div class="panel-heading">续费数据</div>
+			  <div class="panel-body">
+			    <ul>
+			    	<li>续费总业绩<font color="red">*</font><input type="number" min="0" step="0.01"  name="renew_achieve" class="form-control" required="required"></li>
+		            
+		            <li style="clear:left;">月1V1/多收费总人数<input type="number" min="0" step="1"  name="renew_month_person" class="form-control" readonly="readonly"></li>
+		            <li>月1V1/多收费总业绩<input type="number" min="0" step="0.01"  name="renew_month_achieve" class="form-control" readonly="readonly"></li>
+		            <li>月1V1/多收费平均单底<input type="number" min="0" step="0.01"  name="renew_month_average" class="form-control" readonly="readonly"></li>
+		            
+		            <li style="clear:left;">高一人数<input type="number" min="0" step="1"  name="renew_one_person" class="form-control"></li>
+		            <li>高一业绩<input type="number" min="0" step="0.01"  name="renew_one_achieve" class="form-control"></li>
+		            <li>高一平均单底<input type="number" min="0" step="0.01"  name="renew_one_average" class="form-control" readonly="readonly"></li>
+		            
+		            <li style="clear:left;">高二人数<input type="number" min="0" step="1"  name="renew_two_person" class="form-control"></li>
+		            <li>高二业绩<input type="number" min="0" step="0.01"  name="renew_two_achieve" class="form-control"></li>
+		            <li>高二平均单底<input type="number" min="0" step="0.01"  name="renew_two_average" class="form-control" readonly="readonly"></li>
+		            
+		            <li style="clear:left;">高三人数<input type="number" min="0" step="1"  name="renew_three_person" class="form-control"></li>
+		            <li>高三业绩<input type="number" min="0" step="0.01"  name="renew_three_achieve" class="form-control"></li>
+		            <li>高三平均单底<input type="number" min="0" step="0.01"  name="renew_three_average" class="form-control" readonly="readonly"></li>
+		            
+		            <li style="clear:left;">其他人数<input type="number" min="0" step="1"  name="renew_other_person" class="form-control"></li>
+		            <li>其他业绩<input type="number" min="0" step="0.01"  name="renew_other_achieve" class="form-control"></li>
+		            <li>其他平均单底<input type="number" min="0" step="0.01"  name="renew_other_average" class="form-control" readonly="readonly"></li>
+
+					<li style="clear:left;"><hr width="800px" style="height:1px;border:none;border-top:1px solid #0066CC;"/></li>		           
+		            
+		            <li style="clear:left;">有效学员数<input type="number" min="0" step="1"  name="valid_person" class="form-control"></li>
+		            <li>上课学员数<input type="number" min="0" step="1"  name="class_person" class="form-control"></li>
+		            <li>退费人数<input type="number" min="0" step="1"  name="back_person" class="form-control"></li>
+		            
+		            <li style="clear:left;">营训类收费人数<input type="number" min="0" step="1"  name="renew_camp_person" class="form-control"></li>
+		            <li>营训类收费业绩<input type="number" min="0" step="0.01"  name="renew_camp_achieve" class="form-control"></li>
+		           
+		            <li style="clear:left;">月1V1/多退费人数<input type="number" min="0" step="1"  name="renew_month_back_person" class="form-control"></li>
+		            <li>月1V1/多退费业绩<input type="number" min="0" step="0.01"  name="renew_month_back_achieve" class="form-control"></li>
+		            
+		            <li style="clear:left;">营训类退费人数<input type="number" min="0" step="1"  name="renew_camp_back_person" class="form-control"></li>
+		            <li>营训类退费业绩<input type="number" min="0" step="0.01"  name="renew_camp_back_achieve" class="form-control"></li>
+		            
+		            
+			    </ul>
+			  </div>
+			</div>
+            
+            
+             <div class="panel panel-default">
+			  <div class="panel-heading">消耗数据</div>
+			  <div class="panel-body">
+			    <ul>
+			    	<li>消耗总课时<input type="number" min="0" step="0.01"  name="consump_class" class="form-control"></li>
+		            
+		            <li>常规消耗<input type="number" min="0" step="0.01"  name="general_fee" class="form-control"></li>
+		            <li>全日制消耗<input type="number" min="0" step="0.01"  name="fulltime_fee" class="form-control"></li>
+		            <li>班课消耗<input type="number" min="0" step="0.01"  name="grade_fee" class="form-control" ></li>
+		            
+		            <li>常规课时<input type="number" min="0" step="0.01"  name="general_class" class="form-control"></li>
+		            <li>全日制课时<input type="number" min="0" step="0.01"  name="fulltime_class" class="form-control"></li>
+		            <li>班课课时<input type="number" min="0" step="0.01"  name="grade_class" class="form-control" ></li>
+		            
+		            <li>语文<input type="number" min="0" step="0.01"  name="yw" class="form-control"></li>
+		            <li>数学<input type="number" min="0" step="0.01"  name="sx" class="form-control"></li>
+		            <li>英语<input type="number" min="0" step="0.01"  name="yy" class="form-control" ></li>
+		            
+		            <li>物理<input type="number" min="0" step="0.01"  name="wl" class="form-control"></li>
+		            <li>化学<input type="number" min="0" step="0.01"  name="hx" class="form-control"></li>
+		            <li>生物<input type="number" min="0" step="0.01"  name="sw" class="form-control" ></li>
+		            
+		            <li>文综<input type="number" min="0" step="0.01"  name="wz" class="form-control"></li>
+			    </ul>
+			  </div>
+			</div>
+    </div>
+</form>
+
+<!-- 审核相关按钮 -->
+<div class="panel panel-default">
+    <div class="panel-body">
+        <button class="btn btn-info" onclick="check(1);">提交到集团</button></if>
+        <button class="btn btn-info" id="bt_change">修改</button>
+        <button class="btn btn-danger" onclick="check(-1)">删除</button>
+    </div>
+</div>
+
+<!-- 页面数据列表 -->
+<div class="table-responsive">
+    <table id="apply_list" class="table table-bordered table-hover table-condensed">
+    </table>
+</div>
+
+
+<div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+    // 页面会用到的类型id
+    STATE={"0":"待提交","1":"正常","2":"删除"};//审核状态
+    SCHOOL={:json_encode($school)};
+
+	$(document).ready(function(){
+	    loadData(0);//页面数据加载
+	    
+	    $('input[name="new_month_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="new_month_person"]').val()) && $('input[name="new_month_person"]').val()>0) {
+	    		$('input[name="new_month_average"]').val(Math.round(($('input[name="new_month_achieve"]').val()/$('input[name="new_month_person"]').val())*100)/100);	
+	    	}
+	    	
+	    });
+	    
+	    $('input[name="new_month_person"]').change(function(){
+	    	if($.isNumeric($('input[name="new_month_person"]').val()) && $('input[name="new_month_person"]').val()>0) {
+	    		$('input[name="new_month_average"]').val(Math.round(($('input[name="new_month_achieve"]').val()/$('input[name="new_month_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    
+	    $('input[name="new_one_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="new_one_person"]').val()) && $('input[name="new_one_person"]').val()>0) {
+	    		$('input[name="new_one_average"]').val(Math.round(($('input[name="new_one_achieve"]').val()/$('input[name="new_one_person"]').val())*100)/100);	
+	    	}
+	    	
+	    });
+	    
+	    $('input[name="new_one_person"]').change(function(){
+	    	if($.isNumeric($('input[name="new_one_person"]').val()) && $('input[name="new_one_person"]').val()>0) {
+	    		$('input[name="new_one_average"]').val(Math.round(($('input[name="new_one_achieve"]').val()/$('input[name="new_one_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    
+	    $('input[name="new_two_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="new_two_person"]').val()) && $('input[name="new_two_person"]').val()>0) {
+	    		$('input[name="new_two_average"]').val(Math.round(($('input[name="new_two_achieve"]').val()/$('input[name="new_two_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    $('input[name="new_two_person"]').change(function(){
+	    	if($.isNumeric($('input[name="new_two_person"]').val()) && $('input[name="new_two_person"]').val()>0) {
+	    		$('input[name="new_two_average"]').val(Math.round(($('input[name="new_two_achieve"]').val()/$('input[name="new_two_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    
+	    $('input[name="new_three_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="new_three_person"]').val()) && $('input[name="new_three_person"]').val()>0) {
+	    		$('input[name="new_three_average"]').val(Math.round(($('input[name="new_three_achieve"]').val()/$('input[name="new_three_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    $('input[name="new_three_person"]').change(function(){
+	    	if($.isNumeric($('input[name="new_three_person"]').val()) && $('input[name="new_three_person"]').val()>0) {
+	    		$('input[name="new_three_average"]').val(Math.round(($('input[name="new_three_achieve"]').val()/$('input[name="new_three_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    $('input[name="new_other_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="new_other_person"]').val()) && $('input[name="new_other_person"]').val()>0) {
+	    		$('input[name="new_other_average"]').val(Math.round(($('input[name="new_other_achieve"]').val()/$('input[name="new_other_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    $('input[name="new_other_person"]').change(function(){
+	    	if($.isNumeric($('input[name="new_other_person"]').val()) && $('input[name="new_other_person"]').val()>0) {
+	    		$('input[name="new_other_average"]').val(Math.round(($('input[name="new_other_achieve"]').val()/$('input[name="new_other_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    
+	    //=========================================================================================================
+	    
+	    
+	    
+		$('input[name="new_one_person"]').focusout(function(){
+	    	
+	    	var score = (
+	    				  ($.isNumeric($('input[name="new_month_person"]').val())?parseInt($('input[name="new_month_person"]').val()):0)
+	    				+ ($.isNumeric($('input[name="new_one_person"]').val())?parseInt($('input[name="new_one_person"]').val()):0)
+	    				
+	    				);
+	    	$('input[name="new_month_person"]').val(score);
+	    	$('input[name="new_month_person"]').trigger('change');
+	    });
+		
+	    $('input[name="new_one_person"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="new_month_person"]').val())?parseInt($('input[name="new_month_person"]').val()):0)
+					- ($.isNumeric($('input[name="new_one_person"]').val())?parseInt($('input[name="new_one_person"]').val()):0)
+			);
+	    	
+	    	$('input[name="new_month_person"]').val(score);
+	    	$('input[name="new_month_person"]').trigger('change');
+	    });
+	    
+		$('input[name="new_two_person"]').focusout(function(){
+	    	
+	    	var score = (
+	    				  ($.isNumeric($('input[name="new_month_person"]').val())?parseInt($('input[name="new_month_person"]').val()):0)
+	    				+ ($.isNumeric($('input[name="new_two_person"]').val())?parseInt($('input[name="new_two_person"]').val()):0)
+	    				
+	    				);
+	    	$('input[name="new_month_person"]').val(score);
+	    	$('input[name="new_month_person"]').trigger('change');
+	    });
+		
+	    $('input[name="new_two_person"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="new_month_person"]').val())?parseInt($('input[name="new_month_person"]').val()):0)
+					- ($.isNumeric($('input[name="new_two_person"]').val())?parseInt($('input[name="new_two_person"]').val()):0)
+			);
+	    	$('input[name="new_month_person"]').val(score);
+	    	$('input[name="new_month_person"]').trigger('change');
+	    });
+	    
+	    
+		$('input[name="new_three_person"]').focusout(function(){
+	    	
+	    	var score = (
+	    				  ($.isNumeric($('input[name="new_month_person"]').val())?parseInt($('input[name="new_month_person"]').val()):0)
+	    				+ ($.isNumeric($('input[name="new_three_person"]').val())?parseInt($('input[name="new_three_person"]').val()):0)
+	    				
+	    				);
+	    	$('input[name="new_month_person"]').val(score);
+	    	$('input[name="new_month_person"]').trigger('change');
+	    });
+		
+	    $('input[name="new_three_person"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="new_month_person"]').val())?parseInt($('input[name="new_month_person"]').val()):0)
+					- ($.isNumeric($('input[name="new_three_person"]').val())?parseInt($('input[name="new_three_person"]').val()):0)
+			);
+	    	$('input[name="new_month_person"]').val(score);
+	    	$('input[name="new_month_person"]').trigger('change');
+	    });
+	    
+		$('input[name="new_other_person"]').focusout(function(){
+	    	
+	    	var score = (
+	    				  ($.isNumeric($('input[name="new_month_person"]').val())?parseInt($('input[name="new_month_person"]').val()):0)
+	    				+ ($.isNumeric($('input[name="new_other_person"]').val())?parseInt($('input[name="new_other_person"]').val()):0)
+	    				
+	    				);
+	    	$('input[name="new_month_person"]').val(score);
+	    	$('input[name="new_month_person"]').trigger('change');
+	    });
+		
+	    $('input[name="new_other_person"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="new_month_person"]').val())?parseInt($('input[name="new_month_person"]').val()):0)
+					- ($.isNumeric($('input[name="new_other_person"]').val())?parseInt($('input[name="new_other_person"]').val()):0)
+			);
+	    	$('input[name="new_month_person"]').val(score);
+	    	$('input[name="new_month_person"]').trigger('change');
+	    });
+	    
+	    
+	    $('input[name="new_one_achieve"]').focusout(function(){
+	    	
+	    	var score = (
+	    				($.isNumeric($('input[name="new_month_achieve"]').val())?parseFloat($('input[name="new_month_achieve"]').val()):0.00)
+	    				+ ($.isNumeric($('input[name="new_one_achieve"]').val())?parseFloat($('input[name="new_one_achieve"]').val()):0.00)
+	    				).toFixed(2);
+	    	$('input[name="new_month_achieve"]').val(score);
+	    	$('input[name="new_month_achieve"]').trigger('change');
+	    });
+	    
+	    $('input[name="new_one_achieve"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="new_month_achieve"]').val())?parseFloat($('input[name="new_month_achieve"]').val()):0.00)
+					- ($.isNumeric($('input[name="new_one_achieve"]').val())?parseFloat($('input[name="new_one_achieve"]').val()):0.00)
+					).toFixed(2);
+	    	$('input[name="new_month_achieve"]').val(score);
+	    	$('input[name="new_month_achieve"]').trigger('change');
+	    });
+	    
+	    
+		$('input[name="new_two_achieve"]').focusout(function(){
+	    	
+	    	var score = (
+	    				($.isNumeric($('input[name="new_month_achieve"]').val())?parseFloat($('input[name="new_month_achieve"]').val()):0.00)
+	    				+ ($.isNumeric($('input[name="new_two_achieve"]').val())?parseFloat($('input[name="new_two_achieve"]').val()):0.00)
+	    				).toFixed(2);
+	    	$('input[name="new_month_achieve"]').val(score);
+	    	$('input[name="new_month_achieve"]').trigger('change');
+	    });
+	    
+	    $('input[name="new_two_achieve"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="new_month_achieve"]').val())?parseFloat($('input[name="new_month_achieve"]').val()):0.00)
+					- ($.isNumeric($('input[name="new_two_achieve"]').val())?parseFloat($('input[name="new_two_achieve"]').val()):0.00)
+					).toFixed(2);
+	    	$('input[name="new_month_achieve"]').val(score);
+	    	$('input[name="new_month_achieve"]').trigger('change');
+	    });
+	    
+		$('input[name="new_three_achieve"]').focusout(function(){
+	    	
+	    	var score = (
+	    				($.isNumeric($('input[name="new_month_achieve"]').val())?parseFloat($('input[name="new_month_achieve"]').val()):0.00)
+	    				+ ($.isNumeric($('input[name="new_three_achieve"]').val())?parseFloat($('input[name="new_three_achieve"]').val()):0.00)
+	    				).toFixed(2);
+	    	$('input[name="new_month_achieve"]').val(score);
+	    	$('input[name="new_month_achieve"]').trigger('change');
+	    });
+	    
+	    $('input[name="new_three_achieve"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="new_month_achieve"]').val())?parseFloat($('input[name="new_month_achieve"]').val()):0.00)
+					- ($.isNumeric($('input[name="new_three_achieve"]').val())?parseFloat($('input[name="new_three_achieve"]').val()):0.00)
+					).toFixed(2);
+	    	$('input[name="new_month_achieve"]').val(score);
+	    	$('input[name="new_month_achieve"]').trigger('change');
+	    });
+	    
+	    
+		$('input[name="new_other_achieve"]').focusout(function(){
+	    	
+	    	var score = (
+	    				($.isNumeric($('input[name="new_month_achieve"]').val())?parseFloat($('input[name="new_month_achieve"]').val()):0.00)
+	    				+ ($.isNumeric($('input[name="new_other_achieve"]').val())?parseFloat($('input[name="new_other_achieve"]').val()):0.00)
+	    				).toFixed(2);
+	    	$('input[name="new_month_achieve"]').val(score);
+	    	$('input[name="new_month_achieve"]').trigger('change');
+	    });
+	    
+	    $('input[name="new_other_achieve"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="new_month_achieve"]').val())?parseFloat($('input[name="new_month_achieve"]').val()):0.00)
+					- ($.isNumeric($('input[name="new_other_achieve"]').val())?parseFloat($('input[name="new_other_achieve"]').val()):0.00)
+					).toFixed(2);
+	    	$('input[name="new_month_achieve"]').val(score);
+	    	$('input[name="new_month_achieve"]').trigger('change');
+	    });
+	    
+	    
+	    //====================================================renew==============================================================================//
+	    
+	    $('input[name="renew_month_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_month_person"]').val()) && $('input[name="renew_month_person"]').val()>0) {
+	    		$('input[name="renew_month_average"]').val(Math.round(($('input[name="renew_month_achieve"]').val()/$('input[name="renew_month_person"]').val())*100)/100);	
+	    	}
+	    	
+	    });
+	    
+	    $('input[name="renew_month_person"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_month_person"]').val()) && $('input[name="renew_month_person"]').val()>0) {
+	    		$('input[name="renew_month_average"]').val(Math.round(($('input[name="renew_month_achieve"]').val()/$('input[name="renew_month_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    
+	    $('input[name="renew_one_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_one_person"]').val()) && $('input[name="renew_one_person"]').val()>0) {
+	    		$('input[name="renew_one_average"]').val(Math.round(($('input[name="renew_one_achieve"]').val()/$('input[name="renew_one_person"]').val())*100)/100);	
+	    	}
+	    	
+	    });
+	    
+	    $('input[name="renew_one_person"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_one_person"]').val()) && $('input[name="renew_one_person"]').val()>0) {
+	    		$('input[name="renew_one_average"]').val(Math.round(($('input[name="renew_one_achieve"]').val()/$('input[name="renew_one_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    
+	    $('input[name="renew_two_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_two_person"]').val()) && $('input[name="renew_two_person"]').val()>0) {
+	    		$('input[name="renew_two_average"]').val(Math.round(($('input[name="renew_two_achieve"]').val()/$('input[name="renew_two_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    $('input[name="renew_two_person"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_two_person"]').val()) && $('input[name="renew_two_person"]').val()>0) {
+	    		$('input[name="renew_two_average"]').val(Math.round(($('input[name="renew_two_achieve"]').val()/$('input[name="renew_two_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    
+	    $('input[name="renew_three_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_three_person"]').val()) && $('input[name="renew_three_person"]').val()>0) {
+	    		$('input[name="renew_three_average"]').val(Math.round(($('input[name="renew_three_achieve"]').val()/$('input[name="renew_three_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    $('input[name="renew_three_person"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_three_person"]').val()) && $('input[name="renew_three_person"]').val()>0) {
+	    		$('input[name="renew_three_average"]').val(Math.round(($('input[name="renew_three_achieve"]').val()/$('input[name="renew_three_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    $('input[name="renew_other_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_other_person"]').val()) && $('input[name="renew_other_person"]').val()>0) {
+	    		$('input[name="renew_other_average"]').val(Math.round(($('input[name="renew_other_achieve"]').val()/$('input[name="renew_other_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    $('input[name="renew_other_person"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_other_person"]').val()) && $('input[name="renew_other_person"]').val()>0) {
+	    		$('input[name="renew_other_average"]').val(Math.round(($('input[name="renew_other_achieve"]').val()/$('input[name="renew_other_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+	    //============================================================================================================
+	    
+	    $('input[name="renew_month_achieve"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_month_person"]').val()) && $('input[name="renew_month_person"]').val()>0) {
+	    		$('input[name="renew_month_average"]').val(Math.round(($('input[name="renew_month_achieve"]').val()/$('input[name="renew_month_person"]').val())*100)/100);	
+	    	}
+	    	
+	    });
+	    
+	    $('input[name="renew_month_person"]').change(function(){
+	    	if($.isNumeric($('input[name="renew_month_person"]').val()) && $('input[name="renew_month_person"]').val()>0) {
+	    		$('input[name="renew_month_average"]').val(Math.round(($('input[name="renew_month_achieve"]').val()/$('input[name="renew_month_person"]').val())*100)/100);	
+	    	}
+	    });
+	    
+		$('input[name="renew_one_person"]').focusout(function(){
+	    	
+	    	var score = (
+	    				  ($.isNumeric($('input[name="renew_month_person"]').val())?parseInt($('input[name="renew_month_person"]').val()):0)
+	    				+ ($.isNumeric($('input[name="renew_one_person"]').val())?parseInt($('input[name="renew_one_person"]').val()):0)
+	    				
+	    				);
+	    	$('input[name="renew_month_person"]').val(score);
+	    	$('input[name="renew_month_person"]').trigger('change');
+	    });
+		
+	    $('input[name="renew_one_person"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="renew_month_person"]').val())?parseInt($('input[name="renew_month_person"]').val()):0)
+					- ($.isNumeric($('input[name="renew_one_person"]').val())?parseInt($('input[name="renew_one_person"]').val()):0)
+			);
+	    	
+	    	$('input[name="renew_month_person"]').val(score);
+	    	$('input[name="renew_month_person"]').trigger('change');
+	    });
+	    
+		$('input[name="renew_two_person"]').focusout(function(){
+	    	
+	    	var score = (
+	    				  ($.isNumeric($('input[name="renew_month_person"]').val())?parseInt($('input[name="renew_month_person"]').val()):0)
+	    				+ ($.isNumeric($('input[name="renew_two_person"]').val())?parseInt($('input[name="renew_two_person"]').val()):0)
+	    				
+	    				);
+	    	$('input[name="renew_month_person"]').val(score);
+	    	$('input[name="renew_month_person"]').trigger('change');
+	    });
+		
+	    $('input[name="renew_two_person"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="renew_month_person"]').val())?parseInt($('input[name="renew_month_person"]').val()):0)
+					- ($.isNumeric($('input[name="renew_two_person"]').val())?parseInt($('input[name="renew_two_person"]').val()):0)
+			);
+	    	$('input[name="renew_month_person"]').val(score);
+	    	$('input[name="renew_month_person"]').trigger('change');
+	    });
+	    
+	    
+		$('input[name="renew_three_person"]').focusout(function(){
+	    	
+	    	var score = (
+	    				  ($.isNumeric($('input[name="renew_month_person"]').val())?parseInt($('input[name="renew_month_person"]').val()):0)
+	    				+ ($.isNumeric($('input[name="renew_three_person"]').val())?parseInt($('input[name="renew_three_person"]').val()):0)
+	    				
+	    				);
+	    	$('input[name="renew_month_person"]').val(score);
+	    	$('input[name="renew_month_person"]').trigger('change');
+	    });
+		
+	    $('input[name="renew_three_person"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="renew_month_person"]').val())?parseInt($('input[name="renew_month_person"]').val()):0)
+					- ($.isNumeric($('input[name="renew_three_person"]').val())?parseInt($('input[name="renew_three_person"]').val()):0)
+			);
+	    	$('input[name="renew_month_person"]').val(score);
+	    	$('input[name="renew_month_person"]').trigger('change');
+	    });
+	    
+		$('input[name="renew_other_person"]').focusout(function(){
+	    	
+	    	var score = (
+	    				  ($.isNumeric($('input[name="renew_month_person"]').val())?parseInt($('input[name="renew_month_person"]').val()):0)
+	    				+ ($.isNumeric($('input[name="renew_other_person"]').val())?parseInt($('input[name="renew_other_person"]').val()):0)
+	    				
+	    				);
+	    	$('input[name="renew_month_person"]').val(score);
+	    	$('input[name="renew_month_person"]').trigger('change');
+	    });
+		
+	    $('input[name="renew_other_person"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="renew_month_person"]').val())?parseInt($('input[name="renew_month_person"]').val()):0)
+					- ($.isNumeric($('input[name="renew_other_person"]').val())?parseInt($('input[name="renew_other_person"]').val()):0)
+			);
+	    	$('input[name="renew_month_person"]').val(score);
+	    	$('input[name="renew_month_person"]').trigger('change');
+	    });
+	    
+	    
+	    $('input[name="renew_one_achieve"]').focusout(function(){
+	    	
+	    	var score = (
+	    				($.isNumeric($('input[name="renew_month_achieve"]').val())?parseFloat($('input[name="renew_month_achieve"]').val()):0.00)
+	    				+ ($.isNumeric($('input[name="renew_one_achieve"]').val())?parseFloat($('input[name="renew_one_achieve"]').val()):0.00)
+	    				).toFixed(2);
+	    	$('input[name="renew_month_achieve"]').val(score);
+	    	$('input[name="renew_month_achieve"]').trigger('change');
+	    });
+	    
+	    $('input[name="renew_one_achieve"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="renew_month_achieve"]').val())?parseFloat($('input[name="renew_month_achieve"]').val()):0.00)
+					- ($.isNumeric($('input[name="renew_one_achieve"]').val())?parseFloat($('input[name="renew_one_achieve"]').val()):0.00)
+					).toFixed(2);
+	    	$('input[name="renew_month_achieve"]').val(score);
+	    	$('input[name="renew_month_achieve"]').trigger('change');
+	    });
+	    
+	    
+		$('input[name="renew_two_achieve"]').focusout(function(){
+	    	
+	    	var score = (
+	    				($.isNumeric($('input[name="renew_month_achieve"]').val())?parseFloat($('input[name="renew_month_achieve"]').val()):0.00)
+	    				+ ($.isNumeric($('input[name="renew_two_achieve"]').val())?parseFloat($('input[name="renew_two_achieve"]').val()):0.00)
+	    				).toFixed(2);
+	    	$('input[name="renew_month_achieve"]').val(score);
+	    	$('input[name="renew_month_achieve"]').trigger('change');
+	    });
+	    
+	    $('input[name="renew_two_achieve"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="renew_month_achieve"]').val())?parseFloat($('input[name="renew_month_achieve"]').val()):0.00)
+					- ($.isNumeric($('input[name="renew_two_achieve"]').val())?parseFloat($('input[name="renew_two_achieve"]').val()):0.00)
+					).toFixed(2);
+	    	$('input[name="renew_month_achieve"]').val(score);
+	    	$('input[name="renew_month_achieve"]').trigger('change');
+	    });
+	    
+		$('input[name="renew_three_achieve"]').focusout(function(){
+	    	
+	    	var score = (
+	    				($.isNumeric($('input[name="renew_month_achieve"]').val())?parseFloat($('input[name="renew_month_achieve"]').val()):0.00)
+	    				+ ($.isNumeric($('input[name="renew_three_achieve"]').val())?parseFloat($('input[name="renew_three_achieve"]').val()):0.00)
+	    				).toFixed(2);
+	    	$('input[name="renew_month_achieve"]').val(score);
+	    	$('input[name="renew_month_achieve"]').trigger('change');
+	    });
+	    
+	    $('input[name="renew_three_achieve"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="renew_month_achieve"]').val())?parseFloat($('input[name="renew_month_achieve"]').val()):0.00)
+					- ($.isNumeric($('input[name="renew_three_achieve"]').val())?parseFloat($('input[name="renew_three_achieve"]').val()):0.00)
+					).toFixed(2);
+	    	$('input[name="renew_month_achieve"]').val(score);
+	    	$('input[name="renew_month_achieve"]').trigger('change');
+	    });
+	    
+	    
+		$('input[name="renew_other_achieve"]').focusout(function(){
+	    	
+	    	var score = (
+	    				($.isNumeric($('input[name="renew_month_achieve"]').val())?parseFloat($('input[name="renew_month_achieve"]').val()):0.00)
+	    				+ ($.isNumeric($('input[name="renew_other_achieve"]').val())?parseFloat($('input[name="renew_other_achieve"]').val()):0.00)
+	    				).toFixed(2);
+	    	$('input[name="renew_month_achieve"]').val(score);
+	    	$('input[name="renew_month_achieve"]').trigger('change');
+	    });
+	    
+	    $('input[name="renew_other_achieve"]').focusin(function(){
+	    	var score = (
+	    			($.isNumeric($('input[name="renew_month_achieve"]').val())?parseFloat($('input[name="renew_month_achieve"]').val()):0.00)
+					- ($.isNumeric($('input[name="renew_other_achieve"]').val())?parseFloat($('input[name="renew_other_achieve"]').val()):0.00)
+					).toFixed(2);
+	    	$('input[name="renew_month_achieve"]').val(score);
+	    	$('input[name="renew_month_achieve"]').trigger('change');
+	    });
+	    
+	});
+
+    // 页码绑定事件
+    $('#pagination').on('click', '.page', function(){
+        var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
+        loadData(page_offset);
+    });
+    //金额自动计算
+    $('input[name=unit_price],input[name=count]').change(function(){
+        var mm = $('input[name=unit_price]').val()*$('input[name=count]').val();
+        $('#mm').val(mm.toFixed(2));
+    })
+    //添加/修改申请
+    $("#apply_form").submit(function(event){
+        event.preventDefault();
+        Ycom.loading.show();
+        var data = $("#apply_form").serializeArray();
+        $.post("{:U('write')}",data,function(msg){
+            loadData(0);
+            ui_info(msg);
+        });
+        //清空表单（忽略部分项目）
+        //Ycom.clearForm('#apply_form','[name=type],[name=belong],[name=receive_school],[name=receive_card],[name=month]');
+        $('input[type="reset"]').click();
+        $("#bt_add").show();
+        $("#bt_save_change").hide();
+    })
+    // 数据列表点击事件
+    $("#apply_list").on('click','tbody tr',function(){
+        $("#apply_list tr").removeClass('success');
+        $(this).addClass('success');
+    })
+    //全选/取消
+    $("#apply_list").on('click','#checkbox',function(){
+        $("#apply_list tbody input[type=checkbox]").prop('checked',($(this).prop('checked')==true)?true:false);
+    })
+    //修改功能,只修改其中一个
+    $("#bt_change").click(function(){
+        var id = $("#apply_list tbody input:checked").val();
+        var data = $("#apply_list tbody input:checked").data('info');
+        if(id==undefined){
+            ui_error('请选择要修改的项目！');
+        }else{
+            $("#apply_form").show();
+            Ycom.fillForm('#apply_form',data);
+            $('#bt_save_change').show();
+            $('#bt_add').hide();
+            $('input[name=unit_price]').change();
+        }
+    })
+    //审核数据(1通过、0退回、-1删除)
+    function check(type){
+        if($("#apply_list tbody input:checked").val()==undefined){
+            ui_error('请选择要操作的项目！');
+            return;
+        }
+        Ycom.loading.show();
+        var data = $("#apply_list tbody input:checked").serializeJson();
+        var why = '';
+        
+        if(data.id!=undefined)
+        $.post('{:U("check")}',{type:type,data:data,why:why},function(msg){
+            if(msg=='ok'){
+            	ui_info('操作成功');
+            }
+            loadData(0);
+        })
+    }
+    
+
+//加载数据列表
+function loadData(offset) {
+    Ycom.loading.show();
+    var search = $('#adv_search').serializeJson();
+    var count = $('#pagination').data('count');
+    var money = 0 ;//项目合计金额
+    $.ajax({
+        url: '{:U("BusinessData/ajax_list")}',
+        type: 'GET',
+        dataType: 'JSON',
+        data: {search: search, offset: offset, count: count},
+    })
+    .done(function(result) {debugger;
+        for(var x in result.data){
+            //将数据完整保存在checkbox上，方便修改功能使用
+            result.data[x]._checkbox = '<input type="checkbox" name="id" value="'+result.data[x].id+'" data-info=\''+JSON.stringify(result.data[x])+'\'>';
+            if(result.data[x].edit == '0')result.data[x]._checkbox ='';
+                //被退回的数据显示退回的原因
+            result.data[x].state = STATE[result.data[x].state];
+            result.data[x].month = result.data[x].month;
+            result.data[x].area_name = result.data[x].area_name;
+            result.data[x].school_name = result.data[x].school_name;
+            
+            result.data[x].all_achieve = new Number(result.data[x].all_achieve).toFixed(2);
+            result.data[x].all_part_achieve = new Number(result.data[x].all_part_achieve).toFixed(2);
+            
+            result.data[x].new_month_achieve = new Number(result.data[x].new_month_achieve).toFixed(2);
+            result.data[x].new_month_person = new Number(result.data[x].new_month_person).toFixed(2);
+            result.data[x].new_month_average = new Number(result.data[x].new_month_average).toFixed(2);
+            
+            result.data[x].renew_month_achieve = new Number(result.data[x].renew_month_achieve).toFixed(2);
+            result.data[x].renew_month_person = new Number(result.data[x].renew_month_person).toFixed(2);
+            result.data[x].renew_month_average = new Number(result.data[x].renew_month_average).toFixed(2);
+            
+            result.data[x].consump_achieve = new Number(result.data[x].consump_achieve).toFixed(2);
+            result.data[x].consump_class = new Number(result.data[x].consump_class).toFixed(2);
+            
+            result.data[x].valid_person = result.data[x].valid_person;
+            result.data[x].class_person = result.data[x].class_person;
+            result.data[x].back_person = result.data[x].back_person;
+            
+            result.data[x].create_time = result.data[x].create_time;
+            
+        }
+        if (result.state == 'ok') {
+            Ycom.table('#apply_list', {
+                '_checkbox':'<input type="checkbox" id="checkbox">',
+                'id':'序号',
+                'state':'审核状态',
+                'month':'月份',
+                'area_name':'区域',
+                'school_name':'校区',
+                'all_achieve':'总业绩(含特训)',
+                'all_part_achieve':'总业绩(不含特训)',
+                'new_month_achieve':'新招业绩',
+                'new_month_person':'新招人数',
+                'new_month_average':'新招平均单底',
+                'renew_month_achieve':'续费业绩',
+                'renew_month_person':'续费人数',
+                'renew_month_average':'续费平均单底',
+                'consump_achieve':'消耗业绩',
+                'consump_class':'消耗课时',
+                'valid_person':'有效学员数',
+                'class_person':'上课学员数',
+                'back_person':'退费人数',
+                'create_time':'数据创建时间',
+            }, result.data);
+            Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
+            $('[data-toggle="tooltip"]').tooltip();
+        }else{
+            ui_info(result.info);
+        }
+    })
+    .fail(function() {
+        ui_error('网络错误，请稍后再试')
+    })
+    .always(function(result) {
+        if (typeof(always) != "undefined") {
+            always(result);
+        }
+        Ycom.loading.hide();
+    });
+}
+
+</script>
+</block>
+
