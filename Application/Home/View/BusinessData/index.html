@@ -100,8 +100,8 @@
 			  <div class="panel-heading">基础数据</div>
 			  <div class="panel-body">
 			   		<ul>
-			   			<li>区域<font color="red">*</font><select id="type_form_add" name="area" class="form-control" required="required">{:fill_option_ex(get_config('SCHOOL_REGION'))}</select></li>
-			        	<li>校区<font color="red">*</font><select name="school" class="form-control" required="required">{:fill_option_ex(C('SCHOOL'))}</select></li>
+			   			<li>区域<font color="red">*</font><select id="type_form_add" name="area" class="form-control" required="required"><option value="">请选择所属区域</option>{:fill_option_ex(get_config('SCHOOL_REGION'))}</select></li>
+			        	<li>校区<font color="red">*</font><select name="school" class="form-control" required="required"><option value="">请选择所属校区</option>{:fill_option_ex(C('SCHOOL'))}</select></li>
 			            <li>月份<font color="red">*</font><input type="text" name="month" class="form-control" value="{:session('date')}" onclick="WdatePicker({dateFmt:'yyyy-MM'})" readonly="readonly" required="required"></li>
 			            
 			            <li style="clear:left;">总业绩(含特训)<font color="red">*</font><input type="number" name="all_achieve" class="form-control" min="0" step="0.01"  required></li>
