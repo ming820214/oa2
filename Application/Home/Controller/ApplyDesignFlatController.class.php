@@ -226,13 +226,13 @@ class ApplyDesignFlatController extends HomeController {
          		         }elseif(session('auth_id') == '439'){
          		             //何亮
          		             unset($w['apply_school']);
-         		             $w['area'] = '黑龙江';
-         		             $w['state'] = 20;
+         		             $w['_string']="((area='黑龙江' and state=20) or (state=10 and apply_school='s11'))";
          		         }elseif(session('auth_id') == '651'){
          		             //王大鹏
          		             unset($w['apply_school']);
-         		             $w['area'] = '吉林';
-         		             $w['state'] = 20;
+//          		             $w['area'] = '吉林';
+//          		             $w['state'] = 20;
+         		             $w['_string']="((area='吉林' and state=20) or (state=10 and apply_school='s8'))";
          		         }elseif(session('auth_id') == '2101'){
          		             unset($w['apply_school']);
          		             unset($w['area']);
