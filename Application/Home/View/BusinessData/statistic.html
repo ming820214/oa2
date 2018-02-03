@@ -223,8 +223,13 @@ function loadData(offset) {
                 'consump_achieve':'消耗业绩',
                 'consump_class':'消耗课时',
                 'valid_person':'有效学员数',
+                'valid_average_class':'有效学员生均课时',
                 'class_person':'上课学员数',
-                'back_person':'退费人数'
+                'class_student_average':'上课学员生均课时',
+                'back_person':'退费人数',
+                'back_rate':'退费率',
+                'school_person_rate':'校区人效',
+                'school_area_rate':'校区坪效'
             }, result.data);
             Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
             $('[data-toggle="tooltip"]').tooltip();

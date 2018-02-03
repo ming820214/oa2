@@ -27,13 +27,13 @@ class BusinessDataController extends HomeController {
 资金申请
 */
 	public function statistic(){
-        $this -> display('');
+        $this -> display();
 	}
 /**
 报销申请
 */
-	public function cost(){
-        $this -> display('index');
+	public function bar(){
+        $this -> display('bar');
 	}
 
 /**
@@ -164,7 +164,7 @@ class BusinessDataController extends HomeController {
                
                 $data=M('businessData')->where($w)
                 ->group('school')
-                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person")
+                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person),2) AS valid_average_class,round(sum(consump_class) / sum(class_person),2) AS class_student_average,round(sum(back_person) / sum(valid_person),2) AS back_rate,round(sum(consump_achieve) / teacher_num,2) AS school_person_rate,round(sum(consump_achieve) / school_area,2) AS school_area_rate ")
                 ->select();
                 
                 if($data){
@@ -178,7 +178,7 @@ class BusinessDataController extends HomeController {
                 
                 $data2=M('businessData')->where($w)
                 ->group('area')
-                ->field("area as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person")
+                ->field("area as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate")
                 ->select();
                 
                 if($data2){
@@ -189,7 +189,7 @@ class BusinessDataController extends HomeController {
                 
                 $data3=M('businessData')->where($w)
                 ->group('school')
-                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person")
+                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate ")
                 ->select();
                 
                 if($data3){
@@ -200,7 +200,7 @@ class BusinessDataController extends HomeController {
                 
                 unset($w['area']);
                 $data1 = M('businessData')->where($w)
-                ->field("'集团' as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person")
+                ->field("'集团' as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate ")
                 ->select();
                 
                 $data = array_merge($data1,$data2,$data3);
@@ -212,7 +212,7 @@ class BusinessDataController extends HomeController {
                 
                 $data2=M('businessData')->where($w)
                 ->group('area')
-                ->field("area as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person")
+                ->field("area as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate ")
                 ->select();
                 
                 if($data2){
@@ -223,7 +223,7 @@ class BusinessDataController extends HomeController {
                 
                 $data3=M('businessData')->where($w)
                 ->group('school')
-                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person")
+                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate ")
                 ->select();
                 
                 if($data3){
@@ -234,7 +234,7 @@ class BusinessDataController extends HomeController {
                 
                 unset($w['area']);
                 $data1 = M('businessData')->where($w)
-                ->field("'集团' as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person")
+                ->field("'集团' as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate ")
                 ->select();
                 
                 $data = array_merge($data1,$data2,$data3);
