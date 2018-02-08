@@ -1,0 +1,111 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+
+<script src="__INS__/Highcharts-6.0.5/code/highcharts.js"></script>
+<script src="__INS__/Highcharts-6.0.5/code/modules/data.js"></script>
+<script src="__INS__/Highcharts-6.0.5/code/modules/exporting.js"></script>
+
+<!-- 搜索部分 -->
+<form class="panel panel-default" id="adv_search" method="post" action="{:U('BusinessData/allAchieveBar')}">
+    <div class="panel-heading">
+        <div class="row">
+            <h4 class="col-xs-6">高级搜索</h4>
+            <div class="col-xs-6 text-right">
+                <a class="btn btn-info" onclick="loadData()">筛选</a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="form-inline">
+            <div class="input-group col-30">
+                <a class="input-group-addon">月份</a>
+                <input name="month1" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="" readonly>
+                <a class="input-group-addon">-</a>
+                <input name="month2" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="" readonly>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+
+</block>
+<block name="js">
+<script type="text/javascript">
+
+function loadData(){
+var search = $('#adv_search').serializeJson();
+	
+	$.ajax({
+		url: '{:U("BusinessData/newMonthAchieveBar")}',
+        type: 'GET',
+        dataType: 'JSON',
+        data: {search: search},
+		success:function(msg){
+			if(msg.state == 'ok'){
+				if(msg.data){
+					
+					var axis = [];
+					
+					$.each(msg.data,function(i,vo){
+						axis[i] = vo['name'] + "/" + vo['month'];
+					});
+					
+					Highcharts.chart('container', {
+					     series:
+					    	  [
+						    	 {	 name:"新招业绩数据",
+						             data: msg.data
+						 	        
+						    	 }
+					    	],  
+					     
+					    chart: {
+					        type: 'column'
+					    },
+					    title: {
+					        text: '新招业绩数据图表'
+					    },
+					    credits: {
+					        enabled: false
+					    },
+					     xAxis: {
+					        categories: axis
+					    },
+					    yAxis: {
+					        allowDecimals: true,
+					        title: {
+					            text: '元'
+					        }
+					    },
+					    
+					    plotOptions: {
+					        column: {
+					            dataLabels: {
+					                enabled: true
+					            }
+					        },
+					        series: {
+					            colorByPoint: true 
+					        }
+					    },
+					    
+					    tooltip: {
+					        formatter: function () { //debugger;
+					            //'<b>' + this.series.name + '</b><br/>' +
+					            return  '<b>' +  this.point.y + '</b><br/>' + this.point.name + '<br/>' + this.point.month;
+					        }
+					    }
+					});
+					
+					
+				}
+			}
+		}
+	});	
+}
+
+</script>
+</block>
+

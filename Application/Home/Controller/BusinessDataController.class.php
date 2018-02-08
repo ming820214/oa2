@@ -17,53 +17,72 @@ class BusinessDataController extends HomeController {
 		$this->subject=$subject;
 		$this->subjectId=$subjectId;
 	}
-/**
-计划申请
-*/
+
     public function index(){
         $this -> display();
     }
-/**
-资金申请
-*/
+
 	public function statistic(){
         $this -> display();
 	}
-/**
-报销申请
-*/
+
 	public function bar(){
         $this -> display('bar');
 	}
-
-/**
-审核申请
-*/
-	public function examine(){
-        $this -> display('index');
+	
+	
+	public function newBar(){
+	    $this -> display('new_bar');
 	}
 
-/**
-数据管理
-*/
-	public function manage(){
-        $this -> display('index');
+
+	public function newPersonBar(){
+        $this -> display('new_person_bar');
+	}
+
+
+	public function newAverageBar(){
+        $this -> display('new_average_bar');
 	}
 	
-	/**
-	 * 各个岗位浏览自己审核过的数据
-	 */
-	public function checked_list(){
-		$this -> display('list_checked_info');
-	}
-
-	/**
-	 * 各个校区浏览自己校区的财务数据
-	 */
-	public function export_list(){
-	    $this -> display('export_list');
+	public function renewBar(){
+	    $this -> display('renew_bar');
 	}
 	
+	
+	public function renewPersonBar(){
+	    $this -> display('renew_person_bar');
+	}
+	
+	
+	public function renewAverageBar(){
+	    $this -> display('renew_average_bar');
+	}
+	
+	public function consumpArchBar(){
+	    $this -> display('consump_achieve_bar');
+	}
+	
+	
+	public function consumpClsBar(){
+	    $this -> display('consump_class_bar');
+	}
+	
+	public function subjectBar(){
+	    $this -> display('subject_bar');
+	}
+	
+	public function validClass(){
+	    $this -> display('valid_class_list');
+	}
+	
+	public function classStudent(){
+	    $this -> display('class_student_list');
+	}
+	
+	public function backStudent(){
+	    $this -> display('back_student_list');
+	}
 /**
 ####################################增删改查
 */
@@ -164,7 +183,7 @@ class BusinessDataController extends HomeController {
                
                 $data=M('businessData')->where($w)
                 ->group('school')
-                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person),2) AS valid_average_class,round(sum(consump_class) / sum(class_person),2) AS class_student_average,round(sum(back_person) / sum(valid_person),2) AS back_rate,round(sum(consump_achieve) / teacher_num,2) AS school_person_rate,round(sum(consump_achieve) / school_area,2) AS school_area_rate ")
+                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_achieve)/sum(new_month_person) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_achieve)/sum(renew_month_person) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person),2) AS valid_average_class,round(sum(consump_class) / sum(class_person),2) AS class_student_average,round(sum(back_person) / sum(valid_person),2) AS back_rate,round(sum(consump_achieve) / sum(teacher_num),2) AS school_person_rate,round(sum(consump_achieve) / sum(school_area),2) AS school_area_rate ")
                 ->select();
                 
                 if($data){
@@ -178,7 +197,7 @@ class BusinessDataController extends HomeController {
                 
                 $data2=M('businessData')->where($w)
                 ->group('area')
-                ->field("area as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate")
+                ->field("area as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_achieve)/sum(new_month_person) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_achieve)/sum(renew_month_person) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / sum(teacher_num), 2) AS school_person_rate,round(sum(consump_achieve) / sum(school_area), 2) AS school_area_rate")
                 ->select();
                 
                 if($data2){
@@ -189,7 +208,7 @@ class BusinessDataController extends HomeController {
                 
                 $data3=M('businessData')->where($w)
                 ->group('school')
-                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate ")
+                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_achieve)/sum(new_month_person) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_achieve)/sum(renew_month_person) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / sum(teacher_num), 2) AS school_person_rate,round(sum(consump_achieve) / sum(school_area), 2) AS school_area_rate ")
                 ->select();
                 
                 if($data3){
@@ -200,7 +219,7 @@ class BusinessDataController extends HomeController {
                 
                 unset($w['area']);
                 $data1 = M('businessData')->where($w)
-                ->field("'集团' as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate ")
+                ->field("'集团' as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_achieve)/sum(new_month_person) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_achieve)/sum(renew_month_person) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / sum(teacher_num), 2) AS school_person_rate,round(sum(consump_achieve) / sum(school_area), 2) AS school_area_rate ")
                 ->select();
                 
                 $data = array_merge($data1,$data2,$data3);
@@ -212,7 +231,7 @@ class BusinessDataController extends HomeController {
                 
                 $data2=M('businessData')->where($w)
                 ->group('area')
-                ->field("area as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate ")
+                ->field("area as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_achieve)/sum(new_month_person) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_achieve)/sum(renew_month_person) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / sum(teacher_num), 2) AS school_person_rate,round(sum(consump_achieve) / sum(school_area), 2) AS school_area_rate ")
                 ->select();
                 
                 if($data2){
@@ -223,7 +242,7 @@ class BusinessDataController extends HomeController {
                 
                 $data3=M('businessData')->where($w)
                 ->group('school')
-                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate ")
+                ->field("school as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_achieve)/sum(new_month_person) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_achieve)/sum(renew_month_person) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / sum(teacher_num), 2) AS school_person_rate,round(sum(consump_achieve) / sum(school_area), 2) AS school_area_rate ")
                 ->select();
                 
                 if($data3){
@@ -234,7 +253,7 @@ class BusinessDataController extends HomeController {
                 
                 unset($w['area']);
                 $data1 = M('businessData')->where($w)
-                ->field("'集团' as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_average) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_average) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / teacher_num, 2) AS school_person_rate,round(sum(consump_achieve) / school_area, 2) AS school_area_rate ")
+                ->field("'集团' as unit,'" . $month . "' as `month`,sum(all_achieve) as all_achieve, sum(all_part_achieve) as all_part_achieve, sum(new_month_achieve) as new_month_achieve, sum(new_month_person) as new_month_person, sum(new_month_achieve)/sum(new_month_person) as new_month_average, sum(renew_month_achieve) as renew_month_achieve, sum(renew_month_person) as renew_month_person, sum(renew_month_achieve)/sum(renew_month_person) as renew_month_average, sum(consump_achieve) as consump_achieve, sum(consump_class) as consump_class, sum(valid_person) as valid_person, sum(class_person) as class_person, sum(back_person) as back_person,round(sum(consump_class) / sum(valid_person), 2) AS valid_average_class,round(sum(consump_class) / sum(class_person), 2) AS class_student_average, round(sum(back_person) / sum(valid_person), 2) AS back_rate,round(sum(consump_achieve) / sum(teacher_num), 2) AS school_person_rate,round(sum(consump_achieve) / sum(school_area), 2) AS school_area_rate ")
                 ->select();
                 
                 $data = array_merge($data1,$data2,$data3);
@@ -253,21 +272,589 @@ class BusinessDataController extends HomeController {
     /*
      *各个岗位自己已审核的页面数据列表
      */
-    public function ajax_checked_list(){
+    public function allAchieveBar(){
     	if(IS_AJAX){
     		$w=I('get.search');
     		array_empty_delt($w);
-    		if($w['info']) $w['info'] = array('like','%' . $w['info'] . '%');
-    		if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 00:00:00']];
-    		$w['_string'] = "LOCATE('" . $_SESSION['user_name'] . "',record) != 0"; 
-    		$data=M('apply')->where($w)->order('state asc,money_time asc,school asc,subject asc,type asc,id desc')->field('record',true)->limit(I('get.offset'),I('get.count'))->select();
-    		$total=M('apply')->where($w)->count();
-    		$count=$this->get_count($w);
     		
-    		$this->ajaxReturn(['state'=>'ok','data'=>$data,'total'=>$total,'count'=>$count]);
+    		if($w['month1']){
+    		    $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+    		}
+    		
+    		$w['state'] = array('eq',1);
+    		
+    		$data=M('businessData')->where($w)
+    		->group('area,`month`')
+    		->field("area as name,`month`,sum(all_achieve) as y")
+    		->select();
+    		
+    		if($data){
+    		    foreach($data as &$vo){
+    		        switch($vo['name']){
+    		            case '10': $vo['color'] = "#FF0000";break;
+    		            case '20': $vo['color'] = "#00FF00";break;
+    		            case '30': $vo['color'] = "#0000FF";break;
+    		            case '40': $vo['color'] = "#FFFF00";break;
+    		        }
+    		        $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+    		        $vo['y'] = (float)$vo['y'];
+    		        
+    		    }   
+    		}
+    		
+    		$this->ajaxReturn(['state'=>'ok','data'=>$data]);
     	}else{
     		$this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
     	}
+    }
+    
+    
+    public function newMonthAchieveBar(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('area,`month`')
+            ->field("area as name,`month`,sum(new_month_achieve) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '10': $vo['color'] = "#FF0000";break;
+                        case '20': $vo['color'] = "#00FF00";break;
+                        case '30': $vo['color'] = "#0000FF";break;
+                        case '40': $vo['color'] = "#FFFF00";break;
+                    }
+                    $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    public function newMonthPersonBar(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('area,`month`')
+            ->field("area as name,`month`,sum(new_month_person) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '10': $vo['color'] = "#FF0000";break;
+                        case '20': $vo['color'] = "#00FF00";break;
+                        case '30': $vo['color'] = "#0000FF";break;
+                        case '40': $vo['color'] = "#FFFF00";break;
+                    }
+                    $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    public function newAverageBarData(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data1=M('businessData')->where($w)
+            ->group('area,`month`')
+            ->field("area as name,`month`,sum(new_month_achieve)/sum(new_month_person) as y")
+            ->select();
+            
+            $data2=M('businessData')->where($w)
+            ->field("'集团' as name,`month`,sum(new_month_achieve)/sum(new_month_person) as y")
+            ->select();
+            
+            $data = array_merge($data2,$data1);
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '10': $vo['color'] = "#FF0000";break;
+                        case '20': $vo['color'] = "#00FF00";break;
+                        case '30': $vo['color'] = "#0000FF";break;
+                        case '40': $vo['color'] = "#FFFF00";break;
+                        default: $vo['color'] = "#000000";break;
+                    }
+                    if($vo['name'] != '集团'){
+                        $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+                    }
+                    
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    
+    
+    
+    public function renewMonthAchieveBar(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('area,`month`')
+            ->field("area as name,`month`,sum(renew_month_achieve) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '10': $vo['color'] = "#FF0000";break;
+                        case '20': $vo['color'] = "#00FF00";break;
+                        case '30': $vo['color'] = "#0000FF";break;
+                        case '40': $vo['color'] = "#FFFF00";break;
+                    }
+                    $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    public function renewMonthPersonBar(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('area,`month`')
+            ->field("area as name,`month`,sum(renew_month_person) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '10': $vo['color'] = "#FF0000";break;
+                        case '20': $vo['color'] = "#00FF00";break;
+                        case '30': $vo['color'] = "#0000FF";break;
+                        case '40': $vo['color'] = "#FFFF00";break;
+                    }
+                    $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    public function renewAverageBarData(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data1=M('businessData')->where($w)
+            ->group('area,`month`')
+            ->field("area as name,`month`,sum(renew_month_achieve)/sum(renew_month_person) as y")
+            ->select();
+            
+            $data2=M('businessData')->where($w)
+            ->field("'集团' as name,`month`,sum(renew_month_achieve)/sum(renew_month_person) as y")
+            ->select();
+            
+            $data = array_merge($data2,$data1);
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '10': $vo['color'] = "#FF0000";break;
+                        case '20': $vo['color'] = "#00FF00";break;
+                        case '30': $vo['color'] = "#0000FF";break;
+                        case '40': $vo['color'] = "#FFFF00";break;
+                        default: $vo['color'] = "#000000";break;
+                    }
+                    if($vo['name'] != '集团'){
+                        $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+                    }
+                    
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    
+    public function consumpAchieveBar(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('area,`month`')
+            ->field("area as name,`month`,sum(consump_achieve) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '10': $vo['color'] = "#FF0000";break;
+                        case '20': $vo['color'] = "#00FF00";break;
+                        case '30': $vo['color'] = "#0000FF";break;
+                        case '40': $vo['color'] = "#FFFF00";break;
+                    }
+                    $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    
+    public function consumpClassBar(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('area,`month`')
+            ->field("area as name,`month`,sum(consump_class) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '10': $vo['color'] = "#FF0000";break;
+                        case '20': $vo['color'] = "#00FF00";break;
+                        case '30': $vo['color'] = "#0000FF";break;
+                        case '40': $vo['color'] = "#FFFF00";break;
+                    }
+                    $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    
+    public function subjectBarData(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data1=M('businessData')->where($w)
+            ->group('name,`month`')
+            ->field("'数学' as name,`month`,sum(sx) as y")
+            ->select();
+            
+            $data2=M('businessData')->where($w)
+            ->group('name,`month`')
+            ->field("'语文' as name,`month`,sum(yw) as y")
+            ->select();
+            
+            $data3=M('businessData')->where($w)
+            ->group('name,`month`')
+            ->field("'英语' as name,`month`,sum(yy) as y")
+            ->select();
+            
+            $data4=M('businessData')->where($w)
+            ->group('name,`month`')
+            ->field("'物理' as name,`month`,sum(wl) as y")
+            ->select();
+            
+            $data5=M('businessData')->where($w)
+            ->group('name,`month`')
+            ->field("'化学' as name,`month`,sum(hx) as y")
+            ->select();
+            
+            
+            $data6=M('businessData')->where($w)
+            ->group('name,`month`')
+            ->field("'生物' as name,`month`,sum(sw) as y")
+            ->select();
+            
+            
+            $data7=M('businessData')->where($w)
+            ->group('name,`month`')
+            ->field("'文综' as name,`month`,sum(wz) as y")
+            ->select();
+            
+            
+            $data = array_merge($data1,$data2,$data3,$data4,$data5,$data6,$data7);
+            
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '数学': $vo['color'] = "#FF0000";break;
+                        case '语文': $vo['color'] = "#00FF00";break;
+                        case '英语': $vo['color'] = "#0000FF";break;
+                        case '物理': $vo['color'] = "#FFFF00";break;
+                        case '化学': $vo['color'] = "#00FFFF";break;
+                        case '生物': $vo['color'] = "#CDFF00";break;
+                        default: $vo['color'] = "#000000";break;
+                    }
+                    
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    public function schoolPersonBar(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('area,`month`')
+            ->field("area as name,`month`,round(sum(consump_achieve) / sum(teacher_num), 2) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '10': $vo['color'] = "#FF0000";break;
+                        case '20': $vo['color'] = "#00FF00";break;
+                        case '30': $vo['color'] = "#0000FF";break;
+                        case '40': $vo['color'] = "#FFFF00";break;
+                    }
+                    $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    
+    public function schoolAreaBar(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            if($w['month1']){
+                $w['_string']= "CONCAT_WS('-',`month`,'01') between '" . $w['month1'] . "-01'" . " and '" . $w['month2'] . "-01'";
+            }
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('area,`month`')
+            ->field("area as name,`month`,round(sum(consump_achieve) / sum(school_area), 2) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    switch($vo['name']){
+                        case '10': $vo['color'] = "#FF0000";break;
+                        case '20': $vo['color'] = "#00FF00";break;
+                        case '30': $vo['color'] = "#0000FF";break;
+                        case '40': $vo['color'] = "#FFFF00";break;
+                    }
+                    $vo['name'] = get_config('SCHOOL_REGION')[$vo['name']];
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    public function validClassList(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('school,`month`')
+            ->order('y DESC')
+            ->field("school as name,`month`,round(sum(consump_class) / sum(valid_person), 2) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    
+                    $vo['name'] = get_school_name($vo['name']);
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    
+    public function classStudentList(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('school,`month`')
+            ->order('y DESC')
+            ->field("school as name,`month`,round(sum(consump_class) / sum(class_person), 2) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    
+                    $vo['name'] = get_school_name($vo['name']);
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
+    }
+    
+    
+    public function backStudentList(){
+        if(IS_AJAX){
+            $w=I('get.search');
+            array_empty_delt($w);
+            
+            
+            $w['state'] = array('eq',1);
+            
+            $data=M('businessData')->where($w)
+            ->group('school,`month`')
+            ->order('y DESC')
+            ->field("school as name,`month`,round(sum(back_person) / sum(valid_person), 2) as y")
+            ->select();
+            
+            if($data){
+                foreach($data as &$vo){
+                    
+                    $vo['name'] = get_school_name($vo['name']);
+                    $vo['y'] = (float)$vo['y'];
+                    
+                }
+            }
+            
+            $this->ajaxReturn(['state'=>'ok','data'=>$data]);
+        }else{
+            $this->ajaxReturn(['state'=>'error','info'=>'没有查询到数据']);
+        }
     }
     
     //设置数据到页面的修改权限，$v['edit']，1允许，0不允许

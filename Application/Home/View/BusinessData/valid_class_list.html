@@ -1,0 +1,72 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+
+<!-- 搜索部分 -->
+<form class="panel panel-default" id="adv_search" method="post" action="{:U('BusinessData/allAchieveBar')}">
+    <div class="panel-heading">
+        <div class="row">
+            <h4 class="col-xs-6">高级搜索</h4>
+            <div class="col-xs-6 text-right">
+                <a class="btn btn-info" onclick="loadData()">筛选</a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="form-inline">
+            <div class="input-group col-30">
+                <a class="input-group-addon">月份</a>
+                <input name="month" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="{:session('date')}" readonly>
+            </div>
+        </div>
+    </div>
+</form>
+
+<table class="table table-hover">
+	<caption><h2>有效学员生均课时排名</h2></caption>
+	<tbody>
+		<tr>
+			<th>序号</th>
+			<th>校区</th>
+			<th>月份</th>
+			<th>有效学员生均课时</th>
+		</tr>
+	</tbody>
+	<tbody id="lst">
+			
+	</tbody>
+</table>
+
+
+</block>
+<block name="js">
+<script type="text/javascript">
+
+function loadData(){
+var search = $('#adv_search').serializeJson();
+	
+	$.ajax({
+		url: '{:U("BusinessData/validClassList")}',
+        type: 'GET',
+        dataType: 'JSON',
+        data: {search: search},
+		success:function(msg){
+			$('#lst').empty();
+			if(msg.state == 'ok'){
+				if(msg.data){
+					$.each(msg.data,function(i,vo){
+						//axis[i] = vo['name'] + "/" + vo['month'];
+						$('#lst').append("<tr id='r" + i + "'>");
+						$('#r' + i).append("<td>" + (i+1));
+						$('#r' + i).append("<td>" + vo['name']);
+						$('#r' + i).append("<td>" + vo['month']);
+						$('#r' + i).append("<td>" + vo['y']);
+					});
+				}
+			}
+		}
+	});	
+}
+
+</script>
+</block>
+
