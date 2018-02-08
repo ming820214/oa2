@@ -83,6 +83,14 @@ class BusinessDataController extends HomeController {
 	public function backStudent(){
 	    $this -> display('back_student_list');
 	}
+	
+	public function schoolPerson(){
+	    $this -> display('school_person');
+	}
+	
+	public function schoolArea(){
+	    $this -> display('school_area');
+	}
 /**
 ####################################增删改查
 */
