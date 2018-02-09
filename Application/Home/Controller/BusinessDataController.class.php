@@ -126,7 +126,7 @@ class BusinessDataController extends HomeController {
 		    }else{
 		        $status = 1;
 		    }
-		    if(M('businessData')->where(I('post.data')['id'])->save(array('state'=>$status))){
+		    if(M('businessData')->where(array('id'=>I('post.data')['id']))->save(array('state'=>$status))){
 		        $this->ajaxReturn('ok');
 		    }else{
 		        $this->ajaxReturn('提交出错，请与系统管理员联系！');
