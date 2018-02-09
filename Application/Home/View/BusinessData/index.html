@@ -64,9 +64,9 @@
         <div class="form-inline">
             <div class="input-group col-30">
                 <a class="input-group-addon">月份</a>
-                <input name="month1" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="{:session('date')}" readonly>
+                <input name="month1" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="" readonly>
                 <a class="input-group-addon">-</a>
-                <input name="month2" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="{:session('date')}" readonly>
+                <input name="month2" type="text" class="form-control" onclick="WdatePicker({dateFmt:'yyyy-MM'})" value="" readonly>
             </div>
             
             <if condition="ACTION_NAME eq 'manage'">
