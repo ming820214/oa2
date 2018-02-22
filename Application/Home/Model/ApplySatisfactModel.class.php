@@ -111,6 +111,7 @@ class ApplySatisfactModel extends CommonModel{
                 //李冰+赵金玲
                 array_push($user, "ZYyy002");
                 array_push($user, "zhaojinling");
+                array_push($user, "XGryxc22");
                 
             }
             unset($w);

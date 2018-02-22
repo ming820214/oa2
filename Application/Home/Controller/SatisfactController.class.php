@@ -166,7 +166,7 @@ class SatisfactController extends HomeController {
          		         unset($w['apply_school']);
          		         $w['area'] = '50';
          		         $w['state'] = 30;
-         		     }elseif(session('auth_id') == '1473' || session('auth_id') == '2335'){
+         		     }elseif(session('auth_id') == '1473' || session('auth_id') == '2335' || session('auth_id') == '566'){
          		         //李冰 赵金玲
          		         if($stage != 1){
          		             unset($w['apply_school']);
