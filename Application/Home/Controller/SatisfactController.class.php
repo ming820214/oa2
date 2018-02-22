@@ -105,7 +105,7 @@ class SatisfactController extends HomeController {
     		$w=I('get.search');
     		array_empty_delt($w);
     		
-    		
+    		if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 00:00:00']];
     		$w['is_del']= array('neq',1);
     		
     		$stage = $w['stage'];
@@ -188,8 +188,10 @@ class SatisfactController extends HomeController {
     		    if($stage == 1){
     		        $map['_logic']='or';
     		        $map['_complex'] = $w;
-    		        if(!(I('get.search')['state'] || I('get.search')['date1'] || I('get.search')['apply_school'] || I('get.search')['area'] || I('get.search')['state'] ||  I('get.search')['back'])){
-    		            $map['state&is_del'] = array(array('elt',40),array('neq',1),'_multi'=>true);
+    		        if(!(I('get.search')['state'])){
+    		            $map['state&is_del'] = array(array('elt',50),array('neq',1),'_multi'=>true);
+    		        }else{
+    		            $map['state&is_del'] = array(array('eq',I('get.search')['state']),array('neq',1),'_multi'=>true);
     		        }
     		        
     		    }else{

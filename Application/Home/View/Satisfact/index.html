@@ -73,20 +73,20 @@
         <div class="form-inline">
            
             <div class="input-group">
-                <a class="input-group-addon">检查日期</a>
+                <a class="input-group-addon">抽查日期</a>
                 <input name="date1" type="date" class="form-control">
                 <a class="input-group-addon">-</a>
                 <input name="date2" type="date" class="form-control">
             </div>
             
             <div class="input-group">
-                <a class="input-group-addon">整改月度</a>
+                <a class="input-group-addon">抽查月度</a>
                 <input type="month" name="apply_month" class="form-control"  value="{$month}"/>
             </div>
             
             <div class="input-group">
                 <a class="input-group-addon">审核状态</a>
-                <select name="state" class="form-control"><option value="">全部</option>{:fill_option_ex(get_config('INSPECT_STATE'))}</select>
+                <select name="state" class="form-control"><option value="">全部</option>{:fill_option_ex(get_config('SATISFACT_STATE'))}</select>
             </div>
             
             <div class="input-group">
@@ -153,7 +153,7 @@
             	学员<input type="text" name="student"  class="form-control" required/>
             </li>
             
-            <li>解决问题反馈<font color="red">*</font>：<select name="resolve" class="form-control" required><option value="">请选择是否解决问题</option><option>是</option><option>否</option></select></li>
+            <li>是否需要反馈<font color="red">*</font>：<select name="resolve" class="form-control" required><option value="">请选择是否需要反馈</option><option>是</option><option>否</option></select></li>
             <li>问题1<select name="question1" class="form-control" required><option value="0">0分</option><option value="3">3分</option><option value="5">5分</option></select></li>
             <li>问题2<select name="question2" class="form-control" required><option value="0">0分</option><option value="3">3分</option><option value="5">5分</option></select></li>
             <li>问题3<select name="question3" class="form-control" required><option value="0">0分</option><option value="3">3分</option><option value="5">5分</option></select></li>
@@ -164,8 +164,11 @@
             <li>问题8<select name="question8" class="form-control" required><option value="0">0分</option><option value="3">3分</option><option value="5">5分</option></select></li>
             <li>问题9<select name="question9" class="form-control" required><option value="0">0分</option><option value="3">3分</option><option value="5">5分</option></select></li>
             <li>问题10<select name="question10" class="form-control" required><option value="0">0分</option><option value="3">3分</option><option value="5">5分</option></select></li>
-            <li>学管师维护得分<input type="number" class="form-control" min="0" step="0.01" name="xg_score"/></li>
-            <li>校区得分<input type="number" class="form-control" min="0" step="0.01" name="school_score"/></li>
+            <li>学管师扣分<select name="xg_minus" class="form-control" required="required"><option value="">请选择分数</option><option value="0">0</option><option value="-10">-10</option></select></li>
+            <li>校区扣分<select name="school_minus" class="form-control" required="required">><option value="">请选择分数</option><option value="0">0</option><option value="-10">-10</option></select></li>
+            <li>学管师维护得分<input type="number" class="form-control" name="xg_score" readonly="readonly"/></li>
+            <li>校区得分<input type="number" class="form-control" name="school_score" readonly="readonly"/></li>
+            
             <li>抽查方式<select name="spot_way" class="form-control" required><option value="">请选择抽查方式</option><option>电话回访</option><option>电话投诉</option></select></li>
             <li style="width:400px;">沟通内容反馈<font color="red">*</font>：<textarea rows="3" cols="" name="feedback" class="form-control" maxlength="200" required ></textarea></li>
             </if>
@@ -238,6 +241,20 @@
 		  $(this).val()
 	  });
 	
+	  //$('input[name="question1"]').val() + $('input[name="question2"]').val() + $('input[name="question3"]').val() + $('input[name="question4"]').val() + $('input[name="question5"]').val() + $('input[name="question6"]').val() + $('input[name="question7"]').val() + $('input[name="question8"]').val()
+	  		
+	  $("select[name='question3'],select[name='question4'],select[name='question5'],select[name='question6'],select[name='question7'],select[name='question8'],select[name='xg_minus']").change(function(){
+		  
+		var resultScore = Number($('select[name="question3"]').val()) + Number($('select[name="question4"]').val()) + Number($('select[name="question5"]').val()) + Number($('select[name="question6"]').val()) + Number($('select[name="question7"]').val()) + Number($('select[name="question8"]').val()) + Number($("select[name='xg_minus']").val());
+		$('input[name="xg_score"]').val(resultScore);
+	});    
+	  
+	  $("select[name='question1'],select[name='question2'],select[name='question3'],select[name='question4'],select[name='question5'],select[name='question6'],select[name='question7'],select[name='question8'],select[name='question9'],select[name='question10'],select[name='school_minus']").change(function(){
+		  
+			var resultScore = Number($('select[name="question1"]').val()) + Number($('select[name="question2"]').val()) + Number($('select[name="question3"]').val()) + Number($('select[name="question4"]').val()) + Number($('select[name="question5"]').val()) + Number($('select[name="question6"]').val()) + Number($('select[name="question7"]').val()) + Number($('select[name="question8"]').val()) + Number($('select[name="question9"]').val()) + Number($('select[name="question10"]').val()) + Number($("select[name='school_minus']").val());
+			$('input[name="school_score"]').val(resultScore);
+		});
+	  
     // 页码绑定事件
     $('#pagination').on('click', '.page', function(){
         var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
@@ -355,7 +372,7 @@ function loadData(offset) {
                 'teacher_name':'学习管理师',
                 'student':'学员',
                 'feedback':'沟通内容反馈',
-                'resolve':'解决问题反馈',
+                'resolve':'是否需要反馈',
                 'spot_way':'抽查方式',
                 'create_time':'抽查时间',
                 'xg_qr':'学管确认时间',
