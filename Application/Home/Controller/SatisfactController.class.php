@@ -13,7 +13,7 @@ class SatisfactController extends HomeController {
         $this->sch_lst = $sch_lst;
 		
         $w['is_del'] = 0;
-        $w['position_id'] = 18;
+        $w['position_id'] = array('in',[18,12]);
         $sg_lst = M('user')->where($w)->getField('id,name,wechat_userid');
         
         $this->assign('sg_lst',$sg_lst);
@@ -310,9 +310,22 @@ class SatisfactController extends HomeController {
     	}
     }
 
-	
+    public function ajax_repeatCheck(){
+        if(IS_AJAX){
+            $w=I();
+            array_empty_delt($w);
+            
+            $w['is_del']= array('neq',1);
+            
+            $data=M('applySatisfact')->where($w)->field('record',true)->select();
+            if(count($data)>0){
+                $this->ajaxReturn(['state'=>'error','info'=>'该学员已经抽查过了！']);
+            }else{
+                $this->ajaxReturn(['state'=>'sucess','info'=>'ok']);
+            }
+        }
 
-
+    }
 	//数据导出功能
 	public function export(){
 
@@ -327,13 +340,8 @@ class SatisfactController extends HomeController {
 		
 		if($w['date1'])$w['create_time']=['between',[$w['date1'].' 00:00:00',$w['date2'].' 23:59:59']];
 		
-		if($w['apply_user']){
-		    $w['apply_user'] = array('like','%'. $w['apply_user'] . '%');
-		}
 		
-		$w['product_type'] = 1;
-		
-		$dat=M('applyDesign')->where($w)->order('id desc')->field("id, state, apply_month, apply_type, apply_school, apply_user, tel, expect_date, email, design_type, flat_count, flat_size, flat_format, flat_create_unit, content_descp, reference_pic, record, why, create_time, update_time, is_del, add_user, add_user_name, CASE back WHEN 1 THEN '退回' else '正常' END as back, descp,area,design_type_other,flat_size_other")->select();;
+		$dat=M('applySatisfact')->where($w)->order('id desc')->field('record',true)->select();
 
         $output = "<HTML>";
         $output .= "<HEAD>";
@@ -343,77 +351,88 @@ class SatisfactController extends HomeController {
         $output .= "<TABLE BORDER=1>";
         $output .= "<tr>
         				<td>序号</td>
+                        <td>是否退回</td>
         				<td>流程状态</td>
         				<td>审核状态</td>
-        				<td>提报月度</td>
-        				<td>计划类型</td>
-        				<td>提报人</td>
-        				<td>联系电话</td>
-        				<td>提报日期</td>
-        				<td>截稿日期</td>
-        				<td>部门接收邮箱</td>
-        				<td>设计类型</td>
-        				<td>设计类型其它</td>
-        				<td>尺寸</td>
-        				<td>尺寸类型其它</td>
-        				<td>版式</td>
-        				<td>数量</td>
-                        <td>制作单位</td>
-                        <td>文字内容</td>
-                        <td>参考案例</td>
-                        <td>区域</td>
-                        <td>备注</td>
-                        <td>退回原因</td>
+        				<td>所属区域</td>
+        				<td>校区</td>
+        				<td>学习管理师</td>
+        				<td>学员</td>
+        				<td>沟通内容反馈</td>
+        				<td>是否需要反馈</td>
+                        <td>解决问题反馈内容</td>    
+        				<td>抽查方式</td>
+        				<td>抽查时间</td>
+        				<td>校长确认时间</td>
+        				<td>区域总监确认时间</td>
+        				<td>客服专员</td>
+        				<td>退回原因</td>
         				<td>最后审核时间</td>
-        				<td>创建人</td>
+                        <td>问题1</td>
+                        <td>问题2</td>
+                        <td>问题3</td>
+                        <td>问题4</td>
+                        <td>问题5</td>
+                        <td>问题6</td>
+                        <td>问题7</td>
+                        <td>问题8</td>
+                        <td>问题9</td>
+                        <td>问题10</td>
+                        <td>学管师扣分</td>
+                        <td>校区扣分</td>
+                        <td>学管师维护得分</td>
+        				<td>校区得分</td>
         				</tr>";
-        $apply_state=get_config('APPLYDESIGN_STATE');
-        
+        $apply_state=get_config('SATISFACT_STATE');
+        $region=get_config('SCHOOL_REGION');
         foreach ($dat as &$vo) {
             
             $vo['state']=$apply_state[$vo['state']];
-            $vo['apply_school']=$this->school_all[$vo['apply_school']];
-            
-            if($vo['reference_pic']){
-                $hrefs = explode(";",$vo['reference_pic']);
-                $ref = '';
-                foreach($hrefs as $arr){
-                    $ref .= '<a href="' . C('WWW').'/oa2'.substr($arr,1) . '" target="_blank">' . substr($arr,1) . '</a><br/>';
-                }
-                $vo['reference_pic'] = $ref;
-            }
+            $vo['apply_school']=get_school_name($vo['apply_school']);
+            $vo['teacher'] = M('user')->where(['is_del'=>0,id=>$vo['teacher'],position_id=>array('in',[18,12])])->getField('name');
+            $vo['area'] = $region[$vo['area']];
 
             $output .= "<tr>";
             $output .= "<td>".$vo['id']."</td>";
-            $output .= "<td>".$vo['back']."</td>";
+            $output .= "<td>". ($vo['back']==1?"退回":"正常") ."</td>";
             $output .= "<td>".$vo['state']."</td>";
             $output .= "<td>".$vo['apply_month']."</td>";
-            $output .= "<td>".$vo['apply_type']."</td>";
-            $output .= "<td>".$vo['apply_user']."</td>";
-            $output .= "<td>".$vo['tel']."</td>";
-            $output .= "<td>".$vo['create_time']."</td>";
-            $output .= "<td>".$vo['expect_date']."</td>";
-            $output .= "<td>".$vo['email']."</td>";
-            $output .= "<td>".$vo['design_type']."</td>";
-            $output .= "<td>".$vo['design_type_other']."</td>";
-            $output .= "<td>".$vo['flat_size']."</td>";
-            $output .= "<td>".$vo['flat_size_other']."</td>";
-            $output .= "<td>".$vo['flat_format']."</td>";
-            $output .= "<td>".$vo['flat_count']."</td>";
-            $output .= "<td>".$vo['flat_create_unit']."</td>";
-            $output .= "<td>".$vo['content_descp']."</td>";
-            $output .= "<td>".$vo['reference_pic']."</td>";
             $output .= "<td>".$vo['area']."</td>";
-            $output .= "<td>".$vo['descp']."</td>";
+            $output .= "<td>".$vo['apply_school']."</td>";
+            $output .= "<td>".$vo['teacher']."</td>";
+            $output .= "<td>".$vo['student']."</td>";
+            $output .= "<td>".$vo['feedback']."</td>";
+            $output .= "<td>".$vo['resolve']."</td>";
+            $output .= "<td>".$vo['resolve_content']."</td>";
+            $output .= "<td>".$vo['spot_way']."</td>";
+            $output .= "<td>".$vo['create_time']."</td>";
+            $output .= "<td>".$vo['xz_qr']."</td>";
+            $output .= "<td>".$vo['qy_qr']."</td>";
+            $output .= "<td>".$vo['add_user_name']."</td>";
             $output .= "<td>".$vo['why']."</td>";
             $output .= "<td>".$vo['update_time']."</td>";
-            $output .= "<td>".$vo['add_user_name']."</td>";
+            $output .= "<td>".$vo['question1']."</td>";
+            $output .= "<td>".$vo['question2']."</td>";
+            $output .= "<td>".$vo['question3']."</td>";
+            $output .= "<td>".$vo['question4']."</td>";
+            $output .= "<td>".$vo['question5']."</td>";
+            $output .= "<td>".$vo['question6']."</td>";
+            
+            $output .= "<td>".$vo['question7']."</td>";
+            $output .= "<td>".$vo['question8']."</td>";
+            $output .= "<td>".$vo['question9']."</td>";
+            $output .= "<td>".$vo['question10']."</td>";
+            
+            $output .= "<td>".$vo['xg_minus']."</td>";
+            $output .= "<td>".$vo['school_minus']."</td>";
+            $output .= "<td>".$vo['xg_score']."</td>";
+            $output .= "<td>".$vo['school_minus']."</td>";
             $output .= "</tr>";
         }
         $output .= "</TABLE>";
         $output .= "</BODY>";
         $output .= "</HTML>";
-        $filename='平面类设计申请明细导出表'.date('Y-m-d');
+        $filename='满意度抽查明细导出表'.date('Y-m-d');
         header("Content-type:application/msexcel");
         header("Content-disposition: attachment; filename=$filename.xls");
         header("Cache-control: private");

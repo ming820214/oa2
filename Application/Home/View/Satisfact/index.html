@@ -64,8 +64,8 @@
         <div class="row">
             <h4 class="col-xs-6">高级搜索</h4>
             <div class="col-xs-6 text-right">
-                <a class="btn btn-info" onclick="loadData(0)">筛选</a>
-                <if condition="(ACTION_NAME eq 'manage')"><button type="submit" class="btn btn-info">导出</button></if>
+                <a class="btn btn-info" onclick="loadData(0)">筛选</a> &nbsp;&nbsp;
+                <button type="submit" class="btn btn-info">导出</button>
             </div>
         </div>
     </div>
@@ -142,15 +142,16 @@
             </select>
             </li>
             <li>
-            	学习管理师<select name="teacher"  class="form-control" required>
+            	学习管理师<select name="teacher"  class="form-control" required="required">
             			<option value="">请选择学习管理师</option>
             			<foreach name="sg_lst" item="sc">
 		            		<option value="{$sc.id}">{$sc.name}</option>
 		            	</foreach>
             		  </select>
             </li>
+            <li>筛选(学习管理师)<input type="text" name="tea" class="form-control"/></li>
             <li>
-            	学员<input type="text" name="student"  class="form-control" required/>
+            	学员<input type="text" name="student"  class="form-control" required="required"/>
             </li>
             
             <li>是否需要反馈<font color="red">*</font>：<select name="resolve" class="form-control" required><option value="">请选择是否需要反馈</option><option>是</option><option>否</option></select></li>
@@ -221,6 +222,35 @@
 	
 	$(document).ready(function(){
 	    loadData(0);//页面数据加载
+	    
+	    $('input[name="tea"]').on('keyup',function(e){
+			$('select[name="teacher"] option').show();
+			$('select[name="teacher"] option').each(function(){
+				if($(this).text().indexOf($('input[name="tea"]').val()) == -1){
+					$(this).attr('dq','1'); //该属性，无任何意义，就是为了实现某种显示效果
+					$(this).hide();
+				}else{
+					$(this).attr('dq','2');
+				}
+			});
+			$('select[name="teacher"] option[dq=2]:first').prop('selected',true)
+		});
+	});
+	
+	$('input[name="student"]').focusout(function(){
+		var name = $(this).val();
+		$.ajax({
+	        url: '{:U("Satisfact/ajax_repeatCheck")}',
+	        type: 'GET',
+	        dataType: 'JSON',
+	        data: {student: name},
+	        success:function(msg){
+	        	if(msg.state == 'error'){
+	        		ui_error(msg.info);
+	        		return;
+	        	}
+	        }
+	    })
 	});
 	
 	
@@ -310,7 +340,7 @@
         var data = $("#apply_list tbody input:checked").serializeJson();
         
         var record = $("#apply_list tbody input:checked").data('info');
-        debugger;
+        
         if((record.state == '20') && (record.resolve == '是')  && ($.isEmptyObject(record.resolve_content))&& ({$_SESSION['position_id']} == 10)){
         	Ycom.loading.hide();
         	ui_error("请先修改记录，填写解决问题反馈内容！");
@@ -366,7 +396,7 @@ function loadData(offset) {
                 'id':'序号',
                 'back':'流程状态',
                 'state':'审核状态',
-                'apply_month':'提报月度',
+                'apply_month':'抽查月度',
                 'area_name':'所属区域',
                 'school_name':'校区',
                 'teacher_name':'学习管理师',
