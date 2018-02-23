@@ -199,7 +199,7 @@ class SatisfactController extends HomeController {
     		    }
     		}
     		
-    		$data=M('applySatisfact')->where($map)->order('id desc')->field('id, state, apply_month, apply_school, area, teacher, student, feedback, why, create_time, update_time, is_del, add_user, add_user_name, back, resolve, question1, question2, question3, question4, question5, question6, question7, question8, question9, question10, xg_score, school_score, spot_way, xg_qr, xz_qr, qy_qr, resolve_content')->limit(I('get.offset'),I('get.count'))->select();
+    		$data=M('applySatisfact')->where($map)->order('id desc')->field('id, state, apply_month, apply_school, area, teacher, student, feedback, why, create_time, update_time, is_del, add_user, add_user_name, back, resolve, question1, question2, question3, question4, question5, question6, question7, question8, question9, question10, xg_score, school_score, spot_way, xg_qr, xz_qr, qy_qr, resolve_content, school_minus, xg_minus')->limit(I('get.offset'),I('get.count'))->select();
     		
     		  foreach ($data as &$vo){
     		      $vo['school_name'] = get_school_name($vo['apply_school']);

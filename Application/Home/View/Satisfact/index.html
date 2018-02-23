@@ -239,18 +239,23 @@
 	
 	$('input[name="student"]').focusout(function(){
 		var name = $(this).val();
-		$.ajax({
-	        url: '{:U("Satisfact/ajax_repeatCheck")}',
-	        type: 'GET',
-	        dataType: 'JSON',
-	        data: {student: name},
-	        success:function(msg){
-	        	if(msg.state == 'error'){
-	        		ui_error(msg.info);
-	        		return;
-	        	}
-	        }
-	    })
+		if($.isEmptyObject(name)){
+			return;
+		}else{
+			$.ajax({
+		        url: '{:U("Satisfact/ajax_repeatCheck")}',
+		        type: 'GET',
+		        dataType: 'JSON',
+		        data: {student: name},
+		        success:function(msg){
+		        	if(msg.state == 'error'){
+		        		ui_error(msg.info);
+		        		return;
+		        	}
+		        }
+		    });	
+		}
+		
 	});
 	
 	
@@ -402,6 +407,20 @@ function loadData(offset) {
                 'teacher_name':'学习管理师',
                 'student':'学员',
                 'feedback':'沟通内容反馈',
+                'question1':'问题1',
+                'question2':'问题2',
+                'question3':'问题3',
+                'question4':'问题4',
+                'question5':'问题5',
+                'question6':'问题6',
+                'question7':'问题7',
+                'question8':'问题8',
+                'question9':'问题9',
+                'question10':'问题10',
+                'xg_minus':'学管师扣分',
+                'school_minus':'校区扣分',
+                'xg_score':'学管师维护得分',
+                'school_score':'校区得分',
                 'resolve':'是否需要反馈',
                 'spot_way':'抽查方式',
                 'create_time':'抽查时间',
