@@ -47,7 +47,7 @@
     		<else/><h1>满意度抽查数据管理</h1>
     	</if>
     </div>
-    <if condition="($_SESSION['auth_id'] eq '1')">
+    <if condition="ACTION_NAME eq 'index'">
     <div class="col-sm-12">
         <a class="btn btn-sm btn-success pull-right" onclick="toggle_adv_search();"><i id="toggle_adv_search_icon" class="fa fa-chevron-down bigger-125"></i></a>
     </div>
@@ -56,7 +56,7 @@
 
 <form class="panel panel-default hidden" id="adv_search" method="post" action="{:U('export')}">
 <input type="hidden" name="stage" value="<switch name="ACTION_NAME"><case value="index">1</case><case value="apply">2</case><case value="cost">3</case><case value="examine">4</case><case value="manage">5</case></switch>">
- <if condition="($_SESSION['auth_id'] eq '1')">
+ <if condition="ACTION_NAME eq 'index'">
 <!-- 搜索部分 -->
 
     <div class="panel-heading">
@@ -403,9 +403,9 @@ function loadData(offset) {
                 'state':'审核状态',
                 'apply_month':'抽查月度',
                 'area_name':'所属区域',
-                'school_name':'校区',
+                'school_name':'所属校区',
                 'teacher_name':'学习管理师',
-                'student':'学员',
+                'student':'学员姓名',
                 'feedback':'沟通内容反馈',
                 'question1':'问题1',
                 'question2':'问题2',
