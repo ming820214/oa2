@@ -186,20 +186,23 @@ class SatisfactController extends HomeController {
     		            if(session('auth_id') == '673'){
     		                //张鹏
     		                unset($w['apply_school']);
-    		                $w['_string']="((area='10') or (apply_school='173'))";
+    		                $w['_string']="((area='10'and state>=30) or (apply_school='173'and state>=20))";
     		            }elseif(session('auth_id') == '439'){
     		                //何亮
     		                unset($w['apply_school']);
-    		                $w['_string']="((area='40') or (apply_school='11'))";
+    		                $w['_string']="((area='40'and state>=30) or (apply_school='11'and state>=20))";
     		            }elseif(session('auth_id') == '651'){
     		                //王大鹏
     		                unset($w['apply_school']);
-    		                $w['_string']="((area='30') or (apply_school='8'))";
-    		          }
+    		                
+    		                $w['_string']="((area='30'and state>=30) or (apply_school='8'and state>=20))";
+    		            }else{
+    		                $w['state'] = array('egt',20);
+    		            }
     		        
     		        
     		        }else if(session('position_id') == '18' || session('position_id') == '12'){
-    		            $w['state'] = 10;
+    		            $w['state'] = array('egt',10);
     		            $w['teacher'] = session('auth_id');
     		        }
     		    }else{
@@ -209,14 +212,17 @@ class SatisfactController extends HomeController {
     		            //张玉珠
     		            unset($w['apply_school']);
     		            $w['area'] = '20';
+    		            $w['state'] = array('egt',30);
     		        }elseif(session('auth_id') == '1'){
     		            //张晓明
     		            unset($w['apply_school']);
     		            $w['area'] = '20';
+    		            $w['state'] = array('egt',30);
     		        }elseif(session('auth_id') == '2100'){
     		            //李明帅
     		            unset($w['apply_school']);
     		            $w['area'] = '50';
+    		            $w['state'] = array('egt',30);
     		        }
     		        
     		    }

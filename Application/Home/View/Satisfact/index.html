@@ -133,7 +133,7 @@
             	<li style="width:400px;">解决问题反馈内容<font color="red">*</font>：<textarea rows="3" cols="" name="resolve_content" class="form-control" maxlength="200" required ></textarea></li>
             <else/>
             
-            <li>提报月度<font color="red">*</font>：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
+            <li>抽查月度<font color="red">*</font>：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
             <li>区域<font color="red">*</font>：<select id="school_area" name="area" class="form-control" required><option value="">请选择区域</option>{:fill_option_ex(get_config('SCHOOL_REGION'))}</select></li>
             <li>校区<font color="red">*</font>：<select id="apply_school" name="apply_school" class="form-control" required ><option value="">请选择校区</option>
             	<foreach name="sch_lst" item="sc">
