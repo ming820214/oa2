@@ -324,7 +324,7 @@ class YewuController extends HomeController {
                 unset($condition['time2']);
             }
             
-            if(session('user_name') == '张鹏'){
+            /* if(session('user_name') == '张鹏'){
                 //张鹏
                 $condition['region']=10;//'辽东';
             }elseif(session('user_name') == '张玉珠'){
@@ -339,7 +339,8 @@ class YewuController extends HomeController {
             }elseif(session('user_name') == '李明帅'){
                 //李明帅
                 $condition['region']=50;//'黑龙江';
-            }elseif(session('user_name') == '孟轩'){
+            }else */
+            if(session('user_name') == '孟轩'){
                 //孟轩
                 $condition['region']=60;//'鸿文优途';
             }else{
@@ -539,7 +540,7 @@ class YewuController extends HomeController {
     
     public function service_set(){
         
-        if(session('user_name') == '张鹏'){
+        /* if(session('user_name') == '张鹏'){
             //张鹏
             $condition['region']=10;//'辽东';
         }elseif(session('user_name') == '张玉珠'){
@@ -554,9 +555,12 @@ class YewuController extends HomeController {
         }elseif(session('user_name') == '李明帅'){
             //李明帅
             $condition['region']=50;//'黑龙江';
-        }elseif(session('user_name') == '孟轩' || session('user_name') == '张晓明'){
+        }else */
+        if(session('user_name') == '孟轩' || session('user_name') == '张晓明'){
             //孟轩
             $condition['region']=60;//'鸿文优途';
+        }elseif(session('user_name') == '李冰' || session('user_name') == '赵金玲'){
+            $condition['addx']=session('auth_id');
         }else{
             $this->error('您没有该权限，请联系系统管理员');
         }
