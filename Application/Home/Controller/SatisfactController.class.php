@@ -142,7 +142,7 @@ class SatisfactController extends HomeController {
          		             //校长
          		             $w['state'] = 20;
          		         }
-         		     }else if(session('position_id') == '18'){
+         		     }else if(session('position_id') == '18' || session('position_id') == '12'){
          		         $w['state'] = 10;
          		         $w['teacher'] = session('auth_id');
          		     }
@@ -177,9 +177,49 @@ class SatisfactController extends HomeController {
          		     }
          		     
          		 }
-    		}else if($stage == 5 && $w['school']){
-    		    $w['apply_school'] = $w['school'];
+    		}else if($stage == 5){
     		    $flag = 1;
+    		    if(get_school_name()!='集团'){
+    		        $w['apply_school'] = session('school_id');
+    		        if(session('position_id') == '10'){
+    		            
+    		            if(session('auth_id') == '673'){
+    		                //张鹏
+    		                unset($w['apply_school']);
+    		                $w['_string']="((area='10') or (apply_school='173'))";
+    		            }elseif(session('auth_id') == '439'){
+    		                //何亮
+    		                unset($w['apply_school']);
+    		                $w['_string']="((area='40') or (apply_school='11'))";
+    		            }elseif(session('auth_id') == '651'){
+    		                //王大鹏
+    		                unset($w['apply_school']);
+    		                $w['_string']="((area='30') or (apply_school='8'))";
+    		          }
+    		        
+    		        
+    		        }else if(session('position_id') == '18' || session('position_id') == '12'){
+    		            $w['state'] = 10;
+    		            $w['teacher'] = session('auth_id');
+    		        }
+    		    }else{
+    		        
+    		        
+    		        if(session('auth_id') == '1283'){
+    		            //张玉珠
+    		            unset($w['apply_school']);
+    		            $w['area'] = '20';
+    		        }elseif(session('auth_id') == '1'){
+    		            //张晓明
+    		            unset($w['apply_school']);
+    		            $w['area'] = '20';
+    		        }elseif(session('auth_id') == '2100'){
+    		            //李明帅
+    		            unset($w['apply_school']);
+    		            $w['area'] = '50';
+    		        }
+    		        
+    		    }
     		}
     		
     		if($flag){
@@ -330,9 +370,9 @@ class SatisfactController extends HomeController {
 	public function export(){
 
 		if(session('school_id')!=0)die;
-		if(session('auth_id') !== '1'){
+		/* if(session('auth_id') !== '1'){
 		    die;
-		}
+		} */
 		$w=I('post.');
 		array_empty_delt($w);
 		unset($w['stage']);

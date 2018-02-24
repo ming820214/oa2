@@ -90,6 +90,11 @@ class ApplySatisfactModel extends CommonModel{
 				
             if($w){
               $user[]=M('user')->where(['is_del'=>0])->where($w)->getField('wechat_userid');//wechat_userid
+              
+              if($v['state'] == '10'){
+                  $userid = M('user')->where(['is_del'=>0])->where([id=>$v['teacher']])->getField('wechat_userid');//wechat_userid
+                  array_push($user,$userid);
+              }
             }
             
             if($v['state'] == '30' && $v['area'] == 10){
@@ -132,7 +137,7 @@ class ApplySatisfactModel extends CommonModel{
         $wx= getWechatObj();
         
         $wx->sendNewsMsg(
-            [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=satisfact/examine')),'')],
+            [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Satisfact/examine')),'')],
             ['touser'=>$user],
             C('WECHAT_APP')['XZMS']
             );
