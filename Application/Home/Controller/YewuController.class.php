@@ -570,7 +570,7 @@ class YewuController extends HomeController {
         $maxcount = M('yewu_students')->where($condition)->count();
         
         
-        $ws['region'] = $condition['region'];
+        //$ws['region'] = $condition['region'];
         $ws['pid'] = 15;
         $ws['is_del'] = 0;
         
