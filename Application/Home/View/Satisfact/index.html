@@ -183,12 +183,12 @@
         <if condition="ACTION_NAME eq 'index'"><button class="btn btn-info" onclick="check(1);">提交</button>&nbsp;&nbsp;<button class="btn btn-info" id="bt_change">修改</button></if>
 
         <if condition="(ACTION_NAME eq 'examine')">
-        	<if condition="($_SESSION.position_id eq '18')">   
+        	<if condition="($_SESSION.position_id eq '18') OR ($_SESSION.position_id eq '12')">   
             	<button class="btn btn-info" onclick="check(1);">无异议通过</button>
             	<else/>
             	<button class="btn btn-info" onclick="check(1);">通过</button>
             </if>
-        	<if condition="($_SESSION.position_id eq '18')">    
+        	<if condition="($_SESSION.position_id eq '18') OR ($_SESSION.position_id eq '12')">    
             	<button class="btn btn-info" onclick="check(0);">有异议退回</button>
             </if>
             <if condition="(ACTION_NAME eq 'examine') AND ($_SESSION.position_id eq '10')">    
