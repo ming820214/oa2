@@ -3,7 +3,7 @@ namespace Home\Model;
 /**
  *申请审核的过程管理
  */
-class ApplySatisfactModel extends CommonModel{
+class ApplyComplaintModel extends CommonModel{
 
     /**
     *审核
@@ -13,7 +13,7 @@ class ApplySatisfactModel extends CommonModel{
     */
     public function check($type,$ids,$why=''){
 
-        $list=M('applySatisfact')->where(['id'=>['in',$ids]])->field('record',true)->select();
+        $list=M('applyComplaint')->where(['id'=>['in',$ids]])->field('record',true)->select();
         if($type==-1){//删除数据
             $this->check_del($list);
             $this->save_check($list,4);
@@ -37,13 +37,11 @@ class ApplySatisfactModel extends CommonModel{
         foreach ($list as &$v) {
                 $v['back'] =null; 
                 
-                if($v['state'] <50){
+                if($v['state'] <40){
                      $v['state']=$v['state']+10;
-                     if($v['state'] == 20){
-                         $v['xg_qr'] = date('Y-m-d H:i:s');
-                     }else if($v['state'] == 30){
+                     if($v['state'] == 10){
                          $v['xz_qr'] = date('Y-m-d H:i:s');
-                     }else if($v['state'] == 40){
+                     }else if($v['state'] == 20){
                          $v['qy_qr'] = date('Y-m-d H:i:s');
                      }
                 }
@@ -92,27 +90,27 @@ class ApplySatisfactModel extends CommonModel{
               $user[]=M('user')->where(['is_del'=>0])->where($w)->getField('wechat_userid');//wechat_userid
               
               if($v['state'] == '10'){
-                  $userid = M('user')->where(['is_del'=>0])->where([id=>$v['teacher']])->getField('wechat_userid');//wechat_userid
+                  $userid = M('user')->where(['is_del'=>0])->where([school=>$v['apply_school'],'position_id'=>10])->getField('wechat_userid');//wechat_userid
                   array_push($user,$userid);
               }
             }
             
-            if($v['state'] == '30' && $v['area'] == 10){
+            if($v['state'] == '20' && $v['area'] == 10){
                 //张鹏
                 array_push($user, "XZsmqh29");
-            }else if($v['state'] == '30' && $v['area'] == 20){
+            }else if($v['state'] == '20' && $v['area'] == 20){
                 //张玉珠
                 array_push($user, "XZdl01");
-            }else if($v['state'] == '30' && $v['area'] == 40){
+            }else if($v['state'] == '20' && $v['area'] == 40){
                 //何亮
                 array_push($user, "XZsy01");
-            }else if($v['state'] == '30' && $v['area'] == 30){
+            }else if($v['state'] == '20' && $v['area'] == 30){
                 //王大鹏
                 array_push($user, "XZfx01");
-            }else if($v['state'] == '30' && $v['area'] == 50){
+            }else if($v['state'] == '20' && $v['area'] == 50){
                 //李明帅
                 array_push($user, "JZsyjn03");
-            }else if($v['state'] == '40'){
+            }else if($v['state'] == '30'){
                 //李冰+赵金玲
                 array_push($user, "ZYyy002");
                 array_push($user, "zhaojinling");
@@ -132,14 +130,14 @@ class ApplySatisfactModel extends CommonModel{
         $f2=array_merge($ff,$user);
         F('weixin',$f2);
         
-        $content = "满意度抽查有变动，请注意查看！";
+        $content = "客户投诉有变动，请注意查看！";
         
         $wx= getWechatObj();
         
         $wx->sendNewsMsg(
-            [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Satisfact/examine')),'')],
+            [$wx->buildNewsItem($content,$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Complaint/examine')),'')],
             ['touser'=>$user],
-            C('WECHAT_APP')['XZZS']
+            C('WECHAT_APP')['XZMS']
             );
         
     }
@@ -148,7 +146,7 @@ class ApplySatisfactModel extends CommonModel{
     *记录审核过程,1通过，2修改,3退回,4删除
     */
     function save_check($data,$type=1){
-        $mod=M('applySatisfact');
+        $mod=M('applyComplaint');
         $info=session('user_name').($type==1?',通过,':($type==2?',修改,':($type==3?',退回,':',删除,'))).date('Y-m-d H:i:s');
         foreach ($data as $v) {
             $inf=$info.','.$v['state'];
