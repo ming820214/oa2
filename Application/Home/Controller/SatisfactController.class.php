@@ -232,12 +232,13 @@ class SatisfactController extends HomeController {
     		    $map = $w;
     		}else{
     		    if($stage == 1){
-    		        $map['_logic']='or';
-    		        $map['_complex'] = $w;
-    		        if(!(I('get.search')['state'])){
+    		        
+    		        if(!(I('get.search')['state']) && !(I('get.search')['date1']) && !(I('get.search')['back']) && !(I('get.search')['area']) && !(I('get.search')['apply_school']) && !(I('get.search')['id'])){
+    		            $map['_logic']='or';
+    		            $map['_complex'] = $w;
     		            $map['state&is_del'] = array(array('elt',50),array('neq',1),'_multi'=>true);
     		        }else{
-    		            $map['state&is_del'] = array(array('eq',I('get.search')['state']),array('neq',1),'_multi'=>true);
+    		            $map = $w;
     		        }
     		        
     		    }else{
