@@ -328,8 +328,8 @@ class ApplyInspectController extends HomeController {
          		         unset($w['apply_school']);
          		         $w['area'] = '50';
          		         $w['state'] = 20;
-         		     }elseif(session('auth_id') == '1059'){
-         		         //郭强
+         		     }elseif(session('auth_id') == '2281'){
+         		         //潘小龙
          		         if($stage != 1){
          		             unset($w['apply_school']);
          		             unset($w['area']);

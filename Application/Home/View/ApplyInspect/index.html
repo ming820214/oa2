@@ -217,7 +217,7 @@
             	<button class="btn btn-info" onclick="check(0);">退回</button>
             </if>
         </if>
-        <if condition="$_SESSION.position_id neq '1' OR $_SESSION.position_id neq '10' OR $_SESSION.auth_id eq '673'">    
+        <if condition="$_SESSION.position_id eq '10' OR $_SESSION.auth_id eq '1'">    
        		<button class="btn btn-info" id="bt_change">整改检查</button><br/><br/>
        		<div style="color: red"><b>操作流程：先点击“整改检查”添加相关文字及附件保存后，再点击“通过”</b></div>
        	</if>

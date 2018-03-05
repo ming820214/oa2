@@ -101,8 +101,8 @@ class ApplyInspectModel extends CommonModel{
                 //李明帅
                 array_push($user, "JZsyjn03");
             }else if($v['state'] == '30'){
-                //郭强
-                array_push($user, "TCsy42");
+                //潘小龙
+                array_push($user, "XZfx03");
                 
             }
             unset($w);
