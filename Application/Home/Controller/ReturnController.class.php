@@ -141,7 +141,7 @@ class ReturnController extends HomeController {
         }else{
         	
 			$foo = M("FooInfo");
-			$class2 = $foo->where(['pid'=>17,'is_del'=>array('neq',1)])->field('id,name,`group`')->order('`group`,sort')->select();
+			$class2 = $foo->where(['pid'=>17,'is_del'=>array('neq',1),display=>1])->field('id,name,`group`')->order('`group`,sort')->select();
 			$this->class2=$class2;
 			
             $w['date']=session('date');

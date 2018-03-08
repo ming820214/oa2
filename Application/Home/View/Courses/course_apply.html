@@ -60,7 +60,7 @@
     <div class="panel-body">
         <ul><input type="hidden" name="id">
         	<li>校区隶属<font color="red">*</font><select name="area" id="area" class="form-control" required="required"><option value="">请选择校区隶属</option>{:fill_option_ex(get_config('SCHOOL_REGION'))}</select></li>
-        	<li id="operate_area" style="display:none;">运营区域<font color="red">*</font><select name="operate_area" class="form-control" required="required"><option value="">请选择运营区域</option><option value="1">运营1区</option><option value="2">运营2区</option><option value="3">运营3区</option><option value="4">运营4区</option></select></li>
+        	<li id="operate_area" style="display:none;">运营区域<font color="red">*</font><select name="operate_area" class="form-control"><option value="">请选择运营区域</option><option value="1">运营1区</option><option value="2">运营2区</option><option value="3">运营3区</option><option value="4">运营4区</option></select></li>
         	
             <li>学员姓名<font color="red">*</font><input type="text" name="name" class="form-control" required></li>
             <li>学号<font color="red">*</font><input type="text" name="std_id" class="form-control" required></li>
