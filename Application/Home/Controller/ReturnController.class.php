@@ -27,7 +27,7 @@ class ReturnController extends HomeController {
 				   	{
 					   	 
 						$record_gt = M('hw003.return','money_')->where(['id'=>$_POST['id']])->find();
-						if($record_gt && $record_gt['state'] == 8 && $record_gt['why3'] && ( ($record_gt['class1'] == 7) || ($record_gt['class1'] == 8) || ($record_gt['class1'] == 9) || ($record_gt['class1'] == 10) || ($record_gt['class1'] == 14))){
+						if($record_gt && $record_gt['state'] == 8 && $record_gt['why3'] && $record_gt['class1'] == 14){
 						    
 							
 						    $user[]= 'XZdl01'; //张玉珠
@@ -39,6 +39,8 @@ class ReturnController extends HomeController {
 							}else{
 								$user[]= ['XZdl01']; //张玉珠
 							}  */
+						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3'] && ( ($record_gt['class1'] == 7) || ($record_gt['class1'] == 8) || ($record_gt['class1'] == 9) || ($record_gt['class1'] == 10))){
+						    $user[]= 'yuzhongsheng'; //于忠盛
 						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 12) && ($record_gt['class1'] != 13) && ($record_gt['class1'] != 14) && ($record_gt['class1'] != 15))){
 						    $user[]= 'YY001'; //王胜鑫
 						}
@@ -1116,7 +1118,7 @@ class ReturnController extends HomeController {
 			$this->class2=$class2;
 			
 // 			if(session('auth_id') == 93){
-			if(session('auth_id') == 1){
+			if(session('auth_id') == 2335){
 				//此处交由刘媛媛处理，之前是王思雷处理的,
 				//如果是王思雷，则只能审核高报项目
 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','%港澳台%'),'OR');
@@ -1366,7 +1368,12 @@ class ReturnController extends HomeController {
             if(session('auth_id') == 1283){
                 //如果是王思雷，则只能审核高报项目
                 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','港澳台'),'OR');
-                $w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(7,8,9,10,14)";
+                $w['_string'] = "`class1`=14";
+                $w['state']=3;
+            }else if(session('auth_id') == 2095){
+                //如果是王思雷，则只能审核高报项目
+                //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','港澳台'),'OR');
+                $w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(7,8,9,10)";
                 $w['state']=3;
             }else{
                 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','港澳台'),'AND');
