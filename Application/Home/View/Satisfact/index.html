@@ -184,12 +184,12 @@
 
         <if condition="(ACTION_NAME eq 'examine')">
         	<if condition="($_SESSION.position_id eq '18') OR ($_SESSION.position_id eq '12')">   
-            	<button class="btn btn-info" onclick="check(1);">无异议通过</button>
+            	<button class="btn btn-info" onclick="check(1,this);">无异议通过</button>
             	<else/>
-            	<button class="btn btn-info" onclick="check(1);">通过</button>
+            	<button class="btn btn-info" onclick="check(1,this);">通过</button>
             </if>
         	<if condition="($_SESSION.position_id eq '18') OR ($_SESSION.position_id eq '12')">    
-            	<button class="btn btn-info" onclick="check(0);">有异议退回</button>
+            	<button class="btn btn-info" onclick="check(0,this);">有异议退回</button>
             </if>
             <if condition="(ACTION_NAME eq 'examine') AND ($_SESSION.position_id eq '10')">    
             	<button class="btn btn-info" id="bt_change">修改</button><br/><br/>
@@ -336,7 +336,7 @@
         }
     });
     //审核数据(1通过、0退回、-1删除)
-    function check(type){
+    function check(type,obj){
         if($("#apply_list tbody input:checked").val()==undefined){
             ui_error('请选择要操作的项目！');
             return;
@@ -359,11 +359,14 @@
                 return;
             }
         }
-        if(data.id!=undefined)
-        $.post('{:U("check")}',{type:type,data:data,why:why},function(msg){
-            if(msg=='ok')ui_info('操作成功');
-            loadData(0);
-        })
+        if(data.id!=undefined){
+        	$(obj).attr('disabled','disabled');
+            
+            $.post('{:U("check")}',{type:type,data:data,why:why},function(msg){
+                if(msg=='ok')ui_info('操作成功');
+                loadData(0);
+            });        	
+        }
     }
     
 
