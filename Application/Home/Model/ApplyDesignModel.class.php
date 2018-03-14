@@ -36,21 +36,30 @@ class ApplyDesignModel extends CommonModel{
     public function check_access(&$list){
         foreach ($list as &$v) {
             $v['back'] =null; 
-            //针对审批助理、师训部、行政办各部门的特殊处理
-            if(($v['apply_school'] == 'b64' || $v['apply_school'] == 'b45' || $v['apply_school'] == 'b69' || $v['apply_school'] == 'b37' || $v['apply_school'] == 'b71') && $v['state'] == 0){
-                $v['state']= 40;
+            
+            if($v['product_type'] == 2){
+                $v['state']= 70;
             }else{
-                if($v['state'] <80){
-                    if($v['state'] ==20){
-                        $v['state']=$v['state']+20;
-                    }else if($v['state'] ==40  && $v['apply_type'] == '月度'){
-                        $v['state']=$v['state']+30;
-                    }else if($v['state'] ==40  && $v['apply_type'] == '临时'){
-                        $v['state']=$v['state']+20;
-                    }else if($v['state'] ==50  && $v['apply_type'] == '月度'){
-                        $v['state']=$v['state']+20;
+                if(in_array($v['design_type'],array('名片','工牌','地贴','户外广告牌'))){
+                    $v['state']= 70;
+                }else{
+                    //针对审批助理、师训部、行政办各部门的特殊处理
+                    if(($v['apply_school'] == 'b64' || $v['apply_school'] == 'b45' || $v['apply_school'] == 'b69' || $v['apply_school'] == 'b37' || $v['apply_school'] == 'b71') && $v['state'] == 0){
+                        $v['state']= 40;
                     }else{
-                        $v['state']=$v['state']+10;
+                        if($v['state'] <80){
+                            if($v['state'] ==20){
+                                $v['state']=$v['state']+20;
+                            }else if($v['state'] ==40  && $v['apply_type'] == '月度'){
+                                $v['state']=$v['state']+30;
+                            }else if($v['state'] ==40  && $v['apply_type'] == '临时'){
+                                $v['state']=$v['state']+20;
+                            }else if($v['state'] ==50  && $v['apply_type'] == '月度'){
+                                $v['state']=$v['state']+20;
+                            }else{
+                                $v['state']=$v['state']+10;
+                            }
+                        }
                     }
                 }
             }
