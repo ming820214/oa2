@@ -1118,7 +1118,7 @@ class ReturnController extends HomeController {
 			$this->class2=$class2;
 			
 // 			if(session('auth_id') == 93){
-			if(session('auth_id') == 2335){
+			if(session('auth_id') == 1){
 				//此处交由刘媛媛处理，之前是王思雷处理的,
 				//如果是王思雷，则只能审核高报项目
 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','%港澳台%'),'OR');
