@@ -38,14 +38,30 @@ class ApplySatisfactModel extends CommonModel{
                 $v['back'] =null; 
                 
                 if($v['state'] <50){
-                     $v['state']=$v['state']+10;
-                     if($v['state'] == 20){
-                         $v['xg_qr'] = date('Y-m-d H:i:s');
-                     }else if($v['state'] == 30){
-                         $v['xz_qr'] = date('Y-m-d H:i:s');
-                     }else if($v['state'] == 40){
-                         $v['qy_qr'] = date('Y-m-d H:i:s');
-                     }
+                    if($v['area'] == 60){
+                        if($v['state'] <10){
+                            $v['state']=$v['state']+10;
+                        }else if($v['state'] == 10){
+                            $v['state']= 30;
+                        }else{
+                            $v['state']=$v['state']+10;
+                        }
+                        
+                        if($v['state'] == 30){
+                            $v['xg_qr'] = date('Y-m-d H:i:s');
+                        }else if($v['state'] == 40){
+                            $v['qy_qr'] = date('Y-m-d H:i:s');
+                        }
+                    }else{
+                        $v['state']=$v['state']+10;
+                        if($v['state'] == 20){
+                            $v['xg_qr'] = date('Y-m-d H:i:s');
+                        }else if($v['state'] == 30){
+                            $v['xz_qr'] = date('Y-m-d H:i:s');
+                        }else if($v['state'] == 40){
+                            $v['qy_qr'] = date('Y-m-d H:i:s');
+                        }
+                    }
                 }
         }
     }
@@ -112,6 +128,9 @@ class ApplySatisfactModel extends CommonModel{
             }else if($v['state'] == '30' && $v['area'] == 50){
                 //李明帅
                 array_push($user, "JZsyjn03");
+            }else if($v['state'] == '30' && $v['area'] == 60){
+                //于忠盛
+                array_push($user, "yuzhongsheng");
             }else if($v['state'] == '40'){
                 //李冰+赵金玲
                 array_push($user, "ZYyy002");

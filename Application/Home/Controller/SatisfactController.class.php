@@ -166,6 +166,11 @@ class SatisfactController extends HomeController {
          		         unset($w['apply_school']);
          		         $w['area'] = '50';
          		         $w['state'] = 30;
+         		     }elseif(session('auth_id') == '2095'){
+         		         //于忠盛
+         		         unset($w['apply_school']);
+         		         $w['area'] = '60';
+         		         $w['state'] = 30;
          		     }elseif(session('auth_id') == '1473' || session('auth_id') == '2335' || session('auth_id') == '566'){
          		         //李冰 赵金玲
          		         if($stage != 1){
@@ -217,6 +222,11 @@ class SatisfactController extends HomeController {
     		            //张晓明
     		            unset($w['apply_school']);
     		            $w['area'] = '20';
+    		            $w['state'] = array('egt',30);
+    		        }elseif(session('auth_id') == '2095'){
+    		            //于忠盛
+    		            unset($w['apply_school']);
+    		            $w['area'] = '60';
     		            $w['state'] = array('egt',30);
     		        }elseif(session('auth_id') == '2100'){
     		            //李明帅
