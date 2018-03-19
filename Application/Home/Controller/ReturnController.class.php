@@ -41,6 +41,8 @@ class ReturnController extends HomeController {
 							}  */
 						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3'] && ( ($record_gt['class1'] == 7) || ($record_gt['class1'] == 8) || ($record_gt['class1'] == 9) || ($record_gt['class1'] == 10))){
 						    $user[]= 'yuzhongsheng'; //于忠盛
+						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3'] && ( ($record_gt['class1'] == 12) || ($record_gt['class1'] == 13) || ($record_gt['class1'] == 15) )){
+						    $user[]= 'JZsyjn03'; //李明帅
 						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 12) && ($record_gt['class1'] != 13) && ($record_gt['class1'] != 14) && ($record_gt['class1'] != 15))){
 						    $user[]= 'YY001'; //王胜鑫
 						}
@@ -492,7 +494,8 @@ class ReturnController extends HomeController {
                     $record_xq = M('hw003.return','money_')->where($w)->find();
                     if($record_xq){
                         
-                        if(( ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14) && ($record_xq['class1'] != 15))){
+//                         if(( ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14) && ($record_xq['class1'] != 15))){
+                        if(( ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 14))){
                             if($record_xq['region'] == '辽东'){
                                 //张鹏
                                 $user[]= 'XZsmqh29';
@@ -511,12 +514,15 @@ class ReturnController extends HomeController {
                             }else if($record_xq['region'] == '黑龙江'){
                                 //何亮
                                 $user[]= 'XZsy01';
+                            }else if($record_xq['region'] == '多种经营事业部'){
+                                //李名帅
+                                $user[]= 'JZsyjn03';
                             }
                             
-                        }elseif(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13) || ($record_xq['class1'] == 15)){
+                        }/* elseif(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13) || ($record_xq['class1'] == 15)){
                             $d['state']=3;
                             $user[]= 'JZsyjn03'; //李名帅
-                        }else{
+                        } */else{
                             $d['state']=8;
                             //$user[]= 'QThwzb002'; //刘媛媛
                             $user[]= 'zhaojinling'; //赵金玲
@@ -800,7 +806,7 @@ class ReturnController extends HomeController {
                     
                     if($record_xq){
                         //如果是王思雷，则只能审核高报项目
-                        if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14)){
+                        if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 14)){
                             //							$user[0]= 'ZXhld001'; //邹德涛
                             $user[]= 'ZYyy002'; //李冰
                             //M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid
@@ -955,12 +961,14 @@ class ReturnController extends HomeController {
                 $w['region'] = "吉林";
             }else if(session('auth_id') == 439){
                 $w['region'] = "黑龙江";
+            }else if(session('auth_id') == 2100){
+                $w['region'] = "多种经营事业部";
             }
             
             $w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10) OR (`class1` is null))";
             
             $w['state']=9;
-            $w['class1'] = array('not in',[12,13,14,15]); //非长颈鹿项目、童话
+            $w['class1'] = array('not in',[14]); //非长颈鹿项目、童话
             //$w['why3']=array('neq','');
             
             
@@ -1127,7 +1135,7 @@ class ReturnController extends HomeController {
 			}else if(session('auth_id') == 1473){
 //				$w['class'] = array('notlike',array('%高考志愿填报%','%自主招生%','%港澳台%'),'AND');
 				
-				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,12,13,14,15) OR (`class1` is null))";
+				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,14) OR (`class1` is null))";
 			}
 			
             $w['state']=8;
