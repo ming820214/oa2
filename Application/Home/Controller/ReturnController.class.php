@@ -489,11 +489,12 @@ class ReturnController extends HomeController {
         if($_POST['aax']){
             foreach ($_POST['id'] as $key => $value) {
                 $w['id']=$value;
-                $d['state']=9;
+                $d['state']=8;
                 {
                     $record_xq = M('hw003.return','money_')->where($w)->find();
                     if($record_xq){
-                        
+                        $user[]= 'zhaojinling'; //赵金玲
+                        $user[]= 'ZYyy002'; //李冰
 //                         if(( ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14) && ($record_xq['class1'] != 15))){
                         if(( ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 14))){
                             if($record_xq['region'] == '辽东'){
@@ -526,6 +527,7 @@ class ReturnController extends HomeController {
                             $d['state']=8;
                             //$user[]= 'QThwzb002'; //刘媛媛
                             $user[]= 'zhaojinling'; //赵金玲
+                            $user[]= 'ZYyy002'; //李冰
                             
                         }
                         
@@ -571,9 +573,15 @@ class ReturnController extends HomeController {
                         
                         $wx= getWechatObj();
                         
-                        if(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13) || ($record_xq['class1'] == 15)){
+                        $wx->sendNewsMsg(
+                            [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/all')),'')],
+                            ['touser'=>$user],
+                            C('WECHAT_APP')['TZTX']
+                            );
+                        
+                        /* if(($record_xq['class1'] == 12) || ($record_xq['class1'] == 13) || ($record_xq['class1'] == 15)){
                             $wx->sendNewsMsg(
-                                [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check3')),'')],
+                                [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/all')),'')],
                                 ['touser'=>$user],
                                 C('WECHAT_APP')['TZTX']
                                 );
@@ -584,7 +592,7 @@ class ReturnController extends HomeController {
                                 ['touser'=>$user],
                                 C('WECHAT_APP')['TZTX']
                                 );
-                        }
+                        } */
                         
                     }
                     
