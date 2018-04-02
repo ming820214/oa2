@@ -143,7 +143,7 @@ class CoursesApplyController extends HomeController {
                 
                 $w['type_state']=['in','15,55'];
                 $w['_string'] = " (operate_area is null or operate_area = '') "; 
-            }else if(session('auth_id')==439){//黑龙江 何亮
+            }else if(session('auth_id')==2441){//黑龙江 何亮
                 $mod = M('foo_info');
                 $sch_ids = $mod->where(['region'=>40,'pid'=>15,'is_del' => 0])->getField('id',true);
                 $w['school'] = array('in',$sch_ids);
