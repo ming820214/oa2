@@ -119,7 +119,7 @@ class CoursesApplyController extends HomeController {
             $w['type_state']=['in','25,30'];
         }else if($w['act']=='examine') {
             
-            if(session('position_id')==10 && !in_array(session('auth_id'),[2100,673,1283,439,651,2119,2186,2095,2175])){
+            if(session('position_id')==10 && !in_array(session('auth_id'),[2100,673,1283,2441,651,2119,2186,2095,2175])){
                 $w['type_state']=['in','10,50'];
             }else if(session('auth_id')==2100){//多种经营 李明帅
                 $mod = M('foo_info');
