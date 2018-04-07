@@ -156,12 +156,12 @@ class SatisfactController extends HomeController {
          		         unset($w['apply_school']);
          		         $w['area'] = '20';
          		         $w['state'] = 30;
-         		     }elseif(session('auth_id') == '1'){
+         		     }/* elseif(session('auth_id') == '1'){
          		         //张晓明
          		         unset($w['apply_school']);
          		         $w['area'] = '20';
          		         $w['state'] = 30;
-         		     }elseif(session('auth_id') == '2100'){
+         		     } */elseif(session('auth_id') == '2100'){
          		         //李明帅
          		         unset($w['apply_school']);
          		         $w['area'] = '50';

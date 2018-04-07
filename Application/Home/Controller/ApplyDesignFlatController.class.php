@@ -233,7 +233,7 @@ class ApplyDesignFlatController extends HomeController {
 //          		             $w['area'] = '吉林';
 //          		             $w['state'] = 20;
          		             $w['_string']="((area='吉林' and state=20) or (state=10 and apply_school='s8'))";
-         		         }elseif(session('auth_id') == '2101'){
+         		         }elseif(session('auth_id') == '2116'){
          		             unset($w['apply_school']);
          		             unset($w['area']);
          		             $w['state'] = 70;
@@ -299,7 +299,7 @@ class ApplyDesignFlatController extends HomeController {
          		         unset($w['apply_school']);
          		         unset($w['area']);
          		         $w['state'] = 60;
-         		     }elseif(session('auth_id') == '2101'){
+         		     }elseif(session('auth_id') == '2116'){
          		         unset($w['apply_school']);
          		         unset($w['area']);
          		         $w['state'] = 70;
