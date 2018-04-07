@@ -130,7 +130,7 @@
     <div class="panel-body">
         <ul><input type="hidden" name="id">
         	<if condition="(ACTION_NAME eq 'examine') AND (session('position_id') == '10')">
-            	<li style="width:400px;">解决问题反馈内容<font color="red">*</font>：<textarea rows="3" cols="" name="resolve_content" class="form-control" maxlength="200" required ></textarea></li>
+            	<li style="width:400px;">解决问题反馈内容<font color="red">*</font>：<textarea rows="3" cols="" name="resolve_content" class="form-control" maxlength="200" required="required" ></textarea></li>
             <else/>
             
             <li>抽查月度<font color="red">*</font>：<input type="month" name="apply_month" class="form-control" required value="{$month}"/></li>
