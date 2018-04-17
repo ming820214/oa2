@@ -51,7 +51,7 @@ class ApplyDesignModel extends CommonModel{
                     if(($v['apply_school'] == 'b64' || $v['apply_school'] == 'b45' || $v['apply_school'] == 'b69' || $v['apply_school'] == 'b37' || $v['apply_school'] == 'b71') && $v['state'] == 0){
                         $v['state']= 40;
                     }else{
-                        if($v['state'] <80){
+                        if($v['state'] <=80){
                             if($v['state'] ==20){
                                 $v['state']=$v['state']+50;
                             }else if($v['state'] ==40  && $v['apply_type'] == '月度'){
