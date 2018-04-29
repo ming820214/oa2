@@ -129,8 +129,8 @@ class AuthCheckBehavior extends Behavior {
 				//跳转到认证网关
 				redirect(U(C('USER_AUTH_GATEWAY')));
 			}
-			$e['message'] = "没有权限";
-			include                         C('TMPL_NO_HAVE_AUTH');
+			$e['message'] = "没有权限（行为）";
+			include C('TMPL_NO_HAVE_AUTH');
 			die ;
 		};
 		return true;

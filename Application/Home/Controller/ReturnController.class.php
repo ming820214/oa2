@@ -16,18 +16,25 @@ class ReturnController extends HomeController {
 			
             if($_POST['x'])$m->state=1;
             
+            $record_gt = M('hw003.return','money_')->where(['id'=>$_POST['id']])->find();
+            
             if($_POST['action_node'] && $_POST['why3'] && $_POST['action_node'] == 'zbgt'){
-                $m->state = 3;
+                //到区域总监李名帅查看长颈鹿项目、童话项目退费
+                if(in_array($record_gt['class1'],[12,13,14,15])){
+                    $m->state = 3;
+                }else{
+                     $m->time2=date('Y-m-d H:i:s');
+                     $m->state = 4;
+                }
+                
             }
             if($m->save()){
                 if((session('auth_id') != 90) && (session('auth_id') != 89) && (session('auth_id') != 69) && (session('auth_id') != 1283) && (session('auth_id') != 1293) && (session('auth_id') != 651) && (session('auth_id') != 439) )
 				  {
-			       
-				   
+				        $record_gt = M('hw003.return','money_')->where(['id'=>$_POST['id']])->find();
 				   	{
-					   	 
-						$record_gt = M('hw003.return','money_')->where(['id'=>$_POST['id']])->find();
-						if($record_gt && $record_gt['state'] == 8 && $record_gt['why3'] && $record_gt['class1'] == 14){
+						
+						if($record_gt && $record_gt['state'] == 3 && $record_gt['why3'] && $record_gt['class1'] == 14){
 						    
 							
 						    $user[]= 'XZdl01'; //张玉珠
@@ -39,11 +46,11 @@ class ReturnController extends HomeController {
 							}else{
 								$user[]= ['XZdl01']; //张玉珠
 							}  */
-						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3'] && ( ($record_gt['class1'] == 7) || ($record_gt['class1'] == 8) || ($record_gt['class1'] == 9) || ($record_gt['class1'] == 10))){
+						}else if($record_gt && $record_gt['state'] == 3 && $record_gt['why3'] && ( ($record_gt['class1'] == 7) || ($record_gt['class1'] == 8) || ($record_gt['class1'] == 9) || ($record_gt['class1'] == 10))){
 						    $user[]= 'yuzhongsheng'; //于忠盛
-						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3'] && ( ($record_gt['class1'] == 12) || ($record_gt['class1'] == 13) || ($record_gt['class1'] == 15) )){
-						    $user[]= 'JZsyjn03'; //李明帅
-						}else if($record_gt && $record_gt['state'] == 8 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 12) && ($record_gt['class1'] != 13) && ($record_gt['class1'] != 14) && ($record_gt['class1'] != 15))){
+						}else if($record_gt && $record_gt['state'] == 3 && $record_gt['why3'] && ( ($record_gt['class1'] == 12) || ($record_gt['class1'] == 13) || ($record_gt['class1'] == 15) )){
+						    $user[]= 'lvxueru'; //吕雪茹
+						}else if($record_gt && $record_gt['state'] == 4 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 12) && ($record_gt['class1'] != 13) && ($record_gt['class1'] != 14) && ($record_gt['class1'] != 15))){
 						    $user[]= 'YY001'; //王胜鑫
 						}
 					}
@@ -524,7 +531,6 @@ class ReturnController extends HomeController {
                             $d['state']=3;
                             $user[]= 'JZsyjn03'; //李名帅
                         } */else{
-                            $d['state']=8;
                             //$user[]= 'QThwzb002'; //刘媛媛
                             $user[]= 'zhaojinling'; //赵金玲
                             $user[]= 'ZYyy002'; //李冰
@@ -733,7 +739,7 @@ class ReturnController extends HomeController {
 
 //给龙哥特别处理
             if(session('user_name')=='总裁'){
-                $w['school']=array('like',array('盘锦水木清华校区','恒泰校区','盘锦日月兴城校区'),'OR');
+                $w['school']=array('like',array('盘锦水木清华校区','盘锦日月兴城校区'),'OR');
             }
 //给龙哥特别处理
 
@@ -807,24 +813,22 @@ class ReturnController extends HomeController {
         if($_POST['aax']){
             foreach ($_POST['id'] as $key => $value) {
                 $w['id']=$value;
-                $d['state']=8;
+                $d['state']=9;
                 
                 {
                     $record_xq = M('hw003.return','money_')->where($w)->find();
                     
-                    if($record_xq){
+                    /* if($record_xq && in_array($record_xq['class1'],[12,13,15])){
+                        $user[]= 'lvxueru'; //吕雪茹
                         //如果是王思雷，则只能审核高报项目
-                        if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 14)){
-                            //							$user[0]= 'ZXhld001'; //邹德涛
-                            $user[]= 'ZYyy002'; //李冰
-                            //M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid
-                        }/* else if(($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 15)){
-                            // 							$user[0]= 'Azl'; //王思雷
-                            //$user[]= 'QThwzb002'; //刘媛媛
-                            //$user[]= 'zhaojinling'; //赵金玲
-                            
-                        } */
+                    }else */ if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 14)){
+                        //$user[0]= 'ZXhld001'; //邹德涛
+                        $user[]= 'ZYyy002'; //李冰
+                        //M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid
+                    }else{
+                        //$user[0]= 'Azl'; //王思雷
                         $user[]= 'zhaojinling'; //赵金玲
+                        
                     }
                 }
                 
@@ -845,7 +849,7 @@ class ReturnController extends HomeController {
                     
                     $wx= getWechatObj();
                     $wx->sendNewsMsg(
-                        [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/gt')),'')],
+                        [$wx->buildNewsItem("您有退费记录待审核",$info,wx_oauth(C('WWW').U('Public/log_wx?urll=Return/check3')),'')],
                         ['touser'=>$user],
                         C('WECHAT_APP')['TZTX']
                         );
@@ -963,19 +967,18 @@ class ReturnController extends HomeController {
                 $w['region'] = "辽东";
             }else if(session('auth_id') == 1283){
                 $w['region'] = "辽西";
-            }else if(session('auth_id') == 1293){
-                $w['region'] = "辽宁";
-            }else if(session('auth_id') == 651){
+            }else if(session('auth_id') == 2440){
                 $w['region'] = "吉林";
-            }else if(session('auth_id') == 439){
+            }else if(session('auth_id') == 2441){
                 $w['region'] = "黑龙江";
-            }else if(session('auth_id') == 2100){
+            }else if(session('auth_id') == 2100){ //李明帅
                 $w['region'] = "多种经营事业部";
+                $w['class1'] = array('in',[12,13,15]);
             }
             
             $w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10) OR (`class1` is null))";
             
-            $w['state']=9;
+            $w['state']=8;
             $w['class1'] = array('not in',[14]); //非长颈鹿项目、童话
             //$w['why3']=array('neq','');
             
@@ -1146,7 +1149,7 @@ class ReturnController extends HomeController {
 				$w['_string'] = "(`class` NOT LIKE '%高考志愿填报%' AND `class` NOT LIKE '%自主招生%' AND `class` NOT LIKE '%港澳台%') AND (`class1` not in (7,8,9,10,14) OR (`class1` is null))";
 			}
 			
-            $w['state']=8;
+            $w['state']=9;
             $w['date']=session('date');
             $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
 			
@@ -1397,11 +1400,11 @@ class ReturnController extends HomeController {
                 $w['state']=3;
             }
             
-            /* $w['state']=3; */
-            
-            //李名帅查看长颈鹿项目、童话项目退费
-            if(session('auth_id') == 2100){
+            //吕雪茹查看长颈鹿项目、童话项目退费
+            if(session('auth_id') == 2175){
                 $w['class1'] = array('in',[12,13,15]); //长颈鹿项目、童话
+                $w['why3']=array('neq','');
+                //$w['state']=9;
             }else{
                 $w['class1'] = array('not in',[12,13,15]); //非长颈鹿项目、童话
                 $w['why3']=array('neq','');
@@ -1409,6 +1412,12 @@ class ReturnController extends HomeController {
             
             
             $w['date']=session('date');
+            
+            if(session('auth_id') == 89){
+                $w['state']=3;
+                $w['zbgt_time'] = array('elt','2018-04-29 09:25:30');
+            }
+            
             $list=M('hw003.money_return',null)->where($w)->order('id desc')->select();
             
             foreach($list as &$vor){
@@ -1432,6 +1441,7 @@ class ReturnController extends HomeController {
             unset($key);
             unset($value);
             
+            unset($w['zbgt_time']);
             $this->list=$list;
             
             $w['state']=array('in','4,5');
