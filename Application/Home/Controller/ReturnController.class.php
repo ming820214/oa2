@@ -500,8 +500,8 @@ class ReturnController extends HomeController {
                 {
                     $record_xq = M('hw003.return','money_')->where($w)->find();
                     if($record_xq){
-                        $user[]= 'zhaojinling'; //赵金玲
-                        $user[]= 'ZYyy002'; //李冰
+//                         $user[]= 'zhaojinling'; //赵金玲
+//                         $user[]= 'ZYyy002'; //李冰
 //                         if(( ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 12) && ($record_xq['class1'] != 13) && ($record_xq['class1'] != 14) && ($record_xq['class1'] != 15))){
                         if(( ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 14))){
                             if($record_xq['region'] == '辽东'){
@@ -534,7 +534,7 @@ class ReturnController extends HomeController {
                             //$user[]= 'QThwzb002'; //刘媛媛
                             $user[]= 'zhaojinling'; //赵金玲
                             $user[]= 'ZYyy002'; //李冰
-                            
+                            $d['state']=9;
                         }
                         
                         /* //如果是王思雷，则只能审核高报项目
