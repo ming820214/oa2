@@ -20,7 +20,7 @@ class ReturnController extends HomeController {
             
             if($_POST['action_node'] && $_POST['why3'] && $_POST['action_node'] == 'zbgt'){
                 //到区域总监李名帅查看长颈鹿项目、童话项目退费
-                if(in_array($record_gt['class1'],[12,13,14,15])){
+                if(in_array($record_gt['class1'],[7,8,9,10,12,13,14,15])){
                     $m->state = 3;
                 }else{
                      $m->time2=date('Y-m-d H:i:s');
@@ -47,7 +47,7 @@ class ReturnController extends HomeController {
 								$user[]= ['XZdl01']; //张玉珠
 							}  */
 						}else if($record_gt && $record_gt['state'] == 3 && $record_gt['why3'] && ( ($record_gt['class1'] == 7) || ($record_gt['class1'] == 8) || ($record_gt['class1'] == 9) || ($record_gt['class1'] == 10))){
-						    $user[]= 'yuzhongsheng'; //于忠盛
+						    $user[]= 'YX001'; //赵锡瑞
 						}else if($record_gt && $record_gt['state'] == 3 && $record_gt['why3'] && ( ($record_gt['class1'] == 12) || ($record_gt['class1'] == 13) || ($record_gt['class1'] == 15) )){
 						    $user[]= 'lvxueru'; //吕雪茹
 						}else if($record_gt && $record_gt['state'] == 4 && $record_gt['why3']  && ( ($record_gt['class1'] != 7) && ($record_gt['class1'] != 8) && ($record_gt['class1'] != 9) && ($record_gt['class1'] != 10) && ($record_gt['class1'] != 12) && ($record_gt['class1'] != 13) && ($record_gt['class1'] != 14) && ($record_gt['class1'] != 15))){
@@ -1389,7 +1389,7 @@ class ReturnController extends HomeController {
                 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','港澳台'),'OR');
                 $w['_string'] = "`class1`=14";
                 $w['state']=3;
-            }else if(session('auth_id') == 2095){
+            }else if(session('auth_id') == 90){
                 //如果是王思雷，则只能审核高报项目
                 //				$w['class'] = array('like',array('%高考志愿填报%','%自主招生%','港澳台'),'OR');
                 $w['_string'] = "(`class` LIKE '%高考志愿填报%' OR `class` LIKE '%自主招生%' OR `class` LIKE '%港澳台%') or `class1` in(7,8,9,10)";
