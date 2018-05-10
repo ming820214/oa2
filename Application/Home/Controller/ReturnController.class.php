@@ -824,6 +824,7 @@ class ReturnController extends HomeController {
                     }else */ if((strpos($record_xq['class'], '高考志愿填报') === FALSE) && (strpos($record_xq['class'], '自主招生') === FALSE) && (strpos($record_xq['class'], '港澳台') === FALSE) && ($record_xq['class1'] != 7) && ($record_xq['class1'] != 8) && ($record_xq['class1'] != 9) && ($record_xq['class1'] != 10) && ($record_xq['class1'] != 14)){
                         //$user[0]= 'ZXhld001'; //邹德涛
                         $user[]= 'ZYyy002'; //李冰
+                        $user[]= 'zhaojinling'; //赵金玲
                         //M('user')->where(['is_del'=>0,'school'=>get_school_id(),'position_id'=>10])->getField('wechat_userid');//wechat_userid
                     }else{
                         //$user[0]= 'Azl'; //王思雷
