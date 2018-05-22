@@ -344,13 +344,33 @@
         Ycom.loading.show();
         var data = $("#apply_list tbody input:checked").serializeJson();
         
-        var record = $("#apply_list tbody input:checked").data('info');
+        //var record = $("#apply_list tbody input:checked").data('info');
+        var record = $("#apply_list tbody input:checked");
         
-        if((record.state == '20') && (record.resolve == '是')  && ($.isEmptyObject(record.resolve_content))&& ({$_SESSION['position_id']} == 10)){
+        if(record.length>1){
+        	for(var i=0;i<record.length;i++){
+        		var rd = $(record[i]).data('info');
+        		
+        		if((rd.state == '20') && (rd.resolve == '是')  && ($.isEmptyObject(rd.resolve_content))&& ({$_SESSION['position_id']} == 10)){
+                	Ycom.loading.hide();
+                	ui_error("请先修改序号" + rd.id + "的记录，填写解决问题反馈内容！");
+                	return;
+                }
+        		
+        	}
+        }else{
+        	record = record.data('info');
+        	if((record.state == '20') && (record.resolve == '是')  && ($.isEmptyObject(record.resolve_content))&& ({$_SESSION['position_id']} == 10)){
+            	Ycom.loading.hide();
+            	ui_error("请先修改记录，填写解决问题反馈内容！");
+            	return;
+            }
+        }
+        /* if((record.state == '20') && (record.resolve == '是')  && ($.isEmptyObject(record.resolve_content))&& ({$_SESSION['position_id']} == 10)){
         	Ycom.loading.hide();
         	ui_error("请先修改记录，填写解决问题反馈内容！");
         	return;
-        }
+        } */
         var why = '';
         if(type==0){
             why = prompt('退回原因(必填)：','');

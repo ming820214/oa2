@@ -89,6 +89,7 @@ class SatisfactController extends HomeController {
 *审核操作
 */
 	public function check(){
+	    
 		if(IS_AJAX&&I('post.data')){
 			if(D('ApplySatisfact')->check(I('post.type'),I('post.data')['id'],I('post.why')))$this->ajaxReturn('ok');
 			$this->ajaxReturn('审核出错');
