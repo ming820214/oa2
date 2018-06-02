@@ -1,0 +1,113 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	<input type="hidden" name="ajax" id="ajax" value="1">
+	<select name="dept_list" id="dept_list" class="hidden">
+		{:fill_option($dept_list)}
+	</select>
+	{:W('PageHeader/simple',array('name'=>'岗位科目管理','search'=>'N'))}
+	<form id="subject_form" name="form_search" method="post">
+		<div class="operate panel panel-default">
+			<div class="panel-body">
+				<div class="pull-left">
+				<h3 style="color:red;">说明：请先选择相应财务岗位，之后再选择该岗位要审核的科目！</h3>
+				</div>
+				<div class="pull-right">
+					<input type="submit" class="btn btn-sm btn-primary" value="保存"/>
+				</div>
+			</div>
+		</div>
+	
+	<!-- 列表显示区域  -->
+	<div class="operate panel panel-default">
+			<div class="panel-body">
+				<div class="row">
+				<div class="col-sm-4 pull-right"></div>
+					<div class="col-sm-3 pull-right">
+						<label for="exampleInputEmail1">岗位<font color="red">*</font>：</label>
+						<select class="form-control" name="post_id" id="post_id" msg="请选择岗位" required="required">
+							<option value=''>请选择岗位</option>{:fill_option_extend(get_config('ORG_POST'),[49,51,53],null)}
+						</select>
+					</div>
+					
+				</div>
+			</div>
+			<div class="panel-body">
+				<div class="col-sm-3 pull-left">
+					<select id="items" class="form-control" multiple="multiple" size="20">
+						{:fill_option_ex(get_config('FINANCE_SUBJECT'))}
+					</select>
+				</div>
+				<div class="col-sm-2" style="margin-top:3%;">
+					<div style="margin-left:40%;margin-right:50%;margin-top:50%;margin-bottom:50%;">
+					<input id="add_item" type="button" class="btn btn-success" value="添加->"><br/><br/>
+					<input id="remove_item" type="button" class="btn btn-danger" value="<-移除">
+					</div>
+				</div>
+				
+				
+				<div class="col-sm-3">
+					<select name="subject_id[]" class="form-control" multiple="multiple" size="20">
+					</select>
+				</div>
+				<div class="col-sm-4 pull-right"></div>
+			</div>
+	</div>
+	</form>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		$("#subject_form").submit(function(event){
+	        event.preventDefault();
+	        var data = $("#subject_form").serializeArray();
+	        $.post("{:U('write')}",data,function(msg){
+	            ui_info(msg);
+	        });
+		});
+		
+		$(document).ready(function() {
+			var options = $('#items').find('option');
+			$('#add_item').click(function(){
+				$('select[name="subject_id[]"]').append($('#items').find('option:selected'));
+			});     
+			
+			$('#items').dblclick(function(){
+				$('select[name="subject_id[]"]').append($('#items').find('option:selected'));
+			});
+			
+			$('select[name="subject_id[]"]').dblclick(function(){
+				$('#items').append($('select[name="subject_id[]"]').find('option:selected'));
+			});
+			
+			
+			$('#remove_item').click(function(){
+				$('#items').append($('select[name="subject_id[]"]').find('option:selected'));
+			});
+			
+			$('#post_id').change(function(){
+				$('select[name="subject_id[]"]').empty();
+				$('#items').empty();
+				$('#items').append(options);
+				$.ajax({
+			        url: '{:U("PostSubject/ajax_list")}',
+			        type: 'GET',
+			        dataType: 'JSON',
+			        data: {post_id:$(this).val()},
+			        success:function(msg){
+			        	if(msg.state == 'ok'){
+			        		if(msg.data){
+			        			for(var i=0;i<msg.data.length;i++){
+			        				$('select[name="subject_id[]"]').append("<option value='" + msg.data[i]['subject_id'] + "'>" + msg.data[i]['subject_name'] + "</option>");
+			        				$('#items option[value="' + msg.data[i]['subject_id'] + '"]').remove();
+			        			}	
+			        		}
+			        		
+			        	}
+			        }
+			    })
+			});
+			
+		});
+		
+	</script>
+
+</block>

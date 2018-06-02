@@ -1,0 +1,555 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+<style>
+.input-group{margin: 10px 0;}
+#apply_form li{ width: 200px;float: left;margin: 5px;list-style: none;font-weight: bold;}
+.table-responsive{max-height: 500px;overflow: auto;}
+#apply_list{min-width: 3000px;}
+.pagination {margin: 0;} 
+.td_dept_name{width: 120px;}
+.td_info{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.td_other{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 500px;}
+.notes{white-space: inherit !important;word-wrap:break-word;word-break:break-all;max-width: 300px;}
+.money_time,.td_update_time,.td_create_time{width: 155px;}
+
+/* Let's get this party started */
+::-webkit-scrollbar {
+    width: 15px;
+    height: 20px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(35,198,200,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(35,198,200,0.4); 
+}
+
+</style>
+
+<div class="page-header clearfix">
+    <div class="col-sm-3">
+    	<if condition="ACTION_NAME == 'index'">
+    		<h1>授课结果认证申请</h1>
+    		<elseif condition="ACTION_NAME == 'examine'"/>
+    		<h1>平面类设计审核</h1>
+    		<else/><h1>授课结果认证数据管理</h1>
+    	</if>
+    </div>
+    
+    <div class="col-sm-12">
+        <a class="btn btn-sm btn-success pull-right" onclick="toggle_adv_search();"><i id="toggle_adv_search_icon" class="fa fa-chevron-down bigger-125"></i></a>
+    </div>
+</div>
+
+<!-- 搜索部分 -->
+<form class="panel panel-default hidden" id="adv_search" method="post" action="{:U('export')}">
+    <div class="panel-heading">
+        <input type="hidden" name="stage" value="<switch name="ACTION_NAME"><case value="index">1</case><case value="apply">2</case><case value="cost">3</case><case value="examine">4</case><case value="manage">5</case></switch>">
+        <div class="row">
+            <h4 class="col-xs-6">高级搜索</h4>
+            <div class="col-xs-6 text-right">
+                <a class="btn btn-info" onclick="loadData(0)">筛选</a>
+                <if condition="(ACTION_NAME eq 'manage')"><button type="submit" class="btn btn-info">导出</button></if>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="form-inline">
+            
+            <div class="input-group">
+                <a class="input-group-addon">提报日期</a>
+                <input name="date1" type="date" class="form-control">
+                <a class="input-group-addon">-</a>
+                <input name="date2" type="date" class="form-control">
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">提报月度</a>
+                <input type="month" name="apply_month" class="form-control"  value="{$month}"/>
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">审核状态</a>
+                <select name="state" class="form-control"><option value="">全部</option>{:fill_option_ex(get_config('APPLYDESIGN_STATE'))}</select>
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">流程状态</a>
+                <select name="back" class="form-control"><option value="">全部</option><option value="0">正常</option><option value="1">退回</option></select>
+            </div>
+            
+            <div class="input-group">
+                <a class="input-group-addon">计划类型</a>
+                <select name="apply_type" class="form-control" ><option value="">全部</option><option>月度</option><option>临时</option></select>
+            </div>
+            
+            
+            <if condition="(ACTION_NAME eq 'manage')">
+                
+                <div class="input-group">
+                    <a class="input-group-addon">申请校区</a>
+                    <select name="school" class="form-control">
+                    	<option value="">全部</option>
+            
+		            	<optgroup label="校区">
+		            	<foreach name="school_all" item="sc">
+		            		<option value="{$key}">{$sc}</option>
+		            	</foreach>
+		            	</optgroup>
+		            	
+		            	<!-- <optgroup label="部门">
+		            	<foreach name="dept" item="dt">
+		            	<option value="{$key}">{$dt}</option>
+		            	</foreach>
+		            	</optgroup> -->
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <a class="input-group-addon">区域</a>
+                    <select name="area" class="form-control"><option value="">请选择区域</option><option>辽宁</option><option>吉林</option><option>黑龙江</option></select>
+                </div>
+                <div class="input-group col-35">
+	                <a class="input-group-addon">提报人</a>
+	                <input type="text" name="apply_user" class="form-control"/>
+	            </div>
+            </if>
+            
+            <div class="input-group col-15">
+                <a class="input-group-addon">序号</a>
+                <input name="id" class="form-control">
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- 录入修改部分 -->
+<form id="apply_form"  enctype="multipart/form-data" method="post"  class="panel panel-default" <if condition="ACTION_NAME neq 'index'">style="display:none;"</if> action="{:U('write')}">
+    <div class="panel-heading">
+        <div class="pull-right">
+            <if condition="ACTION_NAME eq 'index'"><button type="submit" class="btn btn-danger" id="bt_add">保存</button></if>
+            <button type="submit" class="btn btn-danger" style="display:none;" id="bt_save_change">修改</button>&nbsp;
+            <button type="reset" class="btn btn-danger" onclick="$('#apply_list .success').removeClass('success');$('input[type=hidden]').val('');resetFileComponent();">清空</button>
+        </div>
+        <h3>申请/修改 <font color="red">注意事项：修改记录时，需要重新上传各个图片。</font></h3>
+    </div>
+    <div class="panel-body">
+        <ul><input type="hidden" name="id">
+        	<input type="hidden" name="product_type" value="1"/>
+            <li>申请日期<font color="red">*</font>：<input type="date" name="apply_date" class="form-control" required value="{$date}"/></li>
+            <li>科目<font color="red">*</font>：<select name="subject" class="form-control" required><option value="">请选择科目</option><option>语文</option><option>数学</option><option>英语</option><option>物理</option><option>化学</option><option>生物</option><option>地理</option><option>政治</option><option>历史</option></select></li>
+            <li>学员姓名<font color="red">*</font>：<input type="text" name="student" class="form-control" maxlength="10" required/></li>
+            <li>学校<font color="red">*</font>：<input type="text" name="stu_school" class="form-control" maxlength="30" required/></li>
+            <li>年级<font color="red">*</font>：<select name="grade" class="form-control" required ><option value="">请选择年级</option>
+				<option>高三</option>
+				<option>高二</option>
+				<option>高一</option>
+				<option>九年级</option>
+				<option>八年级</option>
+				<option>七年级</option>
+				<option>六年级</option>            
+	            </select>
+            </li>
+            
+             <li>文/理<font color="red">*</font>：<select name="wl" class="form-control" required ><option value="">请选择文理科</option>
+				<option>文科</option>
+				<option>理科</option>
+	            </select>
+            </li>
+            
+            <li>认证类型<font color="red">*</font>：<select name="certificate_type" class="form-control" required ><option value="">请选择认证类型</option>
+				<option>高分明星</option>
+				<option>提分英雄</option>
+	            </select>
+            </li>
+            
+            <li>认证次数<font color="red">*</font>：<select name="certificate_count" class="form-control" required ><option value="">请选择认证类型</option>
+				<option>首次认证</option>
+				<option>再次认证</option>
+	            </select>
+            </li>
+            
+            <li>家长类型<font color="red">*</font>：
+            <select id="parent_type" name="parent_type" class="form-control" required>
+            <option>父亲</option>
+            <option>母亲</option>
+            <option>其他监护人</option>
+            </select>
+            </li>
+            <li id="parent_type_other" style="display:none;">家长类型其他<font color="red">*</font>：
+            	 <input type="text" name="parent_type_other" class="form-control" placeholder="家长类型其他的详情" maxlength="15"/>
+            </li>
+            <li>联系方式<font color="red">*</font>：<input type="text" name="tel" class="form-control" maxlength="11" required></li>
+            
+            <li>上次成绩<font color="red">*</font>:<input type="number" name="prev_score" class="form-control" min="0" step="0.1" required="required" value="0"></li>
+            <li>上次准确率<font color="red">*</font>：<input type="text" name="prev_exact_rate" class="form-control" maxlength="11" required></li>
+            <li>本次成绩<font color="red">*</font>:<input type="number" name="cur_score" class="form-control" min="0" step="0.1" required="required" value="0"></li>
+            <li>本次准确率<font color="red">*</font>：<input type="text" name="cur_exact_rate" class="form-control" maxlength="11" required></li>
+            
+            <li>提升分数<font color="red">*</font>:<input type="number" name="improve_num" readonly="readonly" class="form-control" min="0" step="0.1" required="required"></li>
+            <li>科目满分<font color="red">*</font>:<input type="number" name="score" class="form-control" min="0" step="1" required="required"></li>
+            <li>提分率<font color="red">*</font>：<input type="text" name="improve_rate" class="form-control" maxlength="8" required></li>
+            
+            <li>考试类型<font color="red">*</font>：<select name="exam_type" class="form-control" required ><option value="">请选择考试类型</option>
+				<option>月考</option>
+				<option>期中考试</option>
+				<option>期末考试</option>
+				<option>高三模拟</option>
+				<option>中高考</option>
+	            </select>
+            </li>
+            
+            <li style="width:800px;clear:left;">认证资料：<font color="red">(注意：每张图片限制在10M之内)</font><font color="red">*</font>:
+	            <div class="form-group pos">
+		            <div class="row">
+		            	 <div class="col-md-8">
+			           	 	<input type="file" name="certificate_pic[]" class="form-control" required>
+			           	 </div>
+			           	 <div class="col-md-2">
+			           	 	<input type="button" class="v_delF col-md-1 form-control" value="删除"/>
+			           	 </div>
+		            </div>
+		            <input type="button" class="v_addF col-md-1" style="width:108px;margin-left:554px;margin-top:5px;" value="增加"/>
+	            </div>
+            </li>
+            
+            <li style="width:800px;">合影照片<font color="red">(注意：每张图片限制在10M之内)</font>:
+	            <div class="form-group ref">
+	            	<div class="row">
+		            	 <div class="col-md-8">
+			           	 	<input type="file" name="photos[]" class="form-control" required="required">
+			           	 </div>
+			           	 <div class="col-md-2">
+			           	 	<input type="button" class="v_delF col-md-2 form-control" value="删除"/>
+			           	 </div>
+		            </div>
+		            <input type="button" class="v_addF col-md-1" style="width:108px;margin-left:554px;margin-top:5px;" value="增加"/>
+	            </div>
+	       </li>
+        </ul>
+    </div>
+</form>
+
+<!-- 审核相关按钮 -->
+<div class="panel panel-default">
+    <div class="panel-body">
+        <if condition="ACTION_NAME eq 'index'"><button class="btn btn-info" onclick="check(1);">计划提交</button></if>
+
+        <if condition="(ACTION_NAME eq 'examine')OR(ACTION_NAME eq 'manage')">
+            <button class="btn btn-info" onclick="check(1);">通过</button>
+        	<if condition="$_SESSION.auth_id neq '509'">    
+            	<button class="btn btn-info" onclick="check(0);">退回</button>
+            </if>
+        </if>
+        
+        <if condition="(ACTION_NAME neq 'finance') AND ($_SESSION.auth_id neq '509')">
+        	<button class="btn btn-info" id="bt_change">修改</button>
+            <button class="btn btn-danger" onclick="check(-1)">删除</button>
+        </if>
+    </div>
+</div>
+
+<!-- 页面数据列表 -->
+
+<div class="btn btn-info">申请流程：发起人=》校长审核=>行政审批</div>
+
+<div class="table-responsive">
+    <table id="apply_list" class="table table-bordered table-hover table-condensed">
+    </table>
+</div>
+
+<!-- 底部数据统计以及页码 -->
+<div class="panel-body">
+    <ul id="pagination" class="pagination pull-right" data-offset="0" data-count="30" data-total="300">
+    </ul>
+</div>
+
+
+<!-- 附件添加浏览 -->
+<div class="modal fade" id="picture">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>附件管理</h3>
+            </div>
+            <div class="modal-body">
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <form  method="post" enctype="multipart/form-data" action="{:U('add_picture')}">
+                            <input type="file" name="pic" required/>
+                            <button class="btn btn-primary pull-right">添加保存</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="panel panel-primary">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loading"></div>
+</block>
+<block name="js">
+<script type="text/javascript">
+
+	// 页面会用到的类型id
+	STATE={:json_encode(get_config('APPLYCLASS_STATE'))};//审核状态
+	
+    
+	function resetFileComponent(){
+		
+		//Ycom.clearForm('#apply_form','[name=school],[name=tel],[name=apply_user],[name=count],[name=expect_date],[name=apply_uses],[name=product_form],[name=type],[name=size],[name=is_plan],[name=descp],[name=position[]],[name=references[]]');
+		//debugger;
+		if($('.pos .v_delF').parent().parent().length >1){
+        	var num = $('.pos .v_delF').parent().parent().length;
+    		$.each($('.pos .v_delF').parent().parent(),function(i,obj){
+    			if(i+1 < num){
+    				obj.remove();	
+    			}
+    		});
+    	}
+		
+        if($('.ref .v_delF').parent().parent().length >1){
+        	var num = $('.ref .v_delF').parent().parent().length;
+    		$.each($('.ref .v_delF').parent().parent(),function(i,obj){
+    			if(i+1 < num){
+    				obj.remove();	
+    			}
+    		});
+    	}
+	}
+	$(document).ready(function(){
+	    loadData(0);//页面数据加载
+	});
+	
+	
+	$('#parent_type').change(function(){ //debugger;
+		if($(this).val() == '其他监护人'){
+			$('#parent_type_other').css('display','block');
+			$('input[name="parent_type_other"]').prop('required','required')
+		}else{
+			$('#parent_type_other').css('display','none');
+			$('input[name="parent_type_other"]').val('');
+			$('input[name="parent_type_other"]').prop('required',false);
+			 
+		}
+	});
+	
+	
+	
+    // 页码绑定事件
+    $('#pagination').on('click', '.page', function(){
+        var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
+        loadData(page_offset);
+    });
+    $('.v_addF').click(function(){
+    	//debugger;
+    	$(this).prev().clone().insertBefore($(this));
+    });
+    $('.form-group').delegate('.v_delF','click',function(){
+    	
+    	if($(this).parent().parent().parent().children().length >2){
+    		$(this).parent().parent().remove();	
+    	}else{
+    		ui_error('注意：这是最后一个了，不能再删除！');
+    	}
+    	
+    });
+    
+    $('input[name="prev_score"]').focusout(function(){
+    	if($('input[name="prev_score"]').val()>0 && $('input[name="cur_score"]').val()>0){
+    		var score = $('input[name="cur_score"]').val()-$('input[name="prev_score"]').val();
+    		if(score>0){
+            	$('input[name="improve_num"]').val(score);	
+            }else{
+            	ui_error("提升分数有问题，请注意检查各个输入项！");
+            	return false;
+            }
+    	}
+    	
+    });
+    
+    $('input[name="cur_score"]').focusout(function(){
+    	
+    	if($('input[name="prev_score"]').val()>0 && $('input[name="cur_score"]').val()>0){
+    		var score = $('input[name="cur_score"]').val()-$('input[name="prev_score"]').val();
+    		if(score>0){
+            	$('input[name="improve_num"]').val(score);	
+            }else{
+            	ui_error("提升分数有问题，请注意检查各个输入项！");
+            	return false;
+            }
+    	}
+    	
+    });
+    
+    $('input[name="score"]').focusout(function(){
+    	if($(this).val() && $('input[name="prev_score"]').val() && $(this).val()>0 && $('input[name="prev_score"]').val()>0){
+    		var rate = $('input[name="improve_num"]').val()/($(this).val()-$('input[name="prev_score"]').val())*100;
+    		$('input[name="improve_rate"]').val(rate + "%");
+    	}
+    });
+    
+    
+    
+     /* //添加/修改申请
+    $("#apply_form").submit(function(event){
+        //event.preventDefault();
+        
+        
+        
+    })  */
+    
+    // 数据列表点击事件
+    $("#apply_list").on('click','tbody tr',function(){
+        $("#apply_list tr").removeClass('success');
+        $(this).addClass('success');
+    })
+    //全选/取消
+    $("#apply_list").on('click','#checkbox',function(){
+        $("#apply_list tbody input[type=checkbox]").prop('checked',($(this).prop('checked')==true)?true:false);
+    })
+    //修改功能,只修改其中一个
+    $("#bt_change").click(function(){
+        var id = $("#apply_list tbody input:checked").val();
+        var data = $("#apply_list tbody input:checked").data('info');
+        if(id==undefined){
+            ui_error('请选择要修改的项目！');
+        }else{
+            $("#apply_form").show();
+            Ycom.fillForm('#apply_form',data);
+            $('#design_other').trigger('change');
+            $('#flat_other').trigger('change');
+            $('#bt_save_change').show();
+            $('#bt_add').hide();
+            //$('input[name=unit_price]').change();
+        }
+    })
+    //审核数据(1通过、0退回、-1删除)
+    function check(type){
+        if($("#apply_list tbody input:checked").val()==undefined){
+            ui_error('请选择要操作的项目！');
+            return;
+        }
+        Ycom.loading.show();
+        var data = $("#apply_list tbody input:checked").serializeJson();
+        var why = '';
+        if(type==0){
+            why = prompt('退回原因(必填)：','');
+            if(why==''||why==null){
+                Ycom.loading.hide();
+                return;
+            }
+        }
+        if(data.id!=undefined)
+        $.post('{:U("check")}',{type:type,data:data,why:why},function(msg){
+            if(msg=='ok')ui_info('操作成功');
+            loadData(0);
+        })
+    }
+    //td内容变化时，更新保存数据
+    $("#apply_list").on('blur','.td_money,.td_notes,.td_buy_transport',function(){
+        var name=$(this).prop('class').replace('td_','');
+        var val=$(this).text();
+        var data = JSON.parse('{"'+name+'":"'+val+'"}');
+            data.id=$(this).parents('tr').find('.td_id').text();
+        // if(val!=''&&val!='0')
+        $.post("{:U('write')}",data,function(msg){
+            if(msg!='操作失败')
+            ui_info(msg);
+        })
+    })
+
+//加载数据列表
+function loadData(offset) {
+    Ycom.loading.show();
+    var search = $('#adv_search').serializeJson();
+    var count = $('#pagination').data('count');
+    var money = 0 ;//项目合计金额
+    $.ajax({
+        url: '{:U("ApplyClassApprove/ajax_list")}',
+        type: 'GET',
+        dataType: 'JSON',
+        data: {search: search, offset: offset, count: count},
+    })
+    .done(function(result) {
+        for(var x in result.data){
+            //将数据完整保存在checkbox上，方便修改功能使用
+            result.data[x]._checkbox = '<input type="checkbox" name="id" value="'+result.data[x].id+'" data-info=\''+JSON.stringify(result.data[x])+'\'>';
+            if(result.data[x].edit == '0')result.data[x]._checkbox ='';
+            //result.data[x].stage = (result.data[x].state<60)?'计划申请':(result.data[x].state<90)?'资金申请':'报销申请';
+                //被退回的数据显示退回的原因
+            if(result.data[x].back==1){
+                result.data[x].state = '<a title="' + result.data[x].why + '"  data-toggle="tooltip" data-placement="top" data-original-title="' + result.data[x].why + '">'+STATE[result.data[x].state]+'</a>';
+                result.data[x].back = '退回';
+            }else{
+                result.data[x].state = STATE[result.data[x].state];
+                result.data[x].back = '正常';
+            }
+            
+        }
+        if (result.state == 'ok') {
+            Ycom.table('#apply_list', {
+                '_checkbox':'<input type="checkbox" id="checkbox">',
+                'id':'序号',
+                'back':'流程状态',
+                'state':'审核状态',
+                'apply_date':'申请日期',
+                'add_user_name':'讲师姓名',
+                'school_name':'校区',
+                'subject':'科目',
+                'student':'学员姓名',
+                'stu_school':'学员就读学校',
+                'grade':'年级',
+                'wl':'文/理',
+                'certificate_type':'认证类型',
+                'certificate_count':'认证次数',
+                'parent_type':'家长类型',
+                'tel':'联系方式',
+                'prev_score':'上次成绩',
+                'prev_exact_rate':'上次准确率(%)',
+                'cur_score':'本次成绩',
+                'cur_exact_rate':'本次准确率(%)',
+                'improve_num':'提升分数',
+                'improve_rate':'提分率(%)',
+                'exam_type':'考试类型',
+                'certificate_pic':'认证资料',
+                'photos':'合影照片',
+                'why':'退回原因',
+                'update_time':'最后审核时间'
+            }, result.data);
+            
+            Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
+            
+            $('[data-toggle="tooltip"]').tooltip();
+        }else{
+            ui_info(result.info);
+        }
+    })
+    .fail(function() {
+        ui_error('网络错误，请稍后再试')
+    })
+    .always(function(result) {
+        if (typeof(always) != "undefined") {
+            always(result);
+        }
+        Ycom.loading.hide();
+    });
+}
+
+</script>
+</block>
+

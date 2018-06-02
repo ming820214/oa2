@@ -1,0 +1,138 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	{:W('PageHeader/simple',array('name'=>'部门财务流程规则管理','search'=>'N'))}
+	
+	<div class="row">
+		<div class="col-sm-4 sub_left_menu">
+			<div class="well" style="overflow-y: auto;max-height: 400px;">
+				<?php echo $menu ?>
+			</div>
+		</div>
+		<div class="col-sm-8 sub_content">
+			<form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+				<input type="hidden" name="id" id="id">
+				<input type="hidden" name="ajax" id="ajax" value="1">
+				<input type="hidden" name="opmode" id="opmode" value="add">
+				<input type="hidden" name="dept_id" id="dept_id">
+				<div class="form-group col-xs-12">
+					<label class="col-sm-1 control-label" for="name">审核节点*：</label>
+					<div class="col-sm-11">
+						<label class="checkbox-inline">
+						  <input type="checkbox" id="rank1" name="ranks[]" value="10"> 专员级
+						</label>                                            
+						<label class="checkbox-inline">                     
+						  <input type="checkbox" id="rank2" name="ranks[]" value="20"> 主管级
+						</label>                                            
+						<label class="checkbox-inline">                     
+						  <input type="checkbox" id="rank3" name="ranks[]" value="30"> 经理级
+						</label>                                            
+						                                                    
+						<label class="checkbox-inline">                     
+						  <input type="checkbox" id="rank4" name="ranks[]" value="40"> 总监级
+						</label>                                            
+						<label class="checkbox-inline">                     
+						  <input type="checkbox" id="rank5" name="ranks[]" value="50"> 中心副总裁级
+						</label>                                            
+						<label class="checkbox-inline">                     
+						  <input type="checkbox" id="rank6" name="ranks[]" value="60"> 中心总裁级
+						</label>                                            
+						                                                    
+						<label class="checkbox-inline">                     
+						  <input type="checkbox" id="rank7" name="ranks[]" value="90"> 集团总裁级
+						</label>                                            
+					</div>
+				</div>
+
+
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-1 control-label" for="is_del">状态*：</label>
+					<div class="col-sm-11">
+						<select   name="is_del" id="is_del" class="form-control">
+							<option  value="0">启用</option>
+							<option value="1">禁用</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-1 control-label" for="remark" >备注：</label>
+					<div class="col-sm-11" >
+						<textarea class="form-control" id="remark" name="remark" rows="5" class="col-xs-12" ></textarea>
+					</div>
+				</div>
+				
+				<div class="form-group col-xs-12" id="rank_button">
+					<div class="pull-left">
+						&nbsp;&nbsp;&nbsp;&nbsp;
+					</div>
+					<div class="pull-right">
+						<input class="btn btn-success" type="button" value="保存" onclick="save()"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input class="btn btn-warning" type="reset" value="重置"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					</div>
+				</div>
+				
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+
+		function save() {
+			if (check_form("form_data")) {
+				//$("#opmode").val("add");
+				sendForm("form_data", "{:U('ProcessRule/save')}", fix_url("{:U('ProcessRule/index')}"));
+			}
+		}
+
+		
+		function showdata(result) {
+			//debugger;
+			$('input[name="ranks[]"]').prop('checked',false);
+			for (var s in result.data) {
+				//set_val(s, result.data[s]);
+				if(s == 'dept_id' || s == 'remark' || s == 'is_del'){
+					$('#' + s).val(result.data[s]);	
+				}
+				
+				if(s == 'rank_id'){
+					for(var i=0;i<result.data['rank_id'].length;i++){
+						$('input[name="ranks[]"][value="' + result.data['rank_id'][i] + '"]').prop('checked',true);
+					}
+				}
+			}
+		}
+
+
+		$(document).ready(function() {
+			set_return_url();
+			//set_val('eq_pid', '{$eq_pid}');
+			$(".sub_left_menu .tree_menu a").click(function() {
+				
+				$(".sub_left_menu .tree_menu  a").each(function() {
+					$(this).attr("class", "");
+				});
+
+				/* $('input[name=dept_name]').val('');
+				$('input[name=dept_id]').val('');
+				$('input[name=dept_name2]').val('');
+				$('input[name=dept_id2]').val(''); */
+				$('#dept_id').val('');
+				$('#dept_id').val($(this).attr("node"));
+				if($(this).attr('grade') > 2){
+					$('#rank_button').show();
+				}else{
+					$('#rank_button').hide();
+				}
+				$(this).attr("class", "active");
+				sendAjax("{:U('read')}", "id=" + $(this).attr("node"), function(data) {
+					showdata(data);
+				});
+				return false;
+			});
+			
+		});
+
+	</script>
+
+</block>

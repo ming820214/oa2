@@ -190,14 +190,41 @@
 							</select>
 						</td>
 					</tr>
+					
+					<tr style="background-color: #FF7325">
+						<th>新部门*</th>
+						<td class="col-20">
+						<div class="input-group ">
+							<input class="form-control" name="new_dept_name"  id="new_dept_name" type="text" msg="请选择部门" readonly="readonly" />
+							<input name="new_dept_id" id="new_dept_id" type="hidden" msg="请选择部门" />
+							<div class="input-group-btn">
+								<a class="btn btn-sm btn-primary" onclick="select_new_dept();" > <i class="fa fa-search" ></i> </a>
+							</div>
+						</div></td>
+						<th class="col-10">新岗位*</th>
+						<td>
+						<select name="new_position_id" id="new_position_id" class="form-control" msg="请选择岗位" check="require">
+							<option value="">选择岗位</option>
+							{:fill_option_ex(get_config('ORG_POST'))}
+						</select></td>
+					</tr>
 					<tr>
+						<th style="background-color: #FF7325">新职级*</th>
+						<td style="background-color: #FF7325">
+						<select class="form-control col-10"  name="new_rank_id" id="new_rank_id">
+							<option value="">选择职级</option>
+							{:fill_option_ex(get_config('ORG_RANK'))}
+						</select></td>
+						
 						<th>状态</th>
 						<td>
 						<select class="form-control col-10"  name="is_del" id="is_del">
 							<option  value="0">启用</option>
 							<option value="1">禁用</option>
 						</select></td>
-						<td colspan="2">
+					</tr>
+					<tr>
+						<td colspan="4">
 							<button id="teacher-set" class="btn btn-primary" data-id="">教师上课信息设置</button>
 						</td>
 					</tr>
@@ -247,6 +274,10 @@
 		function select_dept() {
 			winopen("{:U('dept/winpop2')}", 730, 500);
 		}
+		
+		function select_new_dept() {
+			winopen("{:U('department/winpop2')}", 730, 500);
+		}
 
 		function weixin_sync() {
 			winopen("{:U('weixin_sync')}", 730, 500);
@@ -282,9 +313,51 @@
 			$("#form_data select ").each(function() {
 				$(this).find('option:first').attr('selected', 'selected');
 			});
+			
+			$('#new_dept_name').val('');
+			$('#new_dept_id').val('');
+			$('#new_position_id').empty();
+			$('#new_rank_id').empty();
+			
+			$.ajax({
+				type:"GET",
+				url:"{:U('PostRank/getPostInfo')}",
+				async:false,
+				data:"id=" + result.data['new_dept_id'],
+				success:function(data){
+					$('#new_position_id').empty();
+					$('#new_position_id').append('<option value="">请选择岗位</option>');
+					for(var x in data.data){
+						$('#new_position_id').append('<option value="' + data.data[x].post_id + '">' + data.data[x].post_name + '</option>');
+						
+					}
+				}
+			});
+			
+			$.ajax({
+				type:"GET",
+				url:"{:U('PostRank/getRankInfoByPost')}",
+				async:false,
+				data:"dept_id=" + result.data['new_dept_id'] + "&post_id=" + result.data['new_position_id'],
+				success:function(data){
+					$('#new_rank_id').empty();
+					$('#new_rank_id').append('<option value="">请选择职级</option>');
+					for(var x in data.data){
+						$('#new_rank_id').append('<option value="' + data.data[x].rank_id + '">' + data.data[x].rank_name + '</option>');
+						
+					}
+				}
+			});
+		
+			$('#new_rank_id').val('');
+			//$('#new_rank_id').append('<option value="">请选择职级</option>');
+			
 			for (var s in result.data) {
 				set_val(s, result.data[s]);
 			}
+			
+			
+					
 			$("#dept_name").val($("#dept_list option[value='" + $("#dept_id").val() + "']").text());
 			img_url = $("#pic").val();
 			$('#teacher-set').data('id', result.data.id);
@@ -323,6 +396,23 @@
 				}
 				winopen(fix_url("{:U('TeachRole/index')}?uid=" + $(this).data('id')), 1000, 500);
 				return false;
+			});
+			
+			$('#new_position_id').change(function(){
+				$.ajax({
+					type:"GET",
+					url:"{:U('PostRank/getRankInfoByPost')}",
+					async:false,
+					data:"dept_id=" + $("#new_dept_id").val() + "&post_id=" + $("#new_position_id").val(),
+					success:function(data){
+						$('#new_rank_id').empty();
+						$('#new_rank_id').append('<option value="">请选择职级</option>');
+						for(var x in data.data){
+							$('#new_rank_id').append('<option value="' + data.data[x].rank_id + '">' + data.data[x].rank_name + '</option>');
+							
+						}
+					}
+				});
 			});
 		});
 

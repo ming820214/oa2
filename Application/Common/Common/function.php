@@ -253,6 +253,19 @@ function get_dept_name($dept_id = null) {
 	}
 }
 
+function get_department_name($data,$dept_id = null) {
+    if ($dept_id===null) {
+        $dept_id = session("new_dept_id");
+    } 
+    
+    foreach($data as $ko=>$vv){
+        if($vv['id'] == $dept_id){
+            return $vv['name'];
+            //break;
+        }
+    }
+}
+
 function get_position_id($position_name = null) {
 	if(empty($position_name)){
 		return session('position_id');
@@ -415,6 +428,39 @@ function fill_option_ex($list, $select_id = null) {
 	echo $html;
 }
 
+function fill_option_extend($list, $arr = null,$sel) {
+    $html = "";
+    if (is_array($list)) {
+        foreach ($list as $key => $val) {
+            
+            if (is_array($val)) {
+                
+                if(in_array($val['id'],$arr)){
+                    $id = $val['id'];
+                    $name = $val['name'];
+                    
+                    if ($id !== $sel) {
+                        $selected = "";
+                    } else {
+                        $selected = "selected";
+                    }
+                    $html .= '<option value="'.$id.'" '.$selected.'>'.$name.'</option>';
+                }
+            } else {
+                if(in_array($key,$arr)){
+                    if ($key !== $sel) {
+                        $selected = "";
+                    } else {
+                        $selected = "selected";
+                    }
+                    $html .= '<option value="'.$key.'" '.$selected.'>'.$val.'</option>';
+                }
+            }
+        }
+    }
+    
+    echo $html;
+}
 //输出不带valve的
 function fill_option_val($list, $select_id = null) {
 	$html = "";
@@ -558,11 +604,11 @@ function popup_tree_menu($tree, $level = 0) {
 					$del_class = "";
 				}
 				if (isset($val['_child'])) {
-					$html = $html . "<li>\r\n<a class=\"$del_class\" node=\"$id\" ><i class=\"fa fa-angle-right level$level\"></i><span>$title</span></a>\r\n";
+					$html = $html . "<li>\r\n<a class=\"$del_class\" node=\"$id\" grade=\"$level\"><i class=\"fa fa-angle-right level$level\"></i><span>$title</span></a>\r\n";
 					$html = $html . popup_tree_menu($val['_child'], $level);
 					$html = $html . "</li>\r\n";
 				} else {
-					$html = $html . "<li>\r\n<a class=\"$del_class\" node=\"$id\" ><i class=\"fa fa-angle-right level$level\"></i><span>$title</span></a>\r\n</li>\r\n";
+					$html = $html . "<li>\r\n<a class=\"$del_class\" node=\"$id\" grade=\"$level\"><i class=\"fa fa-angle-right level$level\"></i><span>$title</span></a>\r\n</li>\r\n";
 				}
 			}
 		}

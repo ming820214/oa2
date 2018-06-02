@@ -1,0 +1,228 @@
+<extend name="Layout/ins_page" />
+<block name="content">
+	<input type="hidden" name="ajax" id="ajax" value="1">
+	<select name="dept_list" id="dept_list" class="hidden">
+		{:fill_option($dept_list)}
+	</select>
+	{:W('PageHeader/simple',array('name'=>'部门岗位管理','search'=>'N'))}
+	<form id="form_search" name="form_search" method="post">
+		<div class="operate panel panel-default">
+			<div class="panel-body">
+				<div class="pull-left">
+				<h3 style="color:red;">说明：该功能内的相关信息禁止修改</h3>
+				</div>
+				<div class="pull-right">
+					<a onclick="add()" class="btn btn-sm btn-primary">新增</a>
+					<a onclick="edit()"  class="btn btn-sm btn-primary">修改</a>
+					|
+					<!-- <a onclick="del()"  class="btn btn-sm btn-danger">删除</a> -->
+				</div>
+			</div>
+		</div>
+	</form>
+	<!-- 功能操作区域结束 -->
+	<!-- 列表显示区域  -->
+	<div class="row">
+		<div class="col-sm-4 sub_left_menu ">
+			<div class="well">
+				<?php echo $menu ?>
+			</div>
+		</div>
+		<div class="col-sm-8">
+			<table id="apply_list" class="table table-bordered table-hover table-condensed">
+				
+    		</table>
+		</div>
+		<!-- 底部数据统计以及页码 -->
+		<div class="panel-body">
+		    <ul id="pagination" class="pagination pull-right" data-offset="0" data-count="30" data-total="300">
+		    </ul>
+		</div>
+		<div class="col-sm-8 sub_content"  style="clear:left;float:right;display:none;">
+			<form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+				<input type="hidden" name="id" id="id">
+				<input type="hidden" name="opmode" id="opmode" value="">
+				
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="dept_name">归属部门*：</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+							<input name="dept_name" class="form-control" id="dept_name" type="text" readonly="readonly" msg="请选择相应部门" check="require"/>
+							<input name="dept_id" id="pid" type="hidden" msg="请选择相应部门" check="require" />
+							<span class="input-group-btn">
+								<button class="btn btn-sm btn-primary" onclick="select_pid()" type="button">
+									选择
+								</button> </span>
+						</div>
+					</div>
+				</div>
+								
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="name">科目类别*：</label>
+					<div class="col-sm-8">
+						<select id="subject_id" name="subject_id"  check="require" class="form-control"><option value=''>请选择科目类别</option>{:fill_option_ex(get_config('FINANCE_SUBJECT'))}</select>
+						<br/><input type="text" id="filter" class="form-control"  placeholder="筛选科目类别"/>
+					</div>
+				</div>
+				
+				
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="dept_name">审核部门*：</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+							<input name="check_dept_name" class="form-control" id="check_dept_name" type="text" readonly="readonly" msg="请选择相应部门" check="require"/>
+							<input name="check_dept_id" id="check_pid" type="hidden" msg="请选择相应部门" check="require" />
+							<span class="input-group-btn">
+								<button class="btn btn-sm btn-primary" onclick="select_pid2()" type="button">
+									选择
+								</button> </span>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="sort">排序：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="sort" name="sort" >
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="is_del">状态*：</label>
+					<div class="col-sm-8">
+						<select name="is_del" id="is_del" class="form-control">
+							<option  value="0">启用</option>
+							<option value="1">禁用</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="remark" >其他：</label>
+					<div class="col-sm-8" >
+						<textarea class="form-control" name="remark" id="remark" rows="5" class="col-xs-12" ></textarea>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		function add() {
+			winopen("{:U('add')}",740,500);
+		};
+
+		function edit() {
+			var id = $("#apply_list tbody input:checked").val();
+	        var data = $("#apply_list tbody input:checked").data('info');
+	        if(id==undefined){
+	            ui_error('请选择要修改的项目！');
+	        }else{
+	            
+	            Ycom.fillForm('#form_data',data);
+	            winopen("{:U('edit')}",740,500);
+	        }
+		}
+		
+		$('#filter').keyup(function(){
+			$('#post_id option').show();
+			
+			$('#post_id option').each(function(){
+				
+					if($(this).text().indexOf($('#filter').val()) == -1){
+						$(this).attr('dq','1'); //该属性，无任何意义，就是为了实现某种显示效果
+						$(this).hide();
+					}else{
+						$(this).attr('dq','2');
+					}
+			});
+					
+		$('#post_id option[dq=2]:first').prop('selected',true)
+		});
+		
+		function del() {
+			if ($(".sub_left_menu a.active").parent().find(".tree_menu").html() != undefined) {
+				ui_error("有子目录不能删除");
+				return false;
+			}
+			ui_confirm('确定要删除吗?', function() {
+				var vars = $("#form_data").serialize();
+				sendAjax("{:U('del')}", vars, function(data) {
+					if (data.status) {
+						ui_alert(data.info, function() {
+							location.reload(true);
+						});
+					}
+				});
+			});
+		}
+
+		function select_pid() {
+			winopen("{:U('winpop')}", 730, 500);
+		}
+
+		function showdata(result,offset) {
+			
+			var count = $('#pagination').data('count');
+			 
+			for(var x in result.data){
+	            //将数据完整保存在checkbox上，方便修改功能使用
+	            result.data[x]._checkbox = '<input type="checkbox" name="id" value="'+result.data[x].id+'" data-info=\''+JSON.stringify(result.data[x])+'\'>';
+	            if(result.data[x].edit == '0')result.data[x]._checkbox ='';
+	                //被退回的数据显示退回的原因
+	        }
+	        if (result.state == 'ok') {
+	            Ycom.table('#apply_list', {
+	                '_checkbox':'<input type="checkbox" id="checkbox">',
+	                'id':'序号',
+	                'dept_name':'归属部门',
+	                'subject_name':'科目类别',
+	                'check_dept_name':'审核部门',
+	                'remark':'备注',
+	                'is_del_name':'是否启用'
+	            }, result.data);
+	            Ycom.page.reset('#pagination', offset, count, result.total);// 重置页码样式
+	            $('[data-toggle="tooltip"]').tooltip();
+	        }else{
+	            ui_info(result.info);
+	        }
+			$("#opmode").val("edit");
+		}
+		
+		// 页码绑定事件
+	    $('#pagination').on('click', '.page', function(){
+	        var page_offset = ($(this).data('page') - 1) * $('#pagination').data('count');
+	        loadData(page_offset);
+	    });
+		
+	 // 数据列表点击事件
+	    $("#apply_list").on('click','tbody tr',function(){
+	        $("#apply_list tr").removeClass('success');
+	        $(this).addClass('success');
+	        
+	        /* var id = $("#apply_list tbody input:checked").val();
+	        var data = $("#apply_list tbody input:checked").data('info');
+	        if(id==undefined){
+	            ui_error('请选择要修改的项目！');
+	        }else{
+	            
+	            Ycom.fillForm('#form_data',data);
+	        } */
+	        
+	    })
+	    
+		$(document).ready(function() {
+			$(".sub_left_menu .tree_menu a").click(function() {
+				$(".sub_left_menu .tree_menu a.active").removeClass("active");
+				$(this).addClass("active");
+				sendAjax("{:U('read')}", "id=" + $(this).attr("node"), function(data) {
+					showdata(data,0);
+				});
+				return false;
+			});
+			
+		});
+		
+	</script>
+
+</block>

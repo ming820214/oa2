@@ -33,7 +33,13 @@ class TongjiController extends HomeController {
                 $date=date('Y-m');
                 $day=date('Y-m-d');
             }
-            $aa['timee']=array('like',"$date%");
+            
+            $datexx=date('Y-m');
+            $ee=$datexx.'-'.'01';
+            $c=strtotime(date('Y-m-01'));//获取月初时间戳
+            $lastD=$c+date('t',$c)*24*3600-24*3600;//获取月末时间戳
+            
+            $aa['timee']=array('between',array(date('Y-m-d',$c),date('Y-m-d',$lastD)));
             $aa['state']=array('NEQ',2);
             $aa['stuid'] = array('not in',array('77777','88888','99999','66666'));
             $class=M('hw001.class',null)->where($aa)->order('timee asc,grade asc,time1 asc,class asc,teacher asc,state asc')->select();

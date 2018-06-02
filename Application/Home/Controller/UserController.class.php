@@ -97,7 +97,39 @@ class UserController extends HomeController {
 			$this -> success('该编码可以使用！');
 		}
 	}
-
+    
+	/**查看页面 **/
+	function read($id) {
+	    $this -> _edit($id);
+	}
+	
+	/**编辑页面 **/
+	protected function _edit($id, $name = CONTROLLER_NAME) {
+	    $model = M($name);
+	    $vo = $model -> find($id);
+	    if (IS_AJAX) {
+	        if ($vo !== false) {// 读取成功
+	            
+                $vo['new_dept_name'] = M('Department')->where(['id'=>$vo['new_dept_id']])->getField('name');
+                $vo['new_position_name'] = get_config('ORG_POST')[$vo['new_position_id']];
+                $vo['new_rank_name'] = get_config('ORG_RANK')[$vo['new_rank_id']];
+	            
+	            $return['data'] = $vo;
+	            $return['status'] = 1;
+	            $return['info'] = "读取成功";
+	            $this -> ajaxReturn($return);
+	        } else {
+	            $return['status'] = 0;
+	            $return['info'] = "读取错误";
+	            $this -> ajaxReturn($return);
+	        }
+	    }
+	    
+	    $this -> assign('vo', $vo);
+	    $this -> display();
+	    return $vo;
+	}
+	
 	// 插入数据
 	protected function _insert($name = "User") {
 		// 创建数据对象

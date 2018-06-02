@@ -1,0 +1,104 @@
+<extend name="Layout/ins_popup" />
+<block name="content">
+	<input type="hidden" name="ajax" id="ajax" value="1">
+
+	{:W('PageHeader/popup',array('name'=>'添加部门岗位','search'=>'N'))}
+	<!-- 列表显示区域  -->
+	<div class="row">
+		<div class="col-xs-12 sub_content">
+			<form id="form_data" name="form_data" method="post" class="well form-horizontal clearfix">
+				<input type="hidden" name="opmode" id="opmode" value="add">
+				
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="dept_name">部门*：</label>
+					<div class="col-sm-8">
+						<div class="input-group">
+							<input name="dept_name" class="form-control" id="dept_name" type="text" readonly="readonly" msg="请选择相应部门" check="require"/>
+							<input name="dept_id" id="pid" type="hidden" msg="请选择相应部门" check="require" />
+							<span class="input-group-btn">
+								<button class="btn btn-sm btn-primary" onclick="select_pid()" type="button">
+									选择
+								</button> </span>
+						</div>
+					</div>
+				</div>
+								
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="name">岗位*：</label>
+					<div class="col-sm-8">
+						<select id="post_id" name="post_id"  check="require" class="form-control"><option value=''>请选择岗位</option>{:fill_option_ex(get_config('ORG_POST'))}</select>
+						<br/><input type="text" id="filter" class="form-control"  placeholder="筛选岗位"/>
+					</div>
+				</div>
+				
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="sort">排序：</label>
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="sort" name="sort" >
+					</div>
+				</div>
+
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="is_del">状态*：</label>
+					<div class="col-sm-8">
+						<select name="is_del" id="is_del" class="form-control">
+							<option  value="0">启用</option>
+							<option value="1">禁用</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group col-xs-12">
+					<label class="col-sm-4 control-label" for="remark" >其他：</label>
+					<div class="col-sm-8" >
+						<textarea class="form-control" name="remark" id="remark" rows="5" class="col-xs-12" ></textarea>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</block>
+<block name="js">
+	<script type="text/javascript">
+		function save() {
+			if (check_form("form_data")) {
+				var vars = $("#form_data").serialize();
+				sendAjax("{:U('save')}", vars, function(data) {
+					if (data.status) {
+						ui_alert(data.info, function() {
+							parent.location.reload(true);
+							myclose();
+						});
+					}else{
+						ui_error(data.info);
+					}
+				});
+			}
+		}
+
+		function select_pid() {
+			winopen("{:U('winpop')}", 730, 500);
+		}
+		
+		$('#filter').keyup(function(){
+			$('#post_id option').show();
+			
+			$('#post_id option').each(function(){
+				
+					if($(this).text().indexOf($('#filter').val()) == -1){
+						$(this).attr('dq','1'); //该属性，无任何意义，就是为了实现某种显示效果
+						$(this).hide();
+					}else{
+						$(this).attr('dq','2');
+					}
+			});
+					
+		$('#post_id option[dq=2]:first').prop('selected',true)
+		});
+		
+		/* $(document).ready(function() {
+			$pid = $("#id", parent.document).val();
+			$("#pid").val($pid);
+		}); */
+	</script>
+
+</block>

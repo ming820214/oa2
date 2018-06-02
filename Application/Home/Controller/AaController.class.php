@@ -8,6 +8,32 @@ use Think\Controller;
 class AaController extends Controller {
     protected $config = array('app_type' => 'personal');
 
+    public function test_unique(){
+        for($i=0;$i<10000;$i++){
+            //usleep(2000);
+            $data['school'] = '本地雄安区';
+            $data['stuid'] = 989898;
+            $data['course_id'] = 8989;
+            $data['grade'] = 88;
+            $data['state'] = 2;
+            $data['tid'] = 789;
+            $data['teacher'] = '痛症';
+            $data['fankui'] = '0';
+            $data['class'] = '综合';
+            $data['time1'] = '12:28';
+            $data['time2'] = "14:28";
+            $data['count'] = 2;
+            $data['timee'] = '2018-09-09';
+            $data['timestamp'] = date('Y-m-d');
+            $data['unique_value'] = microtime(true);
+            
+            M('hw001.class3',null)->add($data);
+            
+        }
+        
+        var_dump('Hello Boy!');
+        die;
+    }
 /**
 处理班级课出现只有一个人有课，其它人的课没有的情况
 */

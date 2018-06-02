@@ -79,6 +79,10 @@ class PublicController extends Controller {
 				session('date', date('Y-m'));
 				session('last_login_time', $auth_info['last_login_time']);
 				
+				session('new_dept_id',$auth_info['new_dept_id']);
+				session('new_position_id',$auth_info['new_position_id']);
+				session('new_rank_id',$auth_info['new_rank_id']);
+				
 				//用户数据cookie设置；
 				cookie('user_id',$auth_info['id']);
 				cookie('user_name',$auth_info['name']);
@@ -220,6 +224,11 @@ class PublicController extends Controller {
 			session('position_id', $auth_info['position_id']);
 			session('school_id', $auth_info['school']);
 			session('date', date('Y-m'));
+			
+			session('new_dept_id',$auth_info['new_dept_id']);
+			session('new_position_id',$auth_info['new_position_id']);
+			session('new_rank_id',$auth_info['new_rank_id']);
+			
 			$this -> redirect($urll);
 	    }else{
 	    	$this->error('没有相关权限',U('login'));
